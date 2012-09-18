@@ -45,6 +45,7 @@ final class Console
         allCommands.put("setrelationship", SetRelationship.class);
         allCommands.put("adjustrelationship", AdjustRelationship.class);
         allCommands.put("addweapon", AddWeapon.class);
+        allCommands.put("additem", AddItem.class);
         allCommands.put("addcrew", AddCrew.class);
         allCommands.put("addmarines", AddMarines.class);
         allCommands.put("allweapons", AllWeapons.class);
