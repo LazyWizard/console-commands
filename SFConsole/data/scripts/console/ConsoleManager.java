@@ -75,6 +75,11 @@ public class ConsoleManager implements SpawnPointPlugin
         return consoleVars.get(varName);
     }
 
+    public boolean hasVar(String varName)
+    {
+        return (consoleVars.get(varName) != null);
+    }
+
     public LocationAPI getLocation()
     {
         return location;
@@ -99,6 +104,7 @@ public class ConsoleManager implements SpawnPointPlugin
                 {
                     Console.showMultiLineMessage("Error: failed to re-register command '"
                             + key + "':", ex.getMessage(), true);
+                    iter.remove();
                 }
             }
 
