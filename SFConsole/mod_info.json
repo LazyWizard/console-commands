@@ -1,0 +1,10 @@
+{
+  "id":"_lw_devconsole", # internal id
+  "name":"Developer's Console", # displayed to the player
+  "author":"LazyWizard",
+  "totalConversion":"false",
+  "version":"0.01",
+  "description":"An in-game developer's console. Activated with tilde (~).",
+  "gameVersion":"0.53.1a",
+  "replace":[],
+}
