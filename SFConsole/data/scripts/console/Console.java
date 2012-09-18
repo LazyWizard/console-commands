@@ -41,6 +41,7 @@ final class Console
         allCommands.add("AddSupplies");
         allCommands.add("SetRelationship");
         allCommands.add("AdjustRelationship");
+        allCommands.add("AddItem");
         allCommands.add("AddWeapon");
         allCommands.add("AddCrew");
         allCommands.add("AddMarines");
@@ -297,6 +298,10 @@ final class Console
         else if (com.equals("addweapon"))
         {
             command = new AddWeapon();
+        }
+        else if (com.equals("additem"))
+        {
+            command = new AddItem();
         }
         else if (com.equals("addcrew"))
         {
