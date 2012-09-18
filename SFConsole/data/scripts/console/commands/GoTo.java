@@ -10,6 +10,12 @@ import org.lwjgl.util.vector.Vector2f;
 public class GoTo extends BaseCommand
 {
     @Override
+    protected String getName()
+    {
+        return "GoTo";
+    }
+
+    @Override
     protected String getHelp()
     {
         return "";

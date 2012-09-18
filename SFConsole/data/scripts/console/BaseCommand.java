@@ -22,11 +22,6 @@ public abstract class BaseCommand
         return (StarSystemAPI) getLocation();
     }
 
-    public String getName()
-    {
-        return this.getClass().getSimpleName();
-    }
-
     protected static Object getVar(String varName)
     {
         return Console.getManager().getVar(varName);
@@ -76,6 +71,8 @@ public abstract class BaseCommand
 
         showMessage(getName() + " syntax: " + getSyntax());
     }
+
+    protected abstract String getName();
 
     protected abstract String getHelp();
 

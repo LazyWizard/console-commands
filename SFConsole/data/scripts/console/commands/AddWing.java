@@ -9,6 +9,12 @@ import data.scripts.console.BaseCommand;
 public class AddWing extends BaseCommand
 {
     @Override
+    protected String getName()
+    {
+        return "AddWing";
+    }
+
+    @Override
     protected String getHelp()
     {
         return "";

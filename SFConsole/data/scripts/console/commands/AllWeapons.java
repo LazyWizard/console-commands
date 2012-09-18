@@ -12,6 +12,12 @@ public class AllWeapons extends BaseCommand
 {
     private static final String STATION = "Abandoned Storage Facility";
     private static final float STACK_SIZE = 10f;
+    
+    @Override
+    protected String getName()
+    {
+        return "AllWeapons";
+    }
 
     @Override
     protected String getHelp()

@@ -6,6 +6,12 @@ import data.scripts.console.BaseCommand;
 public class AddCredits extends BaseCommand
 {
     @Override
+    protected String getName()
+    {
+        return "AddCredits";
+    }
+
+    @Override
     protected String getHelp()
     {
         return "";

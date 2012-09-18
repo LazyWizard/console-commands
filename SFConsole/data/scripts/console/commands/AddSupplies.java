@@ -6,6 +6,12 @@ import data.scripts.console.BaseCommand;
 public class AddSupplies extends BaseCommand
 {
     @Override
+    protected String getName()
+    {
+        return "AddSupplies";
+    }
+
+    @Override
     protected String getHelp()
     {
         return "";

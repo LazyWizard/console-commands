@@ -6,6 +6,12 @@ import data.scripts.console.BaseCommand;
 public class AdjustRelationship extends BaseCommand
 {
     @Override
+    protected String getName()
+    {
+        return "AdjustRelationship";
+    }
+
+    @Override
     protected String getHelp()
     {
         return "";

@@ -6,6 +6,12 @@ import data.scripts.console.BaseCommand;
 public class AddMarines extends BaseCommand
 {
     @Override
+    protected String getName()
+    {
+        return "AddMarines";
+    }
+
+    @Override
     protected String getHelp()
     {
         return "";
