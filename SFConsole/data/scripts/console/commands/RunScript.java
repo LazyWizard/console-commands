@@ -40,6 +40,12 @@ public class RunScript extends BaseCommand
     }
 
     @Override
+    protected String getName()
+    {
+        return "RunScript";
+    }
+
+    @Override
     protected String getHelp()
     {
         return "Valid arguments:\n  <scriptname> (runs that script)\n  list "

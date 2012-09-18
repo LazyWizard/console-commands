@@ -7,6 +7,12 @@ import data.scripts.console.BaseCommand;
 public class AddWeapon extends BaseCommand
 {
     @Override
+    protected String getName()
+    {
+        return "AddWeapon";
+    }
+
+    @Override
     protected String getHelp()
     {
         return "";

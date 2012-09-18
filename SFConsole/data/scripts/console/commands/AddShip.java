@@ -9,6 +9,12 @@ import data.scripts.console.BaseCommand;
 public class AddShip extends BaseCommand
 {
     @Override
+    protected String getName()
+    {
+        return "AddShip";
+    }
+
+    @Override
     protected String getHelp()
     {
         return "";

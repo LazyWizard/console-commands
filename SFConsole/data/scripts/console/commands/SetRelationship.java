@@ -6,6 +6,13 @@ import data.scripts.console.BaseCommand;
 public class SetRelationship extends BaseCommand
 {
     @Override
+    protected String getName()
+    {
+        return "SetRelationship";
+    }
+
+
+    @Override
     protected String getHelp()
     {
         return "";

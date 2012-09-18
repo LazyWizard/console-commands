@@ -16,7 +16,7 @@ final class Console
     private static final Color CONSOLE_COLOR = Color.YELLOW;
     private static final int LINE_LENGTH = 80;
     // Maps the command to the associated class
-    private static transient final Map allCommands = new TreeMap();
+    private static transient final List allCommands = new ArrayList();
     // The ConsoleManager that requested input (cheap multi-system support)
     private static transient ConsoleManager lastManager;
 
@@ -32,25 +32,23 @@ final class Console
         UIManager.put("Button.background", Color.BLACK);
         UIManager.put("Button.foreground", Color.LIGHT_GRAY);
 
-        // Since I know these classes pass validation, we can insert them
-        // directly into the command map instead of through registerCommand
-        allCommands.put("runscript", RunScript.class);
-        allCommands.put("runcode", RunCode.class);
-        allCommands.put("spawnfleet", SpawnFleet.class);
-        allCommands.put("addship", AddShip.class);
-        allCommands.put("addwing", AddWing.class);
-        allCommands.put("addcredits", AddCredits.class);
-        allCommands.put("addfuel", AddFuel.class);
-        allCommands.put("addsupplies", AddSupplies.class);
-        allCommands.put("setrelationship", SetRelationship.class);
-        allCommands.put("adjustrelationship", AdjustRelationship.class);
-        allCommands.put("addweapon", AddWeapon.class);
-        allCommands.put("addcrew", AddCrew.class);
-        allCommands.put("addmarines", AddMarines.class);
-        allCommands.put("allweapons", AllWeapons.class);
-        allCommands.put("goto", GoTo.class);
-        allCommands.put("home", Home.class);
-        allCommands.put("sethome", SetHome.class);
+        allCommands.add("RunScript");
+        allCommands.add("SpawnFleet");
+        allCommands.add("AddShip");
+        allCommands.add("AddWing");
+        allCommands.add("AddCredits");
+        allCommands.add("AddFuel");
+        allCommands.add("AddSupplies");
+        allCommands.add("SetRelationship");
+        allCommands.add("AdjustRelationship");
+        allCommands.add("AddWeapon");
+        allCommands.add("AddCrew");
+        allCommands.add("AddMarines");
+        allCommands.add("AllWeapons");
+        allCommands.add("GoTo");
+        allCommands.add("Home");
+        allCommands.add("SetHome");
+        Collections.sort(allCommands);
     }
 
     private Console()
@@ -154,37 +152,6 @@ final class Console
         showMessage(message, false);
     }
 
-    static void registerCommand(String command,
-            Class commandClass) throws Exception
-            //throws InvalidCommandObjectException, InvalidCommandPackageException
-    {
-        command = command.toLowerCase();
-        // getPackage() won't work for classes compiled with Janino's classloader
-        // There's an extremely ugly workaround below
-        //if (!COMMAND_PACKAGE.equals(commandClass.getPackage().getName()))
-        if (!COMMAND_PACKAGE.equals(commandClass.getCanonicalName().substring(0,
-                commandClass.getCanonicalName().lastIndexOf('.'))))
-        {
-            // InvalidCommandPackageException
-            throw new Exception("Console command "
-                    + commandClass.getCanonicalName() + " is not in the '"
-                    + COMMAND_PACKAGE + "' package!");
-        }
-
-        if (!BaseCommand.class.isAssignableFrom(commandClass))
-        {
-            // InvalidCommandObjectException
-            throw new Exception("Console command "
-                    + commandClass.getCanonicalName()
-                    + " does not extend BaseCommand!");
-        }
-
-        if (allCommands.put(command, commandClass) != null)
-        {
-            showMessage("Replaced existing command '" + command + "'.");
-        }
-    }
-
     public static void runTests()
     {
         Global.getSector().addMessage("Running console tests...");
@@ -211,14 +178,12 @@ final class Console
     public static void listCommands()
     {
         StringBuilder names = new StringBuilder("Help");
-        Iterator iter = allCommands.values().iterator();
-        Class tmp;
+        Iterator iter = allCommands.iterator();
 
         while (iter.hasNext())
         {
             names.append(", ");
-            tmp = (Class) iter.next();
-            names.append(tmp.getSimpleName());
+            names.append((String) iter.next());
         }
 
         showMultiLineMessage("Valid commands (not case-sensitive): ",
@@ -293,30 +258,69 @@ final class Console
     {
         BaseCommand command;
 
-        if (allCommands.containsKey(com))
+        if (com.equals("runscript"))
         {
-            try
-            {
-                command = (BaseCommand) ((Class) allCommands.get(com)).newInstance();
-            }
-            catch (InstantiationException ex)
-            {
-                showMultiLineMessage("Error while retrieving command "
-                        + com + ": failed to create command object!", ex.getMessage(), true);
-                return false;
-            }
-            catch (IllegalAccessException ex)
-            {
-                showMultiLineMessage("Error while retrieving command "
-                        + com + ": lacks permission!", ex.getMessage(), true);
-                return false;
-            }
-            catch (ClassCastException ex)
-            {
-                showMultiLineMessage("Error while retrieving command "
-                        + com + ": not a valid command object!", ex.getMessage(), true);
-                return false;
-            }
+            command = new RunScript();
+        }
+        else if (com.equals("spawnfleet"))
+        {
+            command = new SpawnFleet();
+        }
+        else if (com.equals("addship"))
+        {
+            command = new AddShip();
+        }
+        else if (com.equals("addwing"))
+        {
+            command = new AddWing();
+        }
+        else if (com.equals("addcredits"))
+        {
+            command = new AddCredits();
+        }
+        else if (com.equals("addfuel"))
+        {
+            command = new AddFuel();
+        }
+        else if (com.equals("addsupplies"))
+        {
+            command = new AddSupplies();
+        }
+        else if (com.equals("setrelationship"))
+        {
+            command = new SetRelationship();
+        }
+        else if (com.equals("adjustrelationship"))
+        {
+            command = new AdjustRelationship();
+        }
+        else if (com.equals("addweapon"))
+        {
+            command = new AddWeapon();
+        }
+        else if (com.equals("addcrew"))
+        {
+            command = new AddCrew();
+        }
+        else if (com.equals("addmarines"))
+        {
+            command = new AddMarines();
+        }
+        else if (com.equals("allweapons"))
+        {
+            command = new AllWeapons();
+        }
+        else if (com.equals("goto"))
+        {
+            command = new GoTo();
+        }
+        else if (com.equals("home"))
+        {
+            command = new Home();
+        }
+        else if (com.equals("sethome"))
+        {
+            command = new SetHome();
         }
         else
         {

@@ -6,6 +6,12 @@ import data.scripts.console.BaseCommand;
 public class SpawnFleet extends BaseCommand
 {
     @Override
+    protected String getName()
+    {
+        return "SpawnFleet";
+    }
+
+    @Override
     protected String getHelp()
     {
         return "";

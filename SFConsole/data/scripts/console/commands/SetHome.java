@@ -12,6 +12,12 @@ public class SetHome extends BaseCommand
     private static final float DISTANCE_CUTOFF = 300f;
 
     @Override
+    protected String getName()
+    {
+        return "SetHome";
+    }
+
+    @Override
     protected String getHelp()
     {
         return "Sets the point to be teleported to with the 'home' command.\n"

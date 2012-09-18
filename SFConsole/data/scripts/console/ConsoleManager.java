@@ -15,13 +15,11 @@ public class ConsoleManager implements SpawnPointPlugin
     private static final boolean REQUIRE_RUN_WINDOWED = true;
     private static final int CONSOLE_KEY = Keyboard.KEY_GRAVE;
     // Per-session variables
-    private transient boolean justReloaded = false;
     private transient boolean didWarn = false;
     private transient boolean isPressed = false;
     // Saved variables
     private LocationAPI location;
     private Map consoleVars = new HashMap();
-    private Map extendedCommands = new HashMap();
 
     public ConsoleManager(LocationAPI location)
     {
@@ -40,29 +38,9 @@ public class ConsoleManager implements SpawnPointPlugin
 
     public Object readResolve()
     {
-        justReloaded = true;
         didWarn = false;
         isPressed = false;
         return this;
-    }
-
-    public boolean registerCommand(String command, Class commandClass)
-    {
-        // We can't write our own exceptions at the moment, so the console
-        // is forced to throw/catch generic Exceptions/RuntimeExceptions
-        try
-        {
-            Console.registerCommand(command, commandClass);
-        }
-        catch (Exception ex)
-        {
-            Console.showMultiLineMessage("Failed to register command '"
-                    + command + "':", ex.getMessage(), true);
-            return false;
-        }
-
-        extendedCommands.put(command, commandClass);
-        return true;
     }
 
     public void setVar(String varName, Object varData)
@@ -78,32 +56,6 @@ public class ConsoleManager implements SpawnPointPlugin
     public LocationAPI getLocation()
     {
         return location;
-    }
-
-    private void reloadCommands()
-    {
-        if (!extendedCommands.isEmpty())
-        {
-            Iterator iter = extendedCommands.keySet().iterator();
-            String key;
-
-            while (iter.hasNext())
-            {
-                key = (String) iter.next();
-
-                try
-                {
-                    registerCommand(key, (Class) extendedCommands.get(key));
-                }
-                catch (Exception ex)
-                {
-                    Console.showMultiLineMessage("Error: failed to re-register command '"
-                            + key + "':", ex.getMessage(), true);
-                }
-            }
-
-            //showMessage("Extended console commands registered successfully!");
-        }
     }
 
     private static boolean allowConsole()
@@ -137,13 +89,6 @@ public class ConsoleManager implements SpawnPointPlugin
     @Override
     public void advance(SectorAPI sector, LocationAPI location)
     {
-        // Re-register user/mod-created commands after a reload
-        if (justReloaded)
-        {
-            justReloaded = false;
-            reloadCommands();
-        }
-
         if (!isPressed)
         {
             if (Keyboard.isKeyDown(CONSOLE_KEY))

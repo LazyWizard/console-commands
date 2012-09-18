@@ -7,6 +7,12 @@ import data.scripts.console.BaseCommand;
 public class AddCrew extends BaseCommand
 {
     @Override
+    protected String getName()
+    {
+        return "AddCrew";
+    }
+
+    @Override
     protected String getHelp()
     {
         return "Adds the specified amount of crew.\n"

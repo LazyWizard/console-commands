@@ -10,6 +10,13 @@ import org.lwjgl.util.vector.Vector2f;
 public class Home extends BaseCommand
 {
     @Override
+    protected String getName()
+    {
+        return "Home";
+    }
+
+
+    @Override
     protected String getHelp()
     {
         return "Teleports the player to their home location.\n"
