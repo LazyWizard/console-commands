@@ -11,32 +11,26 @@ public class RunScript extends BaseCommand
 
     static
     {
-        addDefaultScripts();
+        reloadScripts();
     }
 
     public static void addScript(String name, Script script)
     {
         allowedScripts.put(name, script);
+        saveScripts();
     }
 
-    private static void addDefaultScripts()
+    private static void saveScripts()
     {
-        addScript("ExampleScript", new Script()
+        setVar("UserScripts", allowedScripts);
+    }
+
+    private static void reloadScripts()
+    {
+        if (hasVar("UserScripts"))
         {
-            @Override
-            public void run()
-            {
-                Global.getSector().addMessage("This is an example script.");
-            }
-        });
-        addScript("TestScript", new Script()
-        {
-            @Override
-            public void run()
-            {
-                Global.getSector().addMessage("This is a test script.");
-            }
-        });
+            allowedScripts = (Map) getVar("UserScripts");
+        }
     }
 
     @Override
