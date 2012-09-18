@@ -91,26 +91,31 @@ public class ConsoleManager implements SpawnPointPlugin
     {
         if (!extendedCommands.isEmpty())
         {
-            Iterator iter = extendedCommands.keySet().iterator();
-            String key;
+            boolean success = true;
+            Iterator iter = extendedCommands.entrySet().iterator();
+            Map.Entry tmp;
 
             while (iter.hasNext())
             {
-                key = (String) iter.next();
+                tmp = (Map.Entry) iter.next();
 
                 try
                 {
-                    registerCommand(key, (Class) extendedCommands.get(key));
+                    registerCommand((String) tmp.getKey(), (Class) tmp.getValue());
                 }
                 catch (Exception ex)
                 {
+                    success = false;
                     Console.showMultiLineMessage("Error: failed to re-register command '"
-                            + key + "':", ex.getMessage(), true);
+                            + (String) tmp.getKey() + "':", ex.getMessage(), true);
                     iter.remove();
                 }
             }
 
-            //showMessage("Extended console commands registered successfully!");
+            if (success)
+            {
+                Console.showMessage("Extended console commands registered successfully!");
+            }
         }
     }
 
@@ -119,13 +124,13 @@ public class ConsoleManager implements SpawnPointPlugin
         if (hasVar("UserScripts"))
         {
             Map userScripts = (HashMap) getVar("UserScripts");
-            Iterator iter = userScripts.keySet().iterator();
-            String key;
+            Iterator iter = userScripts.entrySet().iterator();
+            Map.Entry tmp;
 
             while (iter.hasNext())
             {
-                key = (String) iter.next();
-                RunScript.addScript(key, (Script) userScripts.get(key));
+                tmp = (Map.Entry) iter.next();
+                RunScript.addScript((String) tmp.getKey(), (Script) tmp.getValue());
             }
         }
     }
