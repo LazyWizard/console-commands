@@ -32,6 +32,11 @@ public abstract class BaseCommand
         Console.getManager().setVar(varName, varData);
     }
 
+    protected static boolean hasVar(String varName)
+    {
+        return Console.getManager().hasVar(varName);
+    }
+
     protected static void showMultiLineMessage(String preamble,
             String message, boolean indent)
     {

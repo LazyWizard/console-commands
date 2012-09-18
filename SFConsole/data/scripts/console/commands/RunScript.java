@@ -1,6 +1,5 @@
 package data.scripts.console.commands;
 
-import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.Script;
 import data.scripts.console.BaseCommand;
 import java.util.*;
@@ -9,34 +8,15 @@ public class RunScript extends BaseCommand
 {
     private static Map allowedScripts = Collections.synchronizedMap(new HashMap());
 
-    static
-    {
-        addDefaultScripts();
-    }
-
     public static void addScript(String name, Script script)
     {
         allowedScripts.put(name, script);
+        saveScripts();
     }
 
-    private static void addDefaultScripts()
+    private static void saveScripts()
     {
-        addScript("ExampleScript", new Script()
-        {
-            @Override
-            public void run()
-            {
-                Global.getSector().addMessage("This is an example script.");
-            }
-        });
-        addScript("TestScript", new Script()
-        {
-            @Override
-            public void run()
-            {
-                Global.getSector().addMessage("This is a test script.");
-            }
-        });
+        setVar("UserScripts", allowedScripts);
     }
 
     @Override

@@ -1,9 +1,11 @@
 package data.scripts.console;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.Script;
 import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.SpawnPointPlugin;
+import data.scripts.console.commands.RunScript;
 import java.util.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -15,6 +17,7 @@ public class ConsoleManager implements SpawnPointPlugin
     private static final boolean REQUIRE_RUN_WINDOWED = true;
     private static final int CONSOLE_KEY = Keyboard.KEY_GRAVE;
     // Per-session variables
+    private transient boolean justReloaded = false;
     private transient boolean didWarn = false;
     private transient boolean isPressed = false;
     // Saved variables
@@ -38,6 +41,7 @@ public class ConsoleManager implements SpawnPointPlugin
 
     public Object readResolve()
     {
+        justReloaded = true;
         didWarn = false;
         isPressed = false;
         return this;
@@ -53,9 +57,30 @@ public class ConsoleManager implements SpawnPointPlugin
         return consoleVars.get(varName);
     }
 
+    public boolean hasVar(String varName)
+    {
+        return consoleVars.keySet().contains(varName);
+    }
+
     public LocationAPI getLocation()
     {
         return location;
+    }
+
+        private void reloadScripts()
+    {
+        if (hasVar("UserScripts"))
+        {
+            Map userScripts = (HashMap) getVar("UserScripts");
+            Iterator iter = userScripts.keySet().iterator();
+            String key;
+
+            while (iter.hasNext())
+            {
+                key = (String) iter.next();
+                RunScript.addScript(key, (Script) userScripts.get(key));
+            }
+        }
     }
 
     private static boolean allowConsole()
@@ -81,14 +106,24 @@ public class ConsoleManager implements SpawnPointPlugin
 
     private static void showRestrictions()
     {
-        Console.showMessage("The console will only function"
-                + (REQUIRE_RUN_WINDOWED ? " in windowed mode" : "")
-                + (REQUIRE_DEV_MODE ? " with devmode active." : "."));
+        if (REQUIRE_RUN_WINDOWED || REQUIRE_DEV_MODE)
+        {
+            Console.showMessage("The console will only function"
+                    + (REQUIRE_RUN_WINDOWED ? " in windowed mode" : "")
+                    + (REQUIRE_DEV_MODE ? " with devmode active." : "."));
+        }
     }
 
     @Override
     public void advance(SectorAPI sector, LocationAPI location)
     {
+                // Re-register user/mod-created commands after a reload
+        if (justReloaded)
+        {
+            justReloaded = false;
+            reloadScripts();
+        }
+
         if (!isPressed)
         {
             if (Keyboard.isKeyDown(CONSOLE_KEY))
