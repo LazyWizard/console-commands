@@ -1,6 +1,5 @@
 package data.scripts.console.commands;
 
-import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.Script;
 import data.scripts.console.BaseCommand;
 import java.util.*;
@@ -8,11 +7,6 @@ import java.util.*;
 public class RunScript extends BaseCommand
 {
     private static Map allowedScripts = Collections.synchronizedMap(new HashMap());
-
-    static
-    {
-        reloadScripts();
-    }
 
     public static void addScript(String name, Script script)
     {
@@ -23,14 +17,6 @@ public class RunScript extends BaseCommand
     private static void saveScripts()
     {
         setVar("UserScripts", allowedScripts);
-    }
-
-    private static void reloadScripts()
-    {
-        if (hasVar("UserScripts"))
-        {
-            allowedScripts = (Map) getVar("UserScripts");
-        }
     }
 
     @Override
