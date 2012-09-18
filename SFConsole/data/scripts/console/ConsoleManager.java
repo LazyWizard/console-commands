@@ -153,9 +153,12 @@ public class ConsoleManager implements SpawnPointPlugin
 
     private static void showRestrictions()
     {
-        Console.showMessage("The console will only function"
-                + (REQUIRE_RUN_WINDOWED ? " in windowed mode" : "")
-                + (REQUIRE_DEV_MODE ? " with devmode active." : "."));
+        if (REQUIRE_RUN_WINDOWED || REQUIRE_DEV_MODE)
+        {
+            Console.showMessage("The console will only function"
+                    + (REQUIRE_RUN_WINDOWED ? " in windowed mode" : "")
+                    + (REQUIRE_DEV_MODE ? " with devmode active" : "") + ".");
+        }
     }
 
     @Override
