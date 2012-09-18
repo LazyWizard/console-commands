@@ -1,9 +1,11 @@
 package data.scripts.console;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.Script;
 import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.SpawnPointPlugin;
+import data.scripts.console.commands.RunScript;
 import java.util.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -77,7 +79,7 @@ public class ConsoleManager implements SpawnPointPlugin
 
     public boolean hasVar(String varName)
     {
-        return (consoleVars.get(varName) != null);
+        return consoleVars.keySet().contains(varName);
     }
 
     public LocationAPI getLocation()
@@ -109,6 +111,22 @@ public class ConsoleManager implements SpawnPointPlugin
             }
 
             //showMessage("Extended console commands registered successfully!");
+        }
+    }
+
+    private void reloadScripts()
+    {
+        if (hasVar("UserScripts"))
+        {
+            Map userScripts = (HashMap) getVar("UserScripts");
+            Iterator iter = userScripts.keySet().iterator();
+            String key;
+
+            while (iter.hasNext())
+            {
+                key = (String) iter.next();
+                RunScript.addScript(key, (Script) userScripts.get(key));
+            }
         }
     }
 
@@ -148,6 +166,7 @@ public class ConsoleManager implements SpawnPointPlugin
         {
             justReloaded = false;
             reloadCommands();
+            reloadScripts();
         }
 
         if (!isPressed)
