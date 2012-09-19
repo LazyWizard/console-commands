@@ -102,7 +102,8 @@ public class ConsoleManager implements SpawnPointPlugin
     private void reloadConsoleKey()
     {
         consoleKey = (hasVar("ConsoleKey")
-                ? ((Integer) getVar("ConsoleKey")).intValue() : DEFAULT_CONSOLE_KEY);
+                ? ((Integer) getVar("ConsoleKey")).intValue()
+                : DEFAULT_CONSOLE_KEY);
     }
 
     private void reloadCommands()
@@ -133,6 +134,10 @@ public class ConsoleManager implements SpawnPointPlugin
             if (success)
             {
                 Console.showMessage("Extended console commands registered successfully!");
+            }
+            else
+            {
+                Console.showMessage("There were some errors while registering the extended console commands.");
             }
         }
     }
@@ -200,6 +205,13 @@ public class ConsoleManager implements SpawnPointPlugin
         {
             int key = Keyboard.getEventKey();
 
+            if (key == Keyboard.KEY_ESCAPE)
+            {
+                isListening = false;
+                Console.showMessage("Cancelled.");
+                return;
+            }
+
             if (key != Keyboard.KEY_NONE && key != REBIND_KEY)
             {
                 if (RESTRICTED_KEYS.contains(key))
@@ -224,7 +236,8 @@ public class ConsoleManager implements SpawnPointPlugin
             if (Keyboard.isKeyDown(REBIND_KEY))
             {
                 isListening = true;
-                Console.showMessage("The console will be bound to the next key you press.");
+                Console.showMessage("The console will be bound to the next key"
+                        + " you press (escape to cancel).");
             }
         }
 
