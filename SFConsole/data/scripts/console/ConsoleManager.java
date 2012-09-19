@@ -16,7 +16,7 @@ public class ConsoleManager implements SpawnPointPlugin
     private static final boolean REQUIRE_DEV_MODE = false;
     private static final boolean REQUIRE_RUN_WINDOWED = true;
     private static final int DEFAULT_CONSOLE_KEY = Keyboard.KEY_GRAVE;
-    private static final int REBIND_KEY = Keyboard.KEY_K;
+    private static final int REBIND_KEY = Keyboard.KEY_F1; // Shift+key to rebind
     private static final List RESTRICTED_KEYS = new ArrayList();
     // Per-session variables
     private transient int consoleKey = DEFAULT_CONSOLE_KEY;
@@ -35,6 +35,8 @@ public class ConsoleManager implements SpawnPointPlugin
         RESTRICTED_KEYS.add(Keyboard.KEY_ESCAPE);
         RESTRICTED_KEYS.add(Keyboard.KEY_LMETA);
         RESTRICTED_KEYS.add(Keyboard.KEY_RMETA);
+        RESTRICTED_KEYS.add(Keyboard.KEY_LSHIFT);
+        RESTRICTED_KEYS.add(Keyboard.KEY_RSHIFT);
     }
 
     public ConsoleManager(LocationAPI location)
@@ -189,6 +191,22 @@ public class ConsoleManager implements SpawnPointPlugin
         }
     }
 
+    private static void showRestrictedKeys()
+    {
+        StringBuilder keys = new StringBuilder();
+
+        for (int x = 0; x < RESTRICTED_KEYS.size(); x++)
+        {
+            keys.append(Keyboard.getKeyName(((Integer) RESTRICTED_KEYS.get(x)).intValue()));
+            if (x < RESTRICTED_KEYS.size() - 1)
+            {
+                keys.append(", ");
+            }
+        }
+
+        Global.getSector().addMessage("Restricted keys: " + keys.toString());
+    }
+
     @Override
     public void advance(SectorAPI sector, LocationAPI location)
     {
@@ -200,6 +218,8 @@ public class ConsoleManager implements SpawnPointPlugin
             reloadConsoleKey();
             reloadCommands();
             reloadScripts();
+            Global.getSector().addMessage("To rebind the console to another key,"
+                    + " press shift+" + Keyboard.getKeyName(REBIND_KEY) + ".");
         }
 
         if (isListening)
@@ -217,7 +237,8 @@ public class ConsoleManager implements SpawnPointPlugin
             {
                 if (RESTRICTED_KEYS.contains(key))
                 {
-                    Console.showMessage("That key can't be used for the console!");
+                    //Console.showMessage("That key can't be used for the console!");
+                    //showRestrictedKeys();
                     return;
                 }
                 else
@@ -234,11 +255,15 @@ public class ConsoleManager implements SpawnPointPlugin
         }
         else
         {
-            if (Keyboard.isKeyDown(REBIND_KEY))
+            if (Keyboard.isKeyDown(REBIND_KEY)
+                    && (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)
+                    || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)))
             {
                 isListening = true;
                 Console.showMessage("The console will be bound to the next key"
                         + " you press (escape to cancel).");
+                showRestrictedKeys();
+                return;
             }
         }
 
