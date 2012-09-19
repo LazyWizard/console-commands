@@ -15,11 +15,14 @@ public class ConsoleManager implements SpawnPointPlugin
     // Constants
     private static final boolean REQUIRE_DEV_MODE = false;
     private static final boolean REQUIRE_RUN_WINDOWED = true;
-    private static final int CONSOLE_KEY = Keyboard.KEY_GRAVE;
+    private static final int DEFAULT_CONSOLE_KEY = Keyboard.KEY_GRAVE;
+    private static final int REBIND_KEY = Keyboard.KEY_K;
     // Per-session variables
+    private transient int consoleKey = DEFAULT_CONSOLE_KEY;
     private transient boolean justReloaded = false;
     private transient boolean didWarn = false;
     private transient boolean isPressed = false;
+    private transient boolean isListening = false;
     // Saved variables
     private LocationAPI location;
     private Map consoleVars = new HashMap();
@@ -85,6 +88,12 @@ public class ConsoleManager implements SpawnPointPlugin
     public LocationAPI getLocation()
     {
         return location;
+    }
+
+    private void reloadConsoleKey()
+    {
+        consoleKey = (hasVar("ConsoleKey")
+                ? ((Integer) getVar("ConsoleKey")).intValue() : DEFAULT_CONSOLE_KEY);
     }
 
     private void reloadCommands()
@@ -173,13 +182,38 @@ public class ConsoleManager implements SpawnPointPlugin
         if (justReloaded)
         {
             justReloaded = false;
+            reloadConsoleKey();
             reloadCommands();
             reloadScripts();
         }
 
+        if (isListening)
+        {
+            int key = Keyboard.getEventKey();
+
+            if (key != Keyboard.KEY_NONE && key != REBIND_KEY)
+            {
+                isListening = false;
+                Console.showMessage("The console is now bound to "
+                        + Keyboard.getEventCharacter() + ". Key index: "
+                        + key + "(" + Keyboard.getKeyName(key) + ")");
+                setVar("ConsoleKey", key);
+                reloadConsoleKey();
+                return;
+            }
+        }
+        else
+        {
+            if (Keyboard.isKeyDown(REBIND_KEY))
+            {
+                isListening = true;
+                Console.showMessage("The console will be bound to the next key you press.");
+            }
+        }
+
         if (!isPressed)
         {
-            if (Keyboard.isKeyDown(CONSOLE_KEY))
+            if (Keyboard.isKeyDown(consoleKey))
             {
                 isPressed = true;
 
@@ -195,7 +229,7 @@ public class ConsoleManager implements SpawnPointPlugin
         }
         else
         {
-            if (!Keyboard.isKeyDown(CONSOLE_KEY))
+            if (!Keyboard.isKeyDown(consoleKey))
             {
                 isPressed = false;
 

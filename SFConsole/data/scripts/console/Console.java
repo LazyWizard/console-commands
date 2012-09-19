@@ -186,7 +186,7 @@ final class Console
         }
     }
 
-    public static void runTests()
+    private static void runTests()
     {
         Global.getSector().addMessage("Running console tests...");
         //parseCommand("runscript help");
