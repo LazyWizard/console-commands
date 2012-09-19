@@ -27,7 +27,7 @@ public class ConsoleManager implements SpawnPointPlugin
     // Saved variables
     private LocationAPI location;
     private Map consoleVars = new HashMap();
-    private Map extendedCommands = new HashMap();
+    private Set extendedCommands = new HashSet();
 
     static
     {
@@ -60,22 +60,22 @@ public class ConsoleManager implements SpawnPointPlugin
         return this;
     }
 
-    public boolean registerCommand(String command, Class commandClass)
+    public boolean registerCommand(Class commandClass)
     {
         // We can't write our own exceptions at the moment, so the console
         // is forced to throw/catch generic Exceptions/RuntimeExceptions
         try
         {
-            Console.registerCommand(command, commandClass);
+            Console.registerCommand(commandClass);
         }
         catch (Exception ex)
         {
             Console.showMultiLineMessage("Failed to register command '"
-                    + command + "':", ex.getMessage(), true);
+                    + commandClass.getSimpleName() + "':", ex.getMessage(), true);
             return false;
         }
 
-        extendedCommands.put(command, commandClass);
+        extendedCommands.add(commandClass);
         return true;
     }
 
@@ -111,22 +111,22 @@ public class ConsoleManager implements SpawnPointPlugin
         if (!extendedCommands.isEmpty())
         {
             boolean success = true;
-            Iterator iter = extendedCommands.entrySet().iterator();
-            Map.Entry tmp;
+            Iterator iter = extendedCommands.iterator();
+            Class tmp;
 
             while (iter.hasNext())
             {
-                tmp = (Map.Entry) iter.next();
+                tmp = (Class) iter.next();
 
                 try
                 {
-                    registerCommand((String) tmp.getKey(), (Class) tmp.getValue());
+                    registerCommand(tmp);
                 }
                 catch (Exception ex)
                 {
                     success = false;
                     Console.showMultiLineMessage("Error: failed to re-register command '"
-                            + (String) tmp.getKey() + "':", ex.getMessage(), true);
+                            + (String) tmp.getSimpleName() + "':", ex.getMessage(), true);
                     iter.remove();
                 }
             }

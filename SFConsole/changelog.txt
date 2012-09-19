@@ -1,9 +1,11 @@
  0.3 beta (September 19, 2012)
 ===============================
-You can now rebind the console key with K
+You can now rebind the console key in-game (default key to rebind is )
 RunScript's script store is now persistent between reloads
 Added the GC command (tells the JVM to run a garbage collection event)
 Minor optimization when reloading a saved game
+Added Console.setManager() method, should make modding the console easier
+Changed how commands are stored internally
 Miscellaneous display tweaks
 
  0.2 beta (September 18, 2012)

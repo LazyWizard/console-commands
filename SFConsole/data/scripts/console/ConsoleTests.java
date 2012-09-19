@@ -8,7 +8,7 @@ class ConsoleTests
 {
     static void runTests(ConsoleManager consoleManager)
     {
-        consoleManager.registerCommand("addswships", AddSWShips.class);
+        consoleManager.registerCommand(AddSWShips.class);
         Console.addScript("Test", new Script()
         {
             @Override
