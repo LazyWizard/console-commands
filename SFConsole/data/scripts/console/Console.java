@@ -156,11 +156,10 @@ final class Console
         showMessage(message, false);
     }
 
-    static void registerCommand(String command,
-            Class commandClass) throws Exception
+    static void registerCommand(Class commandClass) throws Exception
             //throws InvalidCommandObjectException, InvalidCommandPackageException
     {
-        command = command.toLowerCase();
+        String command = commandClass.getSimpleName().toLowerCase();
         // getPackage() won't work for classes compiled with Janino's classloader
         // There's an extremely ugly workaround below
         //if (!COMMAND_PACKAGE.equals(commandClass.getPackage().getName()))
