@@ -52,6 +52,7 @@ final class Console
         allCommands.put("goto", GoTo.class);
         allCommands.put("home", Home.class);
         allCommands.put("sethome", SetHome.class);
+        allCommands.put("gc", GC.class);
     }
 
     private Console()
