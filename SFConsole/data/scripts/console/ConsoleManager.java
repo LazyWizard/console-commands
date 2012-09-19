@@ -19,13 +19,13 @@ public class ConsoleManager implements SpawnPointPlugin
     private static final int REBIND_KEY = Keyboard.KEY_F1; // Shift+key to rebind
     private static final List RESTRICTED_KEYS = new ArrayList();
     // Per-session variables
-    private transient int consoleKey = DEFAULT_CONSOLE_KEY;
     private transient boolean justReloaded = false;
     private transient boolean didWarn = false;
     private transient boolean isPressed = false;
     private transient boolean isListening = false;
     // Saved variables
     private LocationAPI location;
+    private int consoleKey = DEFAULT_CONSOLE_KEY;
     private Map consoleVars = new HashMap();
     private Set extendedCommands = new HashSet();
 
@@ -99,13 +99,6 @@ public class ConsoleManager implements SpawnPointPlugin
     public LocationAPI getLocation()
     {
         return location;
-    }
-
-    private void reloadConsoleKey()
-    {
-        consoleKey = (hasVar("ConsoleKey")
-                ? ((Integer) getVar("ConsoleKey")).intValue()
-                : DEFAULT_CONSOLE_KEY);
     }
 
     private void reloadCommands()
@@ -215,7 +208,6 @@ public class ConsoleManager implements SpawnPointPlugin
         {
             justReloaded = false;
             Console.setManager(this);
-            reloadConsoleKey();
             reloadCommands();
             reloadScripts();
             Global.getSector().addMessage("To rebind the console to another key,"
@@ -247,8 +239,7 @@ public class ConsoleManager implements SpawnPointPlugin
                     Console.showMessage("The console is now bound to '"
                             + Keyboard.getEventCharacter() + "'. Key index: "
                             + key + " (" + Keyboard.getKeyName(key) + ")");
-                    setVar("ConsoleKey", key);
-                    reloadConsoleKey();
+                    consoleKey = key;
                     return;
                 }
             }
