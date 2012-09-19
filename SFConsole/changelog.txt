@@ -1,0 +1,16 @@
+ 0.3 beta (September 19, 2012)
+===============================
+You can now rebind the console key in-game (to rebind, press Shift+F1)
+RunScript's script store is now persistent between reloads
+Added the GC command (tells the JVM to run a garbage collection event)
+Minor optimization when reloading a saved game
+Added Console.setManager() method, should make modding the console easier
+Miscellaneous display tweaks
+
+ 0.2 beta (September 18, 2012)
+===============================
+Added missing AddItem command
+
+ 0.1 beta (September 17, 2012)
+===============================
+Initial release, 16 included commands, several features removed to run in .53.1a

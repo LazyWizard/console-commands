@@ -16,7 +16,7 @@ final class Console
     private static final Color CONSOLE_COLOR = Color.YELLOW;
     private static final int LINE_LENGTH = 80;
     // Maps the command to the associated class
-    private static transient final List allCommands = new ArrayList();
+    private static transient final SortedSet allCommands = new TreeSet();
     // The ConsoleManager that requested input (cheap multi-system support)
     private static transient ConsoleManager lastManager;
 
@@ -49,7 +49,7 @@ final class Console
         allCommands.add("GoTo");
         allCommands.add("Home");
         allCommands.add("SetHome");
-        Collections.sort(allCommands);
+        allCommands.add("GC");
     }
 
     private Console()
@@ -153,7 +153,7 @@ final class Console
         showMessage(message, false);
     }
 
-    public static void runTests()
+    private static void runTests()
     {
         Global.getSector().addMessage("Running console tests...");
         //parseCommand("runscript help");
@@ -176,6 +176,11 @@ final class Console
         return lastManager;
     }
 
+    static void setManager(ConsoleManager manager)
+    {
+        lastManager = manager;
+    }
+
     public static void listCommands()
     {
         StringBuilder names = new StringBuilder("Help");
@@ -196,8 +201,7 @@ final class Console
 
     public static void getInput(ConsoleManager manager)
     {
-        lastManager = manager;
-        //boolean success =
+        setManager(manager);
         parseCommand(JOptionPane.showInputDialog(null,
                 "Enter a console command (or 'help' for a list of valid commands):",
                 "Starfarer Console", JOptionPane.PLAIN_MESSAGE));
@@ -326,6 +330,10 @@ final class Console
         else if (com.equals("sethome"))
         {
             command = new SetHome();
+        }
+        else if (com.equals("gc"))
+        {
+            command = new GC();
         }
         else
         {
