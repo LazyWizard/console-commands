@@ -210,6 +210,11 @@ final class Console
         return lastManager;
     }
 
+    static void setManager(ConsoleManager manager)
+    {
+        lastManager = manager;
+    }
+
     public static void listCommands()
     {
         StringBuilder names = new StringBuilder("Help");
@@ -232,8 +237,7 @@ final class Console
 
     public static void getInput(ConsoleManager manager)
     {
-        lastManager = manager;
-        //boolean success =
+        setManager(manager);
         parseCommand(JOptionPane.showInputDialog(null,
                 "Enter a console command (or 'help' for a list of valid commands):",
                 "Starfarer Console", JOptionPane.PLAIN_MESSAGE));

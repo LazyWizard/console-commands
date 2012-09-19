@@ -146,7 +146,7 @@ public class ConsoleManager implements SpawnPointPlugin
     {
         if (hasVar("UserScripts"))
         {
-            Map userScripts = (HashMap) getVar("UserScripts");
+            Map userScripts = (Map) getVar("UserScripts");
             Iterator iter = userScripts.entrySet().iterator();
             Map.Entry tmp;
 
@@ -196,6 +196,7 @@ public class ConsoleManager implements SpawnPointPlugin
         if (justReloaded)
         {
             justReloaded = false;
+            Console.setManager(this);
             reloadConsoleKey();
             reloadCommands();
             reloadScripts();
