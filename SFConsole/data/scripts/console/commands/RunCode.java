@@ -72,13 +72,13 @@ public class RunCode extends BaseCommand
         }
         catch (CompileException ex)
         {
-            showMultiLineMessage("Compilation failed:",
+            showMessage("Compilation failed:",
                     ex.toString() + "\n" + ex.getMessage(), true);
             return false;
         }
         catch (InvocationTargetException ex)
         {
-            showMultiLineMessage("Execution failed:",
+            showMessage("Execution failed:",
                     ex.toString() + "\n" + ex.getMessage(), true);
             return false;
         }
