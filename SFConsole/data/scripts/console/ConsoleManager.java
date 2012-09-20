@@ -72,7 +72,7 @@ public class ConsoleManager implements SpawnPointPlugin
         }
         catch (Exception ex)
         {
-            Console.showMultiLineMessage("Failed to register command '"
+            Console.showMessage("Failed to register command '"
                     + commandClass.getSimpleName() + "':", ex.getMessage(), true);
             return false;
         }
@@ -120,7 +120,7 @@ public class ConsoleManager implements SpawnPointPlugin
                 catch (Exception ex)
                 {
                     success = false;
-                    Console.showMultiLineMessage("Error: failed to re-register command '"
+                    Console.showMessage("Error: failed to re-register command '"
                             + (String) tmp.getSimpleName() + "':", ex.getMessage(), true);
                     iter.remove();
                 }
@@ -168,7 +168,7 @@ public class ConsoleManager implements SpawnPointPlugin
 
             if (!REQUIRE_RUN_WINDOWED)
             {
-                Console.showMultiLineMessage("The console will only be visible"
+                Console.showMessage("The console will only be visible"
                         + " if you run the game in windowed mode.\n");
             }
         }
@@ -229,7 +229,7 @@ public class ConsoleManager implements SpawnPointPlugin
             {
                 if (RESTRICTED_KEYS.contains(key))
                 {
-                    //Console.showMessage("That key can't be used for the console!");
+                    //Console.printMessage("That key can't be used for the console!");
                     //showRestrictedKeys();
                     return;
                 }
