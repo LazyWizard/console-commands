@@ -24,12 +24,12 @@ public class InputHandler extends Thread
         return instance;
     }
 
-    public static void stopInputHandler()
+    public synchronized static void stopInputHandler()
     {
         instance.shouldExit = true;
     }
 
-    public static void setConsoleKey(int key)
+    public synchronized static void setConsoleKey(int key)
     {
         consoleKey = key;
     }
