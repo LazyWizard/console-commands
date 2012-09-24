@@ -89,6 +89,19 @@ final class Console
         }
     }
 
+    public static void getInput()
+    {
+        parseCommand(JOptionPane.showInputDialog(null,
+                "Enter a console command (or 'help' for a list of valid commands):",
+                "Starfarer Console", JOptionPane.PLAIN_MESSAGE));
+    }
+
+    public static void getInput(ConsoleManager manager)
+    {
+        setManager(manager);
+        getInput();
+    }
+
     private static void runTests()
     {
         Global.getSector().addMessage("Running console tests...");
@@ -135,14 +148,6 @@ final class Console
         showMessage("Running a command with the argument"
                 + " 'help' will display more detailed instructions on how to"
                 + " use that command.");
-    }
-
-    public static void getInput(ConsoleManager manager)
-    {
-        setManager(manager);
-        parseCommand(JOptionPane.showInputDialog(null,
-                "Enter a console command (or 'help' for a list of valid commands):",
-                "Starfarer Console", JOptionPane.PLAIN_MESSAGE));
     }
 
     private static boolean parseCommand(String command)
