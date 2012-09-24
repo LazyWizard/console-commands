@@ -244,6 +244,12 @@ final class Console
             return true;
         }
 
+        if (ConsoleManager.isInBattle() && command.isCampaignOnly())
+        {
+            showMessage("This command can only be run on the campaign map.");
+            return false;
+        }
+
         try
         {
             return command.runCommand(args);

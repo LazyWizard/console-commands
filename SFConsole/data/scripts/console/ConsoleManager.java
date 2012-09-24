@@ -87,6 +87,11 @@ public class ConsoleManager implements SpawnPointPlugin
         inBattle = isInBattle;
     }
 
+    public static boolean isInBattle()
+    {
+        return inBattle;
+    }
+
     public void setVar(String varName, Object varData)
     {
         consoleVars.put(varName, varData);
@@ -134,7 +139,8 @@ public class ConsoleManager implements SpawnPointPlugin
 
 
         Global.getSector().addMessage("To rebind the console to another key,"
-                + " press shift+" + Keyboard.getKeyName(REBIND_KEY) + ".");
+                + " press shift+" + Keyboard.getKeyName(REBIND_KEY) +
+                " while on the campaign map.");
     }
 
     private void reloadCommands()
@@ -236,18 +242,8 @@ public class ConsoleManager implements SpawnPointPlugin
         Global.getSector().addMessage("Restricted keys: " + keys.toString());
     }
 
-    @Override
-    public void advance(SectorAPI sector, LocationAPI location)
+    public void checkRebind()
     {
-        // Re-register user/mod-created commands after a reload
-        if (justReloaded)
-        {
-            justReloaded = false;
-            reload();
-        }
-
-        inBattle = false;
-
         if (isListening)
         {
             int key = Keyboard.getEventKey();
@@ -283,5 +279,19 @@ public class ConsoleManager implements SpawnPointPlugin
                 showRestrictedKeys();
             }
         }
+    }
+
+    @Override
+    public void advance(SectorAPI sector, LocationAPI location)
+    {
+        if (justReloaded)
+        {
+            justReloaded = false;
+            reload();
+        }
+
+        inBattle = false;
+
+        checkRebind();
     }
 }

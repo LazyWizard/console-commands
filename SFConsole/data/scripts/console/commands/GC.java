@@ -17,6 +17,12 @@ public class GC extends BaseCommand
     }
 
     @Override
+    protected boolean isCampaignOnly()
+    {
+        return false;
+    }
+
+    @Override
     public boolean runCommand(String args)
     {
         System.gc();
