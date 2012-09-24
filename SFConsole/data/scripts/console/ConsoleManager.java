@@ -23,7 +23,6 @@ public class ConsoleManager implements SpawnPointPlugin
     private static Thread inputHandler;
     private transient boolean justReloaded = false;
     private transient boolean didWarn = false;
-    private transient boolean isPressed = false;
     private transient boolean isListening = false;
     // Saved variables
     private LocationAPI location;
@@ -60,7 +59,6 @@ public class ConsoleManager implements SpawnPointPlugin
     {
         justReloaded = true;
         didWarn = false;
-        isPressed = false;
         inBattle = false;
         return this;
     }
@@ -270,7 +268,6 @@ public class ConsoleManager implements SpawnPointPlugin
                     Console.showMessage("The console is now bound to '"
                             + Keyboard.getEventCharacter() + "'. Key index: "
                             + key + " (" + Keyboard.getKeyName(key) + ")");
-                    return;
                 }
             }
         }
@@ -284,39 +281,6 @@ public class ConsoleManager implements SpawnPointPlugin
                 Console.showMessage("The console will be bound to the next key"
                         + " you press (escape to cancel).");
                 showRestrictedKeys();
-                return;
-            }
-        }
-
-        if (!isPressed)
-        {
-            if (Keyboard.isKeyDown(consoleKey))
-            {
-                isPressed = true;
-
-                if (!didWarn)
-                {
-                    didWarn = true;
-                    showWarning();
-                }
-
-                // Due to a bug with LWJGL input and window focus, the console
-                // will only activate once the console key is released
-            }
-        }
-        else
-        {
-            if (!Keyboard.isKeyDown(consoleKey))
-            {
-                isPressed = false;
-
-                if (!allowConsole())
-                {
-                    showRestrictions();
-                    return;
-                }
-
-                Console.getInput(this);
             }
         }
     }
