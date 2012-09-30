@@ -19,8 +19,8 @@ public class ConsoleManager implements SpawnPointPlugin
     private static final int REBIND_KEY = Keyboard.KEY_F1; // Shift+key to rebind
     private static final List RESTRICTED_KEYS = new ArrayList();
     // Per-session variables
+    //private static final Thread inputHandler;
     private static boolean inBattle = false;
-    private static Thread inputHandler;
     private transient boolean justReloaded = false;
     private transient boolean didWarn = false;
     private transient boolean isListening = false;
@@ -59,7 +59,7 @@ public class ConsoleManager implements SpawnPointPlugin
     {
         justReloaded = true;
         didWarn = false;
-        inBattle = false;
+        isListening = false;
         return this;
     }
 
@@ -129,14 +129,8 @@ public class ConsoleManager implements SpawnPointPlugin
         reloadCommands();
         reloadScripts();
 
-        inputHandler = InputHandler.getInputHandler();
-        if (!inputHandler.isAlive())
-        {
-            inputHandler.start();
-        }
-
+        InputHandler.getInputHandler().start();
         InputHandler.setConsoleKey(consoleKey);
-
 
         Global.getSector().addMessage("To rebind the console to another key,"
                 + " press shift+" + Keyboard.getKeyName(REBIND_KEY) +

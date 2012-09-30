@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.Script;
 import data.scripts.console.commands.*;
 import java.awt.Color;
+import java.lang.ref.WeakReference;
 import java.util.*;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -16,9 +17,9 @@ final class Console
     private static final Color CONSOLE_COLOR = Color.YELLOW;
     private static final int LINE_LENGTH = 80;
     // Maps the command to the associated class
-    private static transient final Map allCommands = new TreeMap();
-    // The ConsoleManager that requested input (cheap multi-system support)
-    private static transient ConsoleManager lastManager;
+    private static final Map allCommands = new TreeMap();
+    // The ConsoleManager that requested input (per-save console settings)
+    private static WeakReference activeManager;
 
     // Everything in this block absolutely MUST compile or the console will crash
     static
@@ -53,6 +54,9 @@ final class Console
         allCommands.put("home", Home.class);
         allCommands.put("sethome", SetHome.class);
         allCommands.put("gc", GC.class);
+
+        //inputHandler = InputHandler.getInputHandler();
+        //inputHandler.start();
     }
 
     private Console()
@@ -122,12 +126,12 @@ final class Console
 
     public static ConsoleManager getManager()
     {
-        return lastManager;
+        return (ConsoleManager) activeManager.get();
     }
 
     static void setManager(ConsoleManager manager)
     {
-        lastManager = manager;
+        activeManager = new WeakReference(manager);
     }
 
     public static void listCommands()
@@ -244,9 +248,9 @@ final class Console
             return true;
         }
 
-        if (ConsoleManager.isInBattle() && command.isCampaignOnly())
+        if (command.isCampaignOnly() && Global.getSector().getPlayerFleet() == null)
         {
-            showMessage("This command can only be run on the campaign map.");
+            showMessage("This command can only be run in a campaign!");
             return false;
         }
 
