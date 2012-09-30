@@ -6,9 +6,8 @@ public class InputHandler extends Thread
 {
     private static final long FRAMERATE = (long) (1000 / 20);
     private static int consoleKey = Keyboard.KEY_GRAVE;
-    private static volatile transient InputHandler instance = new InputHandler();
+    private static InputHandler instance = new InputHandler();
     private transient boolean isPressed = false;
-    private boolean shouldExit = false;
 
     private InputHandler()
     {
@@ -16,7 +15,7 @@ public class InputHandler extends Thread
 
     public synchronized static InputHandler getInputHandler()
     {
-        if (instance == null || instance.shouldExit)
+        if (instance == null)
         {
             instance = new InputHandler();
         }
@@ -24,60 +23,55 @@ public class InputHandler extends Thread
         return instance;
     }
 
-    public synchronized static void stopInputHandler()
-    {
-        instance.shouldExit = true;
-    }
-
     public synchronized static void setConsoleKey(int key)
     {
         consoleKey = key;
     }
 
+    private void checkInput()
+    {
+        if (!isPressed)
+        {
+            if (Keyboard.isKeyDown(consoleKey))
+            {
+                isPressed = true;
+
+                // Due to a bug with LWJGL input and window focus, the console
+                // will only activate once the console key is released
+            }
+        }
+        else
+        {
+            if (!Keyboard.isKeyDown(consoleKey))
+            {
+                isPressed = false;
+
+                if (!ConsoleManager.allowConsole())
+                {
+                    ConsoleManager.showRestrictions();
+                    return;
+                }
+
+                Console.getInput();
+            }
+        }
+    }
+
     @Override
     public void run()
     {
-        Console.showMessage("Keyhandler started.");
-
-        while (!shouldExit)
+        while (true)
         {
+            checkInput();
+
             try
             {
-                if (!isPressed)
-                {
-                    if (Keyboard.isKeyDown(consoleKey))
-                    {
-                        isPressed = true;
-
-                        // Due to a bug with LWJGL input and window focus, the console
-                        // will only activate once the console key is released
-                    }
-                }
-                else
-                {
-                    if (!Keyboard.isKeyDown(consoleKey))
-                    {
-                        isPressed = false;
-
-                        if (!ConsoleManager.allowConsole())
-                        {
-                            ConsoleManager.showRestrictions();
-                            return;
-                        }
-
-                        Console.getInput();
-                    }
-                }
-
                 Thread.sleep(FRAMERATE);
             }
             catch (InterruptedException ex)
             {
-                Console.showMessage("Keyhandler interrupted!");
-                return;
+                throw new RuntimeException("Console input thread interrupted!");
             }
         }
-
-        Console.showMessage("Keyhandler stopped.");
     }
 }

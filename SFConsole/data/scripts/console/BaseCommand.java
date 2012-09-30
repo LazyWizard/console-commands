@@ -42,11 +42,6 @@ public abstract class BaseCommand
         return Console.getManager().hasVar(varName);
     }
 
-    protected boolean isCampaignOnly()
-    {
-        return true;
-    }
-
     protected static void showMessage(String preamble,
             String message, boolean indent)
     {
@@ -85,6 +80,11 @@ public abstract class BaseCommand
         }
 
         showMessage(getName() + " syntax: " + getSyntax());
+    }
+
+    protected boolean isCampaignOnly()
+    {
+        return true;
     }
 
     protected abstract String getHelp();
