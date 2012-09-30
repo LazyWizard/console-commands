@@ -25,7 +25,7 @@ public class CombatBase implements BattleObjectivesEffectsPlugin
     @Override
     public void init(CombatEngineAPI engine)
     {
-        Console.setManager(null);
+        //Console.setManager(null);
 
         ConsoleManager.setInBattle(true);
     }
