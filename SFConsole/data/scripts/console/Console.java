@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.Script;
 import data.scripts.console.commands.*;
 import java.awt.Color;
+import java.lang.ref.WeakReference;
 import java.util.*;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -18,7 +19,7 @@ final class Console
     // Maps the command to the associated class
     private static final SortedSet allCommands = new TreeSet();
     // The ConsoleManager that requested input (cheap multi-system support)
-    private static ConsoleManager lastManager;
+    private static WeakReference activeManager;
 
     // Everything in this block absolutely MUST compile or the console will crash
     static
@@ -76,12 +77,12 @@ final class Console
 
     public static ConsoleManager getManager()
     {
-        return lastManager;
+        return (ConsoleManager) activeManager.get();
     }
 
     static void setManager(ConsoleManager manager)
     {
-        lastManager = manager;
+        activeManager = new WeakReference(manager);
     }
 
     public static void listCommands()
