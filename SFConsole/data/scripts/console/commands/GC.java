@@ -13,7 +13,7 @@ public class GC extends BaseCommand
     @Override
     protected String getHelp()
     {
-        return "Tell the Java Virtual Machine to run a garbage collection event.";
+        return "Tells the Java Virtual Machine to run a garbage collection event.";
     }
 
     @Override

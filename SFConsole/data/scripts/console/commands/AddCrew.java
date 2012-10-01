@@ -17,7 +17,8 @@ public class AddCrew extends BaseCommand
     {
         return "Adds the specified amount of crew.\n"
                 + "You can optionally choose an experience level for the spawned crew.\n"
-                + "Valid levels: green, regular, veteran, and elite";
+                + "Valid levels: green, regular, veteran, and elite\n"
+                + "Supports reversed arguments.";
     }
 
     @Override
@@ -52,8 +53,17 @@ public class AddCrew extends BaseCommand
         }
         catch (NumberFormatException ex)
         {
-            showSyntax();
-            return false;
+            // Support for reversed arguments
+            try
+            {
+                amt = Integer.parseInt(tmp[1]);
+                tmp[1] = tmp[0];
+            }
+            catch (NumberFormatException ex2)
+            {
+                showSyntax();
+                return false;
+            }
         }
 
         CrewXPLevel level;
@@ -83,12 +93,14 @@ public class AddCrew extends BaseCommand
         if (amt >= 0)
         {
             Global.getSector().getPlayerFleet().getCargo().addCrew(level, amt);
-            showMessage("Added " + amt + " " + tmp[1] + " crew to player fleet.");
+            showMessage("Added " + amt + " " + level.getPrefix()
+                    + " crew to player fleet.");
         }
         else
         {
             Global.getSector().getPlayerFleet().getCargo().removeCrew(level, -amt);
-            showMessage("Removed " + -amt + " " + tmp[1] + " crew from player fleet.");
+            showMessage("Removed " + -amt + " " + level.getPrefix()
+                    + " crew from player fleet.");
         }
 
         return true;

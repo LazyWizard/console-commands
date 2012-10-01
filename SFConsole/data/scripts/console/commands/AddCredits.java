@@ -14,7 +14,7 @@ public class AddCredits extends BaseCommand
     @Override
     protected String getHelp()
     {
-        return "";
+        return "Adds the specified amount of credits to your fleet's account.";
     }
 
     @Override
@@ -38,7 +38,6 @@ public class AddCredits extends BaseCommand
             return false;
         }
 
-        // Whew
         Global.getSector().getPlayerFleet().getCargo().getCredits().add(amount);
         showMessage("Added " + amount + " credits to player inventory.");
         return true;
