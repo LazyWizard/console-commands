@@ -54,9 +54,6 @@ final class Console
         allCommands.put("home", Home.class);
         allCommands.put("sethome", SetHome.class);
         allCommands.put("gc", GC.class);
-
-        //inputHandler = InputHandler.getInputHandler();
-        //inputHandler.start();
     }
 
     private Console()
@@ -95,7 +92,8 @@ final class Console
 
     public static void getInput()
     {
-        JOptionPane.showConfirmDialog(null, "Thread: " + Thread.currentThread().getName());
+        JOptionPane.showMessageDialog(null, "Thread: "
+                + Thread.currentThread().getName());
         parseCommand(JOptionPane.showInputDialog(null,
                 "Enter a console command (or 'help' for a list of valid commands):",
                 "Starfarer Console", JOptionPane.PLAIN_MESSAGE));
@@ -377,13 +375,20 @@ final class Console
 
     private static void printLine(String message, boolean indent)
     {
-        if (indent)
+        if (ConsoleManager.isInBattle())
         {
-            Global.getSector().addMessage("   " + message, CONSOLE_COLOR);
+            // No in-battle message hooks yet
         }
         else
         {
-            Global.getSector().addMessage(message, CONSOLE_COLOR);
+            if (indent)
+            {
+                Global.getSector().addMessage("   " + message, CONSOLE_COLOR);
+            }
+            else
+            {
+                Global.getSector().addMessage(message, CONSOLE_COLOR);
+            }
         }
     }
 }

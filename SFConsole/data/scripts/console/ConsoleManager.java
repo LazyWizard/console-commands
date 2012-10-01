@@ -24,7 +24,7 @@ public class ConsoleManager implements SpawnPointPlugin
     private static boolean inBattle = false;
     private static CombatEngineAPI activeEngine;
     private transient Timer timer = new Timer();
-    private transient boolean justReloaded = true;
+    private transient boolean justReloaded = false;
     private transient boolean isPressed = false;
     private transient boolean isListening = false;
     // Saved variables
@@ -46,6 +46,7 @@ public class ConsoleManager implements SpawnPointPlugin
     public ConsoleManager(LocationAPI location)
     {
         this.location = location;
+        reloadInput();
     }
 
     public ConsoleManager()
@@ -56,6 +57,8 @@ public class ConsoleManager implements SpawnPointPlugin
         {
             throw new RuntimeException("No LocationAPI set for ConsoleManager!");
         }
+
+        reloadInput();
     }
 
     public Object readResolve()
@@ -227,6 +230,11 @@ public class ConsoleManager implements SpawnPointPlugin
 
     private void reloadInput()
     {
+        if (timer != null)
+        {
+            timer.cancel();
+        }
+
         timer = new Timer("Console-Input", true);
         timer.scheduleAtFixedRate(new TimerTask()
         {
@@ -285,7 +293,13 @@ public class ConsoleManager implements SpawnPointPlugin
         Global.getSector().addMessage("Restricted keys: " + keys.toString());
     }
 
-    public void checkRebind()
+    private void checkBattle()
+    {
+        inBattle = false;
+        activeEngine = null;
+    }
+
+    private void checkRebind()
     {
         if (isListening)
         {
@@ -333,8 +347,7 @@ public class ConsoleManager implements SpawnPointPlugin
             reload();
         }
 
-        inBattle = false;
-
+        checkBattle();
         checkRebind();
     }
 }
