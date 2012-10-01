@@ -34,13 +34,14 @@ public class RunCode extends BaseCommand
     @Override
     protected String getHelp()
     {
-        return "";
+        return "Compiles and runs a line of code. This command has access to"
+                + " most campaign API methods. Does not accept return statements.";
     }
 
     @Override
     protected String getSyntax()
     {
-        return "";
+        return "runcode <line of code>";
     }
 
     @Override
