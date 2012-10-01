@@ -1,3 +1,12 @@
+ 0.4 beta (September 30, 2012)
+===============================
+Completely rewrote AddShip:
+ - less strict about capitalization (tries again with different case)
+ - specifying a ship type without a variant will spawn an empty hull
+The various Add<X> commands will accept their arguments in any order
+Added syntax and usage help for all commands
+Removed showMultiLineMessage methods, incorporated into showMessage
+
  0.3 beta (September 19, 2012)
 ===============================
 You can now rebind the console key in-game (to rebind, press Shift+F1)

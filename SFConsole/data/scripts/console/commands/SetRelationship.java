@@ -8,13 +8,13 @@ public class SetRelationship extends BaseCommand
     @Override
     protected String getHelp()
     {
-        return "";
+        return "Sets the relationship between two factions to the given number.";
     }
 
     @Override
     protected String getSyntax()
     {
-        return "setrelationship <amount>";
+        return "setrelationship <faction1> <faction2> <amount>";
     }
 
     @Override

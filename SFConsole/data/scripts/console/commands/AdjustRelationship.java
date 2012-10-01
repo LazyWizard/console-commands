@@ -8,13 +8,13 @@ public class AdjustRelationship extends BaseCommand
     @Override
     protected String getHelp()
     {
-        return "";
+        return "Modifies the relationship between two factions by the given amount.";
     }
 
     @Override
     protected String getSyntax()
     {
-        return "adjustrelationship <amount>";
+        return "adjustrelationship <faction1> <faction2> <amount>";
     }
 
     @Override
@@ -39,7 +39,7 @@ public class AdjustRelationship extends BaseCommand
         }
         catch (NumberFormatException ex)
         {
-            showMessage("Error: relationship amount must be a number!");
+            showMessage("Error: relationship change must be a number!");
             return false;
         }
 
