@@ -44,13 +44,13 @@ public class AddSWShips extends BaseCommand
     @Override
     protected String getHelp()
     {
-        return "";
+        return "Adds all ships from the Star Wars mod to your fleet.";
     }
 
     @Override
     protected String getSyntax()
     {
-        return "";
+        return "addswships (no arguments)";
     }
 
     @Override
