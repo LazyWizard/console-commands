@@ -67,7 +67,8 @@ public abstract class BaseCommand
         }
 
         showMessage(getName() + " help:",
-                (getSyntax().isEmpty() ? "" : "Usage: " + getSyntax() + "\n")
+                "Combat only: " + (isCombatOnly() ? "yes" : "no") + "\n"
+                + (getSyntax().isEmpty() ? "" : "Usage: " + getSyntax() + "\n")
                 + getHelp(), true);
     }
 
@@ -85,6 +86,11 @@ public abstract class BaseCommand
     protected boolean isCampaignOnly()
     {
         return true;
+    }
+
+    protected boolean isCombatOnly()
+    {
+        return false;
     }
 
     protected abstract String getHelp();

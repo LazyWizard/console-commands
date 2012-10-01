@@ -95,6 +95,7 @@ final class Console
 
     public static void getInput()
     {
+        JOptionPane.showConfirmDialog(null, "Thread: " + Thread.currentThread().getName());
         parseCommand(JOptionPane.showInputDialog(null,
                 "Enter a console command (or 'help' for a list of valid commands):",
                 "Starfarer Console", JOptionPane.PLAIN_MESSAGE));
@@ -265,6 +266,12 @@ final class Console
         if (command.isCampaignOnly() && Global.getSector().getPlayerFleet() == null)
         {
             showMessage("This command can only be run in a campaign!");
+            return false;
+        }
+
+        if (command.isCombatOnly() && !ConsoleManager.isInBattle())
+        {
+            showMessage("This command can only be run during combat!");
             return false;
         }
 
