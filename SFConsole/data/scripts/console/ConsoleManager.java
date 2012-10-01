@@ -119,8 +119,8 @@ public class ConsoleManager implements SpawnPointPlugin
 
             if (!REQUIRE_RUN_WINDOWED)
             {
-                Console.showMultiLineMessage("The console will only be visible"
-                        + " if you run the game in windowed mode.\n");
+                Console.showMessage("The console will only be visible"
+                        + " if you run the game in windowed mode.");
             }
         }
     }

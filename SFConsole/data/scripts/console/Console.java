@@ -16,9 +16,9 @@ final class Console
     private static final Color CONSOLE_COLOR = Color.YELLOW;
     private static final int LINE_LENGTH = 80;
     // Maps the command to the associated class
-    private static transient final SortedSet allCommands = new TreeSet();
+    private static final SortedSet allCommands = new TreeSet();
     // The ConsoleManager that requested input (cheap multi-system support)
-    private static transient ConsoleManager lastManager;
+    private static ConsoleManager lastManager;
 
     // Everything in this block absolutely MUST compile or the console will crash
     static
@@ -54,103 +54,6 @@ final class Console
 
     private Console()
     {
-    }
-
-    public static void showMultiLineMessage(String preamble,
-            String message, boolean indent)
-    {
-        if (preamble != null)
-        {
-            Global.getSector().addMessage(preamble, CONSOLE_COLOR);
-        }
-
-        // Analyse each line of the message seperately
-        String[] lines = message.split("\n");
-        StringBuilder line = new StringBuilder(LINE_LENGTH);
-
-        // Word wrapping is complicated ;)
-        for (int x = 0; x < lines.length; x++)
-        {
-            // Check if the string even needs to be broken up
-            if (lines[x].length() > LINE_LENGTH)
-            {
-                // Clear the StringBuilder so we can generate a new line
-                line.setLength(0);
-                // Split the line up into the individual words, and append each
-                // word to the next line until the character limit is reached
-                String[] words = lines[x].split(" ");
-                for (int y = 0; y < words.length; y++)
-                {
-                    // If this word by itself is longer than the line limit,
-                    // just go ahead and post it in its own line
-                    if (words[y].length() > LINE_LENGTH)
-                    {
-                        // Make sure to post the previous line in queue, if any
-                        if (line.length() > 0)
-                        {
-                            showMessage(line.toString(), indent);
-                            line.setLength(0);
-                        }
-
-                        showMessage(words[y], indent);
-                    }
-                    // If this word would put us over the length limit, post
-                    // the queue and back up a step (re-check this word with
-                    // a blank line - this is in case it trips the above block)
-                    else if (words[y].length() + line.length() > LINE_LENGTH)
-                    {
-                        showMessage(line.toString(), indent);
-                        line.setLength(0);
-                        y--;
-                    }
-                    // This word won't put us over the limit, add it to the queue
-                    else
-                    {
-                        line.append(words[y]);
-                        line.append(" ");
-
-                        // If we have reached the end of the message, ensure
-                        // that we post the remaining part of the queue
-                        if (y == (words.length - 1))
-                        {
-                            showMessage(line.toString(), indent);
-                        }
-                    }
-                }
-            }
-            // Entire message fits into a single line
-            else
-            {
-                showMessage(lines[x], indent);
-            }
-        }
-    }
-
-    public static void showMultiLineMessage(String message, boolean indent)
-    {
-        showMultiLineMessage(null, message, indent);
-    }
-
-    public static void showMultiLineMessage(String message)
-    {
-        showMultiLineMessage(null, message, false);
-    }
-
-    public static void showMessage(String message, boolean indent)
-    {
-        if (indent)
-        {
-            Global.getSector().addMessage("   " + message, CONSOLE_COLOR);
-        }
-        else
-        {
-            Global.getSector().addMessage(message, CONSOLE_COLOR);
-        }
-    }
-
-    public static void showMessage(String message)
-    {
-        showMessage(message, false);
     }
 
     private static void runTests()
@@ -192,9 +95,9 @@ final class Console
             names.append((String) iter.next());
         }
 
-        showMultiLineMessage("Valid commands (not case-sensitive): ",
+        showMessage("Valid commands (not case-sensitive): ",
                 names.toString(), true);
-        showMultiLineMessage("Running a command with the argument"
+        showMessage("Running a command with the argument"
                 + " 'help' will display more detailed instructions on how to"
                 + " use that command.");
     }
@@ -355,7 +258,7 @@ final class Console
         catch (Exception ex)
         {
             command.showSyntax();
-            showMultiLineMessage("Error while running command "
+            showMessage("Error while running command "
                     + com + ":", ex.getMessage(), true);
             return false;
         }
@@ -366,5 +269,97 @@ final class Console
     {
         // Not supported yet
         return executeCommand(com, "");
+    }
+
+    public static void showMessage(String preamble,
+            String message, boolean indent)
+    {
+        if (preamble != null)
+        {
+            Global.getSector().addMessage(preamble, CONSOLE_COLOR);
+        }
+
+        // Analyse each line of the message seperately
+        String[] lines = message.split("\n");
+        StringBuilder line = new StringBuilder(LINE_LENGTH);
+
+        // Word wrapping is complicated ;)
+        for (int x = 0; x < lines.length; x++)
+        {
+            // Check if the string even needs to be broken up
+            if (lines[x].length() > LINE_LENGTH)
+            {
+                // Clear the StringBuilder so we can generate a new line
+                line.setLength(0);
+                // Split the line up into the individual words, and append each
+                // word to the next line until the character limit is reached
+                String[] words = lines[x].split(" ");
+                for (int y = 0; y < words.length; y++)
+                {
+                    // If this word by itself is longer than the line limit,
+                    // just go ahead and post it in its own line
+                    if (words[y].length() > LINE_LENGTH)
+                    {
+                        // Make sure to post the previous line in queue, if any
+                        if (line.length() > 0)
+                        {
+                            printLine(line.toString(), indent);
+                            line.setLength(0);
+                        }
+
+                        printLine(words[y], indent);
+                    }
+                    // If this word would put us over the length limit, post
+                    // the queue and back up a step (re-check this word with
+                    // a blank line - this is in case it trips the above block)
+                    else if (words[y].length() + line.length() > LINE_LENGTH)
+                    {
+                        printLine(line.toString(), indent);
+                        line.setLength(0);
+                        y--;
+                    }
+                    // This word won't put us over the limit, add it to the queue
+                    else
+                    {
+                        line.append(words[y]);
+                        line.append(" ");
+
+                        // If we have reached the end of the message, ensure
+                        // that we post the remaining part of the queue
+                        if (y == (words.length - 1))
+                        {
+                            printLine(line.toString(), indent);
+                        }
+                    }
+                }
+            }
+            // Entire message fits into a single line
+            else
+            {
+                printLine(lines[x], indent);
+            }
+        }
+    }
+
+    public static void showMessage(String message, boolean indent)
+    {
+        showMessage(null, message, indent);
+    }
+
+    public static void showMessage(String message)
+    {
+        showMessage(null, message, false);
+    }
+
+    private static void printLine(String message, boolean indent)
+    {
+        if (indent)
+        {
+            Global.getSector().addMessage("   " + message, CONSOLE_COLOR);
+        }
+        else
+        {
+            Global.getSector().addMessage(message, CONSOLE_COLOR);
+        }
     }
 }

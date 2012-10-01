@@ -14,7 +14,7 @@ public class AddSupplies extends BaseCommand
     @Override
     protected String getHelp()
     {
-        return "";
+        return "Adds the specified amount of supplies to your fleet's cargo.";
     }
 
     @Override

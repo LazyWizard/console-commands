@@ -37,15 +37,15 @@ public abstract class BaseCommand
         return Console.getManager().hasVar(varName);
     }
 
-    protected static void showMultiLineMessage(String preamble,
+    protected static void showMessage(String preamble,
             String message, boolean indent)
     {
-        Console.showMultiLineMessage(preamble, message, indent);
+        Console.showMessage(preamble, message, indent);
     }
 
-    protected static void showMultiLineMessage(String message)
+    protected static void showMessage(String message, boolean indent)
     {
-        Console.showMultiLineMessage(message);
+        Console.showMessage(message, indent);
     }
 
     protected static void showMessage(String message)
@@ -61,7 +61,7 @@ public abstract class BaseCommand
             return;
         }
 
-        showMultiLineMessage(getName() + " help:",
+        showMessage(getName() + " help:",
                 (getSyntax().isEmpty() ? "" : "Usage: " + getSyntax() + "\n")
                 + getHelp(), true);
     }
