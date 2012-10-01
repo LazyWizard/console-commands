@@ -174,10 +174,24 @@ final class Console
             return true;
         }
 
-        if (com.equals("list") || com.equals("help"))
+        if (com.equals("list"))
         {
             listCommands();
             return true;
+        }
+
+        if (com.equals("help"))
+        {
+            if (args.length == 2)
+            {
+                com = args[1];
+                args[1] = "help";
+            }
+            else
+            {
+                listCommands();
+                return false;
+            }
         }
 
         if (args.length > 1)
