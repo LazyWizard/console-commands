@@ -124,7 +124,7 @@ public class AddShip extends BaseCommand
         // More than one ship was requested
         if (amt > 1)
         {
-            for (int x = 0; x < (amt - 1); x++)
+            for (int x = 1; x < amt; x++)
             {
                 ship = fact.createFleetMember(FleetMemberType.SHIP, variant);
                 fleet.addFleetMember(ship);
