@@ -8,7 +8,9 @@ public class SpawnFleet extends BaseCommand
     @Override
     protected String getHelp()
     {
-        return "";
+        return "Spawns the designated fleet near the player character. The"
+                + " fleet id must exist in the .faction file of the faction"
+                + " that was entered as an argument.";
     }
 
     @Override

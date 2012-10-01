@@ -12,7 +12,9 @@ public class GoTo extends BaseCommand
     @Override
     protected String getHelp()
     {
-        return "";
+        return "Teleports your fleet to the token with the given name in this"
+                + " system, if any exists. The argument 'home' will function"
+                + " identically to the 'home' command.";
     }
 
     @Override

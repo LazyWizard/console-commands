@@ -4,7 +4,7 @@
   "author":"LazyWizard",
   "totalConversion":"false",
   "version":"0.4",
-  "description":"An in-game developer's console.\nBy default the console is activated with tilde (~). The console can be re-bound by pressing Shift+F1 on the campaign map.",
+  "description":"An in-game developer's console, only functional in campaign mode.\nBy default the console is activated with tilde (~). The console can be re-bound by pressing Shift+F1 on the campaign map.",
   "gameVersion":"0.53.1a",
   "replace":[],
 }

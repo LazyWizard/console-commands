@@ -8,7 +8,7 @@ public class AddMarines extends BaseCommand
     @Override
     protected String getHelp()
     {
-        return "";
+        return "Adds the specified amount of marines.";
     }
 
     @Override

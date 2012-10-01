@@ -8,7 +8,7 @@ public class AddFuel extends BaseCommand
     @Override
     protected String getHelp()
     {
-        return "";
+        return "Adds the specified amount of fuel to your fleet's cargo.";
     }
 
     @Override

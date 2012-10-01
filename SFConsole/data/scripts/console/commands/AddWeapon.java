@@ -9,7 +9,9 @@ public class AddWeapon extends BaseCommand
     @Override
     protected String getHelp()
     {
-        return "";
+        return "Adds a weapon to your fleet's cargo.\nIf an amount"
+                + " is specified, a stack of that size will be given.\n"
+                + "Supports reversed arguments.";
     }
 
     @Override
@@ -34,16 +36,25 @@ public class AddWeapon extends BaseCommand
             return false;
         }
 
-        float amt;
+        int amt;
 
         try
         {
-            amt = Float.parseFloat(tmp[1]);
+            amt = Integer.parseInt(tmp[1]);
         }
         catch (NumberFormatException ex)
         {
-            showSyntax();
-            return false;
+            // Support for reversed arguments
+            try
+            {
+                amt = Integer.parseInt(tmp[0]);
+                tmp[0] = tmp[1];
+            }
+            catch (NumberFormatException ex2)
+            {
+                showSyntax();
+                return false;
+            }
         }
 
         Global.getSector().getPlayerFleet().getCargo().addItems(

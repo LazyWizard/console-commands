@@ -11,7 +11,13 @@ public class AddWing extends BaseCommand
     @Override
     protected String getHelp()
     {
-        return "";
+        return "Tries to create a wing with the supplied variant ID and adds it"
+                + " to your fleet. This command is case-sensitive.\n"
+                + "If an amount is given, it will spawn that many wings of that"
+                + " ID in your fleet. Ensure you have the required supplies!\n"
+                + "This command will automatically append '_wing' to the ID"
+                + " if the supplied arguments lacked it.\n"
+                + "Supports reversed arguments.";
     }
 
     @Override
@@ -49,11 +55,20 @@ public class AddWing extends BaseCommand
         }
         catch (NumberFormatException ex)
         {
-            showSyntax();
-            return false;
+            // Support for reversed arguments
+            try
+            {
+                amt = Integer.parseInt(tmp[0]);
+                tmp[0] = tmp[1];
+            }
+            catch (NumberFormatException ex2)
+            {
+                showSyntax();
+                return false;
+            }
         }
 
-        if (amt == 0)
+        if (amt <= 0)
         {
             return true;
         }
