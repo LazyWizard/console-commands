@@ -5,6 +5,7 @@ import com.fs.starfarer.api.Script;
 import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.SpawnPointPlugin;
+import com.fs.starfarer.api.combat.CombatEngineAPI;
 import data.scripts.console.commands.RunScript;
 import java.util.*;
 import org.lwjgl.input.Keyboard;
@@ -15,14 +16,16 @@ public class ConsoleManager implements SpawnPointPlugin
     // Constants
     private static final boolean REQUIRE_DEV_MODE = false;
     private static final boolean REQUIRE_RUN_WINDOWED = true;
+    private static final long INPUT_FRAMERATE = (long) (1000 / 20);
     private static final int DEFAULT_CONSOLE_KEY = Keyboard.KEY_GRAVE;
     private static final int REBIND_KEY = Keyboard.KEY_F1; // Shift+key to rebind
     private static final List RESTRICTED_KEYS = new ArrayList();
     // Per-session variables
-    //private static final Thread inputHandler;
     private static boolean inBattle = false;
-    private transient boolean justReloaded = false;
-    private transient boolean didWarn = false;
+    private static CombatEngineAPI activeEngine;
+    private transient Timer timer = new Timer();
+    private transient boolean justReloaded = true;
+    private transient boolean isPressed = false;
     private transient boolean isListening = false;
     // Saved variables
     private LocationAPI location;
@@ -58,7 +61,7 @@ public class ConsoleManager implements SpawnPointPlugin
     public Object readResolve()
     {
         justReloaded = true;
-        didWarn = false;
+        isPressed = false;
         isListening = false;
         return this;
     }
@@ -82,6 +85,32 @@ public class ConsoleManager implements SpawnPointPlugin
         return true;
     }
 
+    private void checkInput()
+    {
+        if (!isPressed)
+        {
+            if (Keyboard.isKeyDown(consoleKey))
+            {
+                isPressed = true;
+            }
+        }
+        else
+        {
+            if (!Keyboard.isKeyDown(consoleKey))
+            {
+                isPressed = false;
+
+                if (!allowConsole())
+                {
+                    showRestrictions();
+                    return;
+                }
+
+                Console.getInput();
+            }
+        }
+    }
+
     public static void setInBattle(boolean isInBattle)
     {
         inBattle = isInBattle;
@@ -90,6 +119,16 @@ public class ConsoleManager implements SpawnPointPlugin
     public static boolean isInBattle()
     {
         return inBattle;
+    }
+
+    public static void setCombatEngine(CombatEngineAPI engine)
+    {
+        activeEngine = engine;
+    }
+
+    public static CombatEngineAPI getCombatEngine()
+    {
+        return activeEngine;
     }
 
     public void setVar(String varName, Object varData)
@@ -120,7 +159,6 @@ public class ConsoleManager implements SpawnPointPlugin
     public void setConsoleKey(int key)
     {
         consoleKey = key;
-        InputHandler.setConsoleKey(key);
     }
 
     private void reload()
@@ -128,13 +166,11 @@ public class ConsoleManager implements SpawnPointPlugin
         Console.setManager(this);
         reloadCommands();
         reloadScripts();
-
-        InputHandler.getInputHandler().start();
-        InputHandler.setConsoleKey(consoleKey);
+        reloadInput();
 
         Global.getSector().addMessage("To rebind the console to another key,"
-                + " press shift+" + Keyboard.getKeyName(REBIND_KEY) +
-                " while on the campaign map.");
+                + " press shift+" + Keyboard.getKeyName(REBIND_KEY)
+                + " while on the campaign map.");
     }
 
     private void reloadCommands()
@@ -187,6 +223,19 @@ public class ConsoleManager implements SpawnPointPlugin
                 RunScript.addScript((String) tmp.getKey(), (Script) tmp.getValue());
             }
         }
+    }
+
+    private void reloadInput()
+    {
+        timer = new Timer("Console-Input", true);
+        timer.scheduleAtFixedRate(new TimerTask()
+        {
+            @Override
+            public void run()
+            {
+                ConsoleManager.this.checkInput();
+            }
+        }, 0, INPUT_FRAMERATE);
     }
 
     public static boolean allowConsole()
