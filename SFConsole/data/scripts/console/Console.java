@@ -258,7 +258,7 @@ public final class Console
             return executeCommand(com, arg.toString());
         }
 
-        return executeCommand(com);
+        return executeCommand(com, "");
     }
 
     static void addScript(String name, Script script)
@@ -266,8 +266,7 @@ public final class Console
         RunScript.addScript(name, script);
     }
 
-    // Commands with arguments
-    private static boolean executeCommand(String com, String args)
+    private static synchronized boolean executeCommand(String com, String args)
     {
         BaseCommand command;
 
@@ -333,19 +332,12 @@ public final class Console
         }
     }
 
-    // Commands without arguments
-    private static boolean executeCommand(String com)
-    {
-        // Not supported yet
-        return executeCommand(com, "");
-    }
-
     /**
-     * Parses, formats, and word-wraps the supplied text, then outputs it to the player.
+     * Formats and word-wraps the supplied text, then outputs it to the player.
      *
      * @param preamble the header for this message, won't be indented
      * @param message the main body of text
-     * @param indent whether to indent each line of message
+     * @param indent whether to indent each line of the main body
      */
     public static void showMessage(String preamble,
             String message, boolean indent)
@@ -418,7 +410,7 @@ public final class Console
     }
 
     /**
-     * Parses, formats, and word-wraps the supplied text, then outputs it to the player.
+     * Formats and word-wraps the supplied text, then outputs it to the player.
      *
      * @param message the message to output
      */
