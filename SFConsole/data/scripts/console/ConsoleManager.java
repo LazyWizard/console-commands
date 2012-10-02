@@ -15,7 +15,7 @@ import org.lwjgl.opengl.Display;
 /**
  * Handles input, provides save-specific console settings and safe public access to certain methods of {@link Console}.
  */
-public class ConsoleManager implements SpawnPointPlugin
+public final class ConsoleManager implements SpawnPointPlugin
 {
     // Constants
     private static final boolean REQUIRE_DEV_MODE = false;
@@ -33,7 +33,7 @@ public class ConsoleManager implements SpawnPointPlugin
     private transient boolean isListening = false;
     // Saved variables
     private LocationAPI location;
-    private int consoleKey = DEFAULT_CONSOLE_KEY;
+    private volatile int consoleKey = DEFAULT_CONSOLE_KEY;
     private Map consoleVars = new HashMap();
     private Set extendedCommands = new HashSet();
 
@@ -92,7 +92,7 @@ public class ConsoleManager implements SpawnPointPlugin
         return true;
     }
 
-    private void checkInput()
+    private synchronized boolean checkInput()
     {
         if (!isPressed)
         {
@@ -107,15 +107,16 @@ public class ConsoleManager implements SpawnPointPlugin
             {
                 isPressed = false;
 
-                if (!allowConsole())
+                if (allowConsole())
                 {
-                    showRestrictions();
-                    return;
+                    return true;
                 }
 
-                Console.getInput();
+                showRestrictions();
             }
         }
+
+        return false;
     }
 
     /**
@@ -285,7 +286,10 @@ public class ConsoleManager implements SpawnPointPlugin
             @Override
             public void run()
             {
-                ConsoleManager.this.checkInput();
+                if (ConsoleManager.this.checkInput())
+                {
+                    Console.getInput(ConsoleManager.this);
+                }
             }
         }, 0, INPUT_FRAMERATE);
     }

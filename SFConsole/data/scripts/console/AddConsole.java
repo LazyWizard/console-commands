@@ -5,7 +5,7 @@ import com.fs.starfarer.api.campaign.SectorGeneratorPlugin;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
 
 @SuppressWarnings("unchecked")
-public class AddConsole implements SectorGeneratorPlugin
+public final class AddConsole implements SectorGeneratorPlugin
 {
     @Override
     public void generate(SectorAPI sector)
