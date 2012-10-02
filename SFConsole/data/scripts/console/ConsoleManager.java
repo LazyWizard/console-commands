@@ -9,13 +9,14 @@ import com.fs.starfarer.api.combat.CombatEngineAPI;
 import data.scripts.console.commands.RunScript;
 import java.lang.ref.WeakReference;
 import java.util.*;
+import javax.swing.JOptionPane;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
 /**
  * Handles input, provides save-specific console settings and safe public access to certain methods of {@link Console}.
  */
-public class ConsoleManager implements SpawnPointPlugin
+public class ConsoleManager implements SpawnPointPlugin, Thread.UncaughtExceptionHandler
 {
     // Constants
     private static final boolean REQUIRE_DEV_MODE = false;
@@ -27,7 +28,7 @@ public class ConsoleManager implements SpawnPointPlugin
     // Per-session variables
     private static boolean inBattle = false;
     private static WeakReference activeEngine;
-    private transient Timer timer = new Timer();
+    private transient Thread inputThread;
     private transient boolean justReloaded = false;
     private transient boolean isPressed = false;
     private transient boolean isListening = false;
@@ -92,7 +93,7 @@ public class ConsoleManager implements SpawnPointPlugin
         return true;
     }
 
-    private void checkInput()
+    private boolean checkInput()
     {
         if (!isPressed)
         {
@@ -107,15 +108,16 @@ public class ConsoleManager implements SpawnPointPlugin
             {
                 isPressed = false;
 
-                if (!allowConsole())
+                if (allowConsole())
                 {
-                    showRestrictions();
-                    return;
+                    return true;
                 }
 
-                Console.getInput();
+                showRestrictions();
             }
         }
+
+        return false;
     }
 
     /**
@@ -274,20 +276,24 @@ public class ConsoleManager implements SpawnPointPlugin
 
     private void reloadInput()
     {
-        if (timer != null)
+        if (inputThread != null && inputThread.isAlive())
         {
-            timer.cancel();
+            return;
         }
 
-        timer = new Timer("Console-Input", true);
-        timer.scheduleAtFixedRate(new TimerTask()
-        {
-            @Override
-            public void run()
-            {
-                ConsoleManager.this.checkInput();
-            }
-        }, 0, INPUT_FRAMERATE);
+        inputThread = new Thread(new InputHandler());
+        inputThread.setName("Console-Input");
+        inputThread.setDaemon(true);
+        inputThread.setUncaughtExceptionHandler(this);
+        inputThread.start();
+        /*timer.scheduleAtFixedRate(new TimerTask()
+         {
+         @Override
+         public void run()
+         {
+         ConsoleManager.this.checkInput();
+         }
+         }, 0, INPUT_FRAMERATE);*/
     }
 
     private static boolean allowConsole()
@@ -395,5 +401,37 @@ public class ConsoleManager implements SpawnPointPlugin
 
         checkBattle();
         checkRebind();
+    }
+
+    private class InputHandler implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            while (true)
+            {
+                if (checkInput())
+                {
+                    throw new RuntimeException("INPUT");
+                }
+
+                try
+                {
+                    Thread.sleep(INPUT_FRAMERATE);
+                }
+                catch (InterruptedException ex)
+                {
+                    throw new RuntimeException("Console input thread interrupted!");
+                }
+            }
+        }
+    }
+
+    @Override
+    public void uncaughtException(Thread t, Throwable e)
+    {
+        JOptionPane.showMessageDialog(null, t.getName());
+        Console.getInput(this);
+        reloadInput();
     }
 }
