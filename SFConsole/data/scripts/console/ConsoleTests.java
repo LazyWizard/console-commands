@@ -4,7 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.Script;
 import data.scripts.console.commands.AddSWShips;
 
-class ConsoleTests
+abstract class ConsoleTests
 {
     static void runTests(ConsoleManager consoleManager)
     {

@@ -6,8 +6,7 @@ import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
 
 /**
- *
- * @author Rob
+ * The basic command object that all console commands must extend.
  */
 public abstract class BaseCommand
 {
