@@ -1,10 +1,9 @@
-package data.scripts.plugins;
+package data.scripts.console;
 
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.plugins.CombatEnginePlugin;
-import data.scripts.console.ConsoleManager;
 
-public class ConsoleCombatHook implements CombatEnginePlugin
+public abstract class BaseCombatHook implements CombatEnginePlugin
 {
     @Override
     public void init(CombatEngineAPI engine)

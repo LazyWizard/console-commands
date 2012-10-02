@@ -12,6 +12,9 @@ import java.util.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
+/**
+ * Handles input, provides save-specific console settings and safe public access to certain methods of {@link Console}.
+ */
 public class ConsoleManager implements SpawnPointPlugin
 {
     // Constants
@@ -44,21 +47,8 @@ public class ConsoleManager implements SpawnPointPlugin
         RESTRICTED_KEYS.add(Keyboard.KEY_RSHIFT);
     }
 
-    public ConsoleManager(LocationAPI location)
-    {
-        this.location = location;
-        reloadInput();
-    }
-
     public ConsoleManager()
     {
-        location = Global.getSector().getStarSystem("Corvus");
-
-        if (location == null)
-        {
-            throw new RuntimeException("No LocationAPI set for ConsoleManager!");
-        }
-
         reloadInput();
     }
 
@@ -70,6 +60,19 @@ public class ConsoleManager implements SpawnPointPlugin
         return this;
     }
 
+    /**
+     * Registers a command with the {@link Console}.
+     *
+     * Commands must pass validation, otherwise registration will fail!<p>
+     *
+     * Validation consists of the following:<br>
+     *  * Checking that there isn't a built-in command with the same name<br>
+     *  * Checking that the command's class is in the correct package<br>
+     *  * Checking that the command extends {@link BaseCommand}
+     *
+     * @param commandClass the class object of the command to be registered
+     * @return true if the command was successfully added, false otherwise
+     */
     public boolean registerCommand(Class commandClass)
     {
         // We can't write our own exceptions at the moment, so the console
@@ -115,59 +118,94 @@ public class ConsoleManager implements SpawnPointPlugin
         }
     }
 
-    public static void setInBattle(boolean isInBattle)
+    /**
+     * Tells the {@link Console} whether to allow battle-only commands or not.
+     *
+     * @param isInBattle
+     */
+    protected static void setInBattle(boolean isInBattle)
     {
         inBattle = isInBattle;
     }
 
-    public static boolean isInBattle()
+    /**
+     * Check if the player is on the battle map.
+     *
+     * @return true if battle-only commands are allowed
+     */
+    protected static boolean isInBattle()
     {
         return inBattle;
     }
 
-    public static void setCombatEngine(CombatEngineAPI engine)
+    /**
+     * Sets the {@link CombatEngineAPI} used by in-battle commands.
+     *
+     * @param engine the active {@link CombatEngineAPI}
+     */
+    protected static void setCombatEngine(CombatEngineAPI engine)
     {
         activeEngine = new WeakReference(engine);
     }
 
-    public static CombatEngineAPI getCombatEngine()
+    /**
+     * Returns the {@link CombatEngineAPI} used by in-battle commands.
+     *
+     * @return the active {@link CombatEngineAPI}
+     */
+    protected static CombatEngineAPI getCombatEngine()
     {
-        if (activeEngine == null)
+        if (activeEngine == null || activeEngine.get() == null)
         {
             return null;
         }
-        
+
         return (CombatEngineAPI) activeEngine.get();
     }
 
-    public void setVar(String varName, Object varData)
+    /**
+     * Creates/sets a persistent variable that can be accessed by all console commands.<p>
+     *
+     * Important: the variable storage is not type-safe! Ensure you use unique names for your variables to avoid conflict!
+     *
+     * @param varName the name this variable can be retrieved under
+     * @param varData the data this variable should hold
+     */
+    protected void setVar(String varName, Object varData)
     {
         consoleVars.put(varName, varData);
     }
 
-    public Object getVar(String varName)
+    /**
+     * Retrieves the value of the variable varName, if any.
+     *
+     * @param varName the name of the variable to retrieve
+     * @return the data associated with that variable
+     */
+    protected Object getVar(String varName)
     {
         return consoleVars.get(varName);
     }
 
-    public boolean hasVar(String varName)
+    /**
+     * Checks for the existence of a variable with the supplied name.
+     *
+     * @param varName the name of the variable to check the existence of
+     * @return true if the variable has been set, false otherwise
+     */
+    protected boolean hasVar(String varName)
     {
         return consoleVars.keySet().contains(varName);
     }
 
-    public LocationAPI getLocation()
+    /**
+     * Gets the current {@link LocationAPI} of the player fleet
+     *
+     * @return the last location to update advance()
+     */
+    protected LocationAPI getLocation()
     {
         return location;
-    }
-
-    public int getConsoleKey()
-    {
-        return consoleKey;
-    }
-
-    public void setConsoleKey(int key)
-    {
-        consoleKey = key;
     }
 
     private void reload()
@@ -252,13 +290,13 @@ public class ConsoleManager implements SpawnPointPlugin
         }, 0, INPUT_FRAMERATE);
     }
 
-    public static boolean allowConsole()
+    private static boolean allowConsole()
     {
         return !(REQUIRE_RUN_WINDOWED && Display.isFullscreen())
                 || (REQUIRE_DEV_MODE && !Global.getSettings().getBoolean("devMode"));
     }
 
-    public static void showWarning()
+    private static void showWarning()
     {
         if (allowConsole())
         {
@@ -273,7 +311,7 @@ public class ConsoleManager implements SpawnPointPlugin
         }
     }
 
-    public static void showRestrictions()
+    private static void showRestrictions()
     {
         if (REQUIRE_RUN_WINDOWED || REQUIRE_DEV_MODE)
         {
@@ -283,7 +321,7 @@ public class ConsoleManager implements SpawnPointPlugin
         }
     }
 
-    public static void showRestrictedKeys()
+    private static void showRestrictedKeys()
     {
         StringBuilder keys = new StringBuilder();
 
@@ -323,7 +361,7 @@ public class ConsoleManager implements SpawnPointPlugin
                 if (!RESTRICTED_KEYS.contains(key))
                 {
                     isListening = false;
-                    setConsoleKey(key);
+                    consoleKey = key;
                     Console.showMessage("The console is now bound to '"
                             + Keyboard.getEventCharacter() + "'. Key index: "
                             + key + " (" + Keyboard.getKeyName(key) + ")");
@@ -347,6 +385,8 @@ public class ConsoleManager implements SpawnPointPlugin
     @Override
     public void advance(SectorAPI sector, LocationAPI location)
     {
+        this.location = location;
+
         if (justReloaded)
         {
             justReloaded = false;
