@@ -7,6 +7,7 @@ import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.SpawnPointPlugin;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import data.scripts.console.commands.RunScript;
+import java.lang.ref.WeakReference;
 import java.util.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -22,7 +23,7 @@ public class ConsoleManager implements SpawnPointPlugin
     private static final List RESTRICTED_KEYS = new ArrayList();
     // Per-session variables
     private static boolean inBattle = false;
-    private static CombatEngineAPI activeEngine;
+    private static WeakReference activeEngine;
     private transient Timer timer = new Timer();
     private transient boolean justReloaded = false;
     private transient boolean isPressed = false;
@@ -126,12 +127,17 @@ public class ConsoleManager implements SpawnPointPlugin
 
     public static void setCombatEngine(CombatEngineAPI engine)
     {
-        activeEngine = engine;
+        activeEngine = new WeakReference(engine);
     }
 
     public static CombatEngineAPI getCombatEngine()
     {
-        return activeEngine;
+        if (activeEngine == null)
+        {
+            return null;
+        }
+        
+        return (CombatEngineAPI) activeEngine.get();
     }
 
     public void setVar(String varName, Object varData)

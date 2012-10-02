@@ -92,8 +92,8 @@ final class Console
 
     public static void getInput()
     {
-        JOptionPane.showMessageDialog(null, "Thread: "
-                + Thread.currentThread().getName());
+        //JOptionPane.showMessageDialog(null, "Thread: "
+        //        + Thread.currentThread().getName());
         parseCommand(JOptionPane.showInputDialog(null,
                 "Enter a console command (or 'help' for a list of valid commands):",
                 "Starfarer Console", JOptionPane.PLAIN_MESSAGE));
@@ -123,8 +123,32 @@ final class Console
         parseCommand("runcode Global.getSector().addMessage(\"Test\");");
     }
 
+    public static void showStatus()
+    {
+        try
+        {
+            showMessage("Console status:",
+                    "Thread: " + Thread.currentThread().getName()
+                    + "\nIn campaign: "
+                    + (getManager() != null ? "yes" : "no")
+                    + "\nIn battle: "
+                    + (ConsoleManager.getCombatEngine() != null ? "yes" : "no"),
+                    true);
+        }
+        catch (Exception ex)
+        {
+            showMessage("Error showing status: " + ex.toString(),
+                    ex.getMessage(), true);
+        }
+    }
+
     public static ConsoleManager getManager()
     {
+        if (activeManager == null)
+        {
+            return null;
+        }
+
         return (ConsoleManager) activeManager.get();
     }
 
@@ -135,7 +159,7 @@ final class Console
 
     public static void listCommands()
     {
-        StringBuilder names = new StringBuilder("Help");
+        StringBuilder names = new StringBuilder("Help, Status");
         Iterator iter = allCommands.values().iterator();
         Class tmp;
 
@@ -170,6 +194,12 @@ final class Console
         if (com.equals("runtests"))
         {
             runTests();
+            return true;
+        }
+
+        if (com.equals("status"))
+        {
+            showStatus();
             return true;
         }
 
@@ -281,7 +311,7 @@ final class Console
         {
             command.showSyntax();
             showMessage("Error while running command "
-                    + com + ":", ex.getMessage(), true);
+                    + com + ": " + ex.toString(), ex.getMessage(), true);
             return false;
         }
     }
