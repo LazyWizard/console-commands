@@ -9,7 +9,12 @@ import java.util.*;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
-final class Console
+/**
+ * Executes commands and handles console output. Can't be instantiated.
+ *
+ * @see ConsoleManager
+ */
+public final class Console
 {
     // All command implementations must be in this package!
     private static final String COMMAND_PACKAGE = "data.scripts.console.commands";
@@ -18,6 +23,7 @@ final class Console
     private static final int LINE_LENGTH = 80;
     // Maps the command to the associated class
     private static final Map allCommands = new TreeMap();
+    private static final Set hardcodedCommands = new HashSet();
     // The ConsoleManager that requested input (per-save console settings)
     private static WeakReference activeManager;
 
@@ -54,6 +60,12 @@ final class Console
         allCommands.put("home", Home.class);
         allCommands.put("sethome", SetHome.class);
         allCommands.put("gc", GC.class);
+
+        // Commands that can't be overwritten
+        hardcodedCommands.add("help");
+        hardcodedCommands.add("status");
+        hardcodedCommands.add("runtests");
+        hardcodedCommands.addAll(allCommands.keySet());
     }
 
     private Console()
@@ -64,6 +76,13 @@ final class Console
     //throws InvalidCommandObjectException, InvalidCommandPackageException
     {
         String command = commandClass.getSimpleName().toLowerCase();
+
+        if (hardcodedCommands.contains(command))
+        {
+            // InvalidCommandNameException
+            throw new Exception("Can't overwrite built-in commands!");
+        }
+
         // getPackage() won't work for classes compiled with Janino's classloader
         // There's an extremely ugly workaround below
         //if (!COMMAND_PACKAGE.equals(commandClass.getPackage().getName()))
@@ -90,7 +109,7 @@ final class Console
         }
     }
 
-    public static void getInput()
+    static void getInput()
     {
         //JOptionPane.showMessageDialog(null, "Thread: "
         //        + Thread.currentThread().getName());
@@ -99,7 +118,7 @@ final class Console
                 "Starfarer Console", JOptionPane.PLAIN_MESSAGE));
     }
 
-    public static void getInput(ConsoleManager manager)
+    static void getInput(ConsoleManager manager)
     {
         setManager(manager);
         getInput();
@@ -123,7 +142,7 @@ final class Console
         parseCommand("runcode Global.getSector().addMessage(\"Test\");");
     }
 
-    public static void showStatus()
+    private static void showStatus()
     {
         try
         {
@@ -137,14 +156,13 @@ final class Console
         }
         catch (Exception ex)
         {
-            showMessage("Error showing status: " + ex.toString(),
-                    ex.getMessage(), true);
+            showError("Error showing status: ", ex);
         }
     }
 
-    public static ConsoleManager getManager()
+    static ConsoleManager getManager()
     {
-        if (activeManager == null)
+        if (activeManager == null || activeManager.get() == null)
         {
             return null;
         }
@@ -157,7 +175,7 @@ final class Console
         activeManager = new WeakReference(manager);
     }
 
-    public static void listCommands()
+    private static void listCommands()
     {
         StringBuilder names = new StringBuilder("Help, Status");
         Iterator iter = allCommands.values().iterator();
@@ -243,7 +261,7 @@ final class Console
         return executeCommand(com);
     }
 
-    public static void addScript(String name, Script script)
+    static void addScript(String name, Script script)
     {
         RunScript.addScript(name, script);
     }
@@ -261,20 +279,20 @@ final class Console
             }
             catch (InstantiationException ex)
             {
-                showMessage("Error while retrieving command "
-                        + com + ": failed to create command object!", ex.getMessage(), true);
+                showError("Error while retrieving command "
+                        + com + ": ", ex);
                 return false;
             }
             catch (IllegalAccessException ex)
             {
-                showMessage("Error while retrieving command "
-                        + com + ": lacks permission!", ex.getMessage(), true);
+                showError("Error while retrieving command "
+                        + com + ": ", ex);
                 return false;
             }
             catch (ClassCastException ex)
             {
-                showMessage("Error while retrieving command "
-                        + com + ": not a valid command object!", ex.getMessage(), true);
+                showError("Error while retrieving command "
+                        + com + ": ", ex);
                 return false;
             }
         }
@@ -291,11 +309,11 @@ final class Console
             return true;
         }
 
-        if (command.isCampaignOnly() && Global.getSector().getPlayerFleet() == null)
+        /*if (command.isCampaignOnly() && Global.getSector().getPlayerFleet() == null)
         {
             showMessage("This command can only be run in a campaign!");
             return false;
-        }
+        }*/
 
         if (command.isCombatOnly() && !ConsoleManager.isInBattle())
         {
@@ -310,8 +328,7 @@ final class Console
         catch (Exception ex)
         {
             command.showSyntax();
-            showMessage("Error while running command "
-                    + com + ": " + ex.toString(), ex.getMessage(), true);
+            showError("Error while running command: ", ex);
             return false;
         }
     }
@@ -323,12 +340,19 @@ final class Console
         return executeCommand(com, "");
     }
 
+    /**
+     * Parses, formats, and word-wraps the supplied text, then outputs it to the player.
+     *
+     * @param preamble the header for this message, won't be indented
+     * @param message the main body of text
+     * @param indent whether to indent each line of message
+     */
     public static void showMessage(String preamble,
             String message, boolean indent)
     {
         if (preamble != null)
         {
-            Global.getSector().addMessage(preamble, CONSOLE_COLOR);
+            showMessage(preamble);
         }
 
         // Analyse each line of the message seperately
@@ -393,14 +417,19 @@ final class Console
         }
     }
 
-    public static void showMessage(String message, boolean indent)
-    {
-        showMessage(null, message, indent);
-    }
-
+    /**
+     * Parses, formats, and word-wraps the supplied text, then outputs it to the player.
+     *
+     * @param message the message to output
+     */
     public static void showMessage(String message)
     {
         showMessage(null, message, false);
+    }
+
+    private static void showError(String preamble, Exception ex)
+    {
+        showMessage(preamble + ex.toString(), ex.getMessage(), true);
     }
 
     private static void printLine(String message, boolean indent)

@@ -12,7 +12,7 @@ public class AddConsole implements SectorGeneratorPlugin
     {
         StarSystemAPI system = sector.getStarSystem("Corvus");
 
-        ConsoleManager consoleManager = new ConsoleManager(system);
+        ConsoleManager consoleManager = new ConsoleManager();
         system.addSpawnPoint(consoleManager);
 
         Console.setManager(consoleManager);
