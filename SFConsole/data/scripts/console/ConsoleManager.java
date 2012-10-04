@@ -9,6 +9,7 @@ import com.fs.starfarer.api.combat.CombatEngineAPI;
 import data.scripts.console.commands.RunScript;
 import java.lang.ref.WeakReference;
 import java.util.*;
+import java.util.concurrent.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
@@ -27,9 +28,9 @@ public final class ConsoleManager implements SpawnPointPlugin
     // Per-session variables
     private static boolean inBattle = false;
     private static WeakReference activeEngine;
-    private transient Timer timer = new Timer();
+    private transient Executor inputHandler;
     private transient boolean justReloaded = false;
-    private transient boolean isPressed = false;
+    private transient volatile boolean isPressed = false;
     private transient boolean isListening = false;
     // Saved variables
     private LocationAPI location;
@@ -141,6 +142,8 @@ public final class ConsoleManager implements SpawnPointPlugin
 
     /**
      * Sets the {@link CombatEngineAPI} used by in-battle commands.
+     *
+     * @see BaseCombatHook
      *
      * @param engine the active {@link CombatEngineAPI}
      */
@@ -275,23 +278,13 @@ public final class ConsoleManager implements SpawnPointPlugin
 
     private void reloadInput()
     {
-        if (timer != null)
+        if (inputHandler != null)
         {
-            timer.cancel();
+            return;
         }
 
-        timer = new Timer("Console-Input", true);
-        timer.scheduleAtFixedRate(new TimerTask()
-        {
-            @Override
-            public void run()
-            {
-                if (ConsoleManager.this.checkInput())
-                {
-                    Console.getInput(ConsoleManager.this);
-                }
-            }
-        }, 0, INPUT_FRAMERATE);
+        inputHandler = Executors.newSingleThreadExecutor(new InputFactory());
+        inputHandler.execute(new InputHandler(Thread.currentThread()));
     }
 
     private static boolean allowConsole()
@@ -399,5 +392,61 @@ public final class ConsoleManager implements SpawnPointPlugin
 
         checkBattle();
         checkRebind();
+    }
+
+    private class InputFactory implements ThreadFactory
+    {
+        @Override
+        public Thread newThread(Runnable r)
+        {
+            Thread tmp = new Thread(r, "Console-Input");
+            tmp.setDaemon(true);
+            return tmp;
+        }
+    }
+
+    private class InputHandler implements Runnable
+    {
+        private WeakReference mainThreadRef;
+
+        private InputHandler()
+        {
+        }
+
+        private InputHandler(Thread thread)
+        {
+            mainThreadRef = new WeakReference(thread);
+        }
+
+        @Override
+        public void run()
+        {
+            Thread mainThread = (Thread) mainThreadRef.get();
+
+            while (Global.getSector().getPlayerFleet() != null)
+            {
+                if (checkInput())
+                {
+                    //Console.showMessage("Input " + Thread.currentThread().getName(),
+                    //        "Output " + mainThread.getName(), false);
+                    //Console.showMessage("# of threads: " + Thread.activeCount());
+
+                    // Yes, this is nasty, but it avoids concurrency issues
+                    mainThread.suspend();
+                    Console.getInput(ConsoleManager.this);
+                    mainThread.resume();
+                    continue;
+                }
+
+                try
+                {
+                    Thread.sleep(INPUT_FRAMERATE);
+                }
+                catch (InterruptedException ex)
+                {
+                    throw new RuntimeException("Console input thread interrupted!");
+                }
+            }
+        }
     }
 }

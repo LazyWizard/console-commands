@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
+import com.fs.starfarer.api.combat.CombatEngineAPI;
 
 /**
  * The basic command object that all console commands must extend.
@@ -48,6 +49,26 @@ public abstract class BaseCommand
     public String getName()
     {
         return this.getClass().getSimpleName();
+    }
+
+    /**
+     * A convenient alias for {@link Console#getManager()}.
+     *
+     * @see Console#getManager()
+     */
+    protected final ConsoleManager getManager()
+    {
+        return Console.getManager();
+    }
+
+    /**
+     * A convenient alias for {@link ConsoleManager#getCombatEngine()}.
+     *
+     * @see ConsoleManager#getCombatEngine()
+     */
+    protected final CombatEngineAPI getCombatEngine()
+    {
+        return ConsoleManager.getCombatEngine();
     }
 
     /**
