@@ -60,6 +60,7 @@ public final class Console
         allCommands.put("home", Home.class);
         allCommands.put("sethome", SetHome.class);
         allCommands.put("gc", GC.class);
+        allCommands.put("addcp", AddCP.class);
 
         // Commands that can't be overwritten
         hardcodedCommands.add("help");
@@ -309,10 +310,10 @@ public final class Console
         }
 
         /*if (command.isCampaignOnly() && Global.getSector().getPlayerFleet() == null)
-        {
-            showMessage("This command can only be run in a campaign!");
-            return false;
-        }*/
+         {
+         showMessage("This command can only be run in a campaign!");
+         return false;
+         }*/
 
         if (command.isCombatOnly() && !ConsoleManager.isInBattle())
         {
@@ -421,6 +422,15 @@ public final class Console
 
     private static void showError(String preamble, Exception ex)
     {
+        if (preamble == null)
+        {
+            preamble = "Error: ";
+        }
+        else if (!preamble.endsWith(": "))
+        {
+            preamble = preamble + ": ";
+        }
+
         showMessage(preamble + ex.toString(), ex.getMessage(), true);
     }
 
