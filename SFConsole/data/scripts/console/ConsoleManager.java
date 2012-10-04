@@ -28,7 +28,7 @@ public final class ConsoleManager implements SpawnPointPlugin
     // Per-session variables
     private static boolean inBattle = false;
     private static WeakReference activeEngine;
-    private transient Executor inputHandler;
+    private static InputHandler inputHandler;
     private transient boolean justReloaded = false;
     private transient volatile boolean isPressed = false;
     private transient boolean isListening = false;
@@ -280,11 +280,13 @@ public final class ConsoleManager implements SpawnPointPlugin
     {
         if (inputHandler != null)
         {
-            return;
+            inputHandler.shouldStop = true;
         }
 
-        inputHandler = Executors.newSingleThreadExecutor(new InputFactory());
-        inputHandler.execute(new InputHandler(Thread.currentThread()));
+        inputHandler = new InputHandler(Thread.currentThread());
+        inputHandler.setName("Console-Input");
+        inputHandler.setDaemon(true);
+        inputHandler.start();
     }
 
     private static boolean allowConsole()
@@ -405,9 +407,10 @@ public final class ConsoleManager implements SpawnPointPlugin
         }
     }
 
-    private class InputHandler implements Runnable
+    private class InputHandler extends Thread
     {
         private WeakReference mainThreadRef;
+        boolean shouldStop = false;
 
         private InputHandler()
         {
@@ -423,7 +426,7 @@ public final class ConsoleManager implements SpawnPointPlugin
         {
             Thread mainThread = (Thread) mainThreadRef.get();
 
-            while (Global.getSector().getPlayerFleet() != null)
+            while (!shouldStop)
             {
                 if (checkInput())
                 {
