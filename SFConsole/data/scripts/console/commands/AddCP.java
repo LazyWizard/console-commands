@@ -10,13 +10,14 @@ public class AddCP extends BaseCommand
     @Override
     protected String getHelp()
     {
-        return "Adds the specified amount of command points to your fleet.";
+        return "Adds the specified amount of command points to your fleet. You"
+                + " can remove the bonus with the argument 'remove'.";
     }
 
     @Override
     protected String getSyntax()
     {
-        return "addcp <amount>";
+        return "addcp <amount>|remove";
     }
 
     @Override
@@ -28,6 +29,15 @@ public class AddCP extends BaseCommand
     @Override
     protected boolean runCommand(String args)
     {
+        if ("remove".equals(args))
+        {
+            MutableStat commandPoints = getCombatEngine().getFleetManager(
+                    FleetSide.PLAYER).getCommandPointsStat();
+            commandPoints.unmodify("Console");
+            showMessage("Removed command point bonus.");
+            return true;
+        }
+
         int amount;
 
         try
@@ -44,6 +54,7 @@ public class AddCP extends BaseCommand
                 FleetSide.PLAYER).getCommandPointsStat();
 
         commandPoints.modifyFlat("Console", amount);
+        showMessage("Added " + amount + " command points.");
         return true;
     }
 }
