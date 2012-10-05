@@ -28,7 +28,7 @@ public final class ConsoleManager implements SpawnPointPlugin
     // Per-session variables
     private static boolean inBattle = false;
     private static WeakReference activeEngine;
-    private static InputHandler inputHandler;
+    private static WeakReference inputHandler;
     private transient boolean justReloaded = false;
     private transient volatile boolean isPressed = false;
     private transient boolean isListening = false;
@@ -228,7 +228,7 @@ public final class ConsoleManager implements SpawnPointPlugin
     {
         if (!extendedCommands.isEmpty())
         {
-            boolean success = true;
+            boolean hadError = false;
             Iterator iter = extendedCommands.iterator();
             Class tmp;
 
@@ -236,26 +236,22 @@ public final class ConsoleManager implements SpawnPointPlugin
             {
                 tmp = (Class) iter.next();
 
-                try
+                if (!registerCommand(tmp))
                 {
-                    registerCommand(tmp);
-                }
-                catch (Exception ex)
-                {
-                    success = false;
+                    hadError = true;
                     Console.showMessage("Error: failed to re-register command '"
-                            + (String) tmp.getSimpleName() + "':", ex.getMessage(), true);
+                            + (String) tmp.getSimpleName() + "'!");
                     iter.remove();
                 }
             }
 
-            if (success)
+            if (hadError)
             {
-                Console.showMessage("Extended console commands registered successfully!");
+                Console.showMessage("There were some errors while registering the extended console commands.");
             }
             else
             {
-                Console.showMessage("There were some errors while registering the extended console commands.");
+                Console.showMessage("Extended console commands registered successfully!");
             }
         }
     }
@@ -278,15 +274,18 @@ public final class ConsoleManager implements SpawnPointPlugin
 
     private void reloadInput()
     {
-        if (inputHandler != null)
+        if (inputHandler != null && inputHandler.get() != null)
         {
-            inputHandler.shouldStop = true;
+            ((InputHandler) inputHandler.get()).shouldStop = true;
         }
 
-        inputHandler = new InputHandler(Thread.currentThread());
-        inputHandler.setName("Console-Input");
-        inputHandler.setDaemon(true);
-        inputHandler.start();
+        InputHandler tmp;
+
+        tmp = new InputHandler(Thread.currentThread());
+        tmp.setName("Console-Input");
+        tmp.setDaemon(true);
+        inputHandler = new WeakReference(tmp);
+        tmp.start();
     }
 
     private static boolean allowConsole()
@@ -409,7 +408,7 @@ public final class ConsoleManager implements SpawnPointPlugin
 
     private class InputHandler extends Thread
     {
-        private WeakReference mainThreadRef;
+        private Thread mainThread;
         boolean shouldStop = false;
 
         private InputHandler()
@@ -418,23 +417,18 @@ public final class ConsoleManager implements SpawnPointPlugin
 
         private InputHandler(Thread thread)
         {
-            mainThreadRef = new WeakReference(thread);
+            mainThread = thread;
         }
 
         @Override
         public void run()
         {
-            Thread mainThread = (Thread) mainThreadRef.get();
-
             while (!shouldStop)
             {
                 if (checkInput())
                 {
-                    //Console.showMessage("Input " + Thread.currentThread().getName(),
-                    //        "Output " + mainThread.getName(), false);
-                    //Console.showMessage("# of threads: " + Thread.activeCount());
-
-                    // Yes, this is nasty, but it avoids concurrency issues
+                    // Nasty concurrency-avoiding hack - trading one set
+                    // of problems for another since 2012!
                     mainThread.suspend();
                     Console.getInput(ConsoleManager.this);
                     mainThread.resume();
