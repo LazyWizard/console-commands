@@ -30,15 +30,6 @@ public final class Console
     // Everything in this block absolutely MUST compile or the console will crash
     static
     {
-        // Change the look and feel of the console pop-up
-        UIManager.put("Panel.background", Color.BLACK);
-        UIManager.put("OptionPane.background", Color.BLACK);
-        UIManager.put("OptionPane.messageForeground", Color.CYAN);
-        UIManager.put("TextField.background", Color.BLACK);
-        UIManager.put("TextField.foreground", Color.YELLOW);
-        UIManager.put("Button.background", Color.BLACK);
-        UIManager.put("Button.foreground", Color.LIGHT_GRAY);
-
         // Since I know these classes pass validation, we can insert them
         // directly into the command map instead of through registerCommand
         allCommands.put("runscript", RunScript.class);
@@ -110,21 +101,6 @@ public final class Console
         }
     }
 
-    static void getInput()
-    {
-        //JOptionPane.showMessageDialog(null, "Thread: "
-        //        + Thread.currentThread().getName());
-        parseCommand(JOptionPane.showInputDialog(null,
-                "Enter a console command (or 'help' for a list of valid commands):",
-                "Starfarer Console", JOptionPane.PLAIN_MESSAGE));
-    }
-
-    static void getInput(ConsoleManager manager)
-    {
-        setManager(manager);
-        getInput();
-    }
-
     private static void runTests()
     {
         Global.getSector().addMessage("Running console tests...");
@@ -148,7 +124,7 @@ public final class Console
         try
         {
             showMessage("Console status:",
-                    "Thread: " + Thread.currentThread().getName()
+                    "Active thread: " + Thread.currentThread().getName()
                     + "\nIn campaign: "
                     + (getManager() != null ? "yes" : "no")
                     + "\nIn battle: "
@@ -196,7 +172,7 @@ public final class Console
                 + " use that command.");
     }
 
-    private static boolean parseCommand(String command)
+    static boolean parseCommand(String command)
     {
         // Don't try to parse blank lines
         if (command == null || command.length() == 0)

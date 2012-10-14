@@ -7,9 +7,11 @@ import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.SpawnPointPlugin;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import data.scripts.console.commands.RunScript;
+import java.awt.Color;
 import java.lang.ref.WeakReference;
 import java.util.*;
-import java.util.concurrent.*;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
@@ -34,12 +36,22 @@ public final class ConsoleManager implements SpawnPointPlugin
     private transient boolean isListening = false;
     // Saved variables
     private LocationAPI location;
+    private List queuedCommands = new ArrayList();
     private volatile int consoleKey = DEFAULT_CONSOLE_KEY;
     private Map consoleVars = new HashMap();
     private Set extendedCommands = new HashSet();
 
     static
     {
+        // Change the look and feel of the console pop-up
+        UIManager.put("Panel.background", Color.BLACK);
+        UIManager.put("OptionPane.background", Color.BLACK);
+        UIManager.put("OptionPane.messageForeground", Color.CYAN);
+        UIManager.put("TextField.background", Color.BLACK);
+        UIManager.put("TextField.foreground", Color.YELLOW);
+        UIManager.put("Button.background", Color.BLACK);
+        UIManager.put("Button.foreground", Color.LIGHT_GRAY);
+
         RESTRICTED_KEYS.add(REBIND_KEY);
         RESTRICTED_KEYS.add(Keyboard.KEY_ESCAPE);
         RESTRICTED_KEYS.add(Keyboard.KEY_LMETA);
@@ -214,7 +226,6 @@ public final class ConsoleManager implements SpawnPointPlugin
 
     private void reload()
     {
-        Console.setManager(this);
         reloadCommands();
         reloadScripts();
         reloadInput();
@@ -281,11 +292,21 @@ public final class ConsoleManager implements SpawnPointPlugin
 
         InputHandler tmp;
 
-        tmp = new InputHandler(Thread.currentThread());
+        tmp = new InputHandler(Thread.currentThread(), this);
         tmp.setName("Console-Input");
         tmp.setDaemon(true);
         inputHandler = new WeakReference(tmp);
         tmp.start();
+    }
+
+    private synchronized void addCommandToQueue(String command)
+    {
+        if (command == null || command.isEmpty())
+        {
+            return;
+        }
+
+        queuedCommands.add(command);
     }
 
     private static boolean allowConsole()
@@ -333,6 +354,22 @@ public final class ConsoleManager implements SpawnPointPlugin
         }
 
         Global.getSector().addMessage("Restricted keys: " + keys.toString());
+    }
+
+    private void checkQueue()
+    {
+        if (queuedCommands.isEmpty())
+        {
+            return;
+        }
+
+        Console.setManager(this);
+        for (int x = 0; x < queuedCommands.size(); x++)
+        {
+            Console.parseCommand((String) queuedCommands.get(x));
+        }
+
+        queuedCommands.clear();
     }
 
     private void checkBattle()
@@ -391,33 +428,32 @@ public final class ConsoleManager implements SpawnPointPlugin
             reload();
         }
 
+        checkQueue();
         checkBattle();
         checkRebind();
     }
 
-    private class InputFactory implements ThreadFactory
-    {
-        @Override
-        public Thread newThread(Runnable r)
-        {
-            Thread tmp = new Thread(r, "Console-Input");
-            tmp.setDaemon(true);
-            return tmp;
-        }
-    }
-
-    private class InputHandler extends Thread
+    private static class InputHandler extends Thread
     {
         private Thread mainThread;
+        private ConsoleManager manager;
         boolean shouldStop = false;
 
         private InputHandler()
         {
         }
 
-        private InputHandler(Thread thread)
+        public InputHandler(Thread thread, ConsoleManager manager)
         {
-            mainThread = thread;
+            this.mainThread = thread;
+            this.manager = manager;
+        }
+
+        private String getInput()
+        {
+            return JOptionPane.showInputDialog(null,
+                    "Enter a console command (or 'help' for a list of valid commands):",
+                    "Starfarer Console", JOptionPane.PLAIN_MESSAGE);
         }
 
         @Override
@@ -425,13 +461,29 @@ public final class ConsoleManager implements SpawnPointPlugin
         {
             while (!shouldStop)
             {
-                if (checkInput())
+                if (manager.checkInput())
                 {
-                    // Nasty concurrency-avoiding hack - trading one set
-                    // of problems for another since 2012!
-                    mainThread.suspend();
-                    Console.getInput(ConsoleManager.this);
-                    mainThread.resume();
+                    String command = getInput();
+
+                    if (ConsoleManager.isInBattle())
+                    {
+                        JOptionPane.showMessageDialog(null,
+                                "There is no stable in-battle command"
+                                + " support yet, sorry!", "Error",
+                                JOptionPane.ERROR_MESSAGE);
+
+                        // Nasty concurrency-avoiding hack - trading one set
+                        // of problems for another since 2012!
+                        /*mainThread.suspend();
+                         Console.setManager(ConsoleManager.this);
+                         Console.parseCommand(command);
+                         mainThread.resume();*/
+                    }
+                    else
+                    {
+                        manager.addCommandToQueue(command);
+                    }
+
                     continue;
                 }
 
