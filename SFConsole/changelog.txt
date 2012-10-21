@@ -1,3 +1,9 @@
+ 0.4b beta (October 21, 2012)
+==============================
+Fixed null-pointer exception with mods that have a custom star system
+Added built-in support for Project CAELUS, Project Ironclads, Fight for
+ Universe: Sector Xplo, and Ascendency.
+
  0.4 beta (September 30, 2012)
 ===============================
 Completely rewrote AddShip:
