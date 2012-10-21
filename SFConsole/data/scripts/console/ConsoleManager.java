@@ -36,8 +36,8 @@ public final class ConsoleManager implements SpawnPointPlugin
     private transient boolean isListening = false;
     // Saved variables
     private LocationAPI location;
-    private List queuedCommands = new ArrayList();
-    private volatile int consoleKey = DEFAULT_CONSOLE_KEY;
+    private volatile List queuedCommands = new ArrayList();
+    private int consoleKey = DEFAULT_CONSOLE_KEY;
     private Map consoleVars = new HashMap();
     private Set extendedCommands = new HashSet();
 
