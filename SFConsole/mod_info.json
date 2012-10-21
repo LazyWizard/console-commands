@@ -3,8 +3,8 @@
   "name":"Developer's Console",
   "author":"LazyWizard",
   "totalConversion":"false",
-  "version":"0.4",
-  "description":"An in-game developer's console, currently only functional on the campaign map.\nBy default the console is activated with tilde (~). The console can be re-bound by pressing Shift+F1.",
+  "version":"0.4b",
+  "description":"An in-game developer's console, currently only functional on the campaign map.\nBy default the console is activated with tilde (~). The console can be re-bound by pressing Shift+F1.\n\nCompatible with all mods that take place in the Corvus system, as well as Project CAELUS, Project Ironclads, Fight for Universe: Sector Xplo, and Ascendency.",
   "gameVersion":"0.53.1a",
   "replace":[],
 }
