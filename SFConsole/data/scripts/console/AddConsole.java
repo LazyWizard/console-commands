@@ -11,11 +11,11 @@ public final class AddConsole implements SectorGeneratorPlugin
 {
     private static final String[] SYSTEM_NAMES =
     {
-        "Corvus",
-        "Caelus",
-        "Barnard's Star",
-        "Xplo",
-        "God"
+        "Corvus", // Vanilla
+        "Caelus", // Project CAELUS
+        "Barnard's Star", // Project Ironclads
+        "Xplo", // Fight for Universe: Sector Xplo
+        "God" // Ascendency
     };
 
     @Override
