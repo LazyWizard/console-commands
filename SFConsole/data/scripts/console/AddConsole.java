@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.SectorGeneratorPlugin;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.swing.JOptionPane;
 
 @SuppressWarnings("unchecked")
 public final class AddConsole implements SectorGeneratorPlugin
@@ -53,7 +54,9 @@ public final class AddConsole implements SectorGeneratorPlugin
                 return;
             }
 
-            throw new RuntimeException("Console could not find a starsystem!");
+            JOptionPane.showMessageDialog(null,
+                    "Console could not find a starsystem!", "Starfarer Console",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 }
