@@ -28,7 +28,7 @@ public abstract class BaseCommand
      */
     protected final LocationAPI getLocation()
     {
-        return Console.getManager().getLocation();
+        return Console.getConsole().getLocation();
     }
 
     /**
@@ -52,13 +52,13 @@ public abstract class BaseCommand
     }
 
     /**
-     * A convenient alias for {@link Console#getManager()}.
+     * A convenient alias for {@link Console#getConsole()}.
      *
-     * @see Console#getManager()
+     * @see Console#getConsole()
      */
-    protected final ConsoleManager getManager()
+    protected final Console getConsole()
     {
-        return Console.getManager();
+        return Console.getConsole();
     }
 
     /**
@@ -68,7 +68,7 @@ public abstract class BaseCommand
      */
     protected final CombatEngineAPI getCombatEngine()
     {
-        return ConsoleManager.getCombatEngine();
+        return Console.getCombatEngine();
     }
 
     /**
@@ -78,7 +78,7 @@ public abstract class BaseCommand
      */
     protected static Object getVar(String varName)
     {
-        return Console.getManager().getVar(varName);
+        return Console.getConsole().getVar(varName);
     }
 
     /**
@@ -88,7 +88,7 @@ public abstract class BaseCommand
      */
     protected static void setVar(String varName, Object varData)
     {
-        Console.getManager().setVar(varName, varData);
+        Console.getConsole().setVar(varName, varData);
     }
 
     /**
@@ -98,7 +98,7 @@ public abstract class BaseCommand
      */
     protected static boolean hasVar(String varName)
     {
-        return Console.getManager().hasVar(varName);
+        return Console.getConsole().hasVar(varName);
     }
 
     /**

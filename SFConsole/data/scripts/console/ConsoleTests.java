@@ -6,9 +6,16 @@ import data.scripts.console.commands.AddSWShips;
 
 abstract class ConsoleTests
 {
-    static void runTests(ConsoleManager consoleManager)
+    static void runTests(Console console)
     {
-        consoleManager.registerCommand(AddSWShips.class);
+        try
+        {
+            console.registerCommand(AddSWShips.class);
+        }
+        catch (Exception ex)
+        {
+        }
+        
         Console.addScript("Test", new Script()
         {
             @Override

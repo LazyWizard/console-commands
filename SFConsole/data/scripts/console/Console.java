@@ -2,34 +2,92 @@ package data.scripts.console;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.Script;
+import com.fs.starfarer.api.campaign.LocationAPI;
+import com.fs.starfarer.api.campaign.SectorAPI;
+import com.fs.starfarer.api.campaign.SpawnPointPlugin;
+import com.fs.starfarer.api.combat.CombatEngineAPI;
 import data.scripts.console.commands.*;
 import java.awt.Color;
 import java.lang.ref.WeakReference;
 import java.util.*;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.Display;
 
 /**
  * Executes commands and handles console output. Can't be instantiated.
  *
  * @see ConsoleManager
  */
-public final class Console
+public class Console implements SpawnPointPlugin
 {
-    // All command implementations must be in this package!
-    private static final String COMMAND_PACKAGE = "data.scripts.console.commands";
-    // Constants to define console output appearance
+    // Constants
+    private static final boolean REQUIRE_DEV_MODE = false;
+    private static final boolean REQUIRE_RUN_WINDOWED = true;
     private static final Color CONSOLE_COLOR = Color.YELLOW;
     private static final int LINE_LENGTH = 80;
+    private static final String COMMAND_PACKAGE = "data.scripts.console.commands";
+    private static final long INPUT_FRAMERATE = (long) (1000 / 20);
+    private static final int DEFAULT_CONSOLE_KEY = Keyboard.KEY_GRAVE;
+    private static final int REBIND_KEY = Keyboard.KEY_F1; // Shift+key to rebind
+    private static final List RESTRICTED_KEYS = new ArrayList();
     // Maps the command to the associated class
-    private static final Map allCommands = new TreeMap();
-    private static final Set hardcodedCommands = new HashSet();
-    // The ConsoleManager that requested input (per-save console settings)
-    private static WeakReference activeManager;
+    private final Map allCommands = new TreeMap();
+    private final Set hardcodedCommands = new HashSet();
+    // Per-session variables
+    private static boolean inBattle = false;
+    private static WeakReference activeConsole, activeEngine, inputHandler;
+    private transient boolean justReloaded = false, isListening = false;
+    private transient volatile boolean isPressed = false, showRestrictions = true;
+    // Saved variables
+    private LocationAPI location;
+    private volatile List queuedCommands = new ArrayList();
+    private int consoleKey = DEFAULT_CONSOLE_KEY;
+    private Map consoleVars = new HashMap();
+    private Set extendedCommands = new HashSet();
 
     // Everything in this block absolutely MUST compile or the console will crash
     static
     {
-        // Since I know these classes pass validation, we can insert them
-        // directly into the command map instead of through registerCommand
+        // Change the look and feel of the console pop-up
+        UIManager.put("Panel.background", Color.BLACK);
+        UIManager.put("OptionPane.background", Color.BLACK);
+        UIManager.put("OptionPane.messageForeground", Color.CYAN);
+        UIManager.put("TextField.background", Color.BLACK);
+        UIManager.put("TextField.foreground", Color.YELLOW);
+        UIManager.put("Button.background", Color.BLACK);
+        UIManager.put("Button.foreground", Color.LIGHT_GRAY);
+
+        // These keys can't be bound to summon the console
+        RESTRICTED_KEYS.add(REBIND_KEY);
+        RESTRICTED_KEYS.add(Keyboard.KEY_ESCAPE);
+        RESTRICTED_KEYS.add(Keyboard.KEY_LMETA);
+        RESTRICTED_KEYS.add(Keyboard.KEY_RMETA);
+        RESTRICTED_KEYS.add(Keyboard.KEY_LSHIFT);
+        RESTRICTED_KEYS.add(Keyboard.KEY_RSHIFT);
+    }
+
+    public Console()
+    {
+        setConsole(this);
+        addBuiltInCommands();
+        reloadInput();
+    }
+
+    public Object readResolve()
+    {
+        justReloaded = true;
+        isPressed = false;
+        isListening = false;
+        setConsole(this);
+        addBuiltInCommands();
+        return this;
+    }
+
+    private void addBuiltInCommands()
+    {
+        // Built-in commands, don't need to go through registerCommand's checks
         allCommands.put("runscript", RunScript.class);
         allCommands.put("runcode", RunCode.class);
         allCommands.put("spawnfleet", SpawnFleet.class);
@@ -58,11 +116,7 @@ public final class Console
         hardcodedCommands.addAll(allCommands.keySet());
     }
 
-    private Console()
-    {
-    }
-
-    static void registerCommand(Class commandClass) throws Exception
+    void registerCommand(Class commandClass) throws Exception
     //throws InvalidCommandObjectException, InvalidCommandPackageException
     {
         String command = commandClass.getSimpleName().toLowerCase();
@@ -97,9 +151,341 @@ public final class Console
         {
             showMessage("Replaced existing command '" + command + "'.");
         }
+
+        extendedCommands.add(commandClass);
     }
 
-    private static void runTests()
+    static Console getConsole()
+    {
+        if (activeConsole == null || activeConsole.get() == null)
+        {
+            return null;
+        }
+
+        return (Console) activeConsole.get();
+    }
+
+    static void setConsole(Console manager)
+    {
+        activeConsole = new WeakReference(manager);
+    }
+
+    private synchronized boolean checkInput()
+    {
+        if (!isPressed)
+        {
+            if (Keyboard.isKeyDown(consoleKey))
+            {
+                isPressed = true;
+            }
+        }
+        else
+        {
+            if (!Keyboard.isKeyDown(consoleKey))
+            {
+                isPressed = false;
+
+                if (allowConsole())
+                {
+                    return true;
+                }
+
+                showRestrictions = true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Tells the {@link Console} whether to allow battle-only commands or not.
+     *
+     * @param isInBattle
+     */
+    protected static void setInBattle(boolean isInBattle)
+    {
+        inBattle = isInBattle;
+    }
+
+    /**
+     * Check if the player is on the battle map.
+     *
+     * @return true if battle-only commands are allowed
+     */
+    protected static boolean isInBattle()
+    {
+        return inBattle;
+    }
+
+    /**
+     * Sets the {@link CombatEngineAPI} used by in-battle commands.
+     *
+     * @see BaseCombatHook
+     *
+     * @param engine the active {@link CombatEngineAPI}
+     */
+    protected static void setCombatEngine(CombatEngineAPI engine)
+    {
+        activeEngine = new WeakReference(engine);
+    }
+
+    /**
+     * Returns the {@link CombatEngineAPI} used by in-battle commands.
+     *
+     * @return the active {@link CombatEngineAPI}
+     */
+    protected static CombatEngineAPI getCombatEngine()
+    {
+        if (activeEngine == null || activeEngine.get() == null)
+        {
+            return null;
+        }
+
+        return (CombatEngineAPI) activeEngine.get();
+    }
+
+    /**
+     * Creates/sets a persistent variable that can be accessed by all console commands.<p>
+     *
+     * Important: the variable storage is not type-safe! Ensure you use unique names for your variables to avoid conflict!
+     *
+     * @param varName the name this variable can be retrieved under
+     * @param varData the data this variable should hold
+     */
+    protected void setVar(String varName, Object varData)
+    {
+        consoleVars.put(varName, varData);
+    }
+
+    /**
+     * Retrieves the value of the variable varName, if any.
+     *
+     * @param varName the name of the variable to retrieve
+     * @return the data associated with that variable
+     */
+    protected Object getVar(String varName)
+    {
+        return consoleVars.get(varName);
+    }
+
+    /**
+     * Checks for the existence of a variable with the supplied name.
+     *
+     * @param varName the name of the variable to check the existence of
+     * @return true if the variable has been set, false otherwise
+     */
+    protected boolean hasVar(String varName)
+    {
+        return consoleVars.keySet().contains(varName);
+    }
+
+    /**
+     * Gets the current {@link LocationAPI} of the player fleet
+     *
+     * @return the last location to update advance()
+     */
+    protected LocationAPI getLocation()
+    {
+        return location;
+    }
+
+    private void reload()
+    {
+        reloadCommands();
+        reloadScripts();
+        reloadInput();
+
+        Global.getSector().addMessage("To rebind the console to another key,"
+                + " press shift+" + Keyboard.getKeyName(REBIND_KEY)
+                + " while on the campaign map.");
+    }
+
+    private void reloadCommands()
+    {
+        if (!extendedCommands.isEmpty())
+        {
+            boolean hadError = false;
+            Iterator iter = extendedCommands.iterator();
+            Class tmp;
+
+            while (iter.hasNext())
+            {
+                tmp = (Class) iter.next();
+
+                try
+                {
+                    registerCommand(tmp);
+                }
+                catch (Exception ex)
+                {
+                    hadError = true;
+                    showError("Error: failed to re-register command '"
+                            + (String) tmp.getSimpleName() + "'!", ex);
+                    iter.remove();
+                }
+            }
+
+            if (hadError)
+            {
+                showMessage("There were some errors while registering the extended console commands.");
+            }
+            else
+            {
+                showMessage("Extended console commands registered successfully!");
+            }
+        }
+    }
+
+    private void reloadScripts()
+    {
+        if (hasVar("UserScripts"))
+        {
+            Map userScripts = (Map) getVar("UserScripts");
+            Iterator iter = userScripts.entrySet().iterator();
+            Map.Entry tmp;
+
+            while (iter.hasNext())
+            {
+                tmp = (Map.Entry) iter.next();
+                RunScript.addScript((String) tmp.getKey(), (Script) tmp.getValue());
+            }
+        }
+    }
+
+    private void reloadInput()
+    {
+        if (inputHandler != null && inputHandler.get() != null)
+        {
+            ((InputHandler) inputHandler.get()).shouldStop = true;
+        }
+
+        InputHandler tmp;
+
+        tmp = new InputHandler(Thread.currentThread(), this);
+        tmp.setName("Console-Input");
+        tmp.setDaemon(true);
+        inputHandler = new WeakReference(tmp);
+        tmp.start();
+    }
+
+    private synchronized void addCommandToQueue(String command)
+    {
+        if (command == null || command.isEmpty())
+        {
+            return;
+        }
+
+        queuedCommands.add(command);
+    }
+
+    private static boolean allowConsole()
+    {
+        return !(REQUIRE_RUN_WINDOWED && Display.isFullscreen())
+                || (REQUIRE_DEV_MODE && !Global.getSettings().getBoolean("devMode"));
+    }
+
+    private static void showWarning()
+    {
+        if (allowConsole())
+        {
+            Console.showMessage("If the game appears frozen, switch windows to"
+                    + " 'Starfarer Console' to enter your command.");
+
+            if (!REQUIRE_RUN_WINDOWED)
+            {
+                Console.showMessage("The console will only be visible"
+                        + " if you run the game in windowed mode.\n");
+            }
+        }
+    }
+
+    private static void showRestrictions()
+    {
+        if (REQUIRE_RUN_WINDOWED || REQUIRE_DEV_MODE)
+        {
+            Console.showMessage("The console will only function"
+                    + (REQUIRE_RUN_WINDOWED ? " in windowed mode" : "")
+                    + (REQUIRE_DEV_MODE ? " with devmode active" : "") + ".");
+        }
+    }
+
+    private static void showRestrictedKeys()
+    {
+        StringBuilder keys = new StringBuilder();
+
+        for (int x = 0; x < RESTRICTED_KEYS.size(); x++)
+        {
+            keys.append(Keyboard.getKeyName(((Integer) RESTRICTED_KEYS.get(x)).intValue()));
+            if (x < RESTRICTED_KEYS.size() - 1)
+            {
+                keys.append(", ");
+            }
+        }
+
+        Global.getSector().addMessage("Restricted keys: " + keys.toString());
+    }
+
+    protected void checkQueue()
+    {
+        if (queuedCommands.isEmpty())
+        {
+            return;
+        }
+
+        for (int x = 0; x < queuedCommands.size(); x++)
+        {
+            parseCommand((String) queuedCommands.get(x));
+        }
+
+        queuedCommands.clear();
+    }
+
+    private void checkBattle()
+    {
+        inBattle = false;
+        activeEngine = null;
+    }
+
+    private void checkRebind()
+    {
+        if (isListening)
+        {
+            int key = Keyboard.getEventKey();
+
+            if (key == Keyboard.KEY_ESCAPE)
+            {
+                isListening = false;
+                Console.showMessage("Cancelled.");
+                return;
+            }
+
+            if (key != Keyboard.KEY_NONE && key != REBIND_KEY)
+            {
+                if (!RESTRICTED_KEYS.contains(key))
+                {
+                    isListening = false;
+                    consoleKey = key;
+                    Console.showMessage("The console is now bound to '"
+                            + Keyboard.getEventCharacter() + "'. Key index: "
+                            + key + " (" + Keyboard.getKeyName(key) + ")");
+                }
+            }
+        }
+        else
+        {
+            if (Keyboard.isKeyDown(REBIND_KEY)
+                    && (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)
+                    || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)))
+            {
+                isListening = true;
+                Console.showMessage("The console will be bound to the next key"
+                        + " you press (escape to cancel).");
+                showRestrictedKeys();
+            }
+        }
+    }
+
+    private void runTests()
     {
         Global.getSector().addMessage("Running console tests...");
         //parseCommand("runscript help");
@@ -123,10 +509,10 @@ public final class Console
         {
             showMessage("Console status:",
                     "Active thread: " + Thread.currentThread().getName()
-                    + "\nIn campaign: "
-                    + (getManager() != null ? "yes" : "no")
+                    //+ "\nIn campaign: "
+                    //+ (getConsole() != null ? "yes" : "no")
                     + "\nIn battle: "
-                    + (ConsoleManager.getCombatEngine() != null ? "yes" : "no"),
+                    + (getCombatEngine() != null ? "yes" : "no"),
                     true);
         }
         catch (Exception ex)
@@ -135,22 +521,7 @@ public final class Console
         }
     }
 
-    static ConsoleManager getManager()
-    {
-        if (activeManager == null || activeManager.get() == null)
-        {
-            return null;
-        }
-
-        return (ConsoleManager) activeManager.get();
-    }
-
-    static void setManager(ConsoleManager manager)
-    {
-        activeManager = new WeakReference(manager);
-    }
-
-    private static void listCommands()
+    private void listCommands()
     {
         StringBuilder names = new StringBuilder("Help, Status");
         Iterator iter = allCommands.values().iterator();
@@ -170,7 +541,7 @@ public final class Console
                 + " use that command.");
     }
 
-    static boolean parseCommand(String command)
+    boolean parseCommand(String command)
     {
         // Don't try to parse blank lines
         if (command == null || command.length() == 0)
@@ -241,7 +612,7 @@ public final class Console
         RunScript.addScript(name, script);
     }
 
-    private static synchronized boolean executeCommand(String com, String args)
+    private synchronized boolean executeCommand(String com, String args)
     {
         BaseCommand command;
 
@@ -283,13 +654,7 @@ public final class Console
             return true;
         }
 
-        /*if (command.isCampaignOnly() && Global.getSector().getPlayerFleet() == null)
-         {
-         showMessage("This command can only be run in a campaign!");
-         return false;
-         }*/
-
-        if (command.isCombatOnly() && !ConsoleManager.isInBattle())
+        if (command.isCombatOnly() && !isInBattle())
         {
             showMessage("This command can only be run during combat!");
             return false;
@@ -394,7 +759,7 @@ public final class Console
         showMessage(null, message, false);
     }
 
-    private static void showError(String preamble, Exception ex)
+    public static void showError(String preamble, Exception ex)
     {
         if (preamble == null)
         {
@@ -410,7 +775,7 @@ public final class Console
 
     private static void printLine(String message, boolean indent)
     {
-        if (ConsoleManager.isInBattle())
+        if (isInBattle())
         {
             // No in-battle message hooks yet
         }
@@ -423,6 +788,75 @@ public final class Console
             else
             {
                 Global.getSector().addMessage(message, CONSOLE_COLOR);
+            }
+        }
+    }
+
+    @Override
+    public void advance(SectorAPI sector, LocationAPI location)
+    {
+        this.location = location;
+
+        if (justReloaded)
+        {
+            justReloaded = false;
+            reload();
+        }
+
+        if (showRestrictions)
+        {
+            showRestrictions = false;
+            showRestrictions();
+        }
+
+        checkQueue();
+        checkBattle();
+        checkRebind();
+    }
+
+    private static class InputHandler extends Thread
+    {
+        private Thread mainThread;
+        private Console manager;
+        boolean shouldStop = false;
+
+        private InputHandler()
+        {
+        }
+
+        public InputHandler(Thread thread, Console manager)
+        {
+            this.mainThread = thread;
+            this.manager = manager;
+        }
+
+        private String getInput()
+        {
+            return JOptionPane.showInputDialog(null,
+                    "Enter a console command (or 'help' for a list of valid commands):",
+                    "Starfarer Console", JOptionPane.PLAIN_MESSAGE);
+        }
+
+        @Override
+        public void run()
+        {
+            while (!shouldStop)
+            {
+                if (manager.checkInput())
+                {
+                    String command = getInput();
+                    manager.addCommandToQueue(command);
+                    continue;
+                }
+
+                try
+                {
+                    Thread.sleep(INPUT_FRAMERATE);
+                }
+                catch (InterruptedException ex)
+                {
+                    throw new RuntimeException("Console input thread interrupted!");
+                }
             }
         }
     }
