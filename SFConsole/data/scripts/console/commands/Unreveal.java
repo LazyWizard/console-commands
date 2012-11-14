@@ -3,18 +3,18 @@ package data.scripts.console.commands;
 import data.scripts.console.BaseCombatHook;
 import data.scripts.console.BaseCommand;
 
-public class Reveal extends BaseCommand
+public class Unreveal extends BaseCommand
 {
     @Override
     protected String getHelp()
     {
-        return "Removes all fog of war on the battle map.";
+        return "Removes the effects of the 'reveal' command.";
     }
 
     @Override
     protected String getSyntax()
     {
-        return "reveal (no arguments)";
+        return "unreveal (no arguments)";
     }
 
     @Override
@@ -26,7 +26,7 @@ public class Reveal extends BaseCommand
     @Override
     public boolean runCommand(String args)
     {
-        BaseCombatHook.shouldReveal = true;
+        BaseCombatHook.shouldReveal = false;
         return true;
     }
 }
