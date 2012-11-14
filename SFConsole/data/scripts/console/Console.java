@@ -6,8 +6,6 @@ import data.scripts.console.commands.*;
 import java.awt.Color;
 import java.lang.ref.WeakReference;
 import java.util.*;
-import javax.swing.JOptionPane;
-import javax.swing.UIManager;
 
 /**
  * Executes commands and handles console output. Can't be instantiated.

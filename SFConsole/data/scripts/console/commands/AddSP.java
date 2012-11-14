@@ -4,7 +4,7 @@ package data.scripts.console.commands;
 //import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import data.scripts.console.BaseCommand;
 
-public class AddSkillPoints extends BaseCommand
+public class AddSP extends BaseCommand
 {
     @Override
     protected String getHelp()
@@ -15,7 +15,7 @@ public class AddSkillPoints extends BaseCommand
     @Override
     protected String getSyntax()
     {
-        return "addskillpoints <amount>";
+        return "addsp <amount>";
     }
 
     @Override
