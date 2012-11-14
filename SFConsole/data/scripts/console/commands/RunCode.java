@@ -4,11 +4,10 @@ import data.scripts.console.BaseCommand;
 import java.lang.reflect.InvocationTargetException;
 import org.codehaus.commons.compiler.CompileException;
 import org.codehaus.janino.*;
-//import org.lazywizard.helpers.CombinedClassLoader;
 
 public class RunCode extends BaseCommand
 {
-    static transient ScriptEvaluator eval;
+    private static transient ScriptEvaluator eval;
     // Most of these are to test classloader blocking
     /*static ExpressionEvaluator eval2;
      static ClassLoader tmp;
@@ -20,8 +19,8 @@ public class RunCode extends BaseCommand
     {
         eval = new ScriptEvaluator();
         eval.setReturnType(void.class);
+        //eval.setParentClassLoader(Global.getSettings().getScriptClassLoader());
         eval.setParentClassLoader(ClassLoader.getSystemClassLoader());
-        //eval.setParentClassLoader(new CombinedClassLoader());
         eval.setDefaultImports(new String[]
                 {
                     "com.fs.starfarer.api.*", "java.util.*",
@@ -73,14 +72,12 @@ public class RunCode extends BaseCommand
         }
         catch (CompileException ex)
         {
-            showMessage("Compilation failed:",
-                    ex.toString() + "\n" + ex.getMessage(), true);
+            showError("Compilation failed:", ex);
             return false;
         }
         catch (InvocationTargetException ex)
         {
-            showMessage("Execution failed:",
-                    ex.toString() + "\n" + ex.getMessage(), true);
+            showError("Execution failed:", ex);
             return false;
         }
 

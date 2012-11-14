@@ -70,7 +70,7 @@ public class Console implements SpawnPointPlugin
 
     public Console()
     {
-        setConsole(this);
+        Console.activeConsole = new WeakReference(this);
         addBuiltInCommands();
         reloadInput();
     }
@@ -80,7 +80,7 @@ public class Console implements SpawnPointPlugin
         justReloaded = true;
         isPressed = false;
         isListening = false;
-        setConsole(this);
+        Console.activeConsole = new WeakReference(this);
         addBuiltInCommands();
         return this;
     }
@@ -118,7 +118,7 @@ public class Console implements SpawnPointPlugin
         hardcodedCommands.addAll(allCommands.keySet());
     }
 
-    void registerCommand(Class commandClass) throws Exception
+    public void registerCommand(Class commandClass) throws Exception
     //throws InvalidCommandObjectException, InvalidCommandPackageException
     {
         String command = commandClass.getSimpleName().toLowerCase();
@@ -165,11 +165,6 @@ public class Console implements SpawnPointPlugin
         }
 
         return (Console) activeConsole.get();
-    }
-
-    static void setConsole(Console manager)
-    {
-        activeConsole = new WeakReference(manager);
     }
 
     private synchronized boolean checkInput()
@@ -363,10 +358,10 @@ public class Console implements SpawnPointPlugin
 
         InputHandler tmp;
 
-        tmp = new InputHandler(Thread.currentThread(), this);
+        tmp = new InputHandler(this);
         tmp.setName("Console-Input");
         tmp.setDaemon(true);
-        inputHandler = new WeakReference(tmp);
+        Console.inputHandler = new WeakReference(tmp);
         tmp.start();
     }
 
@@ -388,16 +383,10 @@ public class Console implements SpawnPointPlugin
 
     private static void showWarning()
     {
-        if (allowConsole())
+        if (allowConsole() && !REQUIRE_RUN_WINDOWED)
         {
-            Console.showMessage("If the game appears frozen, switch windows to"
-                    + " 'Starfarer Console' to enter your command.");
-
-            if (!REQUIRE_RUN_WINDOWED)
-            {
-                Console.showMessage("The console will only be visible"
-                        + " if you run the game in windowed mode.\n");
-            }
+            Console.showMessage("The console will only be visible"
+                    + " if you run the game in windowed mode.\n");
         }
     }
 
@@ -442,7 +431,7 @@ public class Console implements SpawnPointPlugin
         queuedCommands.clear();
     }
 
-    private void checkBattle()
+    private static void checkBattle()
     {
         inBattle = false;
         activeEngine = null;
@@ -543,7 +532,7 @@ public class Console implements SpawnPointPlugin
                 + " use that command.");
     }
 
-    boolean parseCommand(String command)
+    private boolean parseCommand(String command)
     {
         // Don't try to parse blank lines
         if (command == null || command.length() == 0)
@@ -609,7 +598,7 @@ public class Console implements SpawnPointPlugin
         return executeCommand(com, "");
     }
 
-    static void addScript(String name, Script script)
+    public static void addScript(String name, Script script)
     {
         RunScript.addScript(name, script);
     }
@@ -818,7 +807,6 @@ public class Console implements SpawnPointPlugin
 
     private static class InputHandler extends Thread
     {
-        private Thread mainThread;
         private Console manager;
         boolean shouldStop = false;
 
@@ -826,9 +814,8 @@ public class Console implements SpawnPointPlugin
         {
         }
 
-        public InputHandler(Thread thread, Console manager)
+        public InputHandler(Console manager)
         {
-            this.mainThread = thread;
             this.manager = manager;
         }
 
@@ -846,8 +833,7 @@ public class Console implements SpawnPointPlugin
             {
                 if (manager.checkInput())
                 {
-                    String command = getInput();
-                    manager.addCommandToQueue(command);
+                    manager.addCommandToQueue(getInput());
                     continue;
                 }
 
@@ -857,7 +843,7 @@ public class Console implements SpawnPointPlugin
                 }
                 catch (InterruptedException ex)
                 {
-                    throw new RuntimeException("Console input thread interrupted!");
+                    showError("Console input thread interrupted!", ex);
                 }
             }
         }

@@ -122,6 +122,11 @@ public abstract class BaseCommand
         Console.showMessage(message);
     }
 
+    protected static void showError(String preamble, Exception ex)
+    {
+        Console.showError(preamble, ex);
+    }
+
     /**
      * Displays the helpfile returned by {@link BaseCommand#getHelp()}.
      */
