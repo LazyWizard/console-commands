@@ -14,8 +14,9 @@ abstract class ConsoleTests
         }
         catch (Exception ex)
         {
+            Console.showError("Couldn't register command:", ex);
         }
-        
+
         Console.addScript("Test", new Script()
         {
             @Override

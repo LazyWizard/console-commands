@@ -1,13 +1,17 @@
  1.0 (November xx, 2012)
 =========================
-Massive changes to the code base
-User-made commands can now be registered with the console
-Console can now be used in combat or when the game is paused
+Massive changes made to the code base for this release - please report any bugs!
+miscellaneous security and stability improvements
+Slight tweak to mod compatibility - should work with more mods out of the box
+Added documentation (slightly out-of-date) - see JavaDoc.zip in the main folder
+Changed how commands are stored - now uses reflection (much simpler to maintain)
+User-made/mod-specific commands can now be registered with the console
+The console can now be used in combat or when the game is paused/in menus
 New command: AddAP - adds aptitude points to your character
 New command: AddCP - modifies available command points (in-battle only)
 New command: AddSP - adds skill points to your character
-New command: Reveal - reveals the entire battle map (in-battle only)
 New command: RunCode - compiles and runs a line of Java code (uses Janino)
+New commands: (Un)Reveal - (un)reveals the entire battle map (in-battle only)
 
  0.4b beta (October 21, 2012)
 ==============================

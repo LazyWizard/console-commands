@@ -11,20 +11,16 @@ public final class AddConsole implements SectorGeneratorPlugin
 {
     private static final String[] SYSTEM_NAMES =
     {
-        "Corvus", // Vanilla
         "Caelus", // Project CAELUS
         "Barnard's Star", // Project Ironclads
         "Xplo", // Fight for Universe: Sector Xplo
-        "God" // Ascendency
+        "God", // Ascendency
+        "Corvus" // Vanilla, should always be last on this list
     };
 
     @Override
     public void generate(SectorAPI sector)
     {
-        /*ConsoleManager consoleManager = new ConsoleManager();
-        Console.setConsole(consoleManager);
-        ConsoleTests.runTests(consoleManager);*/
-
         Timer deferredAdd = new Timer(true);
         deferredAdd.schedule(new DeferredAdd(sector), 100);
     }
@@ -42,7 +38,6 @@ public final class AddConsole implements SectorGeneratorPlugin
         public void run()
         {
             StarSystemAPI system;
-            Console console = new Console();
 
             for (int x = 0; x < SYSTEM_NAMES.length; x++)
             {
@@ -53,7 +48,9 @@ public final class AddConsole implements SectorGeneratorPlugin
                     continue;
                 }
 
+                Console console = new Console();
                 system.addSpawnPoint(console);
+                ConsoleTests.runTests(console);
                 return;
             }
 

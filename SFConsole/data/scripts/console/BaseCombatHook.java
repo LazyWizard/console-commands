@@ -1,13 +1,17 @@
 package data.scripts.console;
 
 import com.fs.starfarer.api.combat.CombatEngineAPI;
+import com.fs.starfarer.api.combat.FogOfWarAPI;
 import com.fs.starfarer.api.plugins.BattleObjectivesEffectsPlugin;
+import com.fs.starfarer.api.plugins.FogOfWarPlugin;
 
 /**
  * Notifies the {@link ConsoleManager} when the game is in battle.
  */
-public class BaseCombatHook implements BattleObjectivesEffectsPlugin
+public class BaseCombatHook implements BattleObjectivesEffectsPlugin, FogOfWarPlugin
 {
+    public static boolean shouldReveal = false;
+
     @Override
     public void applyEffects()
     {
@@ -27,6 +31,7 @@ public class BaseCombatHook implements BattleObjectivesEffectsPlugin
     @Override
     public void init(CombatEngineAPI engine)
     {
+        shouldReveal = false;
         Console.setInBattle(true);
         Console.setCombatEngine(engine);
     }
@@ -41,5 +46,19 @@ public class BaseCombatHook implements BattleObjectivesEffectsPlugin
     public float getRangeBonusPercent(int owner)
     {
         return 0f;
+    }
+
+    @Override
+    public void reveal(FogOfWarAPI fogOfWar)
+    {
+        if (shouldReveal)
+        {
+            fogOfWar.revealAroundPoint(this, 0, 0, 50000f);
+        }
+    }
+
+    @Override
+    public void hide(FogOfWarAPI fogOfWar)
+    {
     }
 }

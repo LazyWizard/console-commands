@@ -108,6 +108,8 @@ public class Console implements SpawnPointPlugin
         allCommands.put("sethome", SetHome.class);
         allCommands.put("gc", GC.class);
         allCommands.put("addcp", AddCP.class);
+        allCommands.put("reveal", Reveal.class);
+        allCommands.put("unreveal", Unreveal.class);
 
         // Commands that can't be overwritten
         hardcodedCommands.add("help");
