@@ -1,3 +1,20 @@
+ 1.0 (November xx, 2012)
+=========================
+Massive changes to the code base
+User-made commands can now be registered with the console
+Console can now be used in combat or when the game is paused
+New command: AddAP - adds aptitude points to your character
+New command: AddCP - modifies available command points (in-battle only)
+New command: AddSP - adds skill points to your character
+New command: Reveal - reveals the entire battle map (in-battle only)
+New command: RunCode - compiles and runs a line of Java code (uses Janino)
+
+ 0.4b beta (October 21, 2012)
+==============================
+Fixed null-pointer exception with mods that have a custom star system
+Added built-in support for Project CAELUS, Project Ironclads, Fight for
+ Universe: Sector Xplo, and Ascendency.
+
  0.4 beta (September 30, 2012)
 ===============================
 Completely rewrote AddShip:

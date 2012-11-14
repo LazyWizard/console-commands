@@ -226,6 +226,7 @@ public final class ConsoleManager implements SpawnPointPlugin
 
     private void reload()
     {
+        Console.setManager(this);
         reloadCommands();
         reloadScripts();
         reloadInput();
@@ -356,7 +357,7 @@ public final class ConsoleManager implements SpawnPointPlugin
         Global.getSector().addMessage("Restricted keys: " + keys.toString());
     }
 
-    private void checkQueue()
+    protected void checkQueue()
     {
         if (queuedCommands.isEmpty())
         {
@@ -464,26 +465,7 @@ public final class ConsoleManager implements SpawnPointPlugin
                 if (manager.checkInput())
                 {
                     String command = getInput();
-
-                    if (ConsoleManager.isInBattle())
-                    {
-                        JOptionPane.showMessageDialog(null,
-                                "There is no stable in-battle command"
-                                + " support yet, sorry!", "Error",
-                                JOptionPane.ERROR_MESSAGE);
-
-                        // Nasty concurrency-avoiding hack - trading one set
-                        // of problems for another since 2012!
-                        /*mainThread.suspend();
-                         Console.setManager(ConsoleManager.this);
-                         Console.parseCommand(command);
-                         mainThread.resume();*/
-                    }
-                    else
-                    {
-                        manager.addCommandToQueue(command);
-                    }
-
+                    manager.addCommandToQueue(command);
                     continue;
                 }
 
