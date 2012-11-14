@@ -21,29 +21,28 @@ public final class AddConsole implements SectorGeneratorPlugin
     @Override
     public void generate(SectorAPI sector)
     {
-        ConsoleManager consoleManager = new ConsoleManager();
-        Console.setManager(consoleManager);
-        ConsoleTests.runTests(consoleManager);
+        /*ConsoleManager consoleManager = new ConsoleManager();
+        Console.setConsole(consoleManager);
+        ConsoleTests.runTests(consoleManager);*/
 
         Timer deferredAdd = new Timer(true);
-        deferredAdd.schedule(new DeferredAdd(sector, consoleManager), 100);
+        deferredAdd.schedule(new DeferredAdd(sector), 100);
     }
 
     private static class DeferredAdd extends TimerTask
     {
         SectorAPI sector;
-        ConsoleManager consoleManager;
 
-        public DeferredAdd(SectorAPI sector, ConsoleManager consoleManager)
+        public DeferredAdd(SectorAPI sector)
         {
             this.sector = sector;
-            this.consoleManager = consoleManager;
         }
 
         @Override
         public void run()
         {
             StarSystemAPI system;
+            Console console = new Console();
 
             for (int x = 0; x < SYSTEM_NAMES.length; x++)
             {
@@ -54,7 +53,7 @@ public final class AddConsole implements SectorGeneratorPlugin
                     continue;
                 }
 
-                system.addSpawnPoint(consoleManager);
+                system.addSpawnPoint(console);
                 return;
             }
 

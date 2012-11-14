@@ -11,9 +11,9 @@ public class BaseCombatHook implements BattleObjectivesEffectsPlugin
     @Override
     public void applyEffects()
     {
-        if (Console.getManager() != null)
+        if (Console.getConsole() != null)
         {
-            Console.getManager().checkQueue();
+            Console.getConsole().checkQueue();
         }
     }
 
@@ -27,8 +27,8 @@ public class BaseCombatHook implements BattleObjectivesEffectsPlugin
     @Override
     public void init(CombatEngineAPI engine)
     {
-        ConsoleManager.setInBattle(true);
-        ConsoleManager.setCombatEngine(engine);
+        Console.setInBattle(true);
+        Console.setCombatEngine(engine);
     }
 
     @Override
