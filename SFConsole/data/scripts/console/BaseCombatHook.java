@@ -2,15 +2,20 @@ package data.scripts.console;
 
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.FogOfWarAPI;
+import com.fs.starfarer.api.combat.ShipAPI;
+import com.fs.starfarer.api.combat.WeaponAPI;
+import com.fs.starfarer.api.mission.FleetSide;
 import com.fs.starfarer.api.plugins.BattleObjectivesEffectsPlugin;
 import com.fs.starfarer.api.plugins.FogOfWarPlugin;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Notifies the {@link ConsoleManager} when the game is in battle.
  */
 public class BaseCombatHook implements BattleObjectivesEffectsPlugin, FogOfWarPlugin
 {
-    public static boolean shouldReveal = false;
+    public static boolean shouldReveal = false, infAmmo = false;
 
     @Override
     public void applyEffects()
@@ -18,6 +23,26 @@ public class BaseCombatHook implements BattleObjectivesEffectsPlugin, FogOfWarPl
         if (Console.getConsole() != null)
         {
             Console.getConsole().checkQueue();
+
+            if (infAmmo)
+            {
+                ShipAPI tmp;
+                WeaponAPI wep;
+
+                for (Iterator allShips = Console.getCombatEngine().getAllShips().iterator();allShips.hasNext();)
+                {
+                    tmp = (ShipAPI) allShips.next();
+
+                    if (tmp.getOwner() == FleetSide.PLAYER.ordinal())
+                    {
+                        for (Iterator allWeps = tmp.getAllWeapons().iterator(); allWeps.hasNext();)
+                        {
+                            wep = (WeaponAPI) allWeps.next();
+                            wep.resetAmmo();
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -36,7 +61,7 @@ public class BaseCombatHook implements BattleObjectivesEffectsPlugin, FogOfWarPl
             Console.setConsole(new Console());
         }
 
-        shouldReveal = false;
+        shouldReveal = infAmmo = false;
         Console.setInBattle(true);
         Console.setCombatEngine(engine);
     }

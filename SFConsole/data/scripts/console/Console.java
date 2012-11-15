@@ -89,9 +89,10 @@ public class Console implements SpawnPointPlugin
         allCommands.put("home", Home.class);
         allCommands.put("sethome", SetHome.class);
         allCommands.put("gc", GC.class);
-        allCommands.put("addcp", AddCP.class);
+        allCommands.put("addcommandpoints", AddCommandPoints.class);
         allCommands.put("reveal", Reveal.class);
         allCommands.put("unreveal", Unreveal.class);
+        allCommands.put("infiniteammo", InfiniteAmmo.class);
 
         // Commands that can't be overwritten
         hardcodedCommands.add("help");
@@ -300,6 +301,8 @@ public class Console implements SpawnPointPlugin
     {
         if (!extendedCommands.isEmpty())
         {
+            showMessage("Reloading custom commands...");
+
             boolean hadError = false;
             Iterator iter = extendedCommands.iterator();
             Class tmp;
