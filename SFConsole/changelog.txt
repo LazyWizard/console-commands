@@ -2,10 +2,11 @@
 =========================
 Massive changes made to the code base for this release - please report any bugs!
 Slight tweaks to mod compatibility - should work with more mods out of the box
-Added documentation (slightly out-of-date) - see JavaDoc.zip in the main folder
+Added documentation (somewhat out-of-date) - see JavaDoc.zip in the main folder
 Changed how commands are handled - uses reflection instead of being hard-coded
 User-made/mod-specific commands can now be registered with the console
 The console can now be used in combat or when the game is paused/in menus
+Mission support - load a campaign save first to use your custom settings
 New command: AddAP - adds aptitude points to your character
 New command: AddCP - modifies available command points (in-battle only)
 New command: AddSP - adds skill points to your character

@@ -37,7 +37,8 @@ public class Console implements SpawnPointPlugin
     private final Set hardcodedCommands = new HashSet();
     // Per-session variables
     private static boolean inBattle = false;
-    private static WeakReference activeConsole, activeEngine;
+    private static WeakReference activeEngine;
+    private static Console activeConsole;
     private static InputHandler inputHandler;
     private transient boolean justReloaded = false, isListening = false;
     private transient volatile boolean isPressed = false, showRestrictions = true;
@@ -71,7 +72,7 @@ public class Console implements SpawnPointPlugin
 
     public Console()
     {
-        Console.activeConsole = new WeakReference(this);
+        setConsole(this);
         addBuiltInCommands();
         reloadInput();
     }
@@ -81,21 +82,10 @@ public class Console implements SpawnPointPlugin
         justReloaded = true;
         isPressed = false;
         isListening = false;
-        Console.activeConsole = new WeakReference(this);
+        setConsole(this);
         addBuiltInCommands();
         return this;
     }
-
-    /*@Override
-    protected void finalize() throws Throwable
-    {
-        if (inputHandler != null)
-        {
-            inputHandler.shouldStop = true;
-        }
-
-        super.finalize();
-    }*/
 
     private void addBuiltInCommands()
     {
@@ -171,12 +161,12 @@ public class Console implements SpawnPointPlugin
 
     static Console getConsole()
     {
-        if (activeConsole == null || activeConsole.get() == null)
-        {
-            return null;
-        }
+        return activeConsole;
+    }
 
-        return (Console) activeConsole.get();
+    static void setConsole(Console console)
+    {
+        activeConsole = console;
     }
 
     private synchronized boolean checkInput()
@@ -304,6 +294,8 @@ public class Console implements SpawnPointPlugin
         reloadScripts();
         reloadInput();
 
+        Global.getSector().addMessage("The console will only be visible"
+                + " when the game is run in windowed mode.\n");
         Global.getSector().addMessage("To rebind the console to another key,"
                 + " press shift+" + Keyboard.getKeyName(REBIND_KEY)
                 + " while on the campaign map.");
@@ -390,15 +382,6 @@ public class Console implements SpawnPointPlugin
     {
         return !(REQUIRE_RUN_WINDOWED && Display.isFullscreen())
                 || (REQUIRE_DEV_MODE && !Global.getSettings().getBoolean("devMode"));
-    }
-
-    private static void showWarning()
-    {
-        if (allowConsole() && !REQUIRE_RUN_WINDOWED)
-        {
-            Console.showMessage("The console will only be visible"
-                    + " if you run the game in windowed mode.\n");
-        }
     }
 
     private static void showRestrictions()
@@ -554,8 +537,11 @@ public class Console implements SpawnPointPlugin
         String[] args = command.split(" ");
         String com = args[0].toLowerCase();
 
-        Global.getSector().addMessage("Running command '" + command + "'.",
-                command, Color.GREEN);
+        if (!inBattle)
+        {
+            Global.getSector().addMessage("Running command '" + command + "'.",
+                    command, Color.GREEN);
+        }
 
         if (com.equals("runtests"))
         {
