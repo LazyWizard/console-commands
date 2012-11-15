@@ -23,11 +23,11 @@ import org.lwjgl.opengl.Display;
 public class Console implements SpawnPointPlugin
 {
     // Constants
+    private static final String COMMAND_PACKAGE = "data.scripts.console.commands";
     private static final boolean REQUIRE_DEV_MODE = false;
     private static final boolean REQUIRE_RUN_WINDOWED = true;
     private static final Color CONSOLE_COLOR = Color.YELLOW;
     private static final int LINE_LENGTH = 80;
-    private static final String COMMAND_PACKAGE = "data.scripts.console.commands";
     private static final long INPUT_FRAMERATE = (long) (1000 / 20);
     private static final int DEFAULT_CONSOLE_KEY = Keyboard.KEY_GRAVE;
     private static final int REBIND_KEY = Keyboard.KEY_F1; // Shift+key to rebind
@@ -37,7 +37,8 @@ public class Console implements SpawnPointPlugin
     private final Set hardcodedCommands = new HashSet();
     // Per-session variables
     private static boolean inBattle = false;
-    private static WeakReference activeConsole, activeEngine, inputHandler;
+    private static WeakReference activeConsole, activeEngine;
+    private static InputHandler inputHandler;
     private transient boolean justReloaded = false, isListening = false;
     private transient volatile boolean isPressed = false, showRestrictions = true;
     // Saved variables
@@ -84,6 +85,17 @@ public class Console implements SpawnPointPlugin
         addBuiltInCommands();
         return this;
     }
+
+    /*@Override
+    protected void finalize() throws Throwable
+    {
+        if (inputHandler != null)
+        {
+            inputHandler.shouldStop = true;
+        }
+
+        super.finalize();
+    }*/
 
     private void addBuiltInCommands()
     {
@@ -351,17 +363,16 @@ public class Console implements SpawnPointPlugin
 
     private void reloadInput()
     {
-        if (inputHandler != null && inputHandler.get() != null)
+        if (inputHandler != null)
         {
-            ((InputHandler) inputHandler.get()).shouldStop = true;
+            inputHandler.setConsole(this);
+            return;
         }
 
-        InputHandler tmp;
-
-        tmp = new InputHandler(this);
+        InputHandler tmp = new InputHandler(this);
         tmp.setName("Console-Input");
         tmp.setDaemon(true);
-        Console.inputHandler = new WeakReference(tmp);
+        Console.inputHandler = tmp;
         tmp.start();
     }
 
@@ -807,16 +818,26 @@ public class Console implements SpawnPointPlugin
 
     private static class InputHandler extends Thread
     {
-        private Console manager;
+        private WeakReference console;
         boolean shouldStop = false;
 
         private InputHandler()
         {
         }
 
-        public InputHandler(Console manager)
+        public InputHandler(Console console)
         {
-            this.manager = manager;
+            this.console = new WeakReference(console);
+        }
+
+        private Console getConsole()
+        {
+            return (Console) console.get();
+        }
+
+        private void setConsole(Console console)
+        {
+            this.console = new WeakReference(console);
         }
 
         private String getInput()
@@ -831,9 +852,14 @@ public class Console implements SpawnPointPlugin
         {
             while (!shouldStop)
             {
-                if (manager.checkInput())
+                if (getConsole() == null)
                 {
-                    manager.addCommandToQueue(getInput());
+                    return;
+                }
+
+                if (getConsole().checkInput())
+                {
+                    getConsole().addCommandToQueue(getInput());
                     continue;
                 }
 
