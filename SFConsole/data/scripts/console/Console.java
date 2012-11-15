@@ -93,6 +93,7 @@ public class Console implements SpawnPointPlugin
         allCommands.put("reveal", Reveal.class);
         allCommands.put("unreveal", Unreveal.class);
         allCommands.put("infiniteammo", InfiniteAmmo.class);
+        allCommands.put("nocooldown", NoCooldown.class);
 
         // Commands that can't be overwritten
         hardcodedCommands.add("help");
