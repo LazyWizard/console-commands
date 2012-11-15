@@ -31,6 +31,11 @@ public class BaseCombatHook implements BattleObjectivesEffectsPlugin, FogOfWarPl
     @Override
     public void init(CombatEngineAPI engine)
     {
+        if (Console.getConsole() == null)
+        {
+            Console.setConsole(new Console());
+        }
+
         shouldReveal = false;
         Console.setInBattle(true);
         Console.setCombatEngine(engine);

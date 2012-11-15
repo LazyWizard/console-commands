@@ -1,6 +1,5 @@
 package data.scripts.console.commands;
 
-import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.MutableStat;
 import com.fs.starfarer.api.mission.FleetSide;
 import data.scripts.console.BaseCommand;
