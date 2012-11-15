@@ -8,14 +8,13 @@ import com.fs.starfarer.api.mission.FleetSide;
 import com.fs.starfarer.api.plugins.BattleObjectivesEffectsPlugin;
 import com.fs.starfarer.api.plugins.FogOfWarPlugin;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Notifies the {@link ConsoleManager} when the game is in battle.
  */
 public class BaseCombatHook implements BattleObjectivesEffectsPlugin, FogOfWarPlugin
 {
-    public static boolean shouldReveal = false, infAmmo = false;
+    public static boolean shouldReveal = false, infAmmo = false, noCooldown = false;
 
     @Override
     public void applyEffects()
@@ -24,12 +23,12 @@ public class BaseCombatHook implements BattleObjectivesEffectsPlugin, FogOfWarPl
         {
             Console.getConsole().checkQueue();
 
-            if (infAmmo)
+            if (infAmmo || noCooldown)
             {
                 ShipAPI tmp;
                 WeaponAPI wep;
 
-                for (Iterator allShips = Console.getCombatEngine().getAllShips().iterator();allShips.hasNext();)
+                for (Iterator allShips = Console.getCombatEngine().getAllShips().iterator(); allShips.hasNext();)
                 {
                     tmp = (ShipAPI) allShips.next();
 
@@ -38,7 +37,15 @@ public class BaseCombatHook implements BattleObjectivesEffectsPlugin, FogOfWarPl
                         for (Iterator allWeps = tmp.getAllWeapons().iterator(); allWeps.hasNext();)
                         {
                             wep = (WeaponAPI) allWeps.next();
-                            wep.resetAmmo();
+                            if (infAmmo)
+                            {
+                                wep.resetAmmo();
+                            }
+                            if (noCooldown)
+                            {
+                                wep.setRemainingCooldownTo(Math.min(.1f,
+                                        wep.getCooldownRemaining()));
+                            }
                         }
                     }
                 }
@@ -61,7 +68,7 @@ public class BaseCombatHook implements BattleObjectivesEffectsPlugin, FogOfWarPl
             Console.setConsole(new Console());
         }
 
-        shouldReveal = infAmmo = false;
+        shouldReveal = infAmmo = noCooldown = false;
         Console.setInBattle(true);
         Console.setCombatEngine(engine);
     }
