@@ -10,7 +10,7 @@ public class RunScript extends BaseCommand
 
     public static void addScript(String name, Script script)
     {
-        allowedScripts.put(name, script);
+        allowedScripts.put(name.toLowerCase(), script);
         saveScripts();
     }
 
@@ -35,6 +35,8 @@ public class RunScript extends BaseCommand
     @Override
     public boolean runCommand(String args)
     {
+        args = args.toLowerCase();
+
         if (args.equals("help"))
         {
             showHelp();
