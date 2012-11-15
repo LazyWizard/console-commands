@@ -33,8 +33,8 @@ public class Console implements SpawnPointPlugin
     private static final int REBIND_KEY = Keyboard.KEY_F1; // Shift+key to rebind
     private static final List RESTRICTED_KEYS = new ArrayList();
     // Maps the command to the associated class
-    private final Map allCommands = new TreeMap();
-    private final Set hardcodedCommands = new HashSet();
+    private static final Map allCommands = new TreeMap();
+    private static final Set hardcodedCommands = new HashSet();
     // Per-session variables
     private static boolean inBattle = false;
     private static WeakReference activeEngine;
@@ -68,27 +68,7 @@ public class Console implements SpawnPointPlugin
         RESTRICTED_KEYS.add(Keyboard.KEY_RMETA);
         RESTRICTED_KEYS.add(Keyboard.KEY_LSHIFT);
         RESTRICTED_KEYS.add(Keyboard.KEY_RSHIFT);
-    }
 
-    public Console()
-    {
-        setConsole(this);
-        addBuiltInCommands();
-        reloadInput();
-    }
-
-    public Object readResolve()
-    {
-        justReloaded = true;
-        isPressed = false;
-        isListening = false;
-        setConsole(this);
-        addBuiltInCommands();
-        return this;
-    }
-
-    private void addBuiltInCommands()
-    {
         // Built-in commands, don't need to go through registerCommand's checks
         allCommands.put("runscript", RunScript.class);
         allCommands.put("runcode", RunCode.class);
@@ -118,6 +98,21 @@ public class Console implements SpawnPointPlugin
         hardcodedCommands.add("status");
         hardcodedCommands.add("runtests");
         hardcodedCommands.addAll(allCommands.keySet());
+    }
+
+    public Console()
+    {
+        setConsole(this);
+        reloadInput();
+    }
+
+    public Object readResolve()
+    {
+        justReloaded = true;
+        isPressed = false;
+        isListening = false;
+        setConsole(this);
+        return this;
     }
 
     public void registerCommand(Class commandClass) throws Exception
@@ -295,7 +290,7 @@ public class Console implements SpawnPointPlugin
         reloadInput();
 
         Global.getSector().addMessage("The console will only be visible"
-                + " when the game is run in windowed mode.\n");
+                + " when the game is run in windowed mode.");
         Global.getSector().addMessage("To rebind the console to another key,"
                 + " press shift+" + Keyboard.getKeyName(REBIND_KEY)
                 + " while on the campaign map.");
