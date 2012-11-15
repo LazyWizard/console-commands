@@ -4,7 +4,7 @@ import com.fs.starfarer.api.combat.MutableStat;
 import com.fs.starfarer.api.mission.FleetSide;
 import data.scripts.console.BaseCommand;
 
-public class AddCP extends BaseCommand
+public class AddCommandPoints extends BaseCommand
 {
     @Override
     protected String getHelp()
@@ -16,7 +16,7 @@ public class AddCP extends BaseCommand
     @Override
     protected String getSyntax()
     {
-        return "addcp <amount>|remove";
+        return "addcommandpoints <amount>|remove";
     }
 
     @Override

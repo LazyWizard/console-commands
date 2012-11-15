@@ -4,18 +4,18 @@ package data.scripts.console.commands;
 //import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import data.scripts.console.BaseCommand;
 
-public class AddSP extends BaseCommand
+public class AddAptitudePoints extends BaseCommand
 {
     @Override
     protected String getHelp()
     {
-        return "Adds the specified amount of skill points to your character.";
+        return "Adds the specified amount of aptitude points to your character.";
     }
 
     @Override
     protected String getSyntax()
     {
-        return "addsp <amount>";
+        return "addaptitudepoints <amount>";
     }
 
     @Override
@@ -31,11 +31,11 @@ public class AddSP extends BaseCommand
         }
         catch (NumberFormatException ex)
         {
-            showMessage("Error: Skill points must be a whole number!");
+            showMessage("Error: Aptitude points must be a whole number!");
             return false;
         }
 
-        //character.addSkillPoints(amount);
+        //character.addAptitudePoints(amount);
         return true;
     }
 }
