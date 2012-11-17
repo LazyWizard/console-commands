@@ -5,6 +5,7 @@ Slight tweaks to mod compatibility - should work with more mods out of the box
 Added documentation (somewhat out-of-date) - see JavaDoc.zip in the main folder
 Changed how commands are handled - uses reflection instead of being hard-coded
 User-made/mod-specific commands can now be registered with the console
+You can now issue multiple commands at once (separate commands with a semicolon)
 The console can now be used in combat or when the game is paused/in menus
 Mission support - load a campaign save first to use your custom settings
 New campaign commands:
@@ -15,7 +16,7 @@ New in-battle commands:
  - AddCommandPoints: modifies available command points
  - InfiniteAmmo: toggles infinite ammo for your side
  - NoCooldown: toggles cooldown for all weapons on your side
- - (Un)Reveal: (un)reveals the entire battle map
+ - Reveal/Unreveal: reveals/unreveals the entire battle map
 
  0.4b beta (October 21, 2012)
 ==============================

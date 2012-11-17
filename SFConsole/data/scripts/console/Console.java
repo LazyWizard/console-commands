@@ -374,7 +374,7 @@ public class Console implements SpawnPointPlugin
             return;
         }
 
-        queuedCommands.add(command);
+        queuedCommands.addAll(Arrays.asList(command.split(";")));
     }
 
     private static boolean allowConsole()
@@ -533,6 +533,7 @@ public class Console implements SpawnPointPlugin
             return false;
         }
 
+        command = command.trim();
         String[] args = command.split(" ");
         String com = args[0].toLowerCase();
 
@@ -641,9 +642,10 @@ public class Console implements SpawnPointPlugin
             return true;
         }
 
-        if (command.isCombatOnly() && !isInBattle())
+        if (command.isCombatOnly() ^ isInBattle())
         {
-            showMessage("This command can only be run during combat!");
+            showMessage("This command can only be run "
+                    + (isInBattle() ? "outside" : "during") + " combat!");
             return false;
         }
 
@@ -672,6 +674,11 @@ public class Console implements SpawnPointPlugin
         if (preamble != null)
         {
             showMessage(preamble);
+        }
+
+        if (message == null)
+        {
+            message = "";
         }
 
         // Analyse each line of the message seperately
