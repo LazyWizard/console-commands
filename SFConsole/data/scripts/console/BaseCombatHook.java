@@ -41,7 +41,8 @@ public class BaseCombatHook implements BattleObjectivesEffectsPlugin, FogOfWarPl
                             {
                                 wep.resetAmmo();
                             }
-                            if (noCooldown)
+                            // Bug with burst weapons not reloading - will fix later
+                            if (noCooldown && !wep.isBurstBeam())
                             {
                                 wep.setRemainingCooldownTo(Math.min(.1f,
                                         wep.getCooldownRemaining()));
