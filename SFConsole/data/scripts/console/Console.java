@@ -40,11 +40,11 @@ public class Console implements SpawnPointPlugin
     private static WeakReference activeEngine;
     private static Console activeConsole;
     private static InputHandler inputHandler;
+    private transient List queuedCommands = Collections.synchronizedList(new ArrayList());
     private transient boolean justReloaded = false, isListening = false;
     private transient volatile boolean isPressed = false, showRestrictions = true;
     // Saved variables
     private LocationAPI location;
-    private volatile List queuedCommands = new ArrayList();
     private int consoleKey = DEFAULT_CONSOLE_KEY;
     private Map consoleVars = new HashMap();
     private Set extendedCommands = new HashSet();
@@ -113,6 +113,7 @@ public class Console implements SpawnPointPlugin
         justReloaded = true;
         isPressed = false;
         isListening = false;
+        queuedCommands = Collections.synchronizedList(new ArrayList());
         setConsole(this);
         return this;
     }
