@@ -31,23 +31,23 @@ public class Console implements SpawnPointPlugin
     private static final long INPUT_FRAMERATE = (long) (1000 / 20);
     private static final int DEFAULT_CONSOLE_KEY = Keyboard.KEY_GRAVE;
     private static final int REBIND_KEY = Keyboard.KEY_F1; // Shift+key to rebind
-    private static final List RESTRICTED_KEYS = new ArrayList();
+    private static final List<Integer> RESTRICTED_KEYS = new ArrayList<Integer>();
     // Maps the command to the associated class
-    private static final Map allCommands = new TreeMap();
-    private static final Set hardcodedCommands = new HashSet();
+    private static final Map<String, Class> allCommands = new TreeMap<String, Class>();
+    private static final Set<String> hardcodedCommands = new HashSet();
     // Per-session variables
     private static boolean inBattle = false;
-    private static WeakReference activeEngine;
+    private static WeakReference<CombatEngineAPI> activeEngine;
     private static Console activeConsole;
     private static InputHandler inputHandler;
-    private transient List queuedCommands = Collections.synchronizedList(new ArrayList());
+    private transient List<String> queuedCommands = Collections.synchronizedList(new ArrayList<String>());
     private transient boolean justReloaded = false, isListening = false;
     private transient volatile boolean isPressed = false, showRestrictions = true;
     // Saved variables
     private LocationAPI location;
     private int consoleKey = DEFAULT_CONSOLE_KEY;
-    private Map consoleVars = new HashMap();
-    private Set extendedCommands = new HashSet();
+    private Map<String, Object> consoleVars = new HashMap<String, Object>();
+    private Set<Class> extendedCommands = new HashSet<Class>();
 
     // Everything in this block absolutely MUST compile or the console will crash
     static
@@ -115,7 +115,7 @@ public class Console implements SpawnPointPlugin
         justReloaded = true;
         isPressed = false;
         isListening = false;
-        queuedCommands = Collections.synchronizedList(new ArrayList());
+        queuedCommands = Collections.synchronizedList(new ArrayList<String>());
         setConsole(this);
         return this;
     }
@@ -225,7 +225,7 @@ public class Console implements SpawnPointPlugin
      */
     protected static void setCombatEngine(CombatEngineAPI engine)
     {
-        activeEngine = new WeakReference(engine);
+        activeEngine = new WeakReference<CombatEngineAPI>(engine);
     }
 
     /**
@@ -240,7 +240,7 @@ public class Console implements SpawnPointPlugin
             return null;
         }
 
-        return (CombatEngineAPI) activeEngine.get();
+        return activeEngine.get();
     }
 
     /**
@@ -308,12 +308,12 @@ public class Console implements SpawnPointPlugin
             showMessage("Reloading custom commands...");
 
             boolean hadError = false;
-            Iterator iter = extendedCommands.iterator();
+            Iterator<Class> iter = extendedCommands.iterator();
             Class tmp;
 
             while (iter.hasNext())
             {
-                tmp = (Class) iter.next();
+                tmp = iter.next();
 
                 try
                 {
@@ -323,7 +323,7 @@ public class Console implements SpawnPointPlugin
                 {
                     hadError = true;
                     showError("Error: failed to re-register command '"
-                            + (String) tmp.getSimpleName() + "'!", ex);
+                            + tmp.getSimpleName() + "'!", ex);
                     iter.remove();
                 }
             }
@@ -344,13 +344,13 @@ public class Console implements SpawnPointPlugin
         if (hasVar("UserScripts"))
         {
             Map userScripts = (Map) getVar("UserScripts");
-            Iterator iter = userScripts.entrySet().iterator();
-            Map.Entry tmp;
+            Iterator<Map.Entry<String, Script>> iter = userScripts.entrySet().iterator();
+            Map.Entry<String, Script> tmp;
 
             while (iter.hasNext())
             {
-                tmp = (Map.Entry) iter.next();
-                RunScript.addScript((String) tmp.getKey(), (Script) tmp.getValue());
+                tmp = iter.next();
+                RunScript.addScript(tmp.getKey(), tmp.getValue());
             }
         }
     }
@@ -402,7 +402,7 @@ public class Console implements SpawnPointPlugin
 
         for (int x = 0; x < RESTRICTED_KEYS.size(); x++)
         {
-            keys.append(Keyboard.getKeyName(((Integer) RESTRICTED_KEYS.get(x)).intValue()));
+            keys.append(Keyboard.getKeyName(RESTRICTED_KEYS.get(x).intValue()));
             if (x < RESTRICTED_KEYS.size() - 1)
             {
                 keys.append(", ");
@@ -421,7 +421,7 @@ public class Console implements SpawnPointPlugin
 
         for (int x = 0; x < queuedCommands.size(); x++)
         {
-            parseCommand((String) queuedCommands.get(x));
+            parseCommand(queuedCommands.get(x));
         }
 
         queuedCommands.clear();
@@ -511,13 +511,13 @@ public class Console implements SpawnPointPlugin
     private void listCommands()
     {
         StringBuilder names = new StringBuilder("Help, Status");
-        Iterator iter = allCommands.values().iterator();
+        Iterator<Class> iter = allCommands.values().iterator();
         Class tmp;
 
         while (iter.hasNext())
         {
             names.append(", ");
-            tmp = (Class) iter.next();
+            tmp = iter.next();
             names.append(tmp.getSimpleName());
         }
 
@@ -611,7 +611,7 @@ public class Console implements SpawnPointPlugin
         {
             try
             {
-                command = (BaseCommand) ((Class) allCommands.get(com)).newInstance();
+                command = (BaseCommand) allCommands.get(com).newInstance();
             }
             catch (InstantiationException ex)
             {
@@ -813,7 +813,7 @@ public class Console implements SpawnPointPlugin
 
     private static class InputHandler extends Thread
     {
-        private WeakReference console;
+        private WeakReference<Console> console;
         boolean shouldStop = false;
 
         private InputHandler()
@@ -822,7 +822,7 @@ public class Console implements SpawnPointPlugin
 
         public InputHandler(Console console)
         {
-            this.console = new WeakReference(console);
+            this.console = new WeakReference<Console>(console);
         }
 
         private Console getConsole()
@@ -832,7 +832,7 @@ public class Console implements SpawnPointPlugin
 
         private void setConsole(Console console)
         {
-            this.console = new WeakReference(console);
+            this.console = new WeakReference<Console>(console);
         }
 
         private String getInput()

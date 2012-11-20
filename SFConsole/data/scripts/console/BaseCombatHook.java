@@ -15,7 +15,7 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
     public static boolean shouldReveal = false, infAmmo = false, noCooldown = false;
 
     @Override
-    public void advance(float amount, List events)
+    public void advance(float amount, List<InputEventAPI> events)
     {
         if (Console.getConsole() != null)
         {

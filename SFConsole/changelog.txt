@@ -1,7 +1,8 @@
  1.0 (November xx, 2012)
 =========================
 MASSIVE changes made to the code base for this release - please report any bugs!
-Slight tweaks to mod compatibility - should work with more mods out of the box
+Most code is now stored in console.jar - source is included (view w/ archiver)
+Should work out of the box with all mods that don't overwrite generators.csv
 Added documentation (somewhat out-of-date) - see JavaDoc.zip in the main folder
 Changed how commands are handled - uses reflection instead of being hard-coded
 User-made/mod-specific commands can now be registered with the console

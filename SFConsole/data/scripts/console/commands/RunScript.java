@@ -6,7 +6,8 @@ import java.util.*;
 
 public class RunScript extends BaseCommand
 {
-    private static Map allowedScripts = Collections.synchronizedMap(new HashMap());
+    private static Map<String, Script> allowedScripts =
+            Collections.synchronizedMap(new HashMap<String, Script>());
 
     public static void addScript(String name, Script script)
     {
@@ -51,8 +52,7 @@ public class RunScript extends BaseCommand
                 return true;
             }
 
-            String[] scripts = (String[]) allowedScripts.keySet().toArray(
-                    new String[allowedScripts.keySet().size()]);
+            String[] scripts = allowedScripts.keySet().toArray(new String[0]);
             StringBuilder allScripts = new StringBuilder();
 
             for (int x = 0; x < scripts.length; x++)
@@ -72,8 +72,7 @@ public class RunScript extends BaseCommand
 
         if (allowedScripts.keySet().contains(args))
         {
-            Script toRun = (Script) allowedScripts.get(args);
-            toRun.run();
+            allowedScripts.get(args).run();
             return true;
         }
 
