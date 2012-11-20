@@ -1,27 +1,31 @@
 package data.scripts.console;
 
 import com.fs.starfarer.api.combat.CombatEngineAPI;
-import com.fs.starfarer.api.combat.FogOfWarAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.WeaponAPI;
 import com.fs.starfarer.api.mission.FleetSide;
-import com.fs.starfarer.api.plugins.BattleObjectivesEffectsPlugin;
-import com.fs.starfarer.api.plugins.FogOfWarPlugin;
+import com.fs.starfarer.api.plugins.EveryFrameCombatPlugin;
 import java.util.Iterator;
 
 /**
  * Notifies the {@link ConsoleManager} when the game is in battle.
  */
-public class BaseCombatHook implements BattleObjectivesEffectsPlugin, FogOfWarPlugin
+public class BaseCombatHook implements EveryFrameCombatPlugin
 {
     public static boolean shouldReveal = false, infAmmo = false, noCooldown = false;
 
     @Override
-    public void applyEffects()
+    public void advance(float amount, List events)
     {
         if (Console.getConsole() != null)
         {
             Console.getConsole().checkQueue();
+
+            if (shouldReveal)
+            {
+                Console.getCombatEngine().getFogOfWar(FleetSide.PLAYER.ordinal()).
+                        revealAroundPoint(this, 0, 0, 50000f);
+            }
 
             if (infAmmo || noCooldown)
             {
@@ -72,31 +76,5 @@ public class BaseCombatHook implements BattleObjectivesEffectsPlugin, FogOfWarPl
         shouldReveal = infAmmo = noCooldown = false;
         Console.setInBattle(true);
         Console.setCombatEngine(engine);
-    }
-
-    @Override
-    public float getNavBonusPercent(int owner)
-    {
-        return 0f;
-    }
-
-    @Override
-    public float getRangeBonusPercent(int owner)
-    {
-        return 0f;
-    }
-
-    @Override
-    public void reveal(FogOfWarAPI fogOfWar)
-    {
-        if (shouldReveal)
-        {
-            fogOfWar.revealAroundPoint(this, 0, 0, 50000f);
-        }
-    }
-
-    @Override
-    public void hide(FogOfWarAPI fogOfWar)
-    {
     }
 }
