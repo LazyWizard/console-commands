@@ -1,7 +1,7 @@
 package data.scripts.console.commands;
 
-//import com.fs.starfarer.api.Global;
-//import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
+import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import data.scripts.console.BaseCommand;
 
 public class AddSkillPoints extends BaseCommand
@@ -21,8 +21,8 @@ public class AddSkillPoints extends BaseCommand
     @Override
     public boolean runCommand(String args)
     {
-        //MutableCharacterStatsAPI character =
-        //        Global.getSector().getPlayerFleet().getCommanderStats();
+        MutableCharacterStatsAPI character =
+                Global.getSector().getPlayerFleet().getCommanderStats();
         int amount;
 
         try
@@ -35,7 +35,7 @@ public class AddSkillPoints extends BaseCommand
             return false;
         }
 
-        //character.addSkillPoints(amount);
+        character.addSkillPoints(amount);
         return true;
     }
 }
