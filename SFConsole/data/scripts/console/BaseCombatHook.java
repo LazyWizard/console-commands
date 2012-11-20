@@ -45,8 +45,7 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
                             {
                                 wep.resetAmmo();
                             }
-                            // Bug with burst weapons not reloading - will fix later
-                            if (noCooldown && !wep.isBurstBeam())
+                            if (noCooldown)
                             {
                                 wep.setRemainingCooldownTo(Math.min(.1f,
                                         wep.getCooldownRemaining()));
