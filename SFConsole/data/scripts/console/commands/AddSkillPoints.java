@@ -22,7 +22,7 @@ public class AddSkillPoints extends BaseCommand
     public boolean runCommand(String args)
     {
         //MutableCharacterStatsAPI character =
-        //        Global.getSector().getPlayerFleet().getCommander().GetStatsAPI();
+        //        Global.getSector().getPlayerFleet().getCommanderStats();
         int amount;
 
         try

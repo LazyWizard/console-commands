@@ -353,7 +353,7 @@ public class Console implements SpawnPointPlugin
         }
     }
 
-    private void reloadInput()
+    private synchronized void reloadInput()
     {
         if (inputHandler != null)
         {

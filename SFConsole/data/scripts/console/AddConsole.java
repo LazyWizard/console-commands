@@ -1,5 +1,6 @@
 package data.scripts.console;
 
+import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.SectorGeneratorPlugin;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
@@ -9,52 +10,28 @@ import java.util.TimerTask;
 @SuppressWarnings("unchecked")
 public final class AddConsole implements SectorGeneratorPlugin
 {
-    private static final String[] SYSTEM_NAMES =
-    {
-        "Caelus", // Project CAELUS
-        "Barnard's Star", // Project Ironclads
-        "Xplo", // Fight for Universe: Sector Xplo
-        "God", // Ascendency
-        "Corvus" // Vanilla, should always be last on this list
-    };
-
     @Override
     public void generate(SectorAPI sector)
     {
         Timer deferredAdd = new Timer(true);
-        deferredAdd.schedule(new DeferredAdd(sector), 100);
+        deferredAdd.schedule(new DeferredAdd(), 100);
     }
 
     private static class DeferredAdd extends TimerTask
     {
-        SectorAPI sector;
-
-        public DeferredAdd(SectorAPI sector)
-        {
-            this.sector = sector;
-        }
-
         @Override
         public void run()
         {
-            StarSystemAPI system;
+            StarSystemAPI system = (StarSystemAPI) Global.getSector().getPlayerFleet().getContainingLocation();
 
-            for (int x = 0; x < SYSTEM_NAMES.length; x++)
+            if (system == null)
             {
-                system = sector.getStarSystem(SYSTEM_NAMES[x]);
-
-                if (system == null)
-                {
-                    continue;
-                }
-
-                Console console = new Console();
-                system.addSpawnPoint(console);
-                ConsoleTests.runTests(console);
-                return;
+                throw new RuntimeException("Console could not find a starsystem!");
             }
 
-            throw new RuntimeException("Console could not find a starsystem!");
+            Console console = new Console();
+            system.addSpawnPoint(console);
+            ConsoleTests.runTests(console);
         }
     }
 }
