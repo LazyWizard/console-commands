@@ -2,13 +2,15 @@
 =========================
 MASSIVE changes made to the code base for this release - please report any bugs!
 New features:
- - The console can now be used in combat or when the game is paused/in menus
+ - The console can now be used in combat (limited list of supported commands)
+ - Multi-threaded input: can enter commands when the game is paused/in menus
  - Full mission support (load a campaign save first to use your custom settings)
- - You can now issue multiple commands at once (separate with a semicolon)
+ - You can now issue multiple commands at once (separate them with a semicolon)
  - Should work out of the box with all mods that don't overwrite generators.csv
 New campaign commands:
  - AddAptitudePoints: adds aptitude points to your character
  - AddSkillPoints: adds skill points to your character
+ - Alias: allows you to create nicknames for existing commands
  - RunCode: compiles and runs a line of Java code (uses Janino)
 New in-battle commands:
  - AddCommandPoints: modifies available command points
