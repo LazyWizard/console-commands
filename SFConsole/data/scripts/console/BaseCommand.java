@@ -12,7 +12,7 @@ import com.fs.starfarer.api.combat.CombatEngineAPI;
 public abstract class BaseCommand
 {
     /**
-     * Get the current {@link SectorAPI}.
+     * Returns the current {@link SectorAPI}.
      *
      * @return the {@link SectorAPI} object used by this campaign
      */
@@ -22,7 +22,7 @@ public abstract class BaseCommand
     }
 
     /**
-     * Get the current {@link LocationAPI}.
+     * Returns the current {@link LocationAPI}.
      *
      * @return the {@link LocationAPI} the player fleet is occupying
      */
@@ -32,7 +32,7 @@ public abstract class BaseCommand
     }
 
     /**
-     * Get the current {@link StarSystemAPI}.
+     * Returns the current {@link StarSystemAPI}.
      *
      * @return the {@link StarSystemAPI} the player fleet is occupying
      */
@@ -42,7 +42,7 @@ public abstract class BaseCommand
     }
 
     /**
-     * Get the name of this command
+     * Returns the name of this command.
      *
      * @return the name of this command's implementation's class
      */
@@ -62,9 +62,9 @@ public abstract class BaseCommand
     }
 
     /**
-     * A convenient alias for {@link ConsoleManager#getCombatEngine()}.
+     * A convenient alias for {@link Console#getCombatEngine()}.
      *
-     * @see ConsoleManager#getCombatEngine()
+     * @see Console#getCombatEngine()
      */
     protected final CombatEngineAPI getCombatEngine()
     {
@@ -72,9 +72,9 @@ public abstract class BaseCommand
     }
 
     /**
-     * A convenient alias for {@link ConsoleManager#getVar(java.lang.String)}.
+     * A convenient alias for {@link Console#getVar(java.lang.String, java.lang.Class)}.
      *
-     * @see ConsoleManager#getVar(java.lang.String)
+     * @see Console#getVar(java.lang.String, java.lang.Class)
      */
     protected static <T> T getVar(String varName, Class<T> type)
     {
@@ -82,9 +82,9 @@ public abstract class BaseCommand
     }
 
     /**
-     * A convenient alias for {@link ConsoleManager#setVar(java.lang.String, java.lang.Object)}.
+     * A convenient alias for {@link Console#setVar(java.lang.String, java.lang.Object)}.
      *
-     * @see ConsoleManager#setVar(java.lang.String, java.lang.Object)
+     * @see Console#setVar(java.lang.String, java.lang.Object)
      */
     protected static void setVar(String varName, Object varData)
     {
@@ -92,13 +92,23 @@ public abstract class BaseCommand
     }
 
     /**
-     * A convenient alias for {@link ConsoleManager#hasVar(java.lang.String)}.
+     * A convenient alias for {@link Console#hasVar(java.lang.String)}.
      *
-     * @see ConsoleManager#hasVar(java.lang.String)
+     * @see Console#hasVar(java.lang.String)
      */
     protected static boolean hasVar(String varName)
     {
         return Console.getConsole().hasVar(varName);
+    }
+
+    /**
+     * A convenient alias for {@link Console#getVarType(java.lang.String)}.
+     *
+     * @see Console#getVarType(java.lang.String)
+     */
+    protected static Class getVarType(String varName)
+    {
+        return Console.getConsole().getVarType(varName);
     }
 
     /**
@@ -122,6 +132,11 @@ public abstract class BaseCommand
         Console.showMessage(message);
     }
 
+    /**
+     * A convenient alias for {@link Console#showError(java.lang.String, java.lang.Exception)}.
+     *
+     * @see Console#showError(java.lang.String, java.lang.Exception)
+     */
     protected static void showError(String preamble, Exception ex)
     {
         Console.showError(preamble, ex);
@@ -159,7 +174,7 @@ public abstract class BaseCommand
     }
 
     /**
-     * Get whether this command is restricted to battles only
+     * Returns whether this command is restricted to battles only.
      *
      * @return true if this command can only be run on the battle map
      */
@@ -169,12 +184,14 @@ public abstract class BaseCommand
     }
 
     /**
+     * A block of text displayed via the 'help' command.
      *
      * @return the text to be displayed by {@link BaseCommand#showHelp()}.
      */
     protected abstract String getHelp();
 
     /**
+     * A line of text displayed when a command is entered incorrectly.
      *
      * @return the text to be displayed by {@link BaseCommand#showSyntax()}.
      */

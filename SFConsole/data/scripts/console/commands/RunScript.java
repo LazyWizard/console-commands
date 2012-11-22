@@ -20,6 +20,16 @@ public class RunScript extends BaseCommand
         saveScripts();
     }
 
+    public static Script getScript(String name)
+    {
+        if (allowedScripts.containsKey(name))
+        {
+            return allowedScripts.get(name);
+        }
+
+        return null;
+    }
+
     private static void saveScripts()
     {
         setVar("UserScripts", allowedScripts);

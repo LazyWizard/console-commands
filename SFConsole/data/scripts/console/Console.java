@@ -108,6 +108,9 @@ public class Console implements SpawnPointPlugin
         reloadInput();
     }
 
+    /**
+     * Automatically called by the game - don't call this manually.
+     */
     public Object readResolve()
     {
         justReloaded = true;
@@ -118,6 +121,19 @@ public class Console implements SpawnPointPlugin
         return this;
     }
 
+    /**
+     * Registers a command with the {@link Console}.
+     *
+     * Commands must pass validation, otherwise registration will fail!<p>
+     *
+     * Validation consists of the following:<br>
+     *  - Checking that there isn't a built-in command with the same name<br>
+     *  - Checking that the command's class is in the correct package<br>
+     *  - Checking that the command extends {@link BaseCommand}
+     *
+     * @param commandClass the class object of the command to register
+     * @throws Exception if the command doesn't pass validation
+     */
     public void registerCommand(Class commandClass) throws Exception
     //throws InvalidCommandObjectException, InvalidCommandPackageException
     {
@@ -244,9 +260,9 @@ public class Console implements SpawnPointPlugin
     /**
      * Creates/sets a persistent variable that can be accessed by all console commands.<p>
      *
-     * Important: the variable storage is not type-safe! Ensure you use unique names for your variables to avoid conflict!
+     * Important: ensure you use unique names for your variables to avoid conflict!
      *
-     * @param varName the name this variable can be retrieved under
+     * @param varName the unique key this variable can be retrieved with
      * @param varData the data this variable should hold
      */
     protected void setVar(String varName, Object varData)
@@ -257,13 +273,18 @@ public class Console implements SpawnPointPlugin
     /**
      * Retrieves the value of the variable varName, if any.
      *
-     * @param <T> 
+     * @param <T>
      * @param varName the name of the variable to retrieve
      * @param type the type to be returned (e.g. Script.class)
      * @return the data associated with that variable
      */
     protected <T> T getVar(String varName, Class<T> type)
     {
+        if (!hasVar(varName))
+        {
+            return null;
+        }
+
         try
         {
             return type.cast(consoleVars.get(varName));
@@ -279,7 +300,7 @@ public class Console implements SpawnPointPlugin
     /**
      * Checks for the existence of a variable with the supplied name.
      *
-     * @param varName the name of the variable to check the existence of
+     * @param varName the name of the variable to check
      * @return true if the variable has been set, false otherwise
      */
     protected boolean hasVar(String varName)
@@ -287,6 +308,12 @@ public class Console implements SpawnPointPlugin
         return consoleVars.keySet().contains(varName);
     }
 
+    /**
+     * Get the runtime type of the variable with the supplied name.
+     *
+     * @param varName the name of the variable to check
+     * @return the Class object for the variable if it exists, null otherwise
+     */
     protected Class getVarType(String varName)
     {
         if (!hasVar(varName))
@@ -300,7 +327,7 @@ public class Console implements SpawnPointPlugin
     /**
      * Gets the current {@link LocationAPI} of the player fleet
      *
-     * @return the last location to update advance()
+     * @return the last location this campaign's advance() occurred in
      */
     protected LocationAPI getLocation()
     {
@@ -424,6 +451,9 @@ public class Console implements SpawnPointPlugin
         Global.getSector().addMessage("Restricted keys: " + keys.toString());
     }
 
+    /**
+     * Runs any commands that are queued for execution.
+     */
     protected void checkQueue()
     {
         if (queuedCommands.isEmpty())
@@ -614,9 +644,26 @@ public class Console implements SpawnPointPlugin
         return executeCommand(com, "");
     }
 
+    /**
+     * Registers a script to be executable with the RunScript command.
+     *
+     * @param name The name of the script (for retrieval)
+     * @param script The script to be added
+     */
     public static void addScript(String name, Script script)
     {
         RunScript.addScript(name, script);
+    }
+
+    /**
+     * Retrieve a script from {@link RunScript}'s script storage.
+     *
+     * @param name The name of the script to be retrieved
+     * @return The Script registered with this name, null if none found
+     */
+    public static Script getScript(String name)
+    {
+        return RunScript.getScript(name);
     }
 
     private synchronized boolean executeCommand(String com, String args)
@@ -772,6 +819,12 @@ public class Console implements SpawnPointPlugin
         showMessage(null, message, false);
     }
 
+    /**
+     * Displays information to the user about an exception that has occurred.
+     *
+     * @param preamble A short message to be shown before the exception
+     * @param ex The exception to display
+     */
     public static void showError(String preamble, Exception ex)
     {
         if (preamble == null)
@@ -805,6 +858,9 @@ public class Console implements SpawnPointPlugin
         }
     }
 
+    /**
+     * Automatically called by the game - don't call this manually.
+     */
     @Override
     public void advance(SectorAPI sector, LocationAPI location)
     {

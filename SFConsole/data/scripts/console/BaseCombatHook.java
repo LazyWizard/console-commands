@@ -8,7 +8,7 @@ import com.fs.starfarer.api.plugins.EveryFrameCombatPlugin;
 import java.util.Iterator;
 
 /**
- * Notifies the {@link ConsoleManager} when the game is in battle.
+ * Notifies the {@link Console} when the game is in battle.
  */
 public class BaseCombatHook implements EveryFrameCombatPlugin
 {
@@ -58,7 +58,7 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
     }
 
     /**
-     * Tells {@link ConsoleManager} the game is in battle and registers the {@link CombatEngineAPI}.<p>
+     * Tells {@link Console} the game is in battle and registers the {@link CombatEngineAPI}.<p>
      *
      * Called by the game automatically at the start of each battle.
      *
