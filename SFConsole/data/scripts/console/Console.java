@@ -45,6 +45,7 @@ public class Console implements SpawnPointPlugin
     private LocationAPI location;
     private int consoleKey = DEFAULT_CONSOLE_KEY;
     private Map<String, Object> consoleVars = new HashMap<String, Object>();
+    private Map<String, String> aliases = new HashMap<String, String>();
     private Set<Class> extendedCommands = new HashSet<Class>();
 
     // Everything in this block absolutely MUST compile or the console will crash
@@ -98,6 +99,7 @@ public class Console implements SpawnPointPlugin
         // Commands that can't be overwritten
         hardcodedCommands.add("help");
         hardcodedCommands.add("status");
+        hardcodedCommands.add("alias");
         hardcodedCommands.add("runtests");
         hardcodedCommands.addAll(allCommands.keySet());
     }
@@ -171,6 +173,37 @@ public class Console implements SpawnPointPlugin
         }
 
         extendedCommands.add(commandClass);
+    }
+
+    protected boolean addAlias(String command, String alias)
+    {
+        if (allCommands.containsKey(alias) || !allCommands.containsKey(command)
+                || command.contains(" ") || alias.contains(" "))
+        {
+            return false;
+        }
+
+        aliases.put(alias, command);
+        return true;
+    }
+
+    protected List<String> getAliases(String command)
+    {
+        if (command == null)
+        {
+            return Collections.EMPTY_LIST;
+        }
+
+        List<String> ret = new ArrayList();
+        for (Map.Entry<String, String> entry : aliases.entrySet())
+        {
+            if (entry.getValue().equals(command))
+            {
+                ret.add(entry.getKey());
+            }
+        }
+
+        return ret;
     }
 
     static Console getConsole()
@@ -610,6 +643,11 @@ public class Console implements SpawnPointPlugin
             return true;
         }
 
+        if (com.equals("alias"))
+        {
+            // TODO: add alias code here
+        }
+
         if (com.equals("help"))
         {
             if (args.length == 2)
@@ -622,6 +660,11 @@ public class Console implements SpawnPointPlugin
                 listCommands();
                 return false;
             }
+        }
+
+        if (aliases.containsKey(com))
+        {
+            com = aliases.get(com);
         }
 
         if (args.length > 1)
