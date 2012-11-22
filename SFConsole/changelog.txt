@@ -1,14 +1,15 @@
  1.0 (November xx, 2012)
 =========================
 MASSIVE changes made to the code base for this release - please report any bugs!
-Most code is now stored in console.jar - source is included (view w/ archiver)
-Should work out of the box with all mods that don't overwrite generators.csv
-Added documentation (somewhat out-of-date) - see JavaDoc.zip in the main folder
-Changed how commands are handled - uses reflection instead of being hard-coded
-User-made/mod-specific commands can now be registered with the console
-You can now issue multiple commands at once (separate commands with a semicolon)
 The console can now be used in combat or when the game is paused/in menus
 Mission support - load a campaign save first to use your custom settings
+Added documentation (somewhat out-of-date) - see JavaDoc.zip in the main folder
+You can now issue multiple commands at once (separate commands with a semicolon)
+Most code is now stored in console.jar - source is included in the jar archive
+Should work with all mods/total conversions that don't overwrite generators.csv
+Changed how commands are handled - uses reflection instead of being hard-coded
+User-made/mod-specific commands can now be registered with the console
+Console variable storage/retrieval is now type-safe, added Class getVarType()
 New campaign commands:
  - AddAptitudePoints: adds aptitude points to your character
  - AddSkillPoints: adds skill points to your character

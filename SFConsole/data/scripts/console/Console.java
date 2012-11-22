@@ -16,16 +16,14 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
 /**
- * Executes commands and handles console output. Can't be instantiated.
- *
- * @see ConsoleManager
+ * Executes commands and handles console output. Instances hold custom settings.
  */
 public class Console implements SpawnPointPlugin
 {
     // Constants
-    private static final String COMMAND_PACKAGE = "data.scripts.console.commands";
     private static final boolean REQUIRE_DEV_MODE = false;
     private static final boolean REQUIRE_RUN_WINDOWED = true;
+    private static final String COMMAND_PACKAGE = "data.scripts.console.commands";
     private static final Color CONSOLE_COLOR = Color.YELLOW;
     private static final int LINE_LENGTH = 80;
     private static final long INPUT_FRAMERATE = (long) (1000 / 20);
@@ -70,32 +68,32 @@ public class Console implements SpawnPointPlugin
         RESTRICTED_KEYS.add(Keyboard.KEY_RSHIFT);
 
         // Built-in commands, don't need to go through registerCommand's checks
-        allCommands.put("runscript", RunScript.class);
-        allCommands.put("runcode", RunCode.class);
-        allCommands.put("spawnfleet", SpawnFleet.class);
-        allCommands.put("addship", AddShip.class);
-        allCommands.put("addwing", AddWing.class);
+        allCommands.put("addaptitudepoints", AddAptitudePoints.class);
+        allCommands.put("addcommandpoints", AddCommandPoints.class);
         allCommands.put("addcredits", AddCredits.class);
-        allCommands.put("addfuel", AddFuel.class);
-        allCommands.put("addsupplies", AddSupplies.class);
-        allCommands.put("setrelationship", SetRelationship.class);
-        allCommands.put("adjustrelationship", AdjustRelationship.class);
-        allCommands.put("addweapon", AddWeapon.class);
-        allCommands.put("additem", AddItem.class);
         allCommands.put("addcrew", AddCrew.class);
+        allCommands.put("addfuel", AddFuel.class);
+        allCommands.put("additem", AddItem.class);
         allCommands.put("addmarines", AddMarines.class);
+        allCommands.put("addship", AddShip.class);
+        allCommands.put("addskillpoints", AddSkillPoints.class);
+        allCommands.put("addsupplies", AddSupplies.class);
+        allCommands.put("addweapon", AddWeapon.class);
+        allCommands.put("addwing", AddWing.class);
+        allCommands.put("adjustrelationship", AdjustRelationship.class);
         allCommands.put("allweapons", AllWeapons.class);
+        allCommands.put("gc", GC.class);
         allCommands.put("goto", GoTo.class);
         allCommands.put("home", Home.class);
-        allCommands.put("sethome", SetHome.class);
-        allCommands.put("gc", GC.class);
-        allCommands.put("addcommandpoints", AddCommandPoints.class);
-        allCommands.put("reveal", Reveal.class);
-        allCommands.put("unreveal", Unreveal.class);
         allCommands.put("infiniteammo", InfiniteAmmo.class);
         allCommands.put("nocooldown", NoCooldown.class);
-        allCommands.put("addskillpoints", AddSkillPoints.class);
-        allCommands.put("addaptitudepoints", AddAptitudePoints.class);
+        allCommands.put("reveal", Reveal.class);
+        allCommands.put("runcode", RunCode.class);
+        allCommands.put("runscript", RunScript.class);
+        allCommands.put("sethome", SetHome.class);
+        allCommands.put("setrelationship", SetRelationship.class);
+        allCommands.put("spawnfleet", SpawnFleet.class);
+        allCommands.put("unreveal", Unreveal.class);
 
         // Commands that can't be overwritten
         hardcodedCommands.add("help");
@@ -131,8 +129,8 @@ public class Console implements SpawnPointPlugin
             throw new Exception("Can't overwrite built-in commands!");
         }
 
-        // getPackage() won't work for classes compiled with Janino's classloader
-        // There's an extremely ugly workaround below
+        // getPackage() won't work for classes loaded through Starfarer's
+        // classloader. There's an extremely ugly workaround below
         //if (!COMMAND_PACKAGE.equals(commandClass.getPackage().getName()))
         if (!COMMAND_PACKAGE.equals(commandClass.getCanonicalName().substring(0,
                 commandClass.getCanonicalName().lastIndexOf('.'))))
@@ -259,12 +257,23 @@ public class Console implements SpawnPointPlugin
     /**
      * Retrieves the value of the variable varName, if any.
      *
+     * @param <T> 
      * @param varName the name of the variable to retrieve
+     * @param type the type to be returned (e.g. Script.class)
      * @return the data associated with that variable
      */
-    protected Object getVar(String varName)
+    protected <T> T getVar(String varName, Class<T> type)
     {
-        return consoleVars.get(varName);
+        try
+        {
+            return type.cast(consoleVars.get(varName));
+        }
+        catch (ClassCastException ex)
+        {
+            showError("Error: " + varName + " is not of type "
+                    + type.getSimpleName() + "!", ex);
+            return null;
+        }
     }
 
     /**
@@ -276,6 +285,16 @@ public class Console implements SpawnPointPlugin
     protected boolean hasVar(String varName)
     {
         return consoleVars.keySet().contains(varName);
+    }
+
+    protected Class getVarType(String varName)
+    {
+        if (!hasVar(varName))
+        {
+            return null;
+        }
+
+        return consoleVars.get(varName).getClass();
     }
 
     /**
@@ -343,15 +362,8 @@ public class Console implements SpawnPointPlugin
     {
         if (hasVar("UserScripts"))
         {
-            Map userScripts = (Map) getVar("UserScripts");
-            Iterator<Map.Entry<String, Script>> iter = userScripts.entrySet().iterator();
-            Map.Entry<String, Script> tmp;
-
-            while (iter.hasNext())
-            {
-                tmp = iter.next();
-                RunScript.addScript(tmp.getKey(), tmp.getValue());
-            }
+            Map<String, Script> userScripts = (Map) getVar("UserScripts", Map.class);
+            RunScript.addScripts(userScripts);
         }
     }
 
@@ -540,10 +552,14 @@ public class Console implements SpawnPointPlugin
         String[] args = command.split(" ");
         String com = args[0].toLowerCase();
 
-        if (!inBattle)
+        if (!isInBattle())
         {
             Global.getSector().addMessage("Running command '" + command + "'.",
                     command, Color.GREEN);
+        }
+        else
+        {
+            // In battle message hooks not included yet
         }
 
         if (com.equals("runtests"))
