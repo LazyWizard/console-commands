@@ -76,9 +76,9 @@ public abstract class BaseCommand
      *
      * @see ConsoleManager#getVar(java.lang.String)
      */
-    protected static Object getVar(String varName)
+    protected static <T> T getVar(String varName, Class<T> type)
     {
-        return Console.getConsole().getVar(varName);
+        return Console.getConsole().getVar(varName, type);
     }
 
     /**

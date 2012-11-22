@@ -6,12 +6,17 @@ import java.util.*;
 
 public class RunScript extends BaseCommand
 {
-    private static Map<String, Script> allowedScripts =
-            Collections.synchronizedMap(new HashMap<String, Script>());
+    private static Map<String, Script> allowedScripts = new HashMap<String, Script>();
 
     public static void addScript(String name, Script script)
     {
         allowedScripts.put(name.toLowerCase(), script);
+        saveScripts();
+    }
+
+    public static void addScripts(Map<String, Script> scripts)
+    {
+        allowedScripts.putAll(scripts);
         saveScripts();
     }
 
