@@ -31,7 +31,7 @@ public class Console implements SpawnPointPlugin
     private static final int REBIND_KEY = Keyboard.KEY_F1; // Shift+key to rebind
     private static final List<Integer> RESTRICTED_KEYS = new ArrayList<Integer>();
     // Maps the command to the associated class
-    private static final Map<String, Class> allCommands = new TreeMap<String, Class>();
+    private static final Map<String, Class<? extends BaseCommand>> allCommands = new HashMap<String, Class<? extends BaseCommand>>();
     private static final Set<String> hardcodedCommands = new HashSet();
     // Per-session variables
     private static boolean inBattle = false;
@@ -82,6 +82,7 @@ public class Console implements SpawnPointPlugin
         allCommands.put("addweapon", AddWeapon.class);
         allCommands.put("addwing", AddWing.class);
         allCommands.put("adjustrelationship", AdjustRelationship.class);
+        allCommands.put("alias", Alias.class);
         allCommands.put("allweapons", AllWeapons.class);
         allCommands.put("gc", GC.class);
         allCommands.put("goto", GoTo.class);
@@ -99,7 +100,6 @@ public class Console implements SpawnPointPlugin
         // Commands that can't be overwritten
         hardcodedCommands.add("help");
         hardcodedCommands.add("status");
-        hardcodedCommands.add("alias");
         hardcodedCommands.add("runtests");
         hardcodedCommands.addAll(allCommands.keySet());
     }
@@ -175,10 +175,10 @@ public class Console implements SpawnPointPlugin
         extendedCommands.add(commandClass);
     }
 
-    protected boolean addAlias(String command, String alias)
+    public boolean addAlias(String alias, String command)
     {
         if (allCommands.containsKey(alias) || !allCommands.containsKey(command)
-                || command.contains(" ") || alias.contains(" "))
+                || alias.contains(" "))
         {
             return false;
         }
@@ -364,6 +364,11 @@ public class Console implements SpawnPointPlugin
      */
     protected LocationAPI getLocation()
     {
+        /*if (location == null)
+         {
+         location = Global.getSector().getPlayerFleet().getContainingLocation();
+         }*/
+
         return location;
     }
 
@@ -494,9 +499,9 @@ public class Console implements SpawnPointPlugin
             return;
         }
 
-        for (int x = 0; x < queuedCommands.size(); x++)
+        for (String command : queuedCommands)
         {
-            parseCommand(queuedCommands.get(x));
+            parseCommand(command);
         }
 
         queuedCommands.clear();
@@ -586,7 +591,7 @@ public class Console implements SpawnPointPlugin
     private void listCommands()
     {
         StringBuilder names = new StringBuilder("Help, Status");
-        Iterator<Class> iter = allCommands.values().iterator();
+        Iterator<Class<? extends BaseCommand>> iter = allCommands.values().iterator();
         Class tmp;
 
         while (iter.hasNext())
@@ -603,6 +608,23 @@ public class Console implements SpawnPointPlugin
                 + " use that command.");
     }
 
+    private static String implode(String[] args)
+    {
+        StringBuilder arg = new StringBuilder();
+
+        for (int x = 0; x < args.length; x++)
+        {
+            if (x != 0)
+            {
+                arg.append(" ");
+            }
+
+            arg.append(args[x]);
+        }
+
+        return arg.toString();
+    }
+
     private boolean parseCommand(String command)
     {
         // Don't try to parse blank lines
@@ -612,8 +634,18 @@ public class Console implements SpawnPointPlugin
         }
 
         command = command.trim();
-        String[] args = command.split(" ");
-        String com = args[0].toLowerCase();
+        String[] tmp = command.split(" ");
+        String com = tmp[0].toLowerCase();
+        String args;
+        if (tmp.length > 1)
+        {
+            tmp = Arrays.copyOfRange(tmp, 1, tmp.length);
+            args = implode(tmp);
+        }
+        else
+        {
+            args = "";
+        }
 
         if (!isInBattle())
         {
@@ -643,17 +675,12 @@ public class Console implements SpawnPointPlugin
             return true;
         }
 
-        if (com.equals("alias"))
-        {
-            // TODO: add alias code here
-        }
-
         if (com.equals("help"))
         {
-            if (args.length == 2)
+            if (!args.isEmpty())
             {
-                com = args[1];
-                args[1] = "help";
+                com = args;
+                args = "help";
             }
             else
             {
@@ -667,24 +694,7 @@ public class Console implements SpawnPointPlugin
             com = aliases.get(com);
         }
 
-        if (args.length > 1)
-        {
-            StringBuilder arg = new StringBuilder();
-
-            for (int x = 1; x < args.length; x++)
-            {
-                if (x != 1)
-                {
-                    arg.append(" ");
-                }
-
-                arg.append(args[x]);
-            }
-
-            return executeCommand(com, arg.toString());
-        }
-
-        return executeCommand(com, "");
+        return executeCommand(com, args);
     }
 
     /**

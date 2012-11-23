@@ -1,5 +1,6 @@
 package data.scripts.console.commands;
 
+import com.fs.starfarer.api.Global;
 import data.scripts.console.BaseCommand;
 import java.lang.reflect.InvocationTargetException;
 import org.codehaus.commons.compiler.CompileException;
@@ -7,7 +8,7 @@ import org.codehaus.janino.*;
 
 public class RunCode extends BaseCommand
 {
-    private static transient ScriptEvaluator eval;
+    private static ScriptEvaluator eval;
     // Most of these are to test classloader blocking
     /*static ExpressionEvaluator eval2;
      static ClassLoader tmp;
@@ -19,14 +20,14 @@ public class RunCode extends BaseCommand
     {
         eval = new ScriptEvaluator();
         eval.setReturnType(void.class);
-        //eval.setParentClassLoader(Global.getSettings().getScriptClassLoader());
-        eval.setParentClassLoader(ClassLoader.getSystemClassLoader());
+        eval.setParentClassLoader(Global.getSettings().getScriptClassLoader());
+        //eval.setParentClassLoader(ClassLoader.getSystemClassLoader());
         eval.setDefaultImports(new String[]
                 {
                     "com.fs.starfarer.api.*", "java.util.*",
                     "com.fs.starfarer.api.campaign.*", "java.awt.Color",
                     "com.fs.starfarer.api.fleet.*", "data.scripts.*",
-                    "data.scripts.world.*", "java.lang.Math"
+                    "com.fs.starfarer.api.combat.*", "data.scripts.world.*"
                 });
     }
 
