@@ -552,6 +552,28 @@ public class Console implements SpawnPointPlugin
         }
     }
 
+    /**
+     * Registers a script to be executable with the RunScript command.
+     *
+     * @param name The name of the script (for retrieval)
+     * @param script The script to be added
+     */
+    public static void addScript(String name, Script script)
+    {
+        RunScript.addScript(name, script);
+    }
+
+    /**
+     * Retrieve a script from {@link RunScript}'s script storage.
+     *
+     * @param name The name of the script to be retrieved
+     * @return The Script registered with this name, null if none found
+     */
+    public static Script getScript(String name)
+    {
+        return RunScript.getScript(name);
+    }
+
     private void runTests()
     {
         Global.getSector().addMessage("Running console tests...");
@@ -692,31 +714,16 @@ public class Console implements SpawnPointPlugin
         if (aliases.containsKey(com))
         {
             com = aliases.get(com);
+            if (com.contains(" "))
+            {
+                tmp = com.split(" ");
+                com = tmp[0];
+                args = implode(Arrays.copyOfRange(tmp, 1, tmp.length))
+                        + " " + args;
+            }
         }
 
         return executeCommand(com, args);
-    }
-
-    /**
-     * Registers a script to be executable with the RunScript command.
-     *
-     * @param name The name of the script (for retrieval)
-     * @param script The script to be added
-     */
-    public static void addScript(String name, Script script)
-    {
-        RunScript.addScript(name, script);
-    }
-
-    /**
-     * Retrieve a script from {@link RunScript}'s script storage.
-     *
-     * @param name The name of the script to be retrieved
-     * @return The Script registered with this name, null if none found
-     */
-    public static Script getScript(String name)
-    {
-        return RunScript.getScript(name);
     }
 
     private synchronized boolean executeCommand(String com, String args)
