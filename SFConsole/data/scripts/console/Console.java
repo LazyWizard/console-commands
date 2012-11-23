@@ -6,6 +6,7 @@ import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.SpawnPointPlugin;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
+import static data.scripts.console.ConsoleOptions.*;
 import data.scripts.console.commands.*;
 import java.awt.Color;
 import java.lang.ref.WeakReference;
@@ -20,16 +21,6 @@ import org.lwjgl.opengl.Display;
  */
 public class Console implements SpawnPointPlugin
 {
-    // Constants
-    private static final boolean REQUIRE_DEV_MODE = false;
-    private static final boolean REQUIRE_RUN_WINDOWED = true;
-    private static final String COMMAND_PACKAGE = "data.scripts.console.commands";
-    private static final Color CONSOLE_COLOR = Color.YELLOW;
-    private static final int LINE_LENGTH = 80;
-    private static final long INPUT_FRAMERATE = (long) (1000 / 20);
-    private static final int DEFAULT_CONSOLE_KEY = Keyboard.KEY_GRAVE;
-    private static final int REBIND_KEY = Keyboard.KEY_F1; // Shift+key to rebind
-    private static final List<Integer> RESTRICTED_KEYS = new ArrayList<Integer>();
     // Maps the command to the associated class
     private static final Map<String, Class<? extends BaseCommand>> allCommands = new HashMap<String, Class<? extends BaseCommand>>();
     private static final Set<String> hardcodedCommands = new HashSet();
@@ -59,14 +50,6 @@ public class Console implements SpawnPointPlugin
         UIManager.put("TextField.foreground", Color.YELLOW);
         UIManager.put("Button.background", Color.BLACK);
         UIManager.put("Button.foreground", Color.LIGHT_GRAY);
-
-        // These keys can't be bound to summon the console
-        RESTRICTED_KEYS.add(REBIND_KEY);
-        RESTRICTED_KEYS.add(Keyboard.KEY_ESCAPE);
-        RESTRICTED_KEYS.add(Keyboard.KEY_LMETA);
-        RESTRICTED_KEYS.add(Keyboard.KEY_RMETA);
-        RESTRICTED_KEYS.add(Keyboard.KEY_LSHIFT);
-        RESTRICTED_KEYS.add(Keyboard.KEY_RSHIFT);
 
         // Built-in commands, don't need to go through registerCommand's checks
         allCommands.put("addaptitudepoints", AddAptitudePoints.class);
@@ -175,6 +158,15 @@ public class Console implements SpawnPointPlugin
         extendedCommands.add(commandClass);
     }
 
+    /**
+     * Registers an alias to be used in place of a longer command.
+     *
+     * Fails if the alias would conflict with an existing command.
+     *
+     * @param alias the alias (shorthand) for the command
+     * @param command the command to replace alias with
+     * @return true if the alias was successfully added, false otherwise
+     */
     public boolean addAlias(String alias, String command)
     {
         if (allCommands.containsKey(alias) || !allCommands.containsKey(command)
@@ -187,7 +179,13 @@ public class Console implements SpawnPointPlugin
         return true;
     }
 
-    protected List<String> getAliases(String command)
+    /**
+     * Returns all aliases associated with a command
+     *
+     * @param command the command to check for aliases of
+     * @return a List of Strings of all aliases for this command
+     */
+    public List<String> getAliases(String command)
     {
         if (command == null)
         {
