@@ -21,7 +21,6 @@ public class RunCode extends BaseCommand
         eval = new ScriptEvaluator();
         eval.setReturnType(void.class);
         eval.setParentClassLoader(Global.getSettings().getScriptClassLoader());
-        //eval.setParentClassLoader(ClassLoader.getSystemClassLoader());
         eval.setDefaultImports(new String[]
                 {
                     "com.fs.starfarer.api.*", "java.util.*",

@@ -477,8 +477,14 @@ public class Console implements SpawnPointPlugin
         {
             return;
         }
-
-        queuedCommands.addAll(Arrays.asList(command.split(";")));
+        if (command.startsWith("alias "))
+        {
+            queuedCommands.add(command);
+        }
+        else
+        {
+            queuedCommands.addAll(Arrays.asList(command.split(";")));
+        }
     }
 
     private static boolean allowConsole()
