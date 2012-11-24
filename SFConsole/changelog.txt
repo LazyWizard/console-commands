@@ -1,4 +1,4 @@
- 1.0 (November xx, 2012)
+ 1.0 (November 24, 2012)
 =========================
 MASSIVE changes made to the code base for this release - please report any bugs!
 New features:
@@ -6,7 +6,7 @@ New features:
  - Multi-threaded input: can enter commands when the game is paused/in menus
  - Full mission support (load a campaign save first to use your custom settings)
  - You can now issue multiple commands at once (separate them with a semicolon)
- - Should work out of the box with all mods that don't overwrite generators.csv
+ - Should work out of the box with all mods that don't replace generators.csv
 New campaign commands:
  - AddAptitudePoints: adds aptitude points to your character
  - AddSkillPoints: adds skill points to your character
@@ -19,8 +19,9 @@ New in-battle commands:
  - Reveal/Unreveal: reveals/unreveals the entire battle map
 Modder-specific changes:
  - Changed how commands are handled, uses reflection instead of being hard-coded
+ - ConsoleManager has been removed and merged with data.scripts.console.Console
  - User-made/mod-specific commands can now be registered with the console
- - Most code is now stored in console.jar - source is included in the jar
+ - Most code is now stored in jars/SFConsole.jar - source is included in the jar
  - Console variable storage/retrieval is now type-safe
  - Added protected Class getVarType(String varName) to Console and BaseCommand
  - Added basic documentation - see JavaDoc.zip in the main folder
