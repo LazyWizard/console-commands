@@ -6,7 +6,6 @@ import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.SpawnPointPlugin;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
-import static data.scripts.console.ConsoleOptions.*;
 import data.scripts.console.commands.*;
 import java.awt.Color;
 import java.lang.ref.WeakReference;
@@ -21,6 +20,16 @@ import org.lwjgl.opengl.Display;
  */
 public class Console implements SpawnPointPlugin
 {
+    // Console constants
+    public static final boolean REQUIRE_DEV_MODE = false;
+    public static final boolean REQUIRE_RUN_WINDOWED = true;
+    public static final String COMMAND_PACKAGE = "data.scripts.console.commands";
+    public static final Color CONSOLE_COLOR = Color.YELLOW;
+    public static final int LINE_LENGTH = 80;
+    public static final long INPUT_FRAMERATE = (long) (1000 / 20);
+    public static final int DEFAULT_CONSOLE_KEY = Keyboard.KEY_GRAVE;
+    public static final int REBIND_KEY = Keyboard.KEY_F1; // Shift+key to rebind
+    public static final List<Integer> RESTRICTED_KEYS = new ArrayList<Integer>();
     // Maps the command to the associated class
     private static final Map<String, Class<? extends BaseCommand>> allCommands = new HashMap<String, Class<? extends BaseCommand>>();
     private static final Set<String> hardcodedCommands = new HashSet();
@@ -50,6 +59,14 @@ public class Console implements SpawnPointPlugin
         UIManager.put("TextField.foreground", Color.YELLOW);
         UIManager.put("Button.background", Color.BLACK);
         UIManager.put("Button.foreground", Color.LIGHT_GRAY);
+
+        // These keys can't be bound to summon the console
+        RESTRICTED_KEYS.add(REBIND_KEY);
+        RESTRICTED_KEYS.add(Keyboard.KEY_ESCAPE);
+        RESTRICTED_KEYS.add(Keyboard.KEY_LMETA);
+        RESTRICTED_KEYS.add(Keyboard.KEY_RMETA);
+        RESTRICTED_KEYS.add(Keyboard.KEY_LSHIFT);
+        RESTRICTED_KEYS.add(Keyboard.KEY_RSHIFT);
 
         // Built-in commands, don't need to go through registerCommand's checks
         allCommands.put("addaptitudepoints", AddAptitudePoints.class);
