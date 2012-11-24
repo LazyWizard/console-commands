@@ -8,8 +8,8 @@ public class Alias extends BaseCommand
     protected String getHelp()
     {
         return "Allows you to set a shortcut for console commands. For example,"
-                + " 'alias nc nocooldown' would allow you to use 'nc' in place"
-                + " of 'nocooldown' when entering that command.";
+                + " 'alias ac addcredits' would allow you to later use the"
+                + " command 'ac 5000' as shorthand.";
     }
 
     @Override

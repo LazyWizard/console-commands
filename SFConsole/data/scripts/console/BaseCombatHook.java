@@ -1,11 +1,13 @@
 package data.scripts.console;
 
 import com.fs.starfarer.api.combat.CombatEngineAPI;
+import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.WeaponAPI;
+import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.mission.FleetSide;
-import com.fs.starfarer.api.plugins.EveryFrameCombatPlugin;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Notifies the {@link Console} when the game is in battle.
