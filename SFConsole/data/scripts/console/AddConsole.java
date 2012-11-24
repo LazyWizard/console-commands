@@ -48,9 +48,7 @@ public final class AddConsole implements SectorGeneratorPlugin
                     continue;
                 }
 
-                Console console = new Console();
-                system.addSpawnPoint(console);
-                ConsoleTests.runTests(console);
+                system.addSpawnPoint(new Console());
                 return;
             }
 
