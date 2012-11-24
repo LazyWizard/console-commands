@@ -25,7 +25,7 @@ public class Home extends BaseCommand
     @Override
     public boolean runCommand(String args)
     {
-        SectorEntityToken home = (SectorEntityToken) getVar("Home");
+        SectorEntityToken home = getVar("Home", SectorEntityToken.class);
 
         if (home == null)
         {

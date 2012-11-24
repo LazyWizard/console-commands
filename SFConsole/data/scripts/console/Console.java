@@ -82,8 +82,8 @@ public class Console implements SpawnPointPlugin
 
         // Commands that can't be overwritten
         hardcodedCommands.add("help");
-        hardcodedCommands.add("status");
         hardcodedCommands.add("runtests");
+        hardcodedCommands.add("status");
         hardcodedCommands.addAll(allCommands.keySet());
     }
 
