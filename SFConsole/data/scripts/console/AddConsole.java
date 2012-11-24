@@ -1,6 +1,6 @@
 package data.scripts.console;
 
-import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.SectorGeneratorPlugin;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
@@ -13,8 +13,9 @@ public final class AddConsole implements SectorGeneratorPlugin
     @Override
     public void generate(SectorAPI sector)
     {
+        //JOptionPane.showMessageDialog(null, "Entered generate().");
         Timer deferredAdd = new Timer(true);
-        deferredAdd.scheduleAtFixedRate(new DeferredAdd(sector), 100, 100);
+        deferredAdd.scheduleAtFixedRate(new DeferredAdd(sector), 1000, 1000);
     }
 
     private static class DeferredAdd extends TimerTask
@@ -23,19 +24,29 @@ public final class AddConsole implements SectorGeneratorPlugin
 
         public DeferredAdd(SectorAPI sector)
         {
+            //JOptionPane.showMessageDialog(null, "Created task.");
             this.sector = sector;
         }
 
         @Override
         public void run()
         {
-            StarSystemAPI system = (StarSystemAPI) Global.getSector().getPlayerFleet().getContainingLocation();
+            //JOptionPane.showMessageDialog(null, "Entered run().");
+            CampaignFleetAPI player = sector.getPlayerFleet();
 
-            if (system != null)
+            if (player != null)
             {
-                system.addSpawnPoint(new Console());
-                Console.showMessage("Console successfully activated for this save.");
-                this.cancel();
+                //JOptionPane.showMessageDialog(null, "Player was not null.");
+                StarSystemAPI system = (StarSystemAPI) player.getContainingLocation();
+
+                if (system != null)
+                {
+                    system.addSpawnPoint(new Console());
+                    Console.showMessage("Console successfully activated for this save.");
+                    //JOptionPane.showMessageDialog(null, "Console added to system "
+                    //        + system.getName() + ".");
+                    this.cancel();
+                }
             }
         }
     }
