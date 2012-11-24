@@ -21,14 +21,23 @@ import org.lwjgl.opengl.Display;
 public class Console implements SpawnPointPlugin
 {
     // Console constants
+    /** Does the console require devMode=true in settings.json to function? */
     public static final boolean REQUIRE_DEV_MODE = false;
+    /** Does the console require the game to be run windowed to function? */
     public static final boolean REQUIRE_RUN_WINDOWED = true;
+    /** The package all console commands must be in */
     public static final String COMMAND_PACKAGE = "data.scripts.console.commands";
+    /** The color of messages posted by {@link Console#showMessage(java.lang.String)} */
     public static final Color CONSOLE_COLOR = Color.YELLOW;
+    /** How long a line can be before being split by {@link Console#showMessage(java.lang.String)} */
     public static final int LINE_LENGTH = 80;
+    /** How often (in milliseconds) between polling the keyboard for input */
     public static final long INPUT_FRAMERATE = (long) (1000 / 20);
+    /** This is the LWJGL constant of the default keyboard key to summon the console */
     public static final int DEFAULT_CONSOLE_KEY = Keyboard.KEY_GRAVE;
+    /** This is the LWJGL constant of the keyboard key which, combined with shift, rebinds the console */
     public static final int REBIND_KEY = Keyboard.KEY_F1; // Shift+key to rebind
+    /** A list of LWJGL keyboard constants that can't be bound to summon the console */
     public static final List<Integer> RESTRICTED_KEYS = new ArrayList<Integer>();
     // Maps the command to the associated class
     private static final Map<String, Class<? extends BaseCommand>> allCommands = new HashMap<String, Class<? extends BaseCommand>>();
