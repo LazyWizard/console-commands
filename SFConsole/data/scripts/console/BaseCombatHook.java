@@ -4,7 +4,6 @@ import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.WeaponAPI;
-import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.mission.FleetSide;
 import java.util.Iterator;
 import java.util.List;
@@ -17,7 +16,7 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
     public static boolean shouldReveal = false, infAmmo = false, noCooldown = false;
 
     @Override
-    public void advance(float amount, List<InputEventAPI> events)
+    public void advance(float amount, List events)
     {
         if (Console.getConsole() != null)
         {

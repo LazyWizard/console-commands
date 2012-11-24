@@ -6,6 +6,7 @@ import com.fs.starfarer.api.campaign.SectorGeneratorPlugin;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.swing.JOptionPane;
 
 @SuppressWarnings("unchecked")
 public final class AddConsole implements SectorGeneratorPlugin
@@ -13,8 +14,8 @@ public final class AddConsole implements SectorGeneratorPlugin
     @Override
     public void generate(SectorAPI sector)
     {
-        Timer deferredAdd = new Timer(true);
-        deferredAdd.schedule(new DeferredAdd(), 100);
+        Timer deferredAdd = new Timer();
+        deferredAdd.schedule(new DeferredAdd(), 500);
     }
 
     private static class DeferredAdd extends TimerTask
@@ -26,7 +27,7 @@ public final class AddConsole implements SectorGeneratorPlugin
 
             if (system == null)
             {
-                throw new RuntimeException("Console could not find a starsystem!");
+                JOptionPane.showMessageDialog(null, "Console could not find a starsystem!");
             }
 
             Console console = new Console();
