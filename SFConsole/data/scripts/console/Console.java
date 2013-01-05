@@ -18,7 +18,7 @@ import org.lwjgl.opengl.Display;
 /**
  * Executes commands and handles console output. Instances hold custom settings.
  */
-public class Console implements SpawnPointPlugin
+public final class Console implements SpawnPointPlugin
 {
     // Console constants
     /** Does the console require devMode=true in settings.json to function? */
@@ -477,6 +477,7 @@ public class Console implements SpawnPointPlugin
         {
             return;
         }
+
         if (command.startsWith("alias "))
         {
             queuedCommands.add(command);
@@ -626,13 +627,13 @@ public class Console implements SpawnPointPlugin
     {
         try
         {
-            showMessage("Console status:",
+            JOptionPane.showMessageDialog(null, "Console status:",
                     "Active thread: " + Thread.currentThread().getName()
                     //+ "\nIn campaign: "
                     //+ (getConsole() != null ? "yes" : "no")
                     + "\nIn battle: "
                     + (getCombatEngine() != null ? "yes" : "no"),
-                    true);
+                    JOptionPane.PLAIN_MESSAGE);
         }
         catch (Exception ex)
         {

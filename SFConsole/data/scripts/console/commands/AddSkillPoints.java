@@ -36,6 +36,7 @@ public class AddSkillPoints extends BaseCommand
         }
 
         character.addSkillPoints(amount);
+        showMessage("Added " + amount + " skill points to character.");
         return true;
     }
 }
