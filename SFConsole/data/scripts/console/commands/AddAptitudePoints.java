@@ -36,6 +36,7 @@ public class AddAptitudePoints extends BaseCommand
         }
 
         character.addAptitudePoints(amount);
+        showMessage("Added " + amount + " aptitude points to character.");
         return true;
     }
 }
