@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector2f;
 
 /**
  * Executes commands and handles console output. Instances hold custom settings.
@@ -28,7 +29,7 @@ public final class Console implements SpawnPointPlugin
     /** The package all console commands must be in */
     public static final String COMMAND_PACKAGE = "data.scripts.console.commands";
     /** The color of messages posted by {@link Console#showMessage(java.lang.String)} */
-    public static final Color CONSOLE_COLOR = Color.YELLOW;
+    public static final Color CONSOLE_COLOR = Color.CYAN;
     /** How long a line can be before being split by {@link Console#showMessage(java.lang.String)} */
     public static final int LINE_LENGTH = 80;
     /** How often (in milliseconds) between polling the keyboard for input */
@@ -106,7 +107,6 @@ public final class Console implements SpawnPointPlugin
         allCommands.put("sethome", SetHome.class);
         allCommands.put("setrelationship", SetRelationship.class);
         allCommands.put("spawnfleet", SpawnFleet.class);
-        allCommands.put("unreveal", Unreveal.class);
 
         // Commands that can't be overwritten
         hardcodedCommands.add("help");
@@ -934,9 +934,14 @@ public final class Console implements SpawnPointPlugin
 
     private static void printLine(String message, boolean indent)
     {
-        if (isInBattle())
+        if (isInBattle() && getCombatEngine().getPlayerShip() != null)
         {
-            // No in-battle message hooks yet
+            CombatEngineAPI engine = getCombatEngine();
+            engine.addFloatingText(Vector2f.add(
+                    new Vector2f(-message.length() / 20, -50),
+                    engine.getPlayerShip().getLocation(), null),
+                    message, 25f, CONSOLE_COLOR,
+                    engine.getPlayerShip(), 0f, 0f);
         }
         else
         {

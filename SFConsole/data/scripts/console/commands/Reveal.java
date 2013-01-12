@@ -8,7 +8,7 @@ public class Reveal extends BaseCommand
     @Override
     protected String getHelp()
     {
-        return "Removes all fog of war on the battle map.";
+        return "Toggles fog of war on the battle map.";
     }
 
     @Override
@@ -26,7 +26,7 @@ public class Reveal extends BaseCommand
     @Override
     public boolean runCommand(String args)
     {
-        BaseCombatHook.shouldReveal = true;
+        BaseCombatHook.toggleReveal();
         return true;
     }
 }

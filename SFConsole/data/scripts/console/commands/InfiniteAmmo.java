@@ -26,7 +26,7 @@ public class InfiniteAmmo extends BaseCommand
     @Override
     public boolean runCommand(String args)
     {
-        BaseCombatHook.infAmmo = !BaseCombatHook.infAmmo;
+        BaseCombatHook.toggleInfiniteAmmo();
         return true;
     }
 }
