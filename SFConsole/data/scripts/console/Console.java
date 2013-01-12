@@ -29,7 +29,7 @@ public final class Console implements SpawnPointPlugin
     /** The package all console commands must be in */
     public static final String COMMAND_PACKAGE = "data.scripts.console.commands";
     /** The color of messages posted by {@link Console#showMessage(java.lang.String)} */
-    public static final Color CONSOLE_COLOR = Color.CYAN;
+    public static final Color CONSOLE_COLOR = Color.YELLOW;
     /** How long a line can be before being split by {@link Console#showMessage(java.lang.String)} */
     public static final int LINE_LENGTH = 80;
     /** How often (in milliseconds) between polling the keyboard for input */
