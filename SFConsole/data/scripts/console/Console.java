@@ -40,6 +40,7 @@ public final class Console implements SpawnPointPlugin
     public static final int REBIND_KEY = Keyboard.KEY_F1; // Shift+key to rebind
     /** A list of LWJGL keyboard constants that can't be bound to summon the console */
     public static final List<Integer> RESTRICTED_KEYS = new ArrayList<Integer>();
+    private static final String INDENT = "   ";
     // Maps the command to the associated class
     private static final Map<String, Class<? extends BaseCommand>> allCommands = new HashMap<String, Class<? extends BaseCommand>>();
     private static final Set<String> hardcodedCommands = new HashSet();
@@ -830,76 +831,7 @@ public final class Console implements SpawnPointPlugin
     public static void showMessage(String preamble,
             String message, boolean indent)
     {
-        if (preamble != null)
-        {
-            showMessage(preamble);
-        }
-
-        if (message == null)
-        {
-            message = "";
-        }
-
-        // Analyse each line of the message seperately
-        String[] lines = message.split("\n");
-        StringBuilder line = new StringBuilder(LINE_LENGTH);
-
-        // Word wrapping is complicated ;)
-        for (int x = 0; x < lines.length; x++)
-        {
-            // Check if the string even needs to be broken up
-            if (lines[x].length() > LINE_LENGTH)
-            {
-                // Clear the StringBuilder so we can generate a new line
-                line.setLength(0);
-                // Split the line up into the individual words, and append each
-                // word to the next line until the character limit is reached
-                String[] words = lines[x].split(" ");
-                for (int y = 0; y < words.length; y++)
-                {
-                    // If this word by itself is longer than the line limit,
-                    // just go ahead and post it in its own line
-                    if (words[y].length() > LINE_LENGTH)
-                    {
-                        // Make sure to post the previous line in queue, if any
-                        if (line.length() > 0)
-                        {
-                            printLine(line.toString(), indent);
-                            line.setLength(0);
-                        }
-
-                        printLine(words[y], indent);
-                    }
-                    // If this word would put us over the length limit, post
-                    // the queue and back up a step (re-check this word with
-                    // a blank line - this is in case it trips the above block)
-                    else if (words[y].length() + line.length() > LINE_LENGTH)
-                    {
-                        printLine(line.toString(), indent);
-                        line.setLength(0);
-                        y--;
-                    }
-                    // This word won't put us over the limit, add it to the queue
-                    else
-                    {
-                        line.append(words[y]);
-                        line.append(" ");
-
-                        // If we have reached the end of the message, ensure
-                        // that we post the remaining part of the queue
-                        if (y == (words.length - 1))
-                        {
-                            printLine(line.toString(), indent);
-                        }
-                    }
-                }
-            }
-            // Entire message fits into a single line
-            else
-            {
-                printLine(lines[x], indent);
-            }
-        }
+        printMessage(lineWrap(preamble, false) + lineWrap(message, indent));
     }
 
     /**
@@ -932,26 +864,131 @@ public final class Console implements SpawnPointPlugin
         showMessage(preamble + ex.toString(), ex.getMessage(), true);
     }
 
-    private static void printLine(String message, boolean indent)
+    private static String lineWrap(String message, boolean indent)
     {
-        if (isInBattle() && getCombatEngine().getPlayerShip() != null)
+        if (message == null)
+        {
+            return "";
+        }
+
+        // Analyse each line of the message seperately
+        String[] lines = message.split("\n");
+        StringBuilder line = new StringBuilder(LINE_LENGTH);
+        StringBuilder result = new StringBuilder();
+
+        // Word wrapping is complicated ;)
+        for (int x = 0; x < lines.length; x++)
+        {
+            // Check if the string even needs to be broken up
+            if (lines[x].length() > LINE_LENGTH)
+            {
+                // Clear the StringBuilder so we can generate a new line
+                line.setLength(0);
+                // Split the line up into the individual words, and append each
+                // word to the next line until the character limit is reached
+                String[] words = lines[x].split(" ");
+                for (int y = 0; y < words.length; y++)
+                {
+                    // If this word by itself is longer than the line limit,
+                    // just go ahead and post it in its own line
+                    if (words[y].length() > LINE_LENGTH)
+                    {
+                        // Make sure to post the previous line in queue, if any
+                        if (line.length() > 0)
+                        {
+                            if (indent)
+                            {
+                                result.append(INDENT);
+                            }
+
+                            result.append(line.toString()).append("\n");
+                            line.setLength(0);
+                        }
+
+
+                        if (indent)
+                        {
+                            result.append(INDENT);
+                        }
+
+                        result.append(words[y]).append("\n");
+                    }
+                    // If this word would put us over the length limit, post
+                    // the queue and back up a step (re-check this word with
+                    // a blank line - this is in case it trips the above block)
+                    else if (words[y].length() + line.length() > LINE_LENGTH)
+                    {
+                        if (indent)
+                        {
+                            result.append(INDENT);
+                        }
+
+                        result.append(line.toString()).append("\n");
+                        line.setLength(0);
+                        y--;
+                    }
+                    // This word won't put us over the limit, add it to the queue
+                    else
+                    {
+                        line.append(words[y]);
+                        line.append(" ");
+
+                        // If we have reached the end of the message, ensure
+                        // that we post the remaining part of the queue
+                        if (y == (words.length - 1))
+                        {
+                            if (indent)
+                            {
+                                result.append(INDENT);
+                            }
+
+                            result.append(line.toString()).append("\n");
+                        }
+                    }
+                }
+            }
+            // Entire message fits into a single line
+            else
+            {
+                if (indent)
+                {
+                    result.append(INDENT);
+                }
+
+                result.append(lines[x]).append("\n");
+            }
+        }
+
+        return result.toString();
+    }
+
+    private static void printMessage(String message)
+    {
+        if (isInBattle())
         {
             CombatEngineAPI engine = getCombatEngine();
-            engine.addFloatingText(Vector2f.add(
-                    new Vector2f(-message.length() / 20, -50),
-                    engine.getPlayerShip().getLocation(), null),
-                    message, 25f, CONSOLE_COLOR,
-                    engine.getPlayerShip(), 0f, 0f);
+
+            if (engine.getPlayerShip() != null)
+            {
+                List<String> lines = new ArrayList(Arrays.asList(message.split("\n")));
+
+                for (int x = 0; x < lines.size(); x++)
+                {
+                    engine.addFloatingText(Vector2f.add(
+                            new Vector2f(-message.length() / 20f, -50 - (x * 25)),
+                            engine.getPlayerShip().getLocation(), null),
+                            lines.get(x), 25f, CONSOLE_COLOR,
+                            engine.getPlayerShip(), 0f, 0f);
+                }
+            }
         }
         else
         {
-            if (indent)
+            List<String> lines = new ArrayList(Arrays.asList(message.split("\n")));
+
+            for (int x = 0; x < lines.size(); x++)
             {
-                Global.getSector().addMessage("   " + message, CONSOLE_COLOR);
-            }
-            else
-            {
-                Global.getSector().addMessage(message, CONSOLE_COLOR);
+                Global.getSector().addMessage(lines.get(x), CONSOLE_COLOR);
             }
         }
     }
