@@ -6,6 +6,7 @@ import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.SpawnPointPlugin;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
+import com.fs.starfarer.api.combat.ShipAPI;
 import data.scripts.console.commands.*;
 import java.awt.Color;
 import java.lang.ref.WeakReference;
@@ -630,13 +631,13 @@ public final class Console implements SpawnPointPlugin
     {
         try
         {
-            JOptionPane.showMessageDialog(null, "Console status:",
+            JOptionPane.showMessageDialog(null,
                     "Active thread: " + Thread.currentThread().getName()
                     //+ "\nIn campaign: "
                     //+ (getConsole() != null ? "yes" : "no")
                     + "\nIn battle: "
                     + (getCombatEngine() != null ? "yes" : "no"),
-                    JOptionPane.PLAIN_MESSAGE);
+                    "Console status:", JOptionPane.PLAIN_MESSAGE);
         }
         catch (Exception ex)
         {
@@ -967,18 +968,19 @@ public final class Console implements SpawnPointPlugin
         if (isInBattle())
         {
             CombatEngineAPI engine = getCombatEngine();
+            ShipAPI player = engine.getPlayerShip();
 
-            if (engine.getPlayerShip() != null)
+            if (player != null)
             {
                 List<String> lines = new ArrayList(Arrays.asList(message.split("\n")));
 
                 for (int x = 0; x < lines.size(); x++)
                 {
                     engine.addFloatingText(Vector2f.add(
-                            new Vector2f(-message.length() / 20f, -50 - (x * 25)),
-                            engine.getPlayerShip().getLocation(), null),
-                            lines.get(x), 25f, CONSOLE_COLOR,
-                            engine.getPlayerShip(), 0f, 0f);
+                            new Vector2f(-message.length() / 20f,
+                            -(player.getCollisionRadius() + 50 + (x * 25))),
+                            player.getLocation(), null),
+                            lines.get(x), 25f, CONSOLE_COLOR, player, 0f, 0f);
                 }
             }
         }

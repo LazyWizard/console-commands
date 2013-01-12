@@ -5,7 +5,7 @@ import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.WeaponAPI;
 import com.fs.starfarer.api.mission.FleetSide;
-import java.util.List;
+import java.util.*;
 
 /**
  * Notifies the {@link Console} when the game is in battle.
@@ -57,66 +57,46 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
     {
         if (showActive && engine.getPlayerShip() != null)
         {
-            StringBuilder tmp = new StringBuilder("Active commands: ");
-            int numActive = 0;
+            SortedSet<String> active = new TreeSet();
 
             if (godMode)
             {
-                if (numActive > 0)
-                {
-                    tmp.append(", ");
-                }
-
-                tmp.append("God");
-                numActive++;
+                active.add("God");
             }
             if (infAmmo)
             {
-                if (numActive > 0)
-                {
-                    tmp.append(", ");
-                }
-
-                tmp.append("InfiniteAmmo");
-                numActive++;
+                active.add("InfiniteAmmo");
             }
             if (infFlux)
             {
-                if (numActive > 0)
-                {
-                    tmp.append(", ");
-                }
-
-                tmp.append("InfiniteFlux");
-                numActive++;
+                active.add("InfiniteFlux");
             }
             if (noCooldown)
             {
-                if (numActive > 0)
-                {
-                    tmp.append(", ");
-                }
-
-                tmp.append("NoCooldown");
-                numActive++;
+                active.add("NoCooldown");
             }
             if (shouldReveal)
             {
-                if (numActive > 0)
+                active.add("Reveal");
+            }
+
+            if (!active.isEmpty())
+            {
+                StringBuilder msg = new StringBuilder("Active commands: ");
+
+                for (String str : active)
                 {
-                    tmp.append(", ");
+                    if (str != active.first())
+                    {
+                        msg.append(", ");
+                    }
+
+                    msg.append(str);
                 }
 
-                tmp.append("Reveal");
-                numActive++;
+                Console.showMessage(msg.toString());
             }
 
-            if (numActive == 0)
-            {
-                tmp.append("none");
-            }
-
-            Console.showMessage(tmp.toString());
             showActive = false;
         }
     }
@@ -136,13 +116,11 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
                 {
                     if (godMode)
                     {
-                        ship.getMutableStats().getArmorDamageTakenMult().modifyPercent(CONSOLE_ID, -100f);
                         ship.getMutableStats().getHullDamageTakenMult().modifyPercent(CONSOLE_ID, -100f);
                         ship.getMutableStats().getEmpDamageTakenMult().modifyPercent(CONSOLE_ID, -100f);
                     }
                     else
                     {
-                        ship.getMutableStats().getArmorDamageTakenMult().unmodify(CONSOLE_ID);
                         ship.getMutableStats().getHullDamageTakenMult().unmodify(CONSOLE_ID);
                         ship.getMutableStats().getEmpDamageTakenMult().unmodify(CONSOLE_ID);
                     }
