@@ -26,7 +26,7 @@ public class InfiniteFlux extends BaseCommand
     @Override
     public boolean runCommand(String args)
     {
-        BaseCombatHook.infFlux = !BaseCombatHook.infFlux;
+        BaseCombatHook.toggleInfiniteFlux();
         return true;
     }
 }

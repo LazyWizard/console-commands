@@ -26,7 +26,7 @@ public class God extends BaseCommand
     @Override
     public boolean runCommand(String args)
     {
-        BaseCombatHook.godMode = !BaseCombatHook.godMode;
+        BaseCombatHook.toggleGodMode();
         return true;
     }
 }

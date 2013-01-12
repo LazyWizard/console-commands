@@ -14,8 +14,173 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
 {
     private static final String CONSOLE_ID = "consolemod";
     private static final boolean RESET_COMMANDS_AFTER_COMBAT = false;
-    public static boolean shouldReveal = false, infAmmo = false,
+    private static boolean showActive = true, shouldReveal = false, infAmmo = false,
             infFlux = false, godMode = false, noCooldown = false;
+    private static CombatEngineAPI engine;
+
+    public static boolean toggleGodMode()
+    {
+        godMode = !godMode;
+        showActive = true;
+        return godMode;
+    }
+
+    public static boolean toggleInfiniteAmmo()
+    {
+        infAmmo = !infAmmo;
+        showActive = true;
+        return infAmmo;
+    }
+
+    public static boolean toggleInfiniteFlux()
+    {
+        infFlux = !infFlux;
+        showActive = true;
+        return infFlux;
+    }
+
+    public static boolean toggleNoCooldown()
+    {
+        noCooldown = !noCooldown;
+        showActive = true;
+        return noCooldown;
+    }
+
+    public static boolean toggleReveal()
+    {
+        shouldReveal = !shouldReveal;
+        showActive = true;
+        return shouldReveal;
+    }
+
+    private void checkRender()
+    {
+        if (showActive && engine.getPlayerShip() != null)
+        {
+            StringBuilder tmp = new StringBuilder("Active commands: ");
+            int numActive = 0;
+
+            if (godMode)
+            {
+                if (numActive > 0)
+                {
+                    tmp.append(", ");
+                }
+
+                tmp.append("God");
+                numActive++;
+            }
+            if (infAmmo)
+            {
+                if (numActive > 0)
+                {
+                    tmp.append(", ");
+                }
+
+                tmp.append("InfiniteAmmo");
+                numActive++;
+            }
+            if (infFlux)
+            {
+                if (numActive > 0)
+                {
+                    tmp.append(", ");
+                }
+
+                tmp.append("InfiniteFlux");
+                numActive++;
+            }
+            if (noCooldown)
+            {
+                if (numActive > 0)
+                {
+                    tmp.append(", ");
+                }
+
+                tmp.append("NoCooldown");
+                numActive++;
+            }
+            if (shouldReveal)
+            {
+                if (numActive > 0)
+                {
+                    tmp.append(", ");
+                }
+
+                tmp.append("Reveal");
+                numActive++;
+            }
+
+            if (numActive == 0)
+            {
+                tmp.append("none");
+            }
+
+            Console.showMessage(tmp.toString());
+            showActive = false;
+        }
+    }
+
+    private void checkCommands()
+    {
+        if (godMode || infFlux || infAmmo || noCooldown)
+        {
+            for (ShipAPI ship : engine.getShips())
+            {
+                if (ship.isHulk() || ship.isShuttlePod())
+                {
+                    continue;
+                }
+
+                if (ship.getOwner() == FleetSide.PLAYER.ordinal())
+                {
+                    if (godMode)
+                    {
+                        ship.getMutableStats().getArmorDamageTakenMult().modifyPercent(CONSOLE_ID, -100f);
+                        ship.getMutableStats().getHullDamageTakenMult().modifyPercent(CONSOLE_ID, -100f);
+                        ship.getMutableStats().getEmpDamageTakenMult().modifyPercent(CONSOLE_ID, -100f);
+                    }
+                    else
+                    {
+                        ship.getMutableStats().getArmorDamageTakenMult().unmodify(CONSOLE_ID);
+                        ship.getMutableStats().getHullDamageTakenMult().unmodify(CONSOLE_ID);
+                        ship.getMutableStats().getEmpDamageTakenMult().unmodify(CONSOLE_ID);
+                    }
+
+                    if (infFlux)
+                    {
+                        ship.getFluxTracker().setCurrFlux(0f);
+                        ship.getFluxTracker().setHardFlux(0f);
+                    }
+
+                    if (infAmmo || noCooldown)
+                    {
+                        for (WeaponAPI wep : ship.getAllWeapons())
+                        {
+                            if (infAmmo)
+                            {
+                                wep.resetAmmo();
+                            }
+                            if (noCooldown)
+                            {
+                                wep.setRemainingCooldownTo(Math.min(.1f,
+                                        wep.getCooldownRemaining()));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (shouldReveal)
+        {
+            engine.getFogOfWar(FleetSide.PLAYER.ordinal()).
+                    revealAroundPoint(this, 0, 0,
+                    Math.max(engine.getMapHeight(), engine.getMapWidth()));
+        }
+
+        checkRender();
+    }
 
     @Override
     public void advance(float amount, List events)
@@ -24,62 +189,7 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
         {
             Console.getConsole().checkQueue();
 
-            if (shouldReveal)
-            {
-                Console.getCombatEngine().getFogOfWar(FleetSide.PLAYER.ordinal()).
-                        revealAroundPoint(this, 0, 0, 50000f);
-            }
-
-            if (godMode || infFlux || infAmmo || noCooldown)
-            {
-                for (ShipAPI ship : Console.getCombatEngine().getShips())
-                {
-                    if (ship.isHulk() || ship.isShuttlePod())
-                    {
-                        continue;
-                    }
-
-                    if (ship.getOwner() == FleetSide.PLAYER.ordinal())
-                    {
-                        if (godMode)
-                        {
-                            ship.getMutableStats().getArmorDamageTakenMult().modifyFlat(CONSOLE_ID, -10000f);
-                            ship.getMutableStats().getHullDamageTakenMult().modifyFlat(CONSOLE_ID, -10000f);
-                            ship.getMutableStats().getMaxHullRepairFraction().modifyFlat(CONSOLE_ID, 100f);
-                            ship.getMutableStats().getHullRepairRatePercentPerSecond().modifyFlat(CONSOLE_ID, 10000f);
-                        }
-                        else
-                        {
-                            ship.getMutableStats().getArmorDamageTakenMult().unmodify(CONSOLE_ID);
-                            ship.getMutableStats().getHullDamageTakenMult().unmodify(CONSOLE_ID);
-                            ship.getMutableStats().getMaxHullRepairFraction().unmodify(CONSOLE_ID);
-                            ship.getMutableStats().getHullRepairRatePercentPerSecond().unmodify(CONSOLE_ID);
-                        }
-
-                        if (infFlux)
-                        {
-                            ship.getFluxTracker().setCurrFlux(0f);
-                            ship.getFluxTracker().setHardFlux(0f);
-                        }
-
-                        if (infAmmo || noCooldown)
-                        {
-                            for (WeaponAPI wep : ship.getAllWeapons())
-                            {
-                                if (infAmmo)
-                                {
-                                    wep.resetAmmo();
-                                }
-                                if (noCooldown)
-                                {
-                                    wep.setRemainingCooldownTo(Math.min(.1f,
-                                            wep.getCooldownRemaining()));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            checkCommands();
         }
     }
 
@@ -93,10 +203,14 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
     @Override
     public void init(CombatEngineAPI engine)
     {
+        BaseCombatHook.engine = engine;
+
         if (Console.getConsole() == null)
         {
             Console.setConsole(new Console());
         }
+
+        showActive = true;
 
         if (RESET_COMMANDS_AFTER_COMBAT)
         {

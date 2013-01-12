@@ -26,7 +26,7 @@ public class NoCooldown extends BaseCommand
     @Override
     public boolean runCommand(String args)
     {
-        BaseCombatHook.noCooldown = !BaseCombatHook.noCooldown;
+        BaseCombatHook.toggleNoCooldown();
         return true;
     }
 }
