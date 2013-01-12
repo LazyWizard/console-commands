@@ -1,3 +1,16 @@
+ 1.1 (January 11, 2012)
+========================
+Fixed bug where the console occasionally stopped working during a campaign
+Generator is more aggressive about activating itself in total conversions
+In-battle message support added, displayed underneath player ship
+In-battle commands are no longer reset after each battle
+Active in-battle commands are listed at the start of combat and when toggled
+Removed Unreveal command, Reveal is now a toggle
+New in-battle commands:
+ - God: Invincibility (somewhat buggy - heavy damage will instantly drop you to
+   zero hull but you won't die, and you get a null crash when ramming ships)
+ - InfiniteFlux: Gives all ships on your side infinite flux
+
  1.0 (November 24, 2012)
 =========================
 MASSIVE changes made to the code base for this release - please report any bugs!
