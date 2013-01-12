@@ -94,9 +94,11 @@ public final class Console implements SpawnPointPlugin
         allCommands.put("alias", Alias.class);
         allCommands.put("allweapons", AllWeapons.class);
         allCommands.put("gc", GC.class);
+        allCommands.put("god", God.class);
         allCommands.put("goto", GoTo.class);
         allCommands.put("home", Home.class);
         allCommands.put("infiniteammo", InfiniteAmmo.class);
+        allCommands.put("infiniteflux", InfiniteFlux.class);
         allCommands.put("nocooldown", NoCooldown.class);
         allCommands.put("reveal", Reveal.class);
         allCommands.put("runcode", RunCode.class);
@@ -976,7 +978,7 @@ public final class Console implements SpawnPointPlugin
 
     private static class InputHandler extends Thread
     {
-        private WeakReference<Console> console;
+        private Console console;
         boolean shouldStop = false;
 
         private InputHandler()
@@ -985,17 +987,17 @@ public final class Console implements SpawnPointPlugin
 
         public InputHandler(Console console)
         {
-            this.console = new WeakReference<Console>(console);
+            this.console = console;
         }
 
         private Console getConsole()
         {
-            return (Console) console.get();
+            return console;
         }
 
         private void setConsole(Console console)
         {
-            this.console = new WeakReference<Console>(console);
+            this.console = console;
         }
 
         private String getInput()
