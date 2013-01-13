@@ -116,8 +116,8 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
                 {
                     if (godMode)
                     {
-                        ship.getMutableStats().getHullDamageTakenMult().modifyPercent(CONSOLE_ID, -100f);
-                        ship.getMutableStats().getEmpDamageTakenMult().modifyPercent(CONSOLE_ID, -100f);
+                        ship.getMutableStats().getHullDamageTakenMult().modifyPercent(CONSOLE_ID, -1000f);
+                        ship.getMutableStats().getEmpDamageTakenMult().modifyPercent(CONSOLE_ID, -1000f);
                     }
                     else
                     {
