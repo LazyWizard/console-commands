@@ -1,3 +1,17 @@
+ 1.3 (January 14, 2012)
+========================
+You can now add the console to an existing save with 'addconsole'
+Mod info page now has more information to help beginners with this mod
+Godmode no longer fails with systems that increase ships' vulnerability
+New campaign command: AddXP <amount> - adds experience to your character
+New in-battle command: Nuke - destroys all enemies on the battle map
+Added missing text to AddAptitudePoints and AddSkillPoints
+
+ 1.2 (January 12, 2012)
+========================
+Fixed crash when using invincibility cheats
+Fixed position of in-battle messages when using large ships
+
  1.1 (January 11, 2012)
 ========================
 Fixed bug where the console occasionally stopped working during a campaign
