@@ -1,6 +1,7 @@
 package data.scripts.console;
 
 import com.fs.starfarer.api.combat.CombatEngineAPI;
+import com.fs.starfarer.api.combat.DamageType;
 import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.WeaponAPI;
@@ -15,7 +16,7 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
     private static final String CONSOLE_ID = "consolemod";
     private static final boolean RESET_COMMANDS_AFTER_COMBAT = false;
     private static boolean showActive = true, shouldReveal = false, infAmmo = false,
-            infFlux = false, godMode = false, noCooldown = false;
+            infFlux = false, godMode = false, noCooldown = false, nuke = false;
     private static CombatEngineAPI engine;
 
     public static boolean toggleGodMode()
@@ -51,6 +52,13 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
         shouldReveal = !shouldReveal;
         showActive = true;
         return shouldReveal;
+    }
+
+    public static boolean enableNuke()
+    {
+        nuke = true;
+        Console.showMessage("Nuke activated. All enemy ships destroyed.");
+        return true;
     }
 
     private void checkRender()
@@ -103,7 +111,7 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
 
     private void checkCommands()
     {
-        if (godMode || infFlux || infAmmo || noCooldown)
+        if (godMode || infFlux || infAmmo || noCooldown || nuke)
         {
             for (ShipAPI ship : engine.getShips())
             {
@@ -147,6 +155,14 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
                         }
                     }
                 }
+                else
+                {
+                    if (nuke)
+                    {
+                        engine.applyDamage(ship, ship.getLocation(), 500000,
+                                DamageType.ENERGY, 500000, true, false, null);
+                    }
+                }
             }
         }
 
@@ -157,6 +173,7 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
                     Math.max(engine.getMapHeight(), engine.getMapWidth()));
         }
 
+        nuke = false;
         checkRender();
     }
 
@@ -189,6 +206,7 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
         }
 
         showActive = true;
+        nuke = false;
 
         if (RESET_COMMANDS_AFTER_COMBAT)
         {

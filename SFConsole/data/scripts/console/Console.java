@@ -30,6 +30,8 @@ public final class Console implements SpawnPointPlugin
     public static final boolean REQUIRE_RUN_WINDOWED = true;
     /** The package all console commands must be in */
     public static final String COMMAND_PACKAGE = "data.scripts.console.commands";
+    /** To enter multiple commands at once, separate them with the following */
+    public static final String COMMAND_SEPARATOR = ";";
     /** The color of messages posted by {@link Console#showMessage(java.lang.String)} */
     public static final Color CONSOLE_COLOR = Color.YELLOW;
     /** How long a line can be before being split by {@link Console#showMessage(java.lang.String)} */
@@ -94,6 +96,7 @@ public final class Console implements SpawnPointPlugin
         allCommands.put("addsupplies", AddSupplies.class);
         allCommands.put("addweapon", AddWeapon.class);
         allCommands.put("addwing", AddWing.class);
+        allCommands.put("addxp", AddXP.class);
         allCommands.put("adjustrelationship", AdjustRelationship.class);
         allCommands.put("alias", Alias.class);
         allCommands.put("allweapons", AllWeapons.class);
@@ -104,6 +107,7 @@ public final class Console implements SpawnPointPlugin
         allCommands.put("infiniteammo", InfiniteAmmo.class);
         allCommands.put("infiniteflux", InfiniteFlux.class);
         allCommands.put("nocooldown", NoCooldown.class);
+        allCommands.put("nuke", Nuke.class);
         allCommands.put("reveal", Reveal.class);
         allCommands.put("runcode", RunCode.class);
         allCommands.put("runscript", RunScript.class);
@@ -158,11 +162,22 @@ public final class Console implements SpawnPointPlugin
             return false;
         }
 
-        showMessage("Attempting to activate the console on this save...");
-        Console con = new Console();
-        system.addSpawnPoint(con);
-        setConsole(con);
-        reloadInput(con);
+        showMessage("Attempting to activate the console...");
+
+        try
+        {
+            Console con = new Console();
+            system.addSpawnPoint(con);
+            setConsole(con);
+            reloadInput(con);
+        }
+        catch (Exception ex)
+        {
+            showError("Something went wrong!", ex);
+            inBattle = bat;
+            return false;
+        }
+
         showMessage("Console campaign functionality has been added to this save.");
         inBattle = bat;
         return true;
@@ -521,7 +536,7 @@ public final class Console implements SpawnPointPlugin
         }
         else
         {
-            queuedCommands.addAll(Arrays.asList(command.split(";")));
+            queuedCommands.addAll(Arrays.asList(command.split(COMMAND_SEPARATOR)));
         }
     }
 
