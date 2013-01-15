@@ -5,6 +5,7 @@ import com.fs.starfarer.api.Script;
 import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.SpawnPointPlugin;
+import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import data.scripts.console.commands.*;
@@ -114,13 +115,14 @@ public final class Console implements SpawnPointPlugin
         hardcodedCommands.add("help");
         hardcodedCommands.add("runtests");
         hardcodedCommands.add("status");
+        hardcodedCommands.add("addconsole");
         hardcodedCommands.addAll(allCommands.keySet());
     }
 
     public Console()
     {
         setConsole(this);
-        reloadInput();
+        reloadInput(this);
     }
 
     /**
@@ -134,6 +136,36 @@ public final class Console implements SpawnPointPlugin
         queuedCommands = Collections.synchronizedList(new ArrayList<String>());
         setConsole(this);
         return this;
+    }
+
+    private boolean forceAddConsole()
+    {
+        boolean bat = inBattle;
+        inBattle = false;
+
+        if (Global.getSector() == null || Global.getSector().getPlayerFleet() == null
+                || Global.getSector().getStarSystems().isEmpty())
+        {
+            showMessage("No active campaign detected!");
+            return false;
+        }
+
+        StarSystemAPI system = Global.getSector().getStarSystems().get(0);
+
+        if (system == getConsole().getLocation())
+        {
+            showMessage("The console is already activated for this save!");
+            return false;
+        }
+
+        showMessage("Attempting to activate the console on this save...");
+        Console con = new Console();
+        system.addSpawnPoint(con);
+        setConsole(con);
+        reloadInput(con);
+        showMessage("Console campaign functionality has been added to this save.");
+        inBattle = bat;
+        return true;
     }
 
     /**
@@ -386,17 +418,12 @@ public final class Console implements SpawnPointPlugin
     }
 
     /**
-     * Gets the current {@link LocationAPI} of the player fleet
+     * Gets the current {@link LocationAPI} this console uses
      *
      * @return the last location this campaign's advance() occurred in
      */
-    protected LocationAPI getLocation()
+    public LocationAPI getLocation()
     {
-        /*if (location == null)
-         {
-         location = Global.getSector().getPlayerFleet().getContainingLocation();
-         }*/
-
         return location;
     }
 
@@ -404,7 +431,7 @@ public final class Console implements SpawnPointPlugin
     {
         reloadCommands();
         reloadScripts();
-        reloadInput();
+        reloadInput(this);
 
         Global.getSector().addMessage("The console will only be visible"
                 + " when the game is run in windowed mode.");
@@ -460,15 +487,15 @@ public final class Console implements SpawnPointPlugin
         }
     }
 
-    private synchronized void reloadInput()
+    private synchronized void reloadInput(Console console)
     {
         if (inputHandler != null)
         {
-            inputHandler.setConsole(this);
+            inputHandler.setConsole(console);
             return;
         }
 
-        InputHandler tmp = new InputHandler(this);
+        InputHandler tmp = new InputHandler(console);
         tmp.setName("Console-Input");
         tmp.setDaemon(true);
         Console.inputHandler = tmp;
@@ -479,6 +506,12 @@ public final class Console implements SpawnPointPlugin
     {
         if (command == null || command.isEmpty())
         {
+            return;
+        }
+
+        if (command.equals("addconsole"))
+        {
+            forceAddConsole();
             return;
         }
 
