@@ -1,17 +1,20 @@
 package data.scripts.console.commands;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.CampaignFleetAPI;
+import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.SectorGeneratorPlugin;
 import data.scripts.console.BaseCommand;
+import java.util.*;
 
 public class ActivateMod extends BaseCommand
 {
     @Override
     protected String getHelp()
     {
-        return "Activates a mod's generator. The argument is the fully-qualified"
-                + " name of the generator's class (for example:"
-                + " data.scripts.world.corvus.AddMod).";
+        return "Adds a mod to an existing game. The argument is the fully-"
+                + "qualified name of the mod's generator's class (for example:"
+                + " data.scripts.world.corvus.ModGen).";
     }
 
     @Override
@@ -90,7 +93,80 @@ public class ActivateMod extends BaseCommand
             return false;
         }
 
-        generator.generate(getSector());
+        List<SectorEntityToken> planets = new ArrayList(getStarSystem().getPlanets());
+        List<SectorEntityToken> stations = new ArrayList(getStarSystem().getOrbitalStations());
+        List<SectorEntityToken> asteroids = new ArrayList(getStarSystem().getAsteroids());
+        List<CampaignFleetAPI> fleets = new ArrayList(getStarSystem().getFleets());
+
+        try
+        {
+            generator.generate(getSector());
+        }
+        catch (Exception ex)
+        {
+            showError("Exception while running generator:", ex);
+            showMessage("Attempting to revert...");
+
+            List<SectorEntityToken> newPlanets = new ArrayList(getStarSystem().getPlanets());
+            newPlanets.removeAll(planets);
+
+            if (!newPlanets.isEmpty())
+            {
+                showMessage("Removing added planets...");
+
+                for (SectorEntityToken planet : newPlanets)
+                {
+                    showMessage("DEBUG: Planet " + planet.getFullName());
+                    //getStarSystem().removePlanet(planet);
+                }
+            }
+
+            List<SectorEntityToken> newStations = new ArrayList(getStarSystem().getOrbitalStations());
+            newStations.removeAll(stations);
+
+            if (!newStations.isEmpty())
+            {
+                showMessage("Removing added stations...");
+
+                for (SectorEntityToken station : newStations)
+                {
+                    showMessage("DEBUG: Station " + station.getFullName());
+                    //getStarSystem().removeOrbitalStation(station);
+                }
+            }
+
+            List<SectorEntityToken> newAsteroids = new ArrayList(getStarSystem().getAsteroids());
+            newAsteroids.removeAll(asteroids);
+
+            if (!newAsteroids.isEmpty())
+            {
+                showMessage("Removing added asteroids...");
+
+                for (SectorEntityToken asteroid : newAsteroids)
+                {
+                    showMessage("DEBUG: Asteroid " + asteroid.getFullName());
+                    //getStarSystem().removeAsteroid(asteroid);
+                }
+            }
+
+            List<CampaignFleetAPI> newFleets = new ArrayList(getStarSystem().getFleets());
+            newFleets.removeAll(fleets);
+
+            if (!newFleets.isEmpty())
+            {
+                showMessage("Removing added fleets...");
+
+                for (CampaignFleetAPI fleet : newFleets)
+                {
+                    showMessage("DEBUG: Fleet " + fleet.getFullName());
+                    //getStarSystem().removeFleet(fleet);
+                }
+            }
+
+            showMessage("Reverted successfully.");
+            return false;
+        }
+
         showMessage("Generator ran successfully, mod should be active now.");
         return true;
     }

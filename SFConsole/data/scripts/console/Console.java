@@ -87,7 +87,7 @@ public final class Console implements SpawnPointPlugin
         RESTRICTED_KEYS.add(Keyboard.KEY_RSHIFT);
 
         // Built-in commands, don't need to go through registerCommand's checks
-        //allCommands.put("activatemod", ActivateMod.class);
+        allCommands.put("activatemod", ActivateMod.class);
         allCommands.put("addaptitudepoints", AddAptitudePoints.class);
         allCommands.put("addcommandpoints", AddCommandPoints.class);
         allCommands.put("addcredits", AddCredits.class);
