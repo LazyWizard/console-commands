@@ -30,7 +30,7 @@ public final class Console implements SpawnPointPlugin
     /** Does the console require the game to be run windowed to function? */
     public static final boolean REQUIRE_RUN_WINDOWED = true;
     /** Should we display the entire stack trace when an exception occurs? */
-    public static final boolean SHOW_STACK_TRACE_ON_EXCEPTION = true;
+    public static final boolean SHOW_STACK_TRACE_ON_EXCEPTION = false;
     /** The package all console commands must be in */
     public static final String COMMAND_PACKAGE = "data.scripts.console.commands";
     /** To enter multiple commands at once, separate them with the following */
@@ -75,7 +75,7 @@ public final class Console implements SpawnPointPlugin
         UIManager.put("OptionPane.messageForeground", Color.CYAN);
         UIManager.put("TextField.background", Color.BLACK);
         UIManager.put("TextField.foreground", Color.YELLOW);
-        UIManager.put("TextField.caretForeground", Color.CYAN);
+        UIManager.put("TextField.caretForeground", Color.YELLOW);
         UIManager.put("Button.background", Color.BLACK);
         UIManager.put("Button.foreground", Color.LIGHT_GRAY);
 
