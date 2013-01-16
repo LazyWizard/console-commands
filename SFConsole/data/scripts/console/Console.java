@@ -74,6 +74,7 @@ public final class Console implements SpawnPointPlugin
         UIManager.put("OptionPane.messageForeground", Color.CYAN);
         UIManager.put("TextField.background", Color.BLACK);
         UIManager.put("TextField.foreground", Color.YELLOW);
+        UIManager.put("TextField.caretForeground", Color.CYAN);
         UIManager.put("Button.background", Color.BLACK);
         UIManager.put("Button.foreground", Color.LIGHT_GRAY);
 
