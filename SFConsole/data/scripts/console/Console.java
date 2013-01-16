@@ -84,6 +84,7 @@ public final class Console implements SpawnPointPlugin
         RESTRICTED_KEYS.add(Keyboard.KEY_RSHIFT);
 
         // Built-in commands, don't need to go through registerCommand's checks
+        //allCommands.put("activatemod", ActivateMod.class);
         allCommands.put("addaptitudepoints", AddAptitudePoints.class);
         allCommands.put("addcommandpoints", AddCommandPoints.class);
         allCommands.put("addcredits", AddCredits.class);
@@ -130,7 +131,7 @@ public final class Console implements SpawnPointPlugin
     }
 
     /**
-     * Automatically called by the game - don't call this manually.
+     * Automatically called by the JRE - don't call this manually.
      */
     public Object readResolve()
     {
@@ -910,7 +911,19 @@ public final class Console implements SpawnPointPlugin
             preamble = preamble + ": ";
         }
 
-        showMessage(preamble + ex.toString(), ex.getMessage(), true);
+        StringBuilder message = new StringBuilder();
+
+        if (ex.getMessage() != null)
+        {
+            message.append(ex.getMessage()).append("\n");
+        }
+
+        for (StackTraceElement ste : ex.getStackTrace())
+        {
+            message.append(INDENT).append("at ").append(ste.toString()).append("\n");
+        }
+
+        showMessage(preamble + ex.toString(), message.toString(), true);
     }
 
     private static String lineWrap(String message, boolean indent)
@@ -1015,6 +1028,8 @@ public final class Console implements SpawnPointPlugin
     {
         if (isInBattle())
         {
+            System.out.println("Console-Combat: " + message);
+
             CombatEngineAPI engine = getCombatEngine();
             ShipAPI player = engine.getPlayerShip();
 
@@ -1034,6 +1049,8 @@ public final class Console implements SpawnPointPlugin
         }
         else
         {
+            System.out.println("Console-Campaign: " + message);
+
             List<String> lines = new ArrayList(Arrays.asList(message.split("\n")));
 
             for (int x = 0; x < lines.size(); x++)

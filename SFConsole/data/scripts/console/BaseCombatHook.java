@@ -174,7 +174,6 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
         }
 
         nuke = false;
-        checkRender();
     }
 
     @Override
@@ -184,7 +183,11 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
         {
             Console.getConsole().checkQueue();
 
-            checkCommands();
+            if (!engine.isPaused())
+            {
+                checkCommands();
+                checkRender();
+            }
         }
     }
 
