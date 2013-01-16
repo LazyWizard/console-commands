@@ -1,7 +1,12 @@
  1.4 (January XX, 2012)
 ========================
-The cursor for the console pop-up is now visible (cyan instead of black)
+The cursor for the console pop-up is now visible
+Changed how commands are queued (uses a ConcurrentLinkedQueue instead of a List)
 Fixed bug: exception details not displayed when an error occurs
+Multiple changes to the alias command:
+ - More detail is given when the command fails
+ - Fixed several bugs that prevented aliases with multiple commands from working
+ - Fixed bug: could alias alias and cause an infinite loop
 
  1.3 (January 14, 2012)
 ========================
