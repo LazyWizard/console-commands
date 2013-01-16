@@ -12,6 +12,7 @@ import data.scripts.console.commands.*;
 import java.awt.Color;
 import java.lang.ref.WeakReference;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import org.lwjgl.input.Keyboard;
@@ -55,7 +56,7 @@ public final class Console implements SpawnPointPlugin
     private static WeakReference<CombatEngineAPI> activeEngine;
     private static Console activeConsole;
     private static InputHandler inputHandler;
-    private transient List<String> queuedCommands = Collections.synchronizedList(new ArrayList<String>());
+    private transient Queue<String> queuedCommands = new ConcurrentLinkedQueue<String>();
     private transient boolean justReloaded = false, isListening = false;
     private transient volatile boolean isPressed = false, showRestrictions = true;
     // Saved variables
@@ -141,7 +142,7 @@ public final class Console implements SpawnPointPlugin
         justReloaded = true;
         isPressed = false;
         isListening = false;
-        queuedCommands = Collections.synchronizedList(new ArrayList<String>());
+        queuedCommands = new ConcurrentLinkedQueue<String>();
         setConsole(this);
         return this;
     }
@@ -250,10 +251,27 @@ public final class Console implements SpawnPointPlugin
      */
     public boolean addAlias(String alias, String command)
     {
-        if (allCommands.containsKey(alias) || !allCommands.containsKey(command)
-                || alias.contains(" "))
+        if (alias.contains(" "))
         {
+            showMessage("Improperly formatted alias!");
             return false;
+        }
+
+        if (allCommands.containsKey(alias))
+        {
+            showMessage("Alias '" + alias + "'already exists as a command!");
+            return false;
+        }
+
+        for (String tmp : command.split(COMMAND_SEPARATOR))
+        {
+            String[] com = tmp.split(" ");
+
+            if (!allCommands.containsKey(com[0]))
+            {
+                showMessage("'" + com[0] + "' is not a valid command!");
+                return false;
+            }
         }
 
         aliases.put(alias, command);
@@ -581,14 +599,9 @@ public final class Console implements SpawnPointPlugin
      */
     protected void checkQueue()
     {
-        if (queuedCommands.isEmpty())
+        while (!queuedCommands.isEmpty())
         {
-            return;
-        }
-
-        for (String command : queuedCommands)
-        {
-            parseCommand(command);
+            parseCommand(queuedCommands.remove());
         }
 
         queuedCommands.clear();
@@ -800,14 +813,8 @@ public final class Console implements SpawnPointPlugin
 
         if (aliases.containsKey(com))
         {
-            com = aliases.get(com);
-            if (com.contains(" "))
-            {
-                tmp = com.split(" ");
-                com = tmp[0];
-                args = implode(Arrays.copyOfRange(tmp, 1, tmp.length))
-                        + " " + args;
-            }
+            addCommandToQueue(aliases.get(com));
+            return true;
         }
 
         return executeCommand(com, args);

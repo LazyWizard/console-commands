@@ -23,11 +23,17 @@ public class Alias extends BaseCommand
     {
         String[] tmp = args.split(" ");
 
-        if (tmp.length <= 1)
+        if (tmp.length < 2)
         {
             showSyntax();
             return false;
         }
+        else if (tmp[0].equalsIgnoreCase("alias") || tmp[1].equalsIgnoreCase("alias"))
+        {
+            showMessage("Nice try!");
+            return false;
+        }
+
 
         String alias = tmp[0];
         StringBuilder arg = new StringBuilder();
