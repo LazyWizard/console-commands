@@ -25,6 +25,12 @@ public class ActivateMod extends BaseCommand
     {
         args = args.trim();
 
+        if (args.endsWith(".java"))
+        {
+            args = args.replace("/", ".").replace("\\", ".");
+            args = args.substring(0, args.lastIndexOf(".java"));
+        }
+
         if (args.isEmpty() || args.contains(" "))
         {
             showSyntax();
