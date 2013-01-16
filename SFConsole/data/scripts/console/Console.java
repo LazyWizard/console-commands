@@ -28,6 +28,8 @@ public final class Console implements SpawnPointPlugin
     public static final boolean REQUIRE_DEV_MODE = false;
     /** Does the console require the game to be run windowed to function? */
     public static final boolean REQUIRE_RUN_WINDOWED = true;
+    /** Should we display the entire stack trace when an exception occurs? */
+    public static final boolean SHOW_STACK_TRACE_ON_EXCEPTION = true;
     /** The package all console commands must be in */
     public static final String COMMAND_PACKAGE = "data.scripts.console.commands";
     /** To enter multiple commands at once, separate them with the following */
@@ -911,16 +913,14 @@ public final class Console implements SpawnPointPlugin
             preamble = preamble + ": ";
         }
 
-        StringBuilder message = new StringBuilder();
+        StringBuilder message = new StringBuilder(ex.toString()).append("\n");
 
-        if (ex.getMessage() != null)
+        if (SHOW_STACK_TRACE_ON_EXCEPTION)
         {
-            message.append(ex.getMessage()).append("\n");
-        }
-
-        for (StackTraceElement ste : ex.getStackTrace())
-        {
-            message.append(INDENT).append("at ").append(ste.toString()).append("\n");
+            for (StackTraceElement ste : ex.getStackTrace())
+            {
+                message.append(INDENT).append("at ").append(ste.toString()).append("\n");
+            }
         }
 
         showMessage(preamble + ex.toString(), message.toString(), true);
