@@ -1,8 +1,8 @@
- 1.4 (January XX, 2012)
+ 1.4 (January 17, 2012)
 ========================
 The cursor for the console pop-up is now visible
-Changed how commands are queued (uses a ConcurrentLinkedQueue instead of a List)
 Fixed bug: exception details not displayed when an error occurs
+RunCode works again (ignores separators, can't be used with other commands)
 Multiple changes to the alias command:
  - More detail is given when the command fails
  - Fixed several bugs that prevented aliases with multiple commands from working

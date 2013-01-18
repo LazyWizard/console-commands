@@ -88,7 +88,7 @@ public final class Console implements SpawnPointPlugin
         RESTRICTED_KEYS.add(Keyboard.KEY_RSHIFT);
 
         // Built-in commands, don't need to go through registerCommand's checks
-        allCommands.put("activatemod", ActivateMod.class);
+        //allCommands.put("activatemod", ActivateMod.class);
         allCommands.put("addaptitudepoints", AddAptitudePoints.class);
         allCommands.put("addcommandpoints", AddCommandPoints.class);
         allCommands.put("addcredits", AddCredits.class);
@@ -552,7 +552,7 @@ public final class Console implements SpawnPointPlugin
             return;
         }
 
-        if (command.startsWith("alias "))
+        if (command.startsWith("alias ") || command.startsWith("runcode "))
         {
             queuedCommands.add(command);
         }
@@ -603,8 +603,6 @@ public final class Console implements SpawnPointPlugin
         {
             parseCommand(queuedCommands.remove());
         }
-
-        queuedCommands.clear();
     }
 
     private static void checkBattle()
