@@ -18,7 +18,7 @@ public class God extends BaseCommand
     }
 
     @Override
-    protected boolean isCombatOnly()
+    protected boolean isUseableInCombat()
     {
         return true;
     }

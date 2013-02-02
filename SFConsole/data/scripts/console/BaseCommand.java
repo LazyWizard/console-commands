@@ -154,7 +154,8 @@ public abstract class BaseCommand
         }
 
         showMessage(getName() + " help:",
-                "Combat only: " + (isCombatOnly() ? "yes" : "no") + "\n"
+                "Useable in campaign: " + (isUseableInCampaign() ? "yes" : "no") + "\n"
+                + "Useable in combat: " + (isUseableInCombat() ? "yes" : "no") + "\n"
                 + (getSyntax().isEmpty() ? "" : "Usage: " + getSyntax() + "\n")
                 + getHelp(), true);
     }
@@ -174,11 +175,21 @@ public abstract class BaseCommand
     }
 
     /**
-     * Returns whether this command is restricted to battles only.
+     * Returns whether this command can be used in campaigns.
      *
-     * @return true if this command can only be run on the battle map
+     * @return true if this command can be run on the campaign map
      */
-    protected boolean isCombatOnly()
+    protected boolean isUseableInCampaign()
+    {
+        return true;
+    }
+
+    /**
+     * Returns whether this command can be used in battles.
+     *
+     * @return true if this command can be run on the battle map
+     */
+    protected boolean isUseableInCombat()
     {
         return false;
     }

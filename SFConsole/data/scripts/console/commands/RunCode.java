@@ -44,6 +44,12 @@ public class RunCode extends BaseCommand
     }
 
     @Override
+    protected boolean isUseableInCombat()
+    {
+        return true;
+    }
+
+    @Override
     public boolean runCommand(String args)
     {
         // Yes, this is relatively slow. But for obvious security reasons,

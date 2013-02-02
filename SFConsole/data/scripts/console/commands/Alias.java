@@ -19,6 +19,12 @@ public class Alias extends BaseCommand
     }
 
     @Override
+    protected boolean isUseableInCombat()
+    {
+        return true;
+    }
+
+    @Override
     protected boolean runCommand(String args)
     {
         String[] tmp = args.split(" ");

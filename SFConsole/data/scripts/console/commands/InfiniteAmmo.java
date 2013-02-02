@@ -18,7 +18,7 @@ public class InfiniteAmmo extends BaseCommand
     }
 
     @Override
-    protected boolean isCombatOnly()
+    protected boolean isUseableInCombat()
     {
         return true;
     }
