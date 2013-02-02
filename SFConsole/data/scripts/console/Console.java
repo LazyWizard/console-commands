@@ -171,10 +171,9 @@ public final class Console implements SpawnPointPlugin
 
         try
         {
-            Console con = new Console();
-            system.addSpawnPoint(con);
-            setConsole(con);
-            reloadInput(con);
+            system.addSpawnPoint(this);
+            setConsole(this);
+            reloadInput(this);
         }
         catch (Exception ex)
         {
