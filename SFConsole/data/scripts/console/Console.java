@@ -315,6 +315,11 @@ public final class Console implements SpawnPointPlugin
 
     private synchronized boolean checkInput()
     {
+        if (!Keyboard.isCreated())
+        {
+            return false;
+        }
+
         if (!isPressed)
         {
             if (Keyboard.isKeyDown(consoleKey))
@@ -860,11 +865,21 @@ public final class Console implements SpawnPointPlugin
             return true;
         }
 
-        if (command.isCombatOnly() ^ isInBattle())
+        if (isInBattle())
         {
-            showMessage("This command can only be run "
-                    + (isInBattle() ? "outside" : "during") + " combat!");
-            return false;
+            if (!command.isUseableInCombat())
+            {
+                showMessage("This command can't be used in combat!");
+                return false;
+            }
+        }
+        else
+        {
+            if (!command.isUseableInCampaign())
+            {
+                showMessage("This command can't be used on the campaign map!");
+                return false;
+            }
         }
 
         try

@@ -18,7 +18,13 @@ public class Nuke extends BaseCommand
     }
 
     @Override
-    protected boolean isCombatOnly()
+    protected boolean isUseableInCampaign()
+    {
+        return false;
+    }
+
+    @Override
+    protected boolean isUseableInCombat()
     {
         return true;
     }

@@ -18,7 +18,7 @@ public class Reveal extends BaseCommand
     }
 
     @Override
-    protected boolean isCombatOnly()
+    protected boolean isUseableInCombat()
     {
         return true;
     }

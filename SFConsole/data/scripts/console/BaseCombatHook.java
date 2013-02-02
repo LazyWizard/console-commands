@@ -23,6 +23,12 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
     {
         godMode = !godMode;
         showActive = true;
+
+        if (!Console.isInBattle())
+        {
+            Console.showMessage("Godmode " + (godMode ? "enabled." : "disabled."));
+        }
+
         return godMode;
     }
 
@@ -30,6 +36,12 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
     {
         infAmmo = !infAmmo;
         showActive = true;
+
+        if (!Console.isInBattle())
+        {
+            Console.showMessage("Infinite ammo " + (infAmmo ? "enabled." : "disabled."));
+        }
+
         return infAmmo;
     }
 
@@ -37,6 +49,12 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
     {
         infFlux = !infFlux;
         showActive = true;
+
+        if (!Console.isInBattle())
+        {
+            Console.showMessage("Infinite flux " + (infFlux ? "enabled." : "disabled."));
+        }
+
         return infFlux;
     }
 
@@ -44,6 +62,12 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
     {
         noCooldown = !noCooldown;
         showActive = true;
+
+        if (!Console.isInBattle())
+        {
+            Console.showMessage("Weapon cooldowns " + (noCooldown ? "disabled." : "enabled."));
+        }
+
         return noCooldown;
     }
 
@@ -51,6 +75,12 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
     {
         shouldReveal = !shouldReveal;
         showActive = true;
+
+        if (!Console.isInBattle())
+        {
+            Console.showMessage("Fog of war " + (shouldReveal ? "disabled." : "enabled."));
+        }
+
         return shouldReveal;
     }
 
