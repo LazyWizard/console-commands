@@ -25,6 +25,7 @@ import org.lwjgl.util.vector.Vector2f;
 public final class Console implements SpawnPointPlugin
 {
     // Console constants
+    public static final String CONSOLE_VERSION = "1.5";
     /** Does the console require devMode=true in settings.json to function? */
     public static final boolean REQUIRE_DEV_MODE = false;
     /** Does the console require the game to be run windowed to function? */
@@ -171,6 +172,7 @@ public final class Console implements SpawnPointPlugin
 
         try
         {
+            this.location = system;
             system.addSpawnPoint(this);
             setConsole(this);
             reloadInput(this);
@@ -474,11 +476,17 @@ public final class Console implements SpawnPointPlugin
         reloadScripts();
         reloadInput(this);
 
-        Global.getSector().addMessage("The console will only be visible"
-                + " when the game is run in windowed mode.");
-        Global.getSector().addMessage("To rebind the console to another key,"
-                + " press shift+" + Keyboard.getKeyName(REBIND_KEY)
-                + " while on the campaign map.");
+        if (Display.isFullscreen())
+        {
+            Global.getSector().addMessage("The console will only function properly"
+                    + " when the game is run in windowed mode.");
+        }
+
+        String highlight = "Console version " + CONSOLE_VERSION + " loaded.";
+        Global.getSector().addMessage(highlight
+                +" To rebind the console to another key, press shift+"
+                + Keyboard.getKeyName(REBIND_KEY) + " while on the campaign map.",
+                highlight, Color.GREEN);
     }
 
     private void reloadCommands()

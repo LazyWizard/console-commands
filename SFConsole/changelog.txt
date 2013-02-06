@@ -1,3 +1,14 @@
+ 1.5 (February XX, 2013)
+=========================
+Toggleable combat commands can now be used on the campaign map
+Certain non-combat commands can now be used in battles (Alias, GC, RunCode, etc)
+You can now copy your console settings to a new savefile:
+ (this process will be improved in future versions)
+ - Step 1: start a new game without this mod active, save and quit
+ - Step 2: activate this mod, load the save with the settings you want
+ - Step 3: without exiting the game, load the new save from step 1
+ - Step 4: use the AddConsole command to activate the console on that save
+
  1.4 (January 17, 2012)
 ========================
 The cursor for the console pop-up is now visible
