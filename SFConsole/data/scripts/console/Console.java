@@ -50,7 +50,7 @@ public final class Console implements SpawnPointPlugin
     public static final List<Integer> RESTRICTED_KEYS = new ArrayList<Integer>();
     private static final String INDENT = "   ";
     // Maps the command to the associated class
-    private static final Map<String, Class<? extends BaseCommand>> allCommands = new HashMap<String, Class<? extends BaseCommand>>();
+    private static final SortedMap<String, Class<? extends BaseCommand>> allCommands = new TreeMap<String, Class<? extends BaseCommand>>();
     private static final Set<String> hardcodedCommands = new HashSet();
     // Per-session variables
     private static boolean inBattle = false;
@@ -531,7 +531,7 @@ public final class Console implements SpawnPointPlugin
     {
         if (hasVar("UserScripts"))
         {
-            Map<String, Script> userScripts = (Map) getVar("UserScripts", Map.class);
+            Map<String, Script> userScripts = getVar("UserScripts", Map.class);
             RunScript.addScripts(userScripts);
         }
     }
@@ -723,14 +723,10 @@ public final class Console implements SpawnPointPlugin
     private void listCommands()
     {
         StringBuilder names = new StringBuilder("Help, Status");
-        Iterator<Class<? extends BaseCommand>> iter = allCommands.values().iterator();
-        Class tmp;
 
-        while (iter.hasNext())
+        for (Class<? extends BaseCommand> command : allCommands.values())
         {
-            names.append(", ");
-            tmp = iter.next();
-            names.append(tmp.getSimpleName());
+            names.append(", ").append(command.getSimpleName());
         }
 
         showMessage("Valid commands (not case-sensitive): ",
