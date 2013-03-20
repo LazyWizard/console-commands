@@ -1,3 +1,8 @@
+ 1.6 (March xx, 2013)
+======================
+New GUI, keyhistory support
+RunCode can now use LazyLib's classes if LazyLib is currently active
+
  1.5 (February 7, 2013)
 ========================
 Toggleable combat commands can now be used on the campaign map

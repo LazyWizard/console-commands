@@ -26,7 +26,9 @@ public class RunCode extends BaseCommand
                     "com.fs.starfarer.api.*", "java.util.*",
                     "com.fs.starfarer.api.campaign.*", "java.awt.Color",
                     "com.fs.starfarer.api.fleet.*", "data.scripts.*",
-                    "com.fs.starfarer.api.combat.*", "data.scripts.world.*"
+                    "com.fs.starfarer.api.combat.*", "data.scripts.world.*",
+                    "org.lazywizard.lazylib.*", "org.lazywizard.lazylib.combat.*",
+                    "org.lazywizard.lazylib.campaign.*", "org.lwjgl.util.vector.Vector2f"
                 });
     }
 
@@ -83,7 +85,7 @@ public class RunCode extends BaseCommand
         }
         catch (InvocationTargetException ex)
         {
-            showError("Execution failed:", ex);
+            showError("Execution failed:", ex.getTargetException());
             return false;
         }
 

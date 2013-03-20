@@ -135,9 +135,9 @@ public abstract class BaseCommand
     /**
      * A convenient alias for {@link Console#showError(java.lang.String, java.lang.Exception)}.
      *
-     * @see Console#showError(java.lang.String, java.lang.Exception)
+     * @see Console#showError(java.lang.String, java.lang.Throwable)
      */
-    protected static void showError(String preamble, Exception ex)
+    protected static void showError(String preamble, Throwable ex)
     {
         Console.showError(preamble, ex);
     }
