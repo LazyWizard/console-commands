@@ -13,7 +13,10 @@ import java.awt.Color;
 import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -31,7 +34,7 @@ public final class Console implements SpawnPointPlugin
     /** Does the console require the game to be run windowed to function? */
     public static final boolean REQUIRE_RUN_WINDOWED = true;
     /** Should we display the entire stack trace when an exception occurs? */
-    public static final boolean SHOW_STACK_TRACE_ON_EXCEPTION = false;
+    public static final boolean SHOW_STACK_TRACE_ON_EXCEPTION = true;//false;
     /** The package all console commands must be in */
     public static final String COMMAND_PACKAGE = "data.scripts.console.commands";
     /** To enter multiple commands at once, separate them with the following */
@@ -484,7 +487,7 @@ public final class Console implements SpawnPointPlugin
 
         String highlight = "Console version " + CONSOLE_VERSION + " loaded.";
         Global.getSector().addMessage(highlight
-                +" To rebind the console to another key, press shift+"
+                + " To rebind the console to another key, press shift+"
                 + Keyboard.getKeyName(REBIND_KEY) + " while on the campaign map.",
                 highlight, Color.GREEN);
     }
@@ -926,7 +929,7 @@ public final class Console implements SpawnPointPlugin
      * @param preamble A short message to be shown before the exception
      * @param ex The exception to display
      */
-    public static void showError(String preamble, Exception ex)
+    public static void showError(String preamble, Throwable ex)
     {
         if (preamble == null)
         {
@@ -934,7 +937,14 @@ public final class Console implements SpawnPointPlugin
         }
         else if (!preamble.endsWith(": "))
         {
-            preamble = preamble + ": ";
+            if (preamble.endsWith(":"))
+            {
+                preamble = preamble + " ";
+            }
+            else
+            {
+                preamble = preamble + ": ";
+            }
         }
 
         StringBuilder message = new StringBuilder(ex.toString()).append("\n");
@@ -1131,6 +1141,22 @@ public final class Console implements SpawnPointPlugin
         private void setConsole(Console console)
         {
             this.console = console;
+        }
+
+        public static void main(String[] args)
+        {
+            JTextField xField = new JTextField(40);
+
+            JPanel myPanel = new JPanel();
+            myPanel.add(new JLabel("x:"));
+            myPanel.add(xField);
+
+            int result = JOptionPane.showConfirmDialog(null, myPanel,
+                    "Please Enter X and Y Values", JOptionPane.OK_CANCEL_OPTION);
+            if (result == JOptionPane.OK_OPTION)
+            {
+                System.out.println("x value: " + xField.getText());
+            }
         }
 
         private String getInput()
