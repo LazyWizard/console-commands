@@ -1,7 +1,11 @@
  1.6 (March xx, 2013)
 ======================
 New GUI, keyhistory support
-RunCode can now use LazyLib's classes if LazyLib is currently active
+Console.showError() now accepts Throwables as well as Exceptions
+Improvements to the RunCode command:
+ - Added Vector2f to default imports
+ - RunCode can now use LazyLib's classes if LazyLib is currently active
+ - Exception details shown rather than the InvocationTargetException wrapper
 
  1.5 (February 7, 2013)
 ========================
