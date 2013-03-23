@@ -11,12 +11,25 @@ import com.fs.starfarer.api.combat.ShipAPI;
 import data.scripts.console.commands.*;
 import java.awt.Color;
 import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -77,11 +90,15 @@ public final class Console implements SpawnPointPlugin
         UIManager.put("Panel.background", Color.BLACK);
         UIManager.put("OptionPane.background", Color.BLACK);
         UIManager.put("OptionPane.messageForeground", Color.CYAN);
+        UIManager.put("TextArea.background", Color.BLACK);
+        UIManager.put("TextArea.foreground", Color.YELLOW);
         UIManager.put("TextField.background", Color.BLACK);
         UIManager.put("TextField.foreground", Color.YELLOW);
         UIManager.put("TextField.caretForeground", Color.YELLOW);
         UIManager.put("Button.background", Color.BLACK);
         UIManager.put("Button.foreground", Color.LIGHT_GRAY);
+        UIManager.put("SplitPane.background", Color.BLACK);
+        UIManager.put("SplitPane.foreground", Color.LIGHT_GRAY);
 
         // These keys can't be bound to summon the console
         RESTRICTED_KEYS.add(REBIND_KEY);
@@ -1060,6 +1077,9 @@ public final class Console implements SpawnPointPlugin
 
     private static void printMessage(String message)
     {
+        inputHandler.output.setText(inputHandler.output.getText()
+                + message + "\n");
+
         if (isInBattle())
         {
             System.out.println("Console-Combat: " + message);
@@ -1122,7 +1142,27 @@ public final class Console implements SpawnPointPlugin
     private static class InputHandler extends Thread
     {
         private Console console;
+        private static final JTextArea output;
+        private static final JScrollPane scroll;
+        private static final JTextField input;
+        private static final JSplitPane panel;
         boolean shouldStop = false;
+
+        static
+        {
+            output = new JTextArea(20, 8);
+            output.setEditable(false);
+            output.setFocusable(false);
+            scroll = new JScrollPane(output);
+            scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+            scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            input = new JTextField(40);
+            panel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+            //panel.setTopComponent(output);
+            panel.setDividerSize(2);
+            panel.setTopComponent(scroll);
+            panel.setBottomComponent(input);
+        }
 
         private InputHandler()
         {
@@ -1143,27 +1183,30 @@ public final class Console implements SpawnPointPlugin
             this.console = console;
         }
 
-        public static void main(String[] args)
+        private static String getInput()
         {
-            JTextField xField = new JTextField(40);
-
-            JPanel myPanel = new JPanel();
-            myPanel.add(new JLabel("x:"));
-            myPanel.add(xField);
-
-            int result = JOptionPane.showConfirmDialog(null, myPanel,
-                    "Please Enter X and Y Values", JOptionPane.OK_CANCEL_OPTION);
-            if (result == JOptionPane.OK_OPTION)
-            {
-                System.out.println("x value: " + xField.getText());
-            }
+            input.setText(null);
+            input.requestFocusInWindow();
+            return JOptionPane.showInputDialog(null, panel,
+                    "Enter a console command (or 'help' for a list of valid commands):",
+                    JOptionPane.OK_CANCEL_OPTION);
         }
 
-        private String getInput()
+        public static void main(String[] args)
         {
-            return JOptionPane.showInputDialog(null,
-                    "Enter a console command (or 'help' for a list of valid commands):",
-                    "Starfarer Console", JOptionPane.PLAIN_MESSAGE);
+            UIManager.put("Panel.background", Color.BLACK);
+            UIManager.put("OptionPane.background", Color.BLACK);
+            UIManager.put("OptionPane.messageForeground", Color.CYAN);
+            UIManager.put("TextArea.background", Color.BLACK);
+            UIManager.put("TextArea.foreground", Color.YELLOW);
+            UIManager.put("TextField.background", Color.BLACK);
+            UIManager.put("TextField.foreground", Color.YELLOW);
+            UIManager.put("TextField.caretForeground", Color.YELLOW);
+            UIManager.put("Button.background", Color.BLACK);
+            UIManager.put("Button.foreground", Color.LIGHT_GRAY);
+            UIManager.put("SplitPane.background", Color.BLACK);
+            UIManager.put("SplitPane.background", Color.LIGHT_GRAY);
+            System.out.println(getInput());
         }
 
         @Override
@@ -1178,7 +1221,12 @@ public final class Console implements SpawnPointPlugin
 
                 if (getConsole().checkInput())
                 {
-                    getConsole().addCommandToQueue(getInput());
+                    String command = getInput();
+                    if (command != null && !command.isEmpty())
+                    {
+                        getConsole().addCommandToQueue(command);
+                    }
+
                     continue;
                 }
 
