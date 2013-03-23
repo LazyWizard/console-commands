@@ -4,7 +4,7 @@ import com.fs.starfarer.api.Global;
 import data.scripts.console.BaseCommand;
 import java.lang.reflect.InvocationTargetException;
 import org.codehaus.commons.compiler.CompileException;
-import org.codehaus.janino.*;
+import org.codehaus.janino.ScriptEvaluator;
 
 public class RunCode extends BaseCommand
 {

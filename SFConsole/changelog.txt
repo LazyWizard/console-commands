@@ -1,11 +1,12 @@
  1.6 (March xx, 2013)
 ======================
-New GUI, keyhistory support
-Console.showError() now accepts Throwables as well as Exceptions
+Improved interface, command history support
+Console.showError() shows more detail, accepts Throwables
 Improvements to the RunCode command:
  - Added Vector2f to default imports
  - RunCode can now use LazyLib's classes if LazyLib is currently active
- - Exception details shown rather than the InvocationTargetException wrapper
+ - If an exception occurs, actual exception details are shown rather than the
+   InvocationTargetException wrapper thrown by Janino's ScriptEvaluator
 
  1.5 (February 7, 2013)
 ========================
