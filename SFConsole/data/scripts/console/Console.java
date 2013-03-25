@@ -10,6 +10,8 @@ import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import data.scripts.console.commands.*;
 import java.awt.Color;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +33,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
@@ -560,7 +564,7 @@ public final class Console implements SpawnPointPlugin
     {
         if (inputHandler != null)
         {
-            inputHandler.setConsole(console);
+            InputHandler.setConsole(console);
             return;
         }
 
@@ -1141,24 +1145,61 @@ public final class Console implements SpawnPointPlugin
 
     private static class InputHandler extends Thread
     {
-        private Console console;
         private static final JTextArea output;
         private static final JScrollPane scroll;
         private static final JTextField input;
         private static final JSplitPane panel;
-        boolean shouldStop = false;
+        private static final Queue<String> queuedOutput;
+        private static Console console;
 
         static
         {
-            output = new JTextArea(20, 8);
+            queuedOutput = new ConcurrentLinkedQueue<String>();
+            output = new JTextArea(20, 45);
             output.setEditable(false);
             output.setFocusable(false);
+            output.setLineWrap(true);
+            output.setMaximumSize(output.getPreferredSize());
             scroll = new JScrollPane(output);
             scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
             scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-            input = new JTextField(40);
+            input = new JTextField(45);
+            input.addAncestorListener(new AncestorListener()
+            {
+                @Override
+                public void ancestorAdded(AncestorEvent event)
+                {
+                    event.getComponent().requestFocusInWindow();
+                }
+
+                @Override
+                public void ancestorRemoved(AncestorEvent event)
+                {
+                }
+
+                @Override
+                public void ancestorMoved(AncestorEvent event)
+                {
+                }
+            });
+            input.addKeyListener(new KeyListener()
+            {
+                @Override
+                public void keyTyped(KeyEvent e)
+                {
+                }
+
+                @Override
+                public void keyPressed(KeyEvent e)
+                {
+                }
+
+                @Override
+                public void keyReleased(KeyEvent e)
+                {
+                }
+            });
             panel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-            //panel.setTopComponent(output);
             panel.setDividerSize(2);
             panel.setTopComponent(scroll);
             panel.setBottomComponent(input);
@@ -1170,26 +1211,32 @@ public final class Console implements SpawnPointPlugin
 
         public InputHandler(Console console)
         {
-            this.console = console;
+            InputHandler.console = console;
         }
 
-        private Console getConsole()
+        private static Console getConsole()
         {
             return console;
         }
 
-        private void setConsole(Console console)
+        private static void setConsole(Console console)
         {
-            this.console = console;
+            InputHandler.console = console;
         }
 
         private static String getInput()
         {
             input.setText(null);
-            input.requestFocusInWindow();
-            return JOptionPane.showInputDialog(null, panel,
+            int result = JOptionPane.showConfirmDialog(null, panel,
                     "Enter a console command (or 'help' for a list of valid commands):",
                     JOptionPane.OK_CANCEL_OPTION);
+
+            if (result == JOptionPane.OK_OPTION)
+            {
+                return input.getText();
+            }
+
+            return null;
         }
 
         public static void main(String[] args)
@@ -1212,7 +1259,7 @@ public final class Console implements SpawnPointPlugin
         @Override
         public void run()
         {
-            while (!shouldStop)
+            while (true)
             {
                 if (getConsole() == null)
                 {
@@ -1224,7 +1271,14 @@ public final class Console implements SpawnPointPlugin
                     String command = getInput();
                     if (command != null && !command.isEmpty())
                     {
-                        getConsole().addCommandToQueue(command);
+                        if ("quit".equals(command))
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            getConsole().addCommandToQueue(command);
+                        }
                     }
 
                     continue;
