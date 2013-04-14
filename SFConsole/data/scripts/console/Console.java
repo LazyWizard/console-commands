@@ -174,7 +174,6 @@ public final class Console implements SpawnPointPlugin
 
     private boolean forceAddConsole()
     {
-        boolean bat = inBattle;
         inBattle = false;
 
         if (Global.getSector() == null || Global.getSector().getPlayerFleet() == null
@@ -204,12 +203,10 @@ public final class Console implements SpawnPointPlugin
         catch (Exception ex)
         {
             showError("Something went wrong!", ex);
-            inBattle = bat;
             return false;
         }
 
         showMessage("Console campaign functionality has been added to this save.");
-        inBattle = bat;
         return true;
     }
 
