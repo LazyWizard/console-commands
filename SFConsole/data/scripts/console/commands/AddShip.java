@@ -113,26 +113,26 @@ public class AddShip extends BaseCommand
                 }
                 catch (Exception ex3)
                 {
-                    showMessage("No ship found with id '" + tmp[0] + "'!");
-                    return false;
+                        showMessage("No ship found with id '" + tmp[0] + "'!");
+                        return false;
+                    }
                 }
             }
-        }
 
-        fleet.addFleetMember(ship);
+            fleet.addFleetMember(ship);
 
-        // More than one ship was requested
-        if (amt > 1)
-        {
-            for (int x = 1; x < amt; x++)
+            // More than one ship was requested
+            if (amt > 1)
             {
-                ship = fact.createFleetMember(FleetMemberType.SHIP, variant);
-                fleet.addFleetMember(ship);
+                for (int x = 1; x < amt; x++)
+                {
+                    ship = fact.createFleetMember(FleetMemberType.SHIP, variant);
+                    fleet.addFleetMember(ship);
+                }
             }
-        }
 
-        showMessage("Added " + amt + " of ship " + ship.getSpecId()
-                + " to player fleet.");
-        return true;
+            showMessage("Added " + amt + " of ship " + ship.getSpecId()
+                    + " to player fleet.");
+            return true;
+        }
     }
-}
