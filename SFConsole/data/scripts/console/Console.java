@@ -45,7 +45,7 @@ import org.lwjgl.util.vector.Vector2f;
 public final class Console implements SpawnPointPlugin
 {
     // Console constants
-    public static final String CONSOLE_VERSION = "1.5";
+    public static final String CONSOLE_VERSION = "1.6";
     /** Does the console require devMode=true in settings.json to function? */
     public static final boolean REQUIRE_DEV_MODE = false;
     /** Does the console require the game to be run windowed to function? */
