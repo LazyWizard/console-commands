@@ -134,6 +134,10 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
 
                 Console.showMessage(msg.toString());
             }
+            else
+            {
+                Console.showMessage("Active commands: none");
+            }
 
             showActive = false;
         }
@@ -212,10 +216,10 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
         if (Console.getConsole() != null)
         {
             Console.getConsole().checkQueue();
+            checkCommands();
 
             if (!engine.isPaused())
             {
-                checkCommands();
                 checkRender();
             }
         }
