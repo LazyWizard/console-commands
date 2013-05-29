@@ -241,13 +241,16 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
         {
             Console.setConsole(new Console());
         }
-
-        showActive = true;
+        
         nuke = false;
 
         if (RESET_COMMANDS_AFTER_COMBAT)
         {
-            shouldReveal = infAmmo = infFlux = godMode = noCooldown = false;
+            showActive = shouldReveal = infAmmo = infFlux = godMode = noCooldown = false;
+        }
+        else
+        {
+            showActive = shouldReveal || infAmmo || infFlux || godMode || noCooldown;
         }
 
         Console.setInBattle(true);
