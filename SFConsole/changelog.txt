@@ -1,10 +1,11 @@
- 1.6 (March xx, 2013)
-======================
-Improved interface, command history support
+ 1.6 (July 30, 2013)
+=====================
+Console popup now shows console output
 Console.showError() shows more detail, accepts Throwables
+AddWing now only appends '_wing' to its arguments after it fails without it
 Improvements to the RunCode command:
  - Added Vector2f to default imports
- - RunCode can now use LazyLib's classes if LazyLib is currently active
+ - RunCode can now use LazyLib's classes if LazyLib is tagged in the launcher
  - If an exception occurs, actual exception details are shown rather than the
    InvocationTargetException wrapper thrown by Janino's ScriptEvaluator
 
