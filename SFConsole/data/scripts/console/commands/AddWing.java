@@ -15,8 +15,6 @@ public class AddWing extends BaseCommand
                 + " to your fleet. This command is case-sensitive.\n"
                 + "If an amount is given, it will spawn that many wings of that"
                 + " ID in your fleet. Ensure you have the required supplies!\n"
-                + "This command will automatically append '_wing' to the ID"
-                + " if the supplied arguments lacked it.\n"
                 + "Supports reversed arguments.";
     }
 
@@ -42,10 +40,10 @@ public class AddWing extends BaseCommand
             return false;
         }
 
-        if (!tmp[0].endsWith("_wing"))
-        {
-            tmp[0] = tmp[0] + "_wing";
-        }
+        /*if (!tmp[0].endsWith("_wing"))
+         {
+         tmp[0] = tmp[0] + "_wing";
+         }*/
 
         int amt;
 
@@ -75,15 +73,44 @@ public class AddWing extends BaseCommand
 
         FleetDataAPI fleet = Global.getSector().getPlayerFleet().getFleetData();
         FleetMemberAPI ship = null;
+        String variant = tmp[0];
 
-        for (int x = 0; x < amt; x++)
+        // Add _wing if the command fails
+        try
         {
             ship = Global.getFactory().createFleetMember(
-                    FleetMemberType.FIGHTER_WING, tmp[0]);
-            fleet.addFleetMember(ship);
+                    FleetMemberType.FIGHTER_WING, variant);
+        }
+        catch (Exception ex)
+        {
+            variant = variant + "_wing";
+            try
+            {
+                ship = Global.getFactory().createFleetMember(
+                        FleetMemberType.FIGHTER_WING, variant);
+            }
+            catch (Exception ex2)
+            {
+                showMessage("No ship found with id '" + tmp[0] + "'!");
+                return false;
+            }
         }
 
-        showMessage("Added " + amt + " of wing " + ship.getSpecId() + " to player fleet.");
+        fleet.addFleetMember(ship);
+
+        // More than one ship was requested
+        if (amt > 1)
+        {
+            for (int x = 1; x < amt; x++)
+            {
+                ship = Global.getFactory().createFleetMember(
+                        FleetMemberType.FIGHTER_WING, variant);
+                fleet.addFleetMember(ship);
+            }
+        }
+
+        showMessage("Added " + amt + " of wing " + ship.getSpecId()
+                + " to player fleet.");
         return true;
     }
 }

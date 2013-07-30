@@ -158,8 +158,8 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
                 {
                     if (godMode)
                     {
-                        ship.getMutableStats().getHullDamageTakenMult().modifyPercent(CONSOLE_ID, -1000f);
-                        ship.getMutableStats().getEmpDamageTakenMult().modifyPercent(CONSOLE_ID, -1000f);
+                        ship.getMutableStats().getHullDamageTakenMult().modifyMult(CONSOLE_ID, 0f);
+                        ship.getMutableStats().getEmpDamageTakenMult().modifyMult(CONSOLE_ID, 0f);
                     }
                     else
                     {
@@ -241,7 +241,7 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
         {
             Console.setConsole(new Console());
         }
-        
+
         nuke = false;
 
         if (RESET_COMMANDS_AFTER_COMBAT)
