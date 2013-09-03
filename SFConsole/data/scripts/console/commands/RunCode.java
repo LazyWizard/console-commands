@@ -2,6 +2,7 @@ package data.scripts.console.commands;
 
 import com.fs.starfarer.api.Global;
 import data.scripts.console.BaseCommand;
+import data.scripts.console.Console;
 import java.lang.reflect.InvocationTargetException;
 import org.codehaus.commons.compiler.CompileException;
 import org.codehaus.janino.ScriptEvaluator;
@@ -56,7 +57,7 @@ public class RunCode extends BaseCommand
     {
         // Yes, this is relatively slow. But for obvious security reasons,
         // I'd rather allow only manually-entered code to run
-        if (!"data.scripts.console.Console".equals(
+        if (!Console.class.getCanonicalName().equals(
                 new Throwable().getStackTrace()[1].getClassName()))
         {
             showMessage("A mod attempted to execute arbitrary code on your machine!");
