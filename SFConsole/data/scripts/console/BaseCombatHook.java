@@ -181,7 +181,7 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
                             {
                                 wep.resetAmmo();
                             }
-                            if (noCooldown)
+                            if (noCooldown && wep.getCooldownRemaining() >= 0.1f)
                             {
                                 wep.setRemainingCooldownTo(Math.min(.1f,
                                         wep.getCooldownRemaining()));
