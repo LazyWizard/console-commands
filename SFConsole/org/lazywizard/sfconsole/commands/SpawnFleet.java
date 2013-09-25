@@ -2,8 +2,8 @@ package org.lazywizard.sfconsole.commands;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
-import data.scripts.console.BaseCommand;
-import data.scripts.console.Console;
+import org.lazywizard.sfconsole.BaseCommand;
+import org.lazywizard.sfconsole.Console;
 
 public class SpawnFleet extends BaseCommand
 {
@@ -35,8 +35,9 @@ public class SpawnFleet extends BaseCommand
         String faction = tmp[0];
         String fleet = tmp[1];
 
-        CampaignFleetAPI toSpawn = getSector().createFleet(faction, fleet);
-        Global.getSector().getCurrentLocation().spawnFleet(getSector().getPlayerFleet(), 50, 50, toSpawn);
+        CampaignFleetAPI toSpawn = Global.getSector().createFleet(faction, fleet);
+        Global.getSector().getCurrentLocation().spawnFleet(
+                Global.getSector().getPlayerFleet(), 50, 50, toSpawn);
 
         Console.showMessage("Fleet '" + fleet + "' successfully spawned!");
 

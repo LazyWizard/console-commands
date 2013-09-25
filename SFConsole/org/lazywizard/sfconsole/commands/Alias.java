@@ -1,7 +1,7 @@
 package org.lazywizard.sfconsole.commands;
 
-import data.scripts.console.BaseCommand;
-import data.scripts.console.Console;
+import org.lazywizard.sfconsole.BaseCommand;
+import org.lazywizard.sfconsole.Console;
 
 public class Alias extends BaseCommand
 {

@@ -1,6 +1,6 @@
 package org.lazywizard.sfconsole.commands;
 
-import data.scripts.console.BaseCommand;
+import org.lazywizard.sfconsole.BaseCommand;
 
 public class GC extends BaseCommand
 {

@@ -214,9 +214,9 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
     @Override
     public void advance(float amount, List events)
     {
-        if (Console.getConsole() != null)
+        if (Console.getConsoleScript() != null)
         {
-            Console.getConsole().checkInput();
+            Console.getConsoleScript().checkInput();
             checkCommands();
 
             if (!engine.isPaused())
@@ -238,9 +238,9 @@ public class BaseCombatHook implements EveryFrameCombatPlugin
     {
         BaseCombatHook.engine = engine;
 
-        if (Console.getConsole() == null)
+        if (Console.getConsoleScript() == null)
         {
-            Console.setConsole(new Console());
+            Console.setConsoleScript(new ConsoleScript());
         }
 
         nuke = false;

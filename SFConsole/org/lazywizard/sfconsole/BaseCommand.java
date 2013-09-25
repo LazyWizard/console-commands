@@ -1,25 +1,10 @@
 package org.lazywizard.sfconsole;
 
-import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.LocationAPI;
-import com.fs.starfarer.api.campaign.SectorAPI;
-import com.fs.starfarer.api.campaign.StarSystemAPI;
-import com.fs.starfarer.api.combat.CombatEngineAPI;
-
 /**
  * The basic command object that all console commands must extend.
  */
 public abstract class BaseCommand
 {
-    /**
-     * Returns the current {@link SectorAPI}.
-     *
-     * @return the {@link SectorAPI} object used by this campaign
-     */
-    protected final SectorAPI getSector()
-    {
-        return Global.getSector();
-    }
 
     /**
      * Returns the name of this command.
