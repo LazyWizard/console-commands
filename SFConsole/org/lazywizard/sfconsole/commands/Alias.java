@@ -28,7 +28,7 @@ public class Alias extends BaseCommand
     @Override
     protected boolean runCommand(String args)
     {
-        String[] tmp = args.split(" ");
+        /*String[] tmp = args.split(" ");
 
         if (tmp.length < 2)
         {
@@ -57,13 +57,15 @@ public class Alias extends BaseCommand
 
         String command = arg.toString();
 
-        if (!Console.getConsole().addAlias(alias, command))
+        if (!Console.addAlias(alias, command))
         {
             Console.showMessage("Alias failed! Does this alias already exist as a command?");
             return false;
         }
 
         Console.showMessage("'" + alias + "' successfully aliased for '" + command + "'.");
-        return true;
+        return true;*/
+
+        return false;
     }
 }
