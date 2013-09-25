@@ -1,6 +1,17 @@
+ 2.0 (September xx, 2013)
+==========================
+(this version is not save compatible with earlier versions)
+LazyLib is now required for this mod to function!
+Major rewrite of the mod, no longer multi-threaded, works with total conversions
+Updated to use new .6a API methods and work with multiple systems
+Console commands are now registered inside data/console/console_commands.csv
+Command classes can now be in any package, not just data.scripts.console
+Removed RunScript command (considering RunCode it's pretty superfluous)
+XBaseCommand is no longer an abstract class, now an interface
+
  1.6b (September 18, 2013)
 ===========================
-Fixed bug with NoCooldown and .6a
+Fixed bug where NoCooldown prevented projectile weapons from firing in .6a
 
  1.6 (July 30, 2013)
 =====================
