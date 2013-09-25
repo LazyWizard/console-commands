@@ -4,8 +4,8 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
-import data.scripts.console.BaseCommand;
-import data.scripts.console.Console;
+import org.lazywizard.sfconsole.BaseCommand;
+import org.lazywizard.sfconsole.Console;
 import org.lwjgl.util.vector.Vector2f;
 
 public class GoTo extends BaseCommand

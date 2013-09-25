@@ -32,10 +32,12 @@ import org.lwjgl.util.vector.Vector2f;
 /**
  * Executes commands and handles console output. Instances hold custom settings.
  */
-public final class Console implements EveryFrameScript
+public final class Console
 {
     // Console constants
     public static final String CONSOLE_VERSION = "1.6";
+    public static final String CONSOLE_DATA_PREFIX = "console_-_";
+    public static final String CONSOLE_ALIAS_DATA = CONSOLE_DATA_PREFIX + "alias_-_";
     /** Does the console require the game to be run windowed to function? */
     public static final boolean REQUIRE_RUN_WINDOWED = true;
     /** Should we display the entire stack trace when an exception occurs? */
@@ -57,15 +59,12 @@ public final class Console implements EveryFrameScript
     private static final SortedMap<String, Class<? extends BaseCommand>> allCommands = new TreeMap<String, Class<? extends BaseCommand>>();
     private static final Set<String> hardcodedCommands = new HashSet();
     // Per-session variables
-    private static boolean inBattle = false;
-    private static Console activeConsole;
-    private transient boolean justReloaded = false, isListening = false;
-    private transient volatile boolean isPressed = false, showRestrictions = true;
+    protected static boolean inBattle = false;
+    protected static SectorAPI activeSector;
+    private static ConsoleScript consoleScript;
     // Saved variables
-    private SectorAPI activeSector;
-    private int consoleKey = DEFAULT_CONSOLE_KEY;
-    private Map<String, Object> consoleVars = new HashMap<String, Object>();
-    private Map<String, String> aliases = new HashMap<String, String>();
+    //private Map<String, Object> consoleVars = new HashMap<String, Object>();
+    //private static Map<String, String> aliases = new HashMap<String, String>();
     // UI variables
     private static final JTextArea output;
     private static final JScrollPane scroll;
@@ -130,38 +129,6 @@ public final class Console implements EveryFrameScript
         panel.setTopComponent(scroll);
         panel.setBottomComponent(input);
 
-        // Built-in commands, don't need to go through registerCommand's checks
-        //allCommands.put("activatemod", ActivateMod.class);
-        /*allCommands.put("addaptitudepoints", AddAptitudePoints.class);
-        allCommands.put("addcommandpoints", AddCommandPoints.class);
-        allCommands.put("addcredits", AddCredits.class);
-        allCommands.put("addcrew", AddCrew.class);
-        allCommands.put("addfuel", AddFuel.class);
-        allCommands.put("additem", AddItem.class);
-        allCommands.put("addmarines", AddMarines.class);
-        allCommands.put("addship", AddShip.class);
-        allCommands.put("addskillpoints", AddSkillPoints.class);
-        allCommands.put("addsupplies", AddSupplies.class);
-        allCommands.put("addweapon", AddWeapon.class);
-        allCommands.put("addwing", AddWing.class);
-        allCommands.put("addxp", AddXP.class);
-        allCommands.put("adjustrelationship", AdjustRelationship.class);
-        allCommands.put("alias", Alias.class);
-        allCommands.put("allweapons", AllWeapons.class);
-        allCommands.put("gc", GC.class);
-        allCommands.put("god", God.class);
-        allCommands.put("goto", GoTo.class);
-        allCommands.put("home", Home.class);
-        allCommands.put("infiniteammo", InfiniteAmmo.class);
-        allCommands.put("infiniteflux", InfiniteFlux.class);
-        allCommands.put("nocooldown", NoCooldown.class);
-        allCommands.put("nuke", Nuke.class);
-        allCommands.put("reveal", Reveal.class);
-        allCommands.put("runcode", RunCode.class);
-        allCommands.put("sethome", SetHome.class);
-        allCommands.put("setrelationship", SetRelationship.class);
-        allCommands.put("spawnfleet", SpawnFleet.class);*/
-
         // Commands that can't be overwritten
         hardcodedCommands.add("help");
         hardcodedCommands.add("runtests");
@@ -171,23 +138,10 @@ public final class Console implements EveryFrameScript
 
     public Console()
     {
-        setConsole(this);
         inBattle = false;
     }
 
-    /**
-     * Automatically called by the JRE - don't call this manually.
-     */
-    public Object readResolve()
-    {
-        justReloaded = true;
-        isPressed = false;
-        isListening = false;
-        setConsole(this);
-        return this;
-    }
-
-    private boolean forceAddConsole()
+    private static boolean forceAddConsole()
     {
         inBattle = false;
 
@@ -208,9 +162,10 @@ public final class Console implements EveryFrameScript
 
         try
         {
-            this.activeSector = sector;
-            sector.addScript(this);
-            setConsole(this);
+            activeSector = sector;
+            ConsoleScript tmp = new ConsoleScript();
+            sector.addScript(tmp);
+            setConsoleScript(tmp);
         }
         catch (Exception ex)
         {
@@ -228,8 +183,7 @@ public final class Console implements EveryFrameScript
      * Commands must pass validation, otherwise registration will fail!<p>
      *
      * Validation consists of the following:<br>
-     *  - Checking that there isn't a built-in command with the same name<br>
-     *  - Checking that the command's class is in the correct package<br>
+     *  - Checking that there isn't a hard-coded command with the same name<br>
      *  - Checking that the command extends {@link BaseCommand}
      *
      * @param commandClass the class object of the command to register
@@ -323,17 +277,17 @@ public final class Console implements EveryFrameScript
         return ret;
     }
 
-    public static Console getConsole()
+    public static ConsoleScript getConsoleScript()
     {
-        return activeConsole;
+        return consoleScript;
     }
 
-    static void setConsole(Console console)
+    static void setConsoleScript(ConsoleScript script)
     {
-        activeConsole = console;
+        consoleScript = script;
     }
 
-    private static String getInput()
+    public static String getInput()
     {
         input.setText(null);
         int result = JOptionPane.showConfirmDialog(null, panel,
@@ -376,9 +330,11 @@ public final class Console implements EveryFrameScript
      * @param varName the unique key this variable can be retrieved with
      * @param varData the data this variable should hold
      */
-    public void setVar(String varName, Object varData)
+    public static void setVar(String varName, Object varData)
     {
-        consoleVars.put(varName, varData);
+        Global.getSector().getPersistentData().put(CONSOLE_DATA_PREFIX
+                + varName, varData);
+        //consoleVars.put(varName, varData);
     }
 
     /**
@@ -389,7 +345,7 @@ public final class Console implements EveryFrameScript
      * @param type the type to be returned (e.g. Script.class)
      * @return the data associated with that variable
      */
-    public <T> T getVar(String varName, Class<T> type)
+    public static <T> T getVar(String varName, Class<T> type)
     {
         if (!hasVar(varName))
         {
@@ -398,7 +354,9 @@ public final class Console implements EveryFrameScript
 
         try
         {
-            return type.cast(consoleVars.get(varName));
+            return type.cast(Global.getSector().getPersistentData()
+                    .get(CONSOLE_DATA_PREFIX + varName));
+            //consoleVars.get(varName));
         }
         catch (ClassCastException ex)
         {
@@ -414,9 +372,11 @@ public final class Console implements EveryFrameScript
      * @param varName the name of the variable to check
      * @return true if the variable has been set, false otherwise
      */
-    protected boolean hasVar(String varName)
+    protected static boolean hasVar(String varName)
     {
-        return consoleVars.keySet().contains(varName);
+        return Global.getSector().getPersistentData().containsKey(
+                CONSOLE_DATA_PREFIX + varName);
+        //return consoleVars.keySet().contains(varName);
     }
 
     /**
@@ -432,10 +392,12 @@ public final class Console implements EveryFrameScript
             return null;
         }
 
-        return consoleVars.get(varName).getClass();
+        return Global.getSector().getPersistentData()
+                .get(CONSOLE_DATA_PREFIX + varName).getClass();
+        //return consoleVars.get(varName).getClass();
     }
 
-    private void reload()
+    public static void showOnLoadMessages()
     {
         if (Display.isFullscreen())
         {
@@ -450,7 +412,7 @@ public final class Console implements EveryFrameScript
                 highlight, Color.GREEN);
     }
 
-    private synchronized void addCommandToQueue(String command)
+    public static void addCommandToQueue(String command)
     {
         if (command == null || command.isEmpty())
         {
@@ -476,12 +438,12 @@ public final class Console implements EveryFrameScript
         }
     }
 
-    private static boolean allowConsole()
+    public static boolean allowConsole()
     {
         return !(REQUIRE_RUN_WINDOWED && Display.isFullscreen());
     }
 
-    private static void showRestrictions()
+    public static void showRestrictions()
     {
         if (REQUIRE_RUN_WINDOWED)
         {
@@ -490,7 +452,7 @@ public final class Console implements EveryFrameScript
         }
     }
 
-    private static void showRestrictedKeys()
+    public static void showRestrictedKeys()
     {
         StringBuilder keys = new StringBuilder();
 
@@ -511,73 +473,7 @@ public final class Console implements EveryFrameScript
         inBattle = false;
     }
 
-    protected void checkInput()
-    {
-        if (!Keyboard.isCreated())
-        {
-            return;
-        }
-
-        if (isListening)
-        {
-            int key = Keyboard.getEventKey();
-
-            if (key == Keyboard.KEY_ESCAPE)
-            {
-                isListening = false;
-                Console.showMessage("Cancelled.");
-                return;
-            }
-
-            if (key != Keyboard.KEY_NONE && key != REBIND_KEY)
-            {
-                if (!RESTRICTED_KEYS.contains(key))
-                {
-                    isListening = false;
-                    consoleKey = key;
-                    Console.showMessage("The console is now bound to '"
-                            + Keyboard.getEventCharacter() + "'. Key index: "
-                            + key + " (" + Keyboard.getKeyName(key) + ")");
-                }
-            }
-        }
-        else
-        {
-            if (Keyboard.isKeyDown(REBIND_KEY)
-                    && (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)
-                    || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)))
-            {
-                isListening = true;
-                Console.showMessage("The console will be bound to the next key"
-                        + " you press (escape to cancel).");
-                showRestrictedKeys();
-            }
-        }
-
-        if (!isPressed)
-        {
-            if (Keyboard.isKeyDown(consoleKey))
-            {
-                isPressed = true;
-            }
-        }
-        else
-        {
-            if (!Keyboard.isKeyDown(consoleKey))
-            {
-                isPressed = false;
-
-                if (allowConsole())
-                {
-                    addCommandToQueue(getInput());
-                }
-
-                showRestrictions = true;
-            }
-        }
-    }
-
-    private void runTests()
+    private static void runTests()
     {
         Global.getSector().addMessage("Running console tests...");
         //parseCommand("runscript help");
@@ -613,7 +509,7 @@ public final class Console implements EveryFrameScript
         }
     }
 
-    private void listCommands()
+    private static void listCommands()
     {
         StringBuilder names = new StringBuilder("Help, Status");
 
@@ -646,7 +542,7 @@ public final class Console implements EveryFrameScript
         return arg.toString();
     }
 
-    private boolean parseCommand(String command)
+    private static boolean parseCommand(String command)
     {
         // Don't try to parse blank lines
         if (command == null || command.length() == 0)
@@ -719,7 +615,7 @@ public final class Console implements EveryFrameScript
         return executeCommand(com, args);
     }
 
-    private synchronized boolean executeCommand(String com, String args)
+    private static boolean executeCommand(String com, String args)
     {
         BaseCommand command;
 
@@ -984,42 +880,5 @@ public final class Console implements EveryFrameScript
                 Global.getSector().addMessage(lines.get(x), CONSOLE_COLOR);
             }
         }
-    }
-
-    /**
-     * Automatically called by the game - don't call this manually.
-     */
-    @Override
-    public void advance(float amount)
-    {
-        System.out.println("Advancing " + amount);
-        this.activeSector = activeSector;
-
-        if (justReloaded)
-        {
-            justReloaded = false;
-            reload();
-        }
-
-        if (showRestrictions)
-        {
-            showRestrictions = false;
-            showRestrictions();
-        }
-
-        checkBattle();
-        checkInput();
-    }
-
-    @Override
-    public boolean isDone()
-    {
-        return false;
-    }
-
-    @Override
-    public boolean runWhilePaused()
-    {
-        return true;
     }
 }

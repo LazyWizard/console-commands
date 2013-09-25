@@ -49,7 +49,7 @@ public class ConsolePlugin extends BaseModPlugin
     @Override
     public void onNewGame()
     {
-        Global.getSector().addScript(new Console());
+        Global.getSector().addScript(new ConsoleScript());
         Console.showMessage("Console successfully activated for this save.");
     }
 

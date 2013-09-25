@@ -1,8 +1,9 @@
 package org.lazywizard.sfconsole.commands;
 
+import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FactionAPI;
-import data.scripts.console.BaseCommand;
-import data.scripts.console.Console;
+import org.lazywizard.sfconsole.BaseCommand;
+import org.lazywizard.sfconsole.Console;
 
 public class AdjustRelationship extends BaseCommand
 {
@@ -44,8 +45,8 @@ public class AdjustRelationship extends BaseCommand
             return false;
         }
 
-        FactionAPI fac1 = getSector().getFaction(faction);
-        FactionAPI fac2 = getSector().getFaction(towardsFaction);
+        FactionAPI fac1 = Global.getSector().getFaction(faction);
+        FactionAPI fac2 = Global.getSector().getFaction(towardsFaction);
 
         if (fac1 == null)
         {

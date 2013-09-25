@@ -1,7 +1,7 @@
 package org.lazywizard.sfconsole.commands;
 
-import data.scripts.console.BaseCombatHook;
-import data.scripts.console.BaseCommand;
+import org.lazywizard.sfconsole.BaseCombatHook;
+import org.lazywizard.sfconsole.BaseCommand;
 
 public class Reveal extends BaseCommand
 {

@@ -4,8 +4,8 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
-import data.scripts.console.BaseCommand;
-import data.scripts.console.Console;
+import org.lazywizard.sfconsole.BaseCommand;
+import org.lazywizard.sfconsole.Console;
 import java.util.List;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -58,7 +58,7 @@ public class SetHome extends BaseCommand
         else
         {
             List toSearch = system.getOrbitalStations();
-            Vector2f playerLocation = getSector().getPlayerFleet().getLocation();
+            Vector2f playerLocation = Global.getSector().getPlayerFleet().getLocation();
             SectorEntityToken tmp;
 
             for (int x = 0; x < toSearch.size(); x++)
@@ -95,7 +95,7 @@ public class SetHome extends BaseCommand
         }
 
         Console.showMessage("Home set to " + newHome.getFullName() + ".");
-        Console.getConsole().setVar("Home", newHome);
+        Console.setVar("Home", newHome);
         return true;
     }
 }

@@ -5,8 +5,8 @@ import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.CargoAPI.CargoItemType;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
-import data.scripts.console.BaseCommand;
-import data.scripts.console.Console;
+import org.lazywizard.sfconsole.BaseCommand;
+import org.lazywizard.sfconsole.Console;
 import java.util.List;
 
 public class AllWeapons extends BaseCommand

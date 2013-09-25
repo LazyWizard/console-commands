@@ -2,8 +2,8 @@ package org.lazywizard.sfconsole.commands;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
-import data.scripts.console.BaseCommand;
-import data.scripts.console.Console;
+import org.lazywizard.sfconsole.BaseCommand;
+import org.lazywizard.sfconsole.Console;
 
 public class AddAptitudePoints extends BaseCommand
 {
