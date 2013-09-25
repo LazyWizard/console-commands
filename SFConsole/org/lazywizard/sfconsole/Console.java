@@ -223,60 +223,58 @@ public final class Console
      * @param command the command to replace alias with
      * @return true if the alias was successfully added, false otherwise
      */
-    public boolean addAlias(String alias, String command)
-    {
-        if (alias.contains(" "))
-        {
-            showMessage("Improperly formatted alias!");
-            return false;
-        }
+    /*public boolean addAlias(String alias, String command)
+     {
+     if (alias.contains(" "))
+     {
+     showMessage("Improperly formatted alias!");
+     return false;
+     }
 
-        if (allCommands.containsKey(alias))
-        {
-            showMessage("Alias '" + alias + "'already exists as a command!");
-            return false;
-        }
+     if (allCommands.containsKey(alias))
+     {
+     showMessage("Alias '" + alias + "'already exists as a command!");
+     return false;
+     }
 
-        for (String tmp : command.split(COMMAND_SEPARATOR))
-        {
-            String[] com = tmp.split(" ");
+     for (String tmp : command.split(COMMAND_SEPARATOR))
+     {
+     String[] com = tmp.split(" ");
 
-            if (!allCommands.containsKey(com[0]))
-            {
-                showMessage("'" + com[0] + "' is not a valid command!");
-                return false;
-            }
-        }
+     if (!allCommands.containsKey(com[0]))
+     {
+     showMessage("'" + com[0] + "' is not a valid command!");
+     return false;
+     }
+     }
 
-        aliases.put(alias, command);
-        return true;
-    }
-
+     aliases.put(alias, command);
+     return true;
+     }*/
     /**
      * Returns all aliases associated with a command
      *
      * @param command the command to check for aliases of
      * @return a List of Strings of all aliases for this command
      */
-    public List<String> getAliases(String command)
-    {
-        if (command == null)
-        {
-            return Collections.EMPTY_LIST;
-        }
+    /*public List<String> getAliases(String command)
+     {
+     if (command == null)
+     {
+     return Collections.EMPTY_LIST;
+     }
 
-        List<String> ret = new ArrayList();
-        for (Map.Entry<String, String> entry : aliases.entrySet())
-        {
-            if (entry.getValue().equals(command))
-            {
-                ret.add(entry.getKey());
-            }
-        }
+     List<String> ret = new ArrayList();
+     for (Map.Entry<String, String> entry : aliases.entrySet())
+     {
+     if (entry.getValue().equals(command))
+     {
+     ret.add(entry.getKey());
+     }
+     }
 
-        return ret;
-    }
-
+     return ret;
+     }*/
     public static ConsoleScript getConsoleScript()
     {
         return consoleScript;
@@ -606,11 +604,11 @@ public final class Console
             }
         }
 
-        if (aliases.containsKey(com))
-        {
-            addCommandToQueue(aliases.get(com));
-            return true;
-        }
+        /*if (aliases.containsKey(com))
+         {
+         addCommandToQueue(aliases.get(com));
+         return true;
+         }*/
 
         return executeCommand(com, args);
     }
