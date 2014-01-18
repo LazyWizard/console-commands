@@ -35,7 +35,7 @@ import org.lwjgl.util.vector.Vector2f;
 public final class Console
 {
     // Console constants
-    public static final String CONSOLE_VERSION = "1.6";
+    public static final String CONSOLE_VERSION = "2.0";
     public static final String CONSOLE_DATA_PREFIX = "console_-_";
     public static final String CONSOLE_ALIAS_DATA = CONSOLE_DATA_PREFIX + "alias_-_";
     /** Does the console require the game to be run windowed to function? */
@@ -224,33 +224,34 @@ public final class Console
      * @return true if the alias was successfully added, false otherwise
      */
     /*public boolean addAlias(String alias, String command)
-     {
-     if (alias.contains(" "))
-     {
-     showMessage("Improperly formatted alias!");
-     return false;
-     }
+    {
+        if (alias.contains(" "))
+        {
+            showMessage("Improperly formatted alias!");
+            return false;
+        }
 
-     if (allCommands.containsKey(alias))
-     {
-     showMessage("Alias '" + alias + "'already exists as a command!");
-     return false;
-     }
+        if (allCommands.containsKey(alias))
+        {
+            showMessage("Alias '" + alias + "'already exists as a command!");
+            return false;
+        }
 
-     for (String tmp : command.split(COMMAND_SEPARATOR))
-     {
-     String[] com = tmp.split(" ");
+        for (String tmp : command.split(COMMAND_SEPARATOR))
+        {
+            String[] com = tmp.split(" ");
 
-     if (!allCommands.containsKey(com[0]))
-     {
-     showMessage("'" + com[0] + "' is not a valid command!");
-     return false;
-     }
-     }
+            if (!allCommands.containsKey(com[0]))
+            {
+                showMessage("'" + com[0] + "' is not a valid command!");
+                return false;
+            }
+        }
 
-     aliases.put(alias, command);
-     return true;
-     }*/
+        aliases.put(alias, command);
+        return true;
+    }
+
     /**
      * Returns all aliases associated with a command
      *
@@ -258,23 +259,29 @@ public final class Console
      * @return a List of Strings of all aliases for this command
      */
     /*public List<String> getAliases(String command)
-     {
-     if (command == null)
-     {
-     return Collections.EMPTY_LIST;
-     }
+    {
+        if (command == null)
+        {
+            return Collections.EMPTY_LIST;
+        }
 
-     List<String> ret = new ArrayList();
-     for (Map.Entry<String, String> entry : aliases.entrySet())
-     {
-     if (entry.getValue().equals(command))
-     {
-     ret.add(entry.getKey());
-     }
-     }
+        List<String> ret = new ArrayList();
+        for (Map.Entry<String, String> entry : aliases.entrySet())
+        {
+            if (entry.getValue().equals(command))
+            {
+                ret.add(entry.getKey());
+            }
+        }
 
-     return ret;
-     }*/
+        return ret;
+    }
+
+    public Map<String, String> getAllAliases()
+    {
+        return Global.getS
+    }*/
+
     public static ConsoleScript getConsoleScript()
     {
         return consoleScript;
@@ -383,7 +390,7 @@ public final class Console
      * @param varName the name of the variable to check
      * @return the Class object for the variable if it exists, null otherwise
      */
-    protected Class getVarType(String varName)
+    protected static Class getVarType(String varName)
     {
         if (!hasVar(varName))
         {

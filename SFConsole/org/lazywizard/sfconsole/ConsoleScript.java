@@ -16,6 +16,7 @@ public class ConsoleScript implements EveryFrameScript
         isPressed = false;
         isListening = false;
         Console.setConsoleScript(this);
+        Console.inBattle = false;
         return this;
     }
 
