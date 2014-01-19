@@ -24,11 +24,14 @@ public class Console
         if ((lastInput + MILLISECONDS_BETWEEN_INPUT <= System.currentTimeMillis())
                 && Keyboard.isKeyDown(CONSOLE_KEY))
         {
-            lastInput = System.currentTimeMillis();
-
-            // TODO: actually implement this!
             String input = JOptionPane.showInputDialog(null,
                     "Enter command, or 'help' for a list of valid commands.");
+            if (input == null)
+            {
+                return false;
+            }
+
+            lastInput = System.currentTimeMillis();
             String[] tmp = input.split(" ");
             String com = tmp[0].toLowerCase();
             String args;
@@ -45,13 +48,21 @@ public class Console
             try
             {
                 BaseCommand command = CommandStore.retrieveCommand(com);
+
+                if (command == null)
+                {
+                    Global.getLogger(Console.class).log(Level.ERROR,
+                            "No such command \"" + com + "\" registered!");
+                    return false;
+                }
+
                 return command.runCommand(args, context);
             }
             catch (Exception ex)
             {
                 Global.getLogger(Console.class).log(Level.ERROR,
                         "Failed to execute command \"" + input
-                                + "\" in context " + context, ex);
+                        + "\" in context " + context, ex);
                 return false;
             }
         }
