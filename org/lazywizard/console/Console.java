@@ -17,16 +17,16 @@ public class Console extends BaseModPlugin
     private static final long MILLISECONDS_BETWEEN_INPUT = 1_500l;
     private static long lastInput = Long.MIN_VALUE;
 
-    static boolean checkInput(Context context)
+    static boolean checkInput(CommandContext context)
     {
-        if ((lastInput + MILLISECONDS_BETWEEN_INPUT > System.currentTimeMillis())
+        if ((lastInput + MILLISECONDS_BETWEEN_INPUT <= System.currentTimeMillis())
                 && Keyboard.isKeyDown(CONSOLE_KEY))
         {
             lastInput = System.currentTimeMillis();
 
-            // TODO: actually implement this
+            // TODO: actually implement this!
             BaseCommand command = new Test();
-            command.runCommand("This is a test!");
+            command.runCommand("This is a test!", context);
             return true;
         }
 
@@ -96,10 +96,4 @@ public class Console extends BaseModPlugin
         Global.getSector().addScript(new ConsoleCampaignListener());
     }
     //</editor-fold>
-
-    static enum Context
-    {
-        COMBAT,
-        CAMPAIGN
-    }
 }
