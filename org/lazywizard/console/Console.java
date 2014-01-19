@@ -1,17 +1,19 @@
 package org.lazywizard.console;
 
-import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
 import java.awt.Color;
+import java.io.IOException;
+import java.util.Arrays;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import org.apache.log4j.Level;
+import org.json.JSONException;
 import org.json.JSONObject;
-import org.lazywizard.console.commands.Test;
+import org.lazywizard.lazylib.CollectionUtils;
 import org.lazywizard.lazylib.JSONUtils;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.Display;
 
-public class Console extends BaseModPlugin
+public class Console
 {
     private static int CONSOLE_KEY;
     private static final long MILLISECONDS_BETWEEN_INPUT = 1_500l;
@@ -25,20 +27,40 @@ public class Console extends BaseModPlugin
             lastInput = System.currentTimeMillis();
 
             // TODO: actually implement this!
-            BaseCommand command = new Test();
-            command.runCommand("This is a test!", context);
-            return true;
+            String input = JOptionPane.showInputDialog(null,
+                    "Enter command, or 'help' for a list of valid commands.");
+            String[] tmp = input.split(" ");
+            String com = tmp[0].toLowerCase();
+            String args;
+            if (tmp.length > 1)
+            {
+                tmp = Arrays.copyOfRange(tmp, 1, tmp.length);
+                args = CollectionUtils.implode(Arrays.asList(tmp), " ");
+            }
+            else
+            {
+                args = "";
+            }
+
+            try
+            {
+                BaseCommand command = CommandStore.retrieveCommand(com);
+                return command.runCommand(args, context);
+            }
+            catch (Exception ex)
+            {
+                Global.getLogger(Console.class).log(Level.ERROR,
+                        "Failed to execute command \"" + input
+                                + "\" in context " + context, ex);
+                return false;
+            }
         }
 
         return false;
     }
 
-
-    //<editor-fold defaultstate="collapsed" desc="ModPlugin stuff">
-    @Override
-    public void onApplicationLoad() throws Exception
+    public static void reloadSettings() throws IOException, JSONException
     {
-        // Console settings
         JSONObject settings = Global.getSettings().loadJSON(
                 "data/console/console_settings.json");
         CONSOLE_KEY = settings.getInt("consoleKey");
@@ -63,37 +85,5 @@ public class Console extends BaseModPlugin
         color = JSONUtils.toColor(settings.getJSONArray("buttonColor"));
         UIManager.put("Button.foreground", color);
         UIManager.put("SplitPane.foreground", color);
-
-        // Load console commands
-        CommandStore.reloadCommands();
-
-        Global.getLogger(Console.class).log(Level.INFO,
-                "Console loaded.");
-
-        if (Display.isFullscreen())
-        {
-            Global.getLogger(Console.class).log(Level.WARN,
-                    "It is highly recommended that you play Starsector"
-                    + " in borderless windowed mode when using the console.");
-        }
     }
-
-    @Override
-    public void onGameLoad()
-    {
-        Global.getSector().addScript(new ConsoleCampaignListener());
-    }
-
-    @Override
-    public void beforeGameSave()
-    {
-        Global.getSector().removeScriptsOfClass(ConsoleCampaignListener.class);
-    }
-
-    @Override
-    public void afterGameSave()
-    {
-        Global.getSector().addScript(new ConsoleCampaignListener());
-    }
-    //</editor-fold>
 }
