@@ -7,7 +7,7 @@ public class Test implements BaseCommand
     @Override
     public boolean runCommand(String args)
     {
-        System.out.println("\n\tSuccess!\n");
+        System.out.println("\n\tRan test command with arguments: " + args + "\n");
         return true;
     }
 }
