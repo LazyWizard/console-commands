@@ -1,13 +1,19 @@
- 2.0 (September xx, 2013)
-==========================
+ 2.0 (someday)
+===============
 (this version is not save compatible with earlier versions)
 LazyLib is now required for this mod to function!
-Major rewrite of the mod, no longer multi-threaded, works with total conversions
-Updated to use new .6a API methods and work with multiple systems
-Console commands are now registered inside data/console/console_commands.csv
-Command classes can now be in any package, not just data.scripts.console
-Removed RunScript command (considering RunCode it's pretty superfluous)
-XBaseCommand is no longer an abstract class, now an interface
+Total rewrite of the mod:
+ - No longer multi-threaded (fixes a load of problems the old mod had)
+ - Utility mod, can be toggled at will, works with total conversions
+Made writing custom commands much simpler:
+ - Existing custom commands will no longer work, will need to be rewritten
+ - Commands must implement the org.lazywizard.console.BaseCommand interface
+ - Commands are registered inside data/console/console_commands.csv
+   - Commands can be in any package now, not just data.scripts.console
+   - This update adds support for commands in a jar
+Changes to existing commands:
+ - Rewrote all commands to use new BaseCommand interface
+ - Removed RunScript command (considering RunCode it's pretty superfluous)
 
  1.6b (September 18, 2013)
 ===========================
