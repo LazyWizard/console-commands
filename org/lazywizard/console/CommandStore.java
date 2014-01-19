@@ -13,6 +13,7 @@ public class CommandStore
 {
     private static final Map<String, StoredCommand> storedCommands = new HashMap<>();
 
+    // Will only throw these exceptions if there is an error loading the CSV
     public static void reloadCommands() throws IOException, JSONException
     {
         // TODO: This could use some cleanup
@@ -21,14 +22,17 @@ public class CommandStore
                 "command", "data/console/console_commands.csv", "lw_console");
         JSONObject tmp;
         Class clazz;
-        String commandName, commandClass = null, source;
+        String commandName, commandClass, source;
         boolean isUsableInCombat, isUsableInCampaign;
         for (int x = 0; x < commandData.length(); x++)
         {
+            // Prevents previous command's info showing up in error message
+            commandName = commandClass = source = null;
+
             try
             {
                 tmp = commandData.getJSONObject(x);
-                commandName = tmp.getString("command");
+                commandName = tmp.getString("command").toLowerCase();
                 commandClass = tmp.getString("class");
                 source = tmp.getString("fs_rowSource");
                 isUsableInCombat = tmp.getBoolean("usable in combat");
@@ -52,7 +56,8 @@ public class CommandStore
             catch (Exception ex)
             {
                 Global.getLogger(CommandStore.class).log(Level.ERROR,
-                        "Failed to load command " + commandClass, ex);
+                        "Failed to load command " + commandName + " (class: "
+                        + commandClass + ") from " + source, ex);
             }
         }
     }

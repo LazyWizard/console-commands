@@ -15,6 +15,10 @@ Changes to existing commands:
  - Rewrote all commands to use new BaseCommand interface
  - Removed RunScript command (considering RunCode it's pretty superfluous)
 
+
+--------------------------------------------------------------------------------
+
+
  1.6b (September 18, 2013)
 ===========================
 Fixed bug where NoCooldown prevented projectile weapons from firing in .6a
