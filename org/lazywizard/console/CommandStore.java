@@ -13,11 +13,11 @@ public class CommandStore
 {
     private static final Map<String, BaseCommand> allCommands = new HashMap<>();
 
-    public static void loadCommandsFromCSV(String path) throws IOException, JSONException
+    public static void reloadCommands() throws IOException, JSONException
     {
         allCommands.clear();
         JSONArray commandData = Global.getSettings().getMergedSpreadsheetDataForMod(
-                "command", path, "lw_console");
+                "command", "data/console/console_commands.csv", "lw_console");
         JSONObject tmp;
         Class cls;
         String commandName = null, commandClass = null, source = null;
