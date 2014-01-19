@@ -1,11 +1,11 @@
-package org.lazywizard.console;
+package org.lazywizard.console.listeners;
 
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.input.InputEventAPI;
 import java.util.List;
 
-public class ConsoleCombatPlugin implements EveryFrameCombatPlugin
+public class ConsoleCombatListener implements EveryFrameCombatPlugin
 {
     @Override
     public void advance(float amount, List<InputEventAPI> events)

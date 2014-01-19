@@ -1,8 +1,8 @@
-package org.lazywizard.console;
+package org.lazywizard.console.listeners;
 
 import com.fs.starfarer.api.EveryFrameScript;
 
-public class ConsoleCampaignScript implements EveryFrameScript
+public class ConsoleCampaignListener implements EveryFrameScript
 {
     @Override
     public boolean isDone()
