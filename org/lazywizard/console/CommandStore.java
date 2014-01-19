@@ -11,16 +11,17 @@ import org.json.JSONObject;
 
 public class CommandStore
 {
-    private static final Map<String, BaseCommand> allCommands = new HashMap<>();
+    private static final Map<String, StoredCommand> storedCommands = new HashMap<>();
 
     public static void reloadCommands() throws IOException, JSONException
     {
-        allCommands.clear();
+        // TODO: This could use some cleanup
+        storedCommands.clear();
         JSONArray commandData = Global.getSettings().getMergedSpreadsheetDataForMod(
                 "command", "data/console/console_commands.csv", "lw_console");
         JSONObject tmp;
-        Class cls;
-        String commandName = null, commandClass = null, source = null;
+        Class clazz;
+        String commandName, commandClass = null, source;
         boolean isUsableInCombat, isUsableInCampaign;
         for (int x = 0; x < commandData.length(); x++)
         {
@@ -31,17 +32,20 @@ public class CommandStore
                 commandClass = tmp.getString("class");
                 source = tmp.getString("fs_rowSource");
                 isUsableInCombat = tmp.getBoolean("usable in combat");
-                isUsableInCampaign = tmp.getBoolean("usable in combat");
+                isUsableInCampaign = tmp.getBoolean("usable in campaign");
 
-                cls = Global.getSettings().getScriptClassLoader().loadClass(commandClass);
+                clazz = Global.getSettings().getScriptClassLoader().loadClass(commandClass);
 
-                if (!BaseCommand.class.isAssignableFrom(cls))
+                if (!BaseCommand.class.isAssignableFrom(clazz))
                 {
-                    throw new Exception(cls.getSimpleName() + " does not extend BaseCommand");
+                    throw new Exception(clazz.getSimpleName()
+                            + " does not extend "
+                            + BaseCommand.class.getSimpleName());
                 }
 
-                allCommands.put(commandName, (BaseCommand) cls.newInstance());
-                Global.getLogger(CommandStore.class).log(Level.INFO,
+                storedCommands.put(commandName,
+                        new StoredCommand(clazz, isUsableInCampaign, isUsableInCombat));
+                Global.getLogger(CommandStore.class).log(Level.DEBUG,
                         "Loaded command " + commandName + " (class: "
                         + commandClass + ") from " + source);
             }
@@ -53,9 +57,49 @@ public class CommandStore
         }
     }
 
-    public static BaseCommand retrieveCommand(String command)
+    public static boolean isUsableInCombat(String command)
     {
-        return allCommands.get(command);
+        if (storedCommands.containsKey(command))
+        {
+            return storedCommands.get(command).isUsableInCombat;
+        }
+
+        return false;
+    }
+
+    public static boolean isUsableInCampaign(String command)
+    {
+        if (storedCommands.containsKey(command))
+        {
+            return storedCommands.get(command).isUsableInCampaign;
+        }
+
+        return false;
+    }
+
+    public static BaseCommand retrieveCommand(String command)
+            throws InstantiationException, IllegalAccessException
+    {
+        if (storedCommands.containsKey(command))
+        {
+            return storedCommands.get(command).commandClass.newInstance();
+        }
+
+        return null;
+    }
+
+    private static class StoredCommand
+    {
+        private final Class<? extends BaseCommand> commandClass;
+        private final boolean isUsableInCombat, isUsableInCampaign;
+
+        StoredCommand(Class<? extends BaseCommand> commandClass,
+                boolean isUsableInCampaign, boolean isUsableInCombat)
+        {
+            this.commandClass = commandClass;
+            this.isUsableInCombat = isUsableInCombat;
+            this.isUsableInCampaign = isUsableInCampaign;
+        }
     }
 
     private CommandStore()

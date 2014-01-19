@@ -1,6 +1,7 @@
-package org.lazywizard.console.listeners;
+package org.lazywizard.console;
 
 import com.fs.starfarer.api.EveryFrameScript;
+import org.lazywizard.console.Console.Context;
 
 public class ConsoleCampaignListener implements EveryFrameScript
 {
@@ -19,6 +20,6 @@ public class ConsoleCampaignListener implements EveryFrameScript
     @Override
     public void advance(float amount)
     {
-        // TODO: Check for input
+        Console.checkInput(Context.CAMPAIGN);
     }
 }
