@@ -1,4 +1,4 @@
-package org.lazywizard.sfconsole;
+package org.lazywizard.console;
 
 import com.fs.starfarer.api.Global;
 import java.io.IOException;
@@ -7,25 +7,32 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 public class CommandStore
 {
-    private static final Map<String, Class<? extends BaseCommand>> allCommands = new HashMap<>();
+    private static final Map<String, BaseCommand> allCommands = new HashMap<>();
 
     public static void loadCommandsFromCSV(String path) throws IOException, JSONException
     {
         allCommands.clear();
         JSONArray commandData = Global.getSettings().getMergedSpreadsheetDataForMod(
-                "command", path, "lw_devconsole");
+                "command", path, "lw_console");
+        JSONObject tmp;
         Class cls;
         String commandName = null, commandClass = null, source = null;
+        boolean isUsableInCombat, isUsableInCampaign;
         for (int x = 0; x < commandData.length(); x++)
         {
             try
             {
-                commandName = commandData.getJSONObject(x).getString("command");
-                commandClass = commandData.getJSONObject(x).getString("class");
-                source = commandData.getJSONObject(x).getString("fs_rowSource");
+                tmp = commandData.getJSONObject(x);
+                commandName = tmp.getString("command");
+                commandClass = tmp.getString("class");
+                source = tmp.getString("fs_rowSource");
+                isUsableInCombat = tmp.getBoolean("usable in combat");
+                isUsableInCampaign = tmp.getBoolean("usable in combat");
+
                 cls = Global.getSettings().getScriptClassLoader().loadClass(commandClass);
 
                 if (!BaseCommand.class.isAssignableFrom(cls))
@@ -33,8 +40,7 @@ public class CommandStore
                     throw new Exception(cls.getSimpleName() + " does not extend BaseCommand");
                 }
 
-                allCommands.put(commandName, (Class<? extends BaseCommand>) Global.getSettings()
-                        .getScriptClassLoader().loadClass(commandClass));
+                allCommands.put(commandName, (BaseCommand) cls.newInstance());
                 Global.getLogger(CommandStore.class).log(Level.INFO,
                         "Loaded command " + commandName + " (class: "
                         + commandClass + ") from " + source);
@@ -49,21 +55,7 @@ public class CommandStore
 
     public static BaseCommand retrieveCommand(String command)
     {
-        if (!allCommands.containsKey(command))
-        {
-            return null;
-        }
-
-        try
-        {
-            return allCommands.get(command).newInstance();
-        }
-        catch (Exception ex)
-        {
-            Global.getLogger(CommandStore.class).log(Level.ERROR,
-                    "Failed to instantiate command " + command, ex);
-            return null;
-        }
+        return allCommands.get(command);
     }
 
     private CommandStore()
