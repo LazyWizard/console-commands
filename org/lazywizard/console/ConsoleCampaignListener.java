@@ -19,6 +19,6 @@ public class ConsoleCampaignListener implements EveryFrameScript
     @Override
     public void advance(float amount)
     {
-        Console.checkInput(CommandContext.CAMPAIGN);
+        Console.advance(CommandContext.CAMPAIGN);
     }
 }

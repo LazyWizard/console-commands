@@ -3,13 +3,12 @@ package org.lazywizard.console;
 import com.fs.starfarer.api.Global;
 import java.awt.Color;
 import java.io.IOException;
-import java.util.Arrays;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import org.apache.log4j.Level;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.lazywizard.lazylib.CollectionUtils;
+import org.lazywizard.console.CommandStore.StoredCommand;
 import org.lazywizard.lazylib.JSONUtils;
 import org.lwjgl.input.Keyboard;
 
@@ -19,55 +18,39 @@ public class Console
     private static final long MILLISECONDS_BETWEEN_INPUT = 1_500l;
     private static long lastInput = Long.MIN_VALUE;
 
-    static boolean checkInput(CommandContext context)
+    private static boolean checkInput(CommandContext context)
     {
-        if ((lastInput + MILLISECONDS_BETWEEN_INPUT <= System.currentTimeMillis())
-                && Keyboard.isKeyDown(CONSOLE_KEY))
+        String input = JOptionPane.showInputDialog(null,
+                "Enter command, or 'help' for a list of valid commands.");
+        if (input == null)
         {
-            String input = JOptionPane.showInputDialog(null,
-                    "Enter command, or 'help' for a list of valid commands.");
-            if (input == null)
-            {
-                return false;
-            }
-
-            lastInput = System.currentTimeMillis();
-            String[] tmp = input.split(" ");
-            String com = tmp[0].toLowerCase();
-            String args;
-            if (tmp.length > 1)
-            {
-                tmp = Arrays.copyOfRange(tmp, 1, tmp.length);
-                args = CollectionUtils.implode(Arrays.asList(tmp), " ");
-            }
-            else
-            {
-                args = "";
-            }
-
-            try
-            {
-                BaseCommand command = CommandStore.retrieveCommand(com);
-
-                if (command == null)
-                {
-                    Global.getLogger(Console.class).log(Level.ERROR,
-                            "No such command \"" + com + "\" registered!");
-                    return false;
-                }
-
-                return command.runCommand(args, context);
-            }
-            catch (Exception ex)
-            {
-                Global.getLogger(Console.class).log(Level.ERROR,
-                        "Failed to execute command \"" + input
-                        + "\" in context " + context, ex);
-                return false;
-            }
+            return false;
         }
 
-        return false;
+        String[] tmp = input.split(" ", 1);
+        String com = tmp[0].toLowerCase();
+        String args = (tmp.length > 1 ? tmp[1] : "");
+
+        try
+        {
+            StoredCommand stored = CommandStore.retrieveCommand(com);
+            if (stored == null)
+            {
+                Global.getLogger(Console.class).log(Level.ERROR,
+                        "No such command \"" + com + "\" registered!");
+                return false;
+            }
+
+            BaseCommand command = stored.getCommandClass().newInstance();
+            return command.runCommand(args, context);
+        }
+        catch (Exception ex)
+        {
+            Global.getLogger(Console.class).log(Level.ERROR,
+                    "Failed to execute command \"" + input
+                    + "\" in context " + context, ex);
+            return false;
+        }
     }
 
     public static void reloadSettings() throws IOException, JSONException
@@ -96,5 +79,15 @@ public class Console
         color = JSONUtils.toColor(settings.getJSONArray("buttonColor"));
         UIManager.put("Button.foreground", color);
         UIManager.put("SplitPane.foreground", color);
+    }
+
+    static void advance(CommandContext context)
+    {
+        if ((lastInput + MILLISECONDS_BETWEEN_INPUT <= System.currentTimeMillis())
+                && Keyboard.isKeyDown(CONSOLE_KEY))
+        {
+            lastInput = System.currentTimeMillis();
+            checkInput(context);
+        }
     }
 }

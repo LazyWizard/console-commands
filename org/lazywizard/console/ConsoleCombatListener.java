@@ -10,7 +10,7 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
     @Override
     public void advance(float amount, List<InputEventAPI> events)
     {
-        Console.checkInput(CommandContext.COMBAT);
+        Console.advance(CommandContext.COMBAT);
     }
 
     @Override
