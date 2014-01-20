@@ -11,7 +11,8 @@ public interface BaseCommand
      * <p>
      * @return {@code true} if this command ran successfully, {@code false}
      *         otherwise.
+     * @throws java.lang.Exception
      * @since 2.0
      */
-    public boolean runCommand(String args, CommandContext context);
+    public boolean runCommand(String args, CommandContext context) throws Exception;
 }

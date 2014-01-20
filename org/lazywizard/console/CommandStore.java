@@ -19,24 +19,22 @@ public class CommandStore
         // TODO: This could use some cleanup
         storedCommands.clear();
         JSONArray commandData = Global.getSettings().getMergedSpreadsheetDataForMod(
-                "command", "data/console/console_commands.csv", "lw_console");
+                "command", "data/console/commands.csv", "lw_console");
         JSONObject tmp;
         Class clazz;
-        String commandName, commandClass, source;
-        boolean isUsableInCombat, isUsableInCampaign;
+        String commandName, commandClass, commandHelp, commandSource;
         for (int x = 0; x < commandData.length(); x++)
         {
             // Prevents previous command's info showing up in error message
-            commandName = commandClass = source = null;
+            commandName = commandClass = commandSource = null;
 
             try
             {
                 tmp = commandData.getJSONObject(x);
                 commandName = tmp.getString("command").toLowerCase();
                 commandClass = tmp.getString("class");
-                source = tmp.getString("fs_rowSource");
-                isUsableInCombat = tmp.getBoolean("usable in combat");
-                isUsableInCampaign = tmp.getBoolean("usable in campaign");
+                commandSource = tmp.getString("fs_rowSource");
+                commandHelp = tmp.getString("helpfile");
 
                 clazz = Global.getSettings().getScriptClassLoader().loadClass(commandClass);
 
@@ -48,62 +46,72 @@ public class CommandStore
                 }
 
                 storedCommands.put(commandName,
-                        new StoredCommand(clazz, isUsableInCampaign, isUsableInCombat));
+                        new StoredCommand(commandName, clazz, commandHelp));
                 Global.getLogger(CommandStore.class).log(Level.DEBUG,
                         "Loaded command " + commandName + " (class: "
-                        + commandClass + ") from " + source);
+                        + commandClass + ") from " + commandSource);
             }
             catch (Exception ex)
             {
                 Global.getLogger(CommandStore.class).log(Level.ERROR,
                         "Failed to load command " + commandName + " (class: "
-                        + commandClass + ") from " + source, ex);
+                        + commandClass + ") from " + commandSource, ex);
             }
         }
     }
 
-    public static boolean isUsableInCombat(String command)
-    {
-        if (storedCommands.containsKey(command))
-        {
-            return storedCommands.get(command).isUsableInCombat;
-        }
-
-        return false;
-    }
-
-    public static boolean isUsableInCampaign(String command)
-    {
-        if (storedCommands.containsKey(command))
-        {
-            return storedCommands.get(command).isUsableInCampaign;
-        }
-
-        return false;
-    }
-
-    public static BaseCommand retrieveCommand(String command)
+    public static StoredCommand retrieveCommand(String command)
             throws InstantiationException, IllegalAccessException
     {
         if (storedCommands.containsKey(command))
         {
-            return storedCommands.get(command).commandClass.newInstance();
+            return storedCommands.get(command);
         }
 
         return null;
     }
 
-    private static class StoredCommand
+    public static class StoredCommand
     {
         private final Class<? extends BaseCommand> commandClass;
-        private final boolean isUsableInCombat, isUsableInCampaign;
+        private final String name, syntax, help;
 
-        StoredCommand(Class<? extends BaseCommand> commandClass,
-                boolean isUsableInCampaign, boolean isUsableInCombat)
+        StoredCommand(String commandName, Class<? extends BaseCommand> commandClass,
+                String helpFile)
         {
+            this.name = commandName;
             this.commandClass = commandClass;
-            this.isUsableInCombat = isUsableInCombat;
-            this.isUsableInCampaign = isUsableInCampaign;
+
+            if (helpFile == null || helpFile.isEmpty())
+            {
+                Global.getLogger(CommandStore.class).log(Level.WARN,
+                        "No helpfile found for command \"" + name + "\"");
+                syntax = null;
+                help = null;
+                return;
+            }
+
+            String[] raw;
+            try
+            {
+                raw = Global.getSettings().loadText(helpFile).split("\n", 1);
+            }
+            catch (IOException ex)
+            {
+                Global.getLogger(CommandStore.class).log(Level.WARN,
+                        "No helpfile found for command \"" + name + "\"", ex);
+                syntax = null;
+                help = null;
+                return;
+            }
+
+            syntax = raw[0];
+            help = (raw.length > 1 ? raw[1] : null);
+        }
+
+        public Class<? extends BaseCommand> getCommandClass()
+        {
+            return commandClass;
         }
     }
 
