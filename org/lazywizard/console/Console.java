@@ -104,6 +104,7 @@ public class Console
             checkInput(context);
         }
 
+        // TODO: Extract this into its own method
         if (!output.isEmpty())
         {
             if (context == CommandContext.CAMPAIGN)
@@ -115,21 +116,25 @@ public class Console
             }
             else
             {
+                CombatEngineAPI engine = Global.getCombatEngine();
+                ShipAPI player = engine.getPlayerShip();
+
+                if (player == null || engine.isEntityInPlay(player))
+                {
+                    // Print output later, once there's a player on-screen
+                    return;
+                }
+
+                // Merge all output into one big String
+                // This prevents output from overlapping itself
                 StringBuilder sb = new StringBuilder();
                 for (String tmp : output)
                 {
                     sb.append(tmp + "\n");
                 }
 
+                // TODO: add font size setting and modify this block to use it
                 String message = sb.toString();
-                CombatEngineAPI engine = Global.getCombatEngine();
-                ShipAPI player = engine.getPlayerShip();
-
-                if (player == null || engine.isEntityInPlay(player))
-                {
-                    return;
-                }
-
                 String[] lines = message.split("\n");
                 for (int x = 0; x < lines.length; x++)
                 {
