@@ -21,6 +21,7 @@ public class CommandStore
         JSONArray commandData = Global.getSettings().getMergedSpreadsheetDataForMod(
                 "command", "data/console/commands.csv", "lw_console");
         JSONObject tmp;
+        ClassLoader loader = Global.getSettings().getScriptClassLoader();
         Class commandClass;
         String commandName, commandHelp, commandSource;
         for (int x = 0; x < commandData.length(); x++)
@@ -33,8 +34,7 @@ public class CommandStore
             {
                 tmp = commandData.getJSONObject(x);
                 commandName = tmp.getString("command").toLowerCase();
-                commandClass = Global.getSettings().getScriptClassLoader()
-                        .loadClass(tmp.getString("class"));
+                commandClass = loader.loadClass(tmp.getString("class"));
                 commandHelp = tmp.getString("helpFile");
                 commandSource = tmp.getString("fs_rowSource");
 
@@ -97,7 +97,7 @@ public class CommandStore
             String[] raw;
             try
             {
-                raw = Global.getSettings().loadText(helpFile).split("\n", 1);
+                raw = Global.getSettings().loadText(helpFile).split("\n", 2);
             }
             catch (IOException ex)
             {
