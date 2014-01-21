@@ -25,7 +25,7 @@ public class Console
     private static Color OUTPUT_COLOR;
     private static int OUTPUT_LINE_LENGTH;
     private static boolean isPressed = false;
-    private static final List<String> output = new ArrayList<>();
+    private static final StringBuilder output = new StringBuilder();
 
     private static boolean checkInput(CommandContext context)
     {
@@ -67,8 +67,7 @@ public class Console
 
     public static void showMessage(String message)
     {
-        output.addAll(Arrays.asList(StringUtils.wrapString(message,
-                OUTPUT_LINE_LENGTH).split("\n")));
+        output.append(message).append("\n");
     }
 
     public static void reloadSettings() throws IOException, JSONException
@@ -77,6 +76,7 @@ public class Console
                 "data/console/console_settings.json");
         CONSOLE_KEY = settings.getInt("consoleKey");
         OUTPUT_COLOR = JSONUtils.toColor(settings.getJSONArray("outputColor"));
+        OUTPUT_LINE_LENGTH = settings.getInt("maxOutputLineLength");
 
         // Console pop-up appearance settings (temporary)
         Color color = JSONUtils.toColor(settings.getJSONArray("backgroundColor"));
@@ -119,14 +119,17 @@ public class Console
         }
 
         // TODO: Extract this into its own method
-        if (!output.isEmpty())
+        if (output.length() > 0)
         {
             if (context == CommandContext.CAMPAIGN)
             {
-                for (String tmp : output)
+                for (String message : StringUtils.wrapString(output.toString(),
+                        OUTPUT_LINE_LENGTH).split("\n"))
                 {
-                    Global.getSector().getCampaignUI().addMessage(tmp, OUTPUT_COLOR);
+                    Global.getSector().getCampaignUI().addMessage(message, OUTPUT_COLOR);
                 }
+
+                output.setLength(0);
             }
             else
             {
@@ -139,28 +142,20 @@ public class Console
                     return;
                 }
 
-                // Merge all output into one big String
-                // This prevents output from overlapping itself
-                StringBuilder sb = new StringBuilder();
-                for (String tmp : output)
-                {
-                    sb.append(tmp + "\n");
-                }
-
                 // TODO: add font size setting and modify this block to use it
-                String message = sb.toString();
-                String[] lines = message.split("\n");
-                for (int x = 0; x < lines.length; x++)
+                String[] messages = StringUtils.wrapString(output.toString(),
+                        OUTPUT_LINE_LENGTH).split("\n");
+                for (int x = 0; x < messages.length; x++)
                 {
                     engine.addFloatingText(Vector2f.add(
-                            new Vector2f(-message.length() / 20f,
+                            new Vector2f(-output.length() / 20f,
                                     -(player.getCollisionRadius() + 50 + (x * 25))),
                             player.getLocation(), null),
-                            lines[x], 25f, OUTPUT_COLOR, player, 0f, 0f);
+                            messages[x], 25f, OUTPUT_COLOR, player, 0f, 0f);
                 }
-            }
 
-            output.clear();
+                output.setLength(0);
+            }
         }
     }
 }
