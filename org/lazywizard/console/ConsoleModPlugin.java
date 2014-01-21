@@ -14,17 +14,13 @@ public class ConsoleModPlugin extends BaseModPlugin
         Console.reloadSettings();
         CommandStore.reloadCommands();
 
-        Global.getLogger(Console.class).log(Level.INFO,
-                "Console loaded.");
+        Console.showMessage("Console loaded.", Level.INFO);
 
         if (Display.isFullscreen())
         {
             Console.showMessage("It is highly recommended that you play"
                     + " Starsector in borderless windowed mode when using"
-                    + " the console.");
-            Global.getLogger(Console.class).log(Level.WARN,
-                    "It is highly recommended that you play Starsector"
-                    + " in borderless windowed mode when using the console.");
+                    + " the console.", Level.WARN);
         }
     }
 

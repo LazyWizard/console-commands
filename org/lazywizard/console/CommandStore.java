@@ -27,7 +27,8 @@ public class CommandStore
         for (int x = 0; x < commandData.length(); x++)
         {
             // Prevents previous command's info showing up in error message
-            commandName = commandSource = null;
+            commandName = null;
+            commandSource = null;
             commandClass = null;
 
             try
