@@ -21,35 +21,36 @@ public class CommandStore
         JSONArray commandData = Global.getSettings().getMergedSpreadsheetDataForMod(
                 "command", "data/console/commands.csv", "lw_console");
         JSONObject tmp;
-        Class clazz;
-        String commandName, commandClass, commandHelp, commandSource;
+        Class commandClass;
+        String commandName, commandHelp, commandSource;
         for (int x = 0; x < commandData.length(); x++)
         {
             // Prevents previous command's info showing up in error message
-            commandName = commandClass = commandSource = null;
+            commandName = commandSource = null;
+            commandClass = null;
 
             try
             {
                 tmp = commandData.getJSONObject(x);
                 commandName = tmp.getString("command").toLowerCase();
-                commandClass = tmp.getString("class");
+                commandClass = Global.getSettings().getScriptClassLoader()
+                        .loadClass(tmp.getString("class"));
+                commandHelp = tmp.getString("helpFile");
                 commandSource = tmp.getString("fs_rowSource");
-                commandHelp = tmp.getString("helpfile");
 
-                clazz = Global.getSettings().getScriptClassLoader().loadClass(commandClass);
-
-                if (!BaseCommand.class.isAssignableFrom(clazz))
+                if (!BaseCommand.class.isAssignableFrom(commandClass))
                 {
-                    throw new Exception(clazz.getSimpleName()
+                    throw new Exception(commandClass.getSimpleName()
                             + " does not extend "
                             + BaseCommand.class.getSimpleName());
                 }
 
                 storedCommands.put(commandName,
-                        new StoredCommand(commandName, clazz, commandHelp));
+                        new StoredCommand(commandName, commandClass,
+                                commandHelp, commandSource));
                 Global.getLogger(CommandStore.class).log(Level.DEBUG,
                         "Loaded command " + commandName + " (class: "
-                        + commandClass + ") from " + commandSource);
+                        + commandClass.getCanonicalName() + ") from " + commandSource);
             }
             catch (Exception ex)
             {
@@ -74,18 +75,20 @@ public class CommandStore
     public static class StoredCommand
     {
         private final Class<? extends BaseCommand> commandClass;
-        private final String name, syntax, help;
+        private final String name, syntax, help, source;
 
+        // TODO: Don't load helpfile, instead leave that up to the 'help' command
         StoredCommand(String commandName, Class<? extends BaseCommand> commandClass,
-                String helpFile)
+                String helpFile, String source)
         {
             this.name = commandName;
             this.commandClass = commandClass;
+            this.source = source;
 
             if (helpFile == null || helpFile.isEmpty())
             {
                 Global.getLogger(CommandStore.class).log(Level.WARN,
-                        "No helpfile found for command \"" + name + "\"");
+                        "No helpfile registered for command \"" + name + "\"");
                 syntax = null;
                 help = null;
                 return;
@@ -98,8 +101,8 @@ public class CommandStore
             }
             catch (IOException ex)
             {
-                Global.getLogger(CommandStore.class).log(Level.WARN,
-                        "No helpfile found for command \"" + name + "\"", ex);
+                Global.getLogger(CommandStore.class).log(Level.ERROR,
+                        "Helpfile not found for command \"" + name + "\"");
                 syntax = null;
                 help = null;
                 return;
@@ -112,6 +115,21 @@ public class CommandStore
         public Class<? extends BaseCommand> getCommandClass()
         {
             return commandClass;
+        }
+
+        public String getSyntax()
+        {
+            return syntax;
+        }
+
+        public String getHelp()
+        {
+            return help;
+        }
+
+        public String getSource()
+        {
+            return source;
         }
     }
 
