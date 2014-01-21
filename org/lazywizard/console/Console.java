@@ -125,7 +125,7 @@ public class Console
                 CombatEngineAPI engine = Global.getCombatEngine();
                 ShipAPI player = engine.getPlayerShip();
 
-                if (player == null || engine.isEntityInPlay(player))
+                if (player == null || !engine.isEntityInPlay(player))
                 {
                     // Print output later, once there's a player on-screen
                     return;
