@@ -45,9 +45,7 @@ public class Console
             StoredCommand stored = CommandStore.retrieveCommand(com);
             if (stored == null)
             {
-                showMessage("No such command \"" + com + "\" registered!");
-                Global.getLogger(Console.class).log(Level.ERROR,
-                        "No such command \"" + com + "\" registered!");
+                showMessage("No such command \"" + com + "\" registered!", Level.ERROR);
                 return false;
             }
 
@@ -57,17 +55,20 @@ public class Console
         catch (Exception ex)
         {
             showMessage("Failed to execute command \"" + input
-                    + "\" in context " + context);
-            Global.getLogger(Console.class).log(Level.ERROR,
-                    "Failed to execute command \"" + input
-                    + "\" in context " + context, ex);
+                    + "\" in context " + context, Level.ERROR);
             return false;
         }
     }
 
-    public static void showMessage(String message)
+    public static void showMessage(String message, Level logLevel)
     {
         output.append(message).append("\n");
+        Global.getLogger(Console.class).log(logLevel, message);
+    }
+
+    public static void showMessage(String message)
+    {
+        showMessage(message, Level.INFO);
     }
 
     public static void reloadSettings() throws IOException, JSONException
@@ -77,6 +78,13 @@ public class Console
         CONSOLE_KEY = settings.getInt("consoleKey");
         OUTPUT_COLOR = JSONUtils.toColor(settings.getJSONArray("outputColor"));
         OUTPUT_LINE_LENGTH = settings.getInt("maxOutputLineLength");
+
+        // What level to log console output at
+        Level logLevel = Level.toLevel(settings.getString("consoleLogLevel"), Level.WARN);
+        Global.getLogger(Console.class).setLevel(logLevel);
+        Global.getLogger(CommandStore.class).setLevel(logLevel);
+        Global.getLogger(ConsoleCampaignListener.class).setLevel(logLevel);
+        Global.getLogger(ConsoleCombatListener.class).setLevel(logLevel);
 
         // Console pop-up appearance settings (temporary)
         Color color = JSONUtils.toColor(settings.getJSONArray("backgroundColor"));
