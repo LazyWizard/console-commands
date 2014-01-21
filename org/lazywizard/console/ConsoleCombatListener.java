@@ -3,6 +3,7 @@ package org.lazywizard.console;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
+import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import java.util.List;
 import static org.lazywizard.console.CommandContext.*;
@@ -16,6 +17,13 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
     {
         // Temp fix for .6.2a bug
         if (engine != Global.getCombatEngine())
+        {
+            return;
+        }
+
+        // Don't function on the main menu
+        ShipAPI player = engine.getPlayerShip();
+        if (player == null || !engine.isEntityInPlay(player))
         {
             return;
         }

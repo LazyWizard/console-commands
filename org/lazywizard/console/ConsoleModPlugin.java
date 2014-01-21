@@ -19,6 +19,9 @@ public class ConsoleModPlugin extends BaseModPlugin
 
         if (Display.isFullscreen())
         {
+            Console.showMessage("It is highly recommended that you play"
+                    + " Starsector in borderless windowed mode when using"
+                    + " the console.");
             Global.getLogger(Console.class).log(Level.WARN,
                     "It is highly recommended that you play Starsector"
                     + " in borderless windowed mode when using the console.");

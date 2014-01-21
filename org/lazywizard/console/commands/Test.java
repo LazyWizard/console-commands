@@ -9,7 +9,7 @@ public class Test implements BaseCommand
     @Override
     public boolean runCommand(String args, CommandContext context)
     {
-        Console.showMessage("\n\tRan test command with arguments: " + args + "\n");
+        Console.showMessage("Ran test command with arguments: " + args);
         return true;
     }
 }
