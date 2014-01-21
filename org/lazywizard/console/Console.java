@@ -24,8 +24,7 @@ public class Console
     private static int CONSOLE_KEY;
     private static Color OUTPUT_COLOR;
     private static int OUTPUT_LINE_LENGTH;
-    private static final long MILLISECONDS_BETWEEN_INPUT = 1_500l;
-    private static long lastInput = Long.MIN_VALUE;
+    private static boolean isPressed = false;
     private static final List<String> output = new ArrayList<>();
 
     private static boolean checkInput(CommandContext context)
@@ -37,7 +36,7 @@ public class Console
             return false;
         }
 
-        String[] tmp = input.split(" ", 1);
+        String[] tmp = input.split(" ", 2);
         String com = tmp[0].toLowerCase();
         String args = (tmp.length > 1 ? tmp[1] : "");
 
@@ -103,11 +102,20 @@ public class Console
 
     static void advance(CommandContext context)
     {
-        if ((lastInput + MILLISECONDS_BETWEEN_INPUT <= System.currentTimeMillis())
-                && Keyboard.isKeyDown(CONSOLE_KEY))
+        if (!isPressed)
         {
-            lastInput = System.currentTimeMillis();
-            checkInput(context);
+            if (Keyboard.isKeyDown(CONSOLE_KEY))
+            {
+                isPressed = true;
+            }
+        }
+        else
+        {
+            if (!Keyboard.isKeyDown(CONSOLE_KEY))
+            {
+                isPressed = false;
+                checkInput(context);
+            }
         }
 
         // TODO: Extract this into its own method
