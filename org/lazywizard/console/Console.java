@@ -6,6 +6,7 @@ import com.fs.starfarer.api.combat.ShipAPI;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -14,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.lazywizard.console.CommandStore.StoredCommand;
 import org.lazywizard.lazylib.JSONUtils;
+import org.lazywizard.lazylib.StringUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -21,6 +23,7 @@ public class Console
 {
     private static int CONSOLE_KEY;
     private static Color OUTPUT_COLOR;
+    private static int OUTPUT_LINE_LENGTH;
     private static final long MILLISECONDS_BETWEEN_INPUT = 1_500l;
     private static long lastInput = Long.MIN_VALUE;
     private static final List<String> output = new ArrayList<>();
@@ -43,6 +46,7 @@ public class Console
             StoredCommand stored = CommandStore.retrieveCommand(com);
             if (stored == null)
             {
+                showMessage("No such command \"" + com + "\" registered!");
                 Global.getLogger(Console.class).log(Level.ERROR,
                         "No such command \"" + com + "\" registered!");
                 return false;
@@ -53,6 +57,8 @@ public class Console
         }
         catch (Exception ex)
         {
+            showMessage("Failed to execute command \"" + input
+                    + "\" in context " + context);
             Global.getLogger(Console.class).log(Level.ERROR,
                     "Failed to execute command \"" + input
                     + "\" in context " + context, ex);
@@ -62,8 +68,8 @@ public class Console
 
     public static void showMessage(String message)
     {
-        // TODO: implement this
-        Global.getLogger(Console.class).log(Level.INFO, message);
+        output.addAll(Arrays.asList(StringUtils.wrapString(message,
+                OUTPUT_LINE_LENGTH).split("\n")));
     }
 
     public static void reloadSettings() throws IOException, JSONException
