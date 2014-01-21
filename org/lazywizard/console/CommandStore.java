@@ -23,7 +23,7 @@ public class CommandStore
         JSONObject tmp;
         ClassLoader loader = Global.getSettings().getScriptClassLoader();
         Class commandClass;
-        String commandName, commandHelp, commandSource;
+        String commandName, commandSyntax, commandHelp, commandSource;
         for (int x = 0; x < commandData.length(); x++)
         {
             // Prevents previous command's info showing up in error message
@@ -35,7 +35,8 @@ public class CommandStore
                 tmp = commandData.getJSONObject(x);
                 commandName = tmp.getString("command").toLowerCase();
                 commandClass = loader.loadClass(tmp.getString("class"));
-                commandHelp = tmp.getString("helpFile");
+                commandSyntax = tmp.getString("syntax");
+                commandHelp = tmp.getString("help");
                 commandSource = tmp.getString("fs_rowSource");
 
                 if (!BaseCommand.class.isAssignableFrom(commandClass))
@@ -47,7 +48,7 @@ public class CommandStore
 
                 storedCommands.put(commandName,
                         new StoredCommand(commandName, commandClass,
-                                commandHelp, commandSource));
+                                commandSyntax, commandHelp, commandSource));
                 Global.getLogger(CommandStore.class).log(Level.DEBUG,
                         "Loaded command " + commandName + " (class: "
                         + commandClass.getCanonicalName() + ") from " + commandSource);
@@ -77,44 +78,24 @@ public class CommandStore
         private final Class<? extends BaseCommand> commandClass;
         private final String name, syntax, help, source;
 
-        // TODO: Don't load helpfile, instead leave that up to the 'help' command
         StoredCommand(String commandName, Class<? extends BaseCommand> commandClass,
-                String helpFile, String source)
+                String syntax, String help, String source)
         {
             this.name = commandName;
             this.commandClass = commandClass;
             this.source = source;
-
-            if (helpFile == null || helpFile.isEmpty())
-            {
-                Global.getLogger(CommandStore.class).log(Level.WARN,
-                        "No helpfile registered for command \"" + name + "\"");
-                syntax = null;
-                help = null;
-                return;
-            }
-
-            String[] raw;
-            try
-            {
-                raw = Global.getSettings().loadText(helpFile).split("\n", 2);
-            }
-            catch (IOException ex)
-            {
-                Global.getLogger(CommandStore.class).log(Level.ERROR,
-                        "Helpfile not found for command \"" + name + "\"");
-                syntax = null;
-                help = null;
-                return;
-            }
-
-            syntax = raw[0];
-            help = (raw.length > 1 ? raw[1] : null);
+            this.syntax = (syntax == null ? "" : syntax);
+            this.help = (help == null ? "" : help);
         }
 
         public Class<? extends BaseCommand> getCommandClass()
         {
             return commandClass;
+        }
+
+        public String getName()
+        {
+            return name;
         }
 
         public String getSyntax()
