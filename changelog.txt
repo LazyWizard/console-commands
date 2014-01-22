@@ -10,7 +10,6 @@ Made writing custom commands much simpler:
  - Commands must implement the org.lazywizard.console.BaseCommand interface
  - Commands are registered inside data/console/console_commands.csv
    - Commands can be in any package now, not just data.scripts.console
-   - This update adds support for commands in a jar
 New commands:
  - Echo, prints a message (mostly for testing)
  - Reload, reloads all console commands and settings
