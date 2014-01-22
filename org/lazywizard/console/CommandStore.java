@@ -2,7 +2,9 @@ package org.lazywizard.console;
 
 import com.fs.starfarer.api.Global;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Level;
 import org.json.JSONArray;
@@ -63,8 +65,12 @@ public class CommandStore
         }
     }
 
+    public static List<String> getLoadedCommandList()
+    {
+        return new ArrayList(storedCommands.keySet());
+    }
+    
     public static StoredCommand retrieveCommand(String command)
-            throws InstantiationException, IllegalAccessException
     {
         if (storedCommands.containsKey(command))
         {

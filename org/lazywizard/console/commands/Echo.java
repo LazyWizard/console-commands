@@ -1,6 +1,5 @@
 package org.lazywizard.console.commands;
 
-import org.apache.log4j.Level;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommandContext;
 import org.lazywizard.console.Console;
