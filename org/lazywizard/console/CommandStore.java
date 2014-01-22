@@ -37,7 +37,7 @@ public class CommandStore
             try
             {
                 tmp = commandData.getJSONObject(x);
-                commandName = tmp.getString("command").toLowerCase();
+                commandName = tmp.getString("command");
                 commandClass = loader.loadClass(tmp.getString("class"));
                 commandSyntax = tmp.getString("syntax");
                 commandHelp = tmp.getString("help");
@@ -71,7 +71,13 @@ public class CommandStore
 
     public static List<String> getLoadedCommandList()
     {
-        return new ArrayList(storedCommands.keySet());
+        List<String> commands = new ArrayList(storedCommands.size());
+        for (StoredCommand tmp : storedCommands.values())
+        {
+            commands.add(tmp.getName());
+        }
+
+        return commands;
     }
 
     public static StoredCommand retrieveCommand(String command)
