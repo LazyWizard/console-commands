@@ -87,20 +87,13 @@ public class Console
         {
             message = "Error: ";
         }
-        else if (!message.endsWith(": "))
+        else if (!message.endsWith(" "))
         {
-            if (message.endsWith(":"))
-            {
-                message = message + " ";
-            }
-            else
-            {
-                message = message + ": ";
-            }
+            message += " ";
         }
 
         StringBuilder stackTrace = new StringBuilder(message).append(ex.toString()).append("\n");
-
+        
         for (StackTraceElement ste : ex.getStackTrace())
         {
             stackTrace.append("at ").append(ste.toString()).append("\n");
@@ -210,5 +203,9 @@ public class Console
                 output.setLength(0);
             }
         }
+    }
+
+    private Console()
+    {
     }
 }
