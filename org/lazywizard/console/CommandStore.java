@@ -22,7 +22,7 @@ public class CommandStore
         // TODO: This could use some cleanup
         storedCommands.clear();
         JSONArray commandData = Global.getSettings().getMergedSpreadsheetDataForMod(
-                "command", "data/console/commands.csv", "lw_console");
+                "class", "data/console/commands.csv", "lw_console");
         JSONObject tmp;
         ClassLoader loader = Global.getSettings().getScriptClassLoader();
         Class commandClass;
