@@ -50,8 +50,8 @@ public interface BaseCommand
      *
      * @param args    The arguments passed into this command. Will be an empty
      *                string if no arguments were entered.
-     * @param context Whether this command was run in combat or on the campaign
-     *                map.
+     * @param context Where this command was called from (campaign, combat,
+     *                mission, simulation, etc).
      * <p>
      * @return A {@link CommandResult} describing the result of execution.
      * <p>
