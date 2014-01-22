@@ -63,9 +63,9 @@ public class AddShip implements BaseCommand
         String variant = tmp[0];
 
         // No variant given = spawn empty hull
-        if (variant.indexOf("_") == -1)
+        if (variant.indexOf('_') == -1)
         {
-            variant = variant + "_Hull";
+            variant += "_Hull";
         }
 
         // Catch common capitalization errors
@@ -77,7 +77,7 @@ public class AddShip implements BaseCommand
         catch (Exception ex)
         {
             // Capitalize first character of variant name
-            int lastUnderscore = variant.lastIndexOf("_");
+            int lastUnderscore = variant.lastIndexOf('_');
             variant = variant.substring(0, lastUnderscore + 1)
                     + Character.toUpperCase(variant.charAt(lastUnderscore + 1))
                     + variant.substring(lastUnderscore + 2);

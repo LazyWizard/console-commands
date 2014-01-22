@@ -1,7 +1,6 @@
 package org.lazywizard.console.commands;
 
 import java.io.IOException;
-import org.apache.log4j.Level;
 import org.json.JSONException;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommandStore;
@@ -19,7 +18,7 @@ public class Reload implements BaseCommand
         }
         catch (IOException | JSONException ex)
         {
-            Console.showMessage("Failed to reload console settings!", Level.ERROR);
+            Console.showMessage("Failed to reload console settings!");
             return CommandResult.ERROR;
         }
 

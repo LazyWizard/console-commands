@@ -62,7 +62,7 @@ public class AddWing implements BaseCommand
         }
 
         FleetDataAPI fleet = Global.getSector().getPlayerFleet().getFleetData();
-        FleetMemberAPI ship = null;
+        FleetMemberAPI ship;
         String variant = tmp[0];
 
         // Add _wing if the command fails
@@ -73,7 +73,7 @@ public class AddWing implements BaseCommand
         }
         catch (Exception ex)
         {
-            variant = variant + "_wing";
+            variant += "_wing";
             try
             {
                 ship = Global.getFactory().createFleetMember(

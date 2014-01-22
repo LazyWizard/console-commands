@@ -33,8 +33,8 @@ public class Nuke implements BaseCommand
 
             if (ship.getOwner() == FleetSide.ENEMY.ordinal())
             {
-                engine.applyDamage(ship, ship.getLocation(), 500000,
-                        DamageType.ENERGY, 500000, true, false, null);
+                engine.applyDamage(ship, ship.getLocation(), 500_000,
+                        DamageType.ENERGY, 500_000, true, false, null);
             }
         }
 

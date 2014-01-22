@@ -43,7 +43,7 @@ public class RunCode implements BaseCommand
 
         if (!args.endsWith(";"))
         {
-            args = args + ";";
+            args += ";";
         }
 
         if (eval == null)

@@ -53,26 +53,22 @@ public class AddCrew implements BaseCommand
         }
 
         CrewXPLevel level;
-
-        if (tmp[1].equals("green"))
+        switch (tmp[1])
         {
-            level = CrewXPLevel.GREEN;
-        }
-        else if (tmp[1].equals("regular"))
-        {
-            level = CrewXPLevel.REGULAR;
-        }
-        else if (tmp[1].equals("veteran"))
-        {
-            level = CrewXPLevel.VETERAN;
-        }
-        else if (tmp[1].equals("elite"))
-        {
-            level = CrewXPLevel.ELITE;
-        }
-        else
-        {
-            return CommandResult.BAD_SYNTAX;
+            case "green":
+                level = CrewXPLevel.GREEN;
+                break;
+            case "regular":
+                level = CrewXPLevel.REGULAR;
+                break;
+            case "veteran":
+                level = CrewXPLevel.VETERAN;
+                break;
+            case "elite":
+                level = CrewXPLevel.ELITE;
+                break;
+            default:
+                return CommandResult.BAD_SYNTAX;
         }
 
         if (amt >= 0)
