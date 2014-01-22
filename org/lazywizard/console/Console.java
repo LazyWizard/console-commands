@@ -51,7 +51,7 @@ public class Console
             BaseCommand command = stored.getCommandClass().newInstance();
             CommandResult result = command.runCommand(args, context);
 
-            if (result == CommandResult.WRONG_SYNTAX
+            if (result == CommandResult.BAD_SYNTAX
                     && !stored.getSyntax().isEmpty())
             {
                 showMessage("Syntax: " + stored.getSyntax());

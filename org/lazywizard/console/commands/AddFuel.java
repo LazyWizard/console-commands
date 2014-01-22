@@ -1,12 +1,13 @@
 package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.Console;
+import org.lazywizard.console.BaseCommand.CommandContext;
+import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommonStrings;
+import org.lazywizard.console.Console;
 
-public class AddSkillPoints implements BaseCommand
+public class AddFuel implements BaseCommand
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -17,22 +18,19 @@ public class AddSkillPoints implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        MutableCharacterStatsAPI character =
-                Global.getSector().getPlayerFleet().getCommanderStats();
         int amount;
-
         try
         {
             amount = Integer.parseInt(args);
         }
         catch (NumberFormatException ex)
         {
-            Console.showMessage("Error: Skill points must be a whole number!");
+            Console.showMessage("Error: fuel amount must be a whole number!");
             return CommandResult.BAD_SYNTAX;
         }
 
-        character.addSkillPoints(amount);
-        Console.showMessage("Added " + amount + " skill points to character.");
+        Global.getSector().getPlayerFleet().getCargo().addFuel(amount);
+        Console.showMessage("Added " + amount + " fuel to player inventory.");
         return CommandResult.SUCCESS;
     }
 }
