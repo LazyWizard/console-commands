@@ -81,6 +81,39 @@ public class Console
         showMessage(message, Level.INFO);
     }
 
+    public static void showException(String message, Throwable ex)
+    {
+        if (message == null)
+        {
+            message = "Error: ";
+        }
+        else if (!message.endsWith(": "))
+        {
+            if (message.endsWith(":"))
+            {
+                message = message + " ";
+            }
+            else
+            {
+                message = message + ": ";
+            }
+        }
+
+        StringBuilder stackTrace = new StringBuilder(message).append(ex.toString()).append("\n");
+
+        for (StackTraceElement ste : ex.getStackTrace())
+        {
+            stackTrace.append("at ").append(ste.toString()).append("\n");
+        }
+
+        showMessage(stackTrace.toString());
+    }
+
+    public static void showException(Throwable ex)
+    {
+        showException(null, ex);
+    }
+
     public static void reloadSettings() throws IOException, JSONException
     {
         JSONObject settings = Global.getSettings().loadJSON(
