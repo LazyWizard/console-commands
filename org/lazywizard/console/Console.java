@@ -28,45 +28,7 @@ public class Console
     private static boolean isPressed = false;
     private static final StringBuilder output = new StringBuilder();
 
-    private static void checkInput(CommandContext context)
-    {
-        String input = JOptionPane.showInputDialog(null,
-                "Enter command, or 'help' for a list of valid commands.");
-        if (input == null)
-        {
-            return;
-        }
-
-        String[] tmp = input.split(" ", 2);
-        String com = tmp[0].toLowerCase();
-        String args = (tmp.length > 1 ? tmp[1] : "");
-
-        try
-        {
-            StoredCommand stored = CommandStore.retrieveCommand(com);
-            if (stored == null)
-            {
-                showMessage("No such command \"" + com + "\" registered!", Level.ERROR);
-                return;
-            }
-
-            BaseCommand command = stored.getCommandClass().newInstance();
-            CommandResult result = command.runCommand(args, context);
-
-            if (result == CommandResult.BAD_SYNTAX
-                    && !stored.getSyntax().isEmpty())
-            {
-                showMessage("Syntax: " + stored.getSyntax());
-            }
-
-        }
-        catch (Exception ex)
-        {
-            showMessage("Failed to execute command \"" + input
-                    + "\" in context " + context, Level.ERROR);
-        }
-    }
-
+    // TODO: Javadoc this!
     public static void showMessage(String message, Level logLevel)
     {
         output.append(message);
@@ -78,11 +40,13 @@ public class Console
         Global.getLogger(Console.class).log(logLevel, message);
     }
 
+    // TODO: Javadoc this!
     public static void showMessage(String message)
     {
         showMessage(message, Level.INFO);
     }
 
+    // TODO: Javadoc this!
     public static void showException(String message, Throwable ex)
     {
         if (message == null)
@@ -102,11 +66,6 @@ public class Console
         }
 
         showMessage(stackTrace.toString());
-    }
-
-    public static void showException(Throwable ex)
-    {
-        showException(null, ex);
     }
 
     public static void reloadSettings() throws IOException, JSONException
@@ -146,25 +105,47 @@ public class Console
         UIManager.put("SplitPane.foreground", color);
     }
 
-    static void advance(CommandContext context)
+    private static void checkInput(CommandContext context)
     {
-        if (!isPressed)
+        String input = JOptionPane.showInputDialog(null,
+                "Enter command, or 'help' for a list of valid commands.");
+        if (input == null)
         {
-            if (Keyboard.isKeyDown(CONSOLE_KEY))
-            {
-                isPressed = true;
-            }
-        }
-        else
-        {
-            if (!Keyboard.isKeyDown(CONSOLE_KEY))
-            {
-                isPressed = false;
-                checkInput(context);
-            }
+            return;
         }
 
-        // TODO: Extract this into its own method
+        String[] tmp = input.split(" ", 2);
+        String com = tmp[0].toLowerCase();
+        String args = (tmp.length > 1 ? tmp[1] : "");
+
+        try
+        {
+            StoredCommand stored = CommandStore.retrieveCommand(com);
+            if (stored == null)
+            {
+                showMessage("No such command \"" + com + "\" registered!", Level.ERROR);
+                return;
+            }
+
+            BaseCommand command = stored.getCommandClass().newInstance();
+            CommandResult result = command.runCommand(args, context);
+
+            if (result == CommandResult.BAD_SYNTAX
+                    && !stored.getSyntax().isEmpty())
+            {
+                showMessage("Syntax: " + stored.getSyntax());
+            }
+
+        }
+        catch (Exception ex)
+        {
+            showMessage("Failed to execute command \"" + input
+                    + "\" in context " + context, Level.ERROR);
+        }
+    }
+
+    private static void checkShowOutput(CommandContext context)
+    {
         if (output.length() > 0)
         {
             if (context == CommandContext.CAMPAIGN)
@@ -205,6 +186,27 @@ public class Console
                 output.setLength(0);
             }
         }
+    }
+
+    static void advance(CommandContext context)
+    {
+        if (!isPressed)
+        {
+            if (Keyboard.isKeyDown(CONSOLE_KEY))
+            {
+                isPressed = true;
+            }
+        }
+        else
+        {
+            if (!Keyboard.isKeyDown(CONSOLE_KEY))
+            {
+                isPressed = false;
+                checkInput(context);
+            }
+        }
+
+        checkShowOutput(context);
     }
 
     private Console()

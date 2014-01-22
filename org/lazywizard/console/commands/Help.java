@@ -15,9 +15,9 @@ public class Help implements BaseCommand
     {
         if (args.isEmpty())
         {
-            List<String> commands = CommandStore.getLoadedCommandList();
+            List<String> commands = CommandStore.getLoadedCommands();
             Collections.sort(commands);
-            Console.showMessage("Loaded commands: "
+            Console.showMessage("Loaded commands:\n"
                     + CollectionUtils.implode(commands));
             Console.showMessage("You can use 'help <command>' for more information"
                     + " on a specific command.");

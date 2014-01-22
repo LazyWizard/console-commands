@@ -66,10 +66,10 @@ public class CommandStore
         }
 
         Global.getLogger(CommandStore.class).log(Level.INFO,
-                "Loaded commands: " + CollectionUtils.implode(getLoadedCommandList()));
+                "Loaded commands: " + CollectionUtils.implode(getLoadedCommands()));
     }
 
-    public static List<String> getLoadedCommandList()
+    public static List<String> getLoadedCommands()
     {
         List<String> commands = new ArrayList(storedCommands.size());
         for (StoredCommand tmp : storedCommands.values())
