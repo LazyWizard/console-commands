@@ -6,7 +6,7 @@ import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import java.util.List;
-import static org.lazywizard.console.CommandContext.*;
+import static org.lazywizard.console.BaseCommand.CommandContext.*;
 
 public class ConsoleCombatListener implements EveryFrameCombatPlugin
 {

@@ -3,7 +3,6 @@ package org.lazywizard.console.commands;
 import java.util.Collections;
 import java.util.List;
 import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.CommandContext;
 import org.lazywizard.console.CommandStore;
 import org.lazywizard.console.CommandStore.StoredCommand;
 import org.lazywizard.console.Console;
@@ -12,7 +11,7 @@ import org.lazywizard.lazylib.CollectionUtils;
 public class Help implements BaseCommand
 {
     @Override
-    public boolean runCommand(String args, CommandContext context)
+    public CommandResult runCommand(String args, CommandContext context)
     {
         if (args.isEmpty())
         {
@@ -22,7 +21,7 @@ public class Help implements BaseCommand
                     + CollectionUtils.implode(commands));
             Console.showMessage("You can use 'help <command>' for more information"
                     + " on a specific command.");
-            return true;
+            return CommandResult.SUCCESS;
         }
         else
         {
@@ -30,7 +29,7 @@ public class Help implements BaseCommand
             if (command == null)
             {
                 Console.showMessage("No such command '" + args + "'!");
-                return false;
+                return CommandResult.ERROR;
             }
 
             Console.showMessage("HELP - " + command.getName().toUpperCase());
@@ -42,7 +41,7 @@ public class Help implements BaseCommand
             {
                 Console.showMessage("Detailed use: " + command.getHelp());
             }
-            return true;
+            return CommandResult.SUCCESS;
         }
     }
 }
