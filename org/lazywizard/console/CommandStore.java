@@ -69,12 +69,32 @@ public class CommandStore
     {
         return new ArrayList(storedCommands.keySet());
     }
-    
+
     public static StoredCommand retrieveCommand(String command)
     {
         if (storedCommands.containsKey(command))
         {
             return storedCommands.get(command);
+        }
+
+        return null;
+    }
+
+    public static String getSyntax(String command)
+    {
+        if (storedCommands.containsKey(command))
+        {
+            return storedCommands.get(command).getSyntax();
+        }
+
+        return null;
+    }
+
+    public static String getHelp(String command)
+    {
+        if (storedCommands.containsKey(command))
+        {
+            return storedCommands.get(command).getHelp();
         }
 
         return null;

@@ -10,6 +10,8 @@ import javax.swing.UIManager;
 import org.apache.log4j.Level;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.lazywizard.console.BaseCommand.CommandContext;
+import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommandStore.StoredCommand;
 import org.lazywizard.lazylib.JSONUtils;
 import org.lazywizard.lazylib.StringUtils;
@@ -24,13 +26,13 @@ public class Console
     private static boolean isPressed = false;
     private static final StringBuilder output = new StringBuilder();
 
-    private static boolean checkInput(CommandContext context)
+    private static void checkInput(CommandContext context)
     {
         String input = JOptionPane.showInputDialog(null,
                 "Enter command, or 'help' for a list of valid commands.");
         if (input == null)
         {
-            return false;
+            return;
         }
 
         String[] tmp = input.split(" ", 2);
@@ -43,17 +45,23 @@ public class Console
             if (stored == null)
             {
                 showMessage("No such command \"" + com + "\" registered!", Level.ERROR);
-                return false;
+                return;
             }
 
             BaseCommand command = stored.getCommandClass().newInstance();
-            return command.runCommand(args, context);
+            CommandResult result = command.runCommand(args, context);
+
+            if (result == CommandResult.WRONG_SYNTAX
+                    && !stored.getSyntax().isEmpty())
+            {
+                showMessage("Syntax: " + stored.getSyntax());
+            }
+
         }
         catch (Exception ex)
         {
             showMessage("Failed to execute command \"" + input
                     + "\" in context " + context, Level.ERROR);
-            return false;
         }
     }
 
