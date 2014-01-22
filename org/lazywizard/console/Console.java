@@ -5,9 +5,6 @@ import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import java.awt.Color;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import org.apache.log4j.Level;
@@ -62,7 +59,12 @@ public class Console
 
     public static void showMessage(String message, Level logLevel)
     {
-        output.append(message).append("\n");
+        output.append(message);
+        if (!message.endsWith("\n"))
+        {
+            output.append("\n");
+        }
+
         Global.getLogger(Console.class).log(logLevel, message);
     }
 
@@ -151,6 +153,8 @@ public class Console
                 }
 
                 // TODO: add font size setting and modify this block to use it
+                // TODO: add per-frame offset variable so multiple commands
+                //       while paused don't overlap
                 String[] messages = StringUtils.wrapString(output.toString(),
                         OUTPUT_LINE_LENGTH).split("\n");
                 for (int x = 0; x < messages.length; x++)
