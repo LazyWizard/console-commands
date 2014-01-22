@@ -28,7 +28,17 @@ public class Console
     private static boolean isPressed = false;
     private static final StringBuilder output = new StringBuilder();
 
-    // TODO: Javadoc this!
+    /**
+     * Displays a message to the user. The message will be formatted and shown
+     * to the player when they reach a section of the game where it can be
+     * displayed properly (combat/campaign map).
+     * <p>
+     * @param message  The message to show.
+     * @param logLevel If this is equal to/higher than the "consoleLogLevel"
+     *                 setting, this message will be logged in Starsector.log.
+     * <p>
+     * @since 2.0
+     */
     public static void showMessage(String message, Level logLevel)
     {
         output.append(message);
@@ -40,13 +50,29 @@ public class Console
         Global.getLogger(Console.class).log(logLevel, message);
     }
 
-    // TODO: Javadoc this!
+    /**
+     * Displays a message to the user. The message will be formatted and shown
+     * to the player when they reach a section of the game where it can be
+     * displayed properly (combat/campaign map).
+     * <p>
+     * @param message The message to show.
+     * <p>
+     * @since 2.0
+     */
     public static void showMessage(String message)
     {
         showMessage(message, Level.INFO);
     }
 
-    // TODO: Javadoc this!
+    /**
+     * Displays the stack trace of a {@link Throwable}.
+     * <p>
+     * @param message An optional message to show before the stack trace. Can be
+     *                {@code null}.
+     * @param ex      The {@link Throwable} whose stack trace will be shown.
+     * <p>
+     * @since 2.0
+     */
     public static void showException(String message, Throwable ex)
     {
         if (message == null)
@@ -169,9 +195,8 @@ public class Console
                     return;
                 }
 
-                // TODO: add font size setting and modify this block to use it
-                // TODO: add per-frame offset variable so multiple commands
-                //       while paused don't overlap
+                // TODO: the values here are kind of arbitrary, need to be worked out properly
+                // TODO: add per-frame offset variable so multiple commands while paused don't overlap
                 String[] messages = StringUtils.wrapString(output.toString(),
                         OUTPUT_LINE_LENGTH).split("\n");
                 for (int x = 0; x < messages.length; x++)
