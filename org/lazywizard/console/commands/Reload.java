@@ -4,14 +4,13 @@ import java.io.IOException;
 import org.apache.log4j.Level;
 import org.json.JSONException;
 import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.CommandContext;
 import org.lazywizard.console.CommandStore;
 import org.lazywizard.console.Console;
 
 public class Reload implements BaseCommand
 {
     @Override
-    public boolean runCommand(String args, CommandContext context)
+    public CommandResult runCommand(String args, CommandContext context)
     {
         try
         {
@@ -21,10 +20,10 @@ public class Reload implements BaseCommand
         catch (IOException | JSONException ex)
         {
             Console.showMessage("Failed to reload console settings!", Level.ERROR);
-            return false;
+            return CommandResult.ERROR;
         }
 
         Console.showMessage("Reloaded console settings.");
-        return true;
+        return CommandResult.SUCCESS;
     }
 }
