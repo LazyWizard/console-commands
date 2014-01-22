@@ -17,7 +17,7 @@ AdjustRelationship,org.lazywizard.console.commands.AdjustRelationship,adjustrela
 #AllWeapons,org.lazywizard.console.commands.AllWeapons,allweapons [optionalStation],"Places a full stack of every weapon into the specified station.\nWarning: if the station is not found, this command will instead place one of every weapon into your fleet's inventory!"
 Echo,org.lazywizard.console.commands.Echo,echo <args>,Prints the message you entered. Mostly used to test that the console is functioning.
 GC,org.lazywizard.console.commands.GC,gc (no arguments),Tell the Java Virtual Machine to run a garbage collection event (free up unused memory).
-#God,org.lazywizard.console.commands.God,god (no arguments),Toggles invincibility for all ships on your side.
+God,org.lazywizard.console.commands.God,god (no arguments),Toggles invincibility for all ships on your side.
 #GoTo,org.lazywizard.console.commands.GoTo,goto <locationName>,"Teleports your fleet to the token with the given name in this system, if any exists. The argument 'home' will function identically to the 'home' command."
 Help,org.lazywizard.console.commands.Help,help [optionalCommand],"Shows a list of all commands, or the details on using a specific command if one is entered."
 #Home,org.lazywizard.console.commands.Home,home (no arguments),Teleports the player to their home location.\nHome location is set with the 'sethome' command.
