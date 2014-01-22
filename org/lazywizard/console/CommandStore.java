@@ -50,7 +50,7 @@ public class CommandStore
                             + BaseCommand.class.getSimpleName());
                 }
 
-                storedCommands.put(commandName,
+                storedCommands.put(commandName.toLowerCase(),
                         new StoredCommand(commandName, commandClass,
                                 commandSyntax, commandHelp, commandSource));
                 Global.getLogger(CommandStore.class).log(Level.DEBUG,
