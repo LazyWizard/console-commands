@@ -13,8 +13,10 @@ import org.json.JSONObject;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommandStore.StoredCommand;
-import org.lazywizard.lazylib.JSONUtils;
-import org.lazywizard.lazylib.StringUtils;
+import org.lazywizard.console.LazyLibTemp.JSONUtils;
+import org.lazywizard.console.LazyLibTemp.StringUtils;
+//import org.lazywizard.lazylib.JSONUtils;
+//import org.lazywizard.lazylib.StringUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -93,7 +95,7 @@ public class Console
         }
 
         StringBuilder stackTrace = new StringBuilder(message).append(ex.toString()).append("\n");
-        
+
         for (StackTraceElement ste : ex.getStackTrace())
         {
             stackTrace.append("at ").append(ste.toString()).append("\n");
