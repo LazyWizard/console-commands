@@ -58,12 +58,12 @@ class LazyLibTemp
                 {
                     // Clear the StringBuilder so we can generate a new line
                     line.setLength(0);
-                // Split the line up into the individual words, and append each
+                    // Split the line up into the individual words, and append each
                     // word to the next line until the character limit is reached
                     String[] words = rawLine.split(" ");
                     for (int y = 0; y < words.length; y++)
                     {
-                    // If this word by itself is longer than the line limit,
+                        // If this word by itself is longer than the line limit,
                         // just go ahead and post it in its own line
                         if (words[y].length() > maxLineLength)
                         {
@@ -94,7 +94,7 @@ class LazyLibTemp
                                 shouldIndent = indentFollowingLines;
                             }
                         }
-                    // If this word would put us over the length limit, post
+                        // If this word would put us over the length limit, post
                         // the queue and back up a step (re-check this word with
                         // a blank line - this is in case it trips the above block)
                         else if (words[y].length() + line.length() > maxLineLength)
@@ -118,7 +118,7 @@ class LazyLibTemp
                             line.append(words[y]);
                             line.append(" ");
 
-                        // If we have reached the end of the message, ensure
+                            // If we have reached the end of the message, ensure
                             // that we post the remaining part of the queue
                             if (y == (words.length - 1))
                             {
