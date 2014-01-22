@@ -19,7 +19,6 @@ public class CommandStore
     // Will only throw these exceptions if there is an error loading the CSV
     public static void reloadCommands() throws IOException, JSONException
     {
-        // TODO: This could use some cleanup
         storedCommands.clear();
         JSONArray commandData = Global.getSettings().getMergedSpreadsheetDataForMod(
                 "class", "data/console/commands.csv", "lw_console");
