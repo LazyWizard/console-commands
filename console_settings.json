@@ -3,14 +3,15 @@
     # Key IDs are integers, and can be found in the LWJGL documentation here:
     # http://www.lwjgl.org/javadoc/constant-values.html#org.lwjgl.input.Keyboard.KEY_0
     "consoleKey":14, # Default: Backspace (14), Tilde would be 41
-    
+
     # The color of the console output text
     "outputColor":[0,255,255],       # Default: cyan    (0,255,255)
     "maxOutputLineLength":80,
-    
+
     # Valid levels: OFF, FATAL, ERROR, WARN, INFO, DEBUG, ALL
+    # INFO and above will save all console output to Starsector.log!
     "consoleLogLevel":WARN,
-    
+
     # Color settings for the console pop-up (temporary)
     "backgroundColor":[0,0,0],       # Default: black   (0,0,0)
     "foregroundColor":[0,255,255],   # Default: cyan    (0,255,255)

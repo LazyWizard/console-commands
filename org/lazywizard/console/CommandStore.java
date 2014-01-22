@@ -10,6 +10,7 @@ import org.apache.log4j.Level;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.lazywizard.lazylib.CollectionUtils;
 
 public class CommandStore
 {
@@ -63,6 +64,9 @@ public class CommandStore
                         + commandClass + ") from " + commandSource, ex);
             }
         }
+
+        Global.getLogger(CommandStore.class).log(Level.INFO,
+                "Loaded commands: " + CollectionUtils.implode(getLoadedCommandList()));
     }
 
     public static List<String> getLoadedCommandList()
