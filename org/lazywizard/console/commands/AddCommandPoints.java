@@ -5,7 +5,7 @@ import com.fs.starfarer.api.combat.MutableStat;
 import com.fs.starfarer.api.mission.FleetSide;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.Console;
-import org.lazywizard.console.Strings;
+import org.lazywizard.console.CommonStrings;
 
 public class AddCommandPoints implements BaseCommand
 {
@@ -14,7 +14,7 @@ public class AddCommandPoints implements BaseCommand
     {
         if (context == CommandContext.CAMPAIGN)
         {
-            Console.showMessage(Strings.ERROR_COMBAT_ONLY);
+            Console.showMessage(CommonStrings.ERROR_COMBAT_ONLY);
             return CommandResult.WRONG_CONTEXT;
         }
 
@@ -36,7 +36,7 @@ public class AddCommandPoints implements BaseCommand
         catch (NumberFormatException ex)
         {
             Console.showMessage("Error: command point amount must be a whole number!");
-            return CommandResult.WRONG_SYNTAX;
+            return CommandResult.BAD_SYNTAX;
         }
 
         MutableStat commandPoints = Global.getCombatEngine().getFleetManager(

@@ -4,7 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.Console;
-import org.lazywizard.console.Strings;
+import org.lazywizard.console.CommonStrings;
 
 public class AddAptitudePoints implements BaseCommand
 {
@@ -13,7 +13,7 @@ public class AddAptitudePoints implements BaseCommand
     {
         if (context == CommandContext.COMBAT_MISSION)
         {
-            Console.showMessage(Strings.ERROR_CAMPAIGN_ONLY);
+            Console.showMessage(CommonStrings.ERROR_CAMPAIGN_ONLY);
             return CommandResult.WRONG_CONTEXT;
         }
 
@@ -28,7 +28,7 @@ public class AddAptitudePoints implements BaseCommand
         catch (NumberFormatException ex)
         {
             Console.showMessage("Error: Aptitude points must be a whole number!");
-            return CommandResult.WRONG_SYNTAX;
+            return CommandResult.BAD_SYNTAX;
         }
 
         character.addAptitudePoints(amount);

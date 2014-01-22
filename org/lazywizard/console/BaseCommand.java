@@ -20,7 +20,7 @@ public interface BaseCommand
         /**
          * Command had the wrong arguments passed in.
          */
-        WRONG_SYNTAX
+        BAD_SYNTAX
     }
 
     public static enum CommandContext
