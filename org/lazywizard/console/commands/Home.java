@@ -52,7 +52,7 @@ public class Home implements BaseCommand
         playerFleet.addAssignment(FleetAssignment.GO_TO_LOCATION, home, 1);
         Console.showMessage("Teleported to " + home.getFullName()
                 + " in " + (loc.isHyperspace() ? "hyperspace" : "the "
-                + ((StarSystemAPI) loc).getName()) + " system successfully.");
+                + ((StarSystemAPI) loc).getName() + " system") + " successfully.");
         return CommandResult.SUCCESS;
     }
 }
