@@ -182,7 +182,7 @@ public class Console
         }
 
         // Hopefully the ONLY hardcoded command support I'll add to this mod...
-        if (rawInput.length() >= 7 && rawInput.substring(0, 6).equalsIgnoreCase("runcode"))
+        if (rawInput.length() >= 7 && rawInput.substring(0, 7).equalsIgnoreCase("runcode"))
         {
             runCommand(rawInput, context);
         }
@@ -190,7 +190,11 @@ public class Console
         {
             for (String input : rawInput.split(COMMAND_SEPARATOR))
             {
-                runCommand(input, context);
+                input = input.trim();
+                if (!input.isEmpty())
+                {
+                    runCommand(input, context);
+                }
             }
         }
     }
