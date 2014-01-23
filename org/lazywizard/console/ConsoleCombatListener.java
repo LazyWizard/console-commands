@@ -28,6 +28,7 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
             return;
         }
 
+        // COMBAT_SIMULATION will be added when the API supports it
         Console.advance(engine.isInCampaign() ? COMBAT_CAMPAIGN : COMBAT_MISSION);
     }
 

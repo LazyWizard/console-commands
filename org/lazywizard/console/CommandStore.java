@@ -21,7 +21,7 @@ public class CommandStore
     {
         storedCommands.clear();
         JSONArray commandData = Global.getSettings().getMergedSpreadsheetDataForMod(
-                "class", "data/console/commands.csv", "lw_console");
+                "command", "data/console/commands.csv", "lw_console");
         JSONObject tmp;
         ClassLoader loader = Global.getSettings().getScriptClassLoader();
         Class commandClass;
@@ -44,9 +44,9 @@ public class CommandStore
 
                 if (!BaseCommand.class.isAssignableFrom(commandClass))
                 {
-                    throw new Exception(commandClass.getSimpleName()
+                    throw new Exception(commandClass.getCanonicalName()
                             + " does not extend "
-                            + BaseCommand.class.getSimpleName());
+                            + BaseCommand.class.getCanonicalName());
                 }
 
                 storedCommands.put(commandName.toLowerCase(),
@@ -119,9 +119,9 @@ public class CommandStore
         {
             this.name = commandName;
             this.commandClass = commandClass;
-            this.source = source;
             this.syntax = (syntax == null ? "" : syntax);
             this.help = (help == null ? "" : help);
+            this.source = source;
         }
 
         public Class<? extends BaseCommand> getCommandClass()

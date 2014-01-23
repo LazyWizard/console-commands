@@ -16,6 +16,8 @@ New commands:
 Changes to existing commands:
  - Ported all old commands to new BaseCommand interface
  - There are no more hard-coded commands - you can overwrite any core command
+ - AllWeapons no longer defaults to player cargo on failure
+ - Home can now teleport your fleet between starsystems
  - Removed AddConsole as the new ModPlugin system makes it unnecessary
  - Removed RunScript command (considering RunCode it's pretty superfluous)
 
