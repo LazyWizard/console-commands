@@ -61,6 +61,11 @@ public class InfiniteAmmo implements BaseCommand
                 return;
             }
 
+            if (engine.isPaused())
+            {
+                return;
+            }
+
             for (ShipAPI ship : engine.getShips())
             {
                 if (ship.isHulk() || ship.isShuttlePod()
