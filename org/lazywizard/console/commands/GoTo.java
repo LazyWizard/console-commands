@@ -13,7 +13,7 @@ public class GoTo implements BaseCommand
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
-        if ("home".equals(args))
+        if ("home".equalsIgnoreCase(args))
         {
             return (new Home().runCommand("", context));
         }
