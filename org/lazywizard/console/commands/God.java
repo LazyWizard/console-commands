@@ -48,6 +48,7 @@ public class God implements BaseCommand
 
     private static class GodPlugin implements EveryFrameCombatPlugin
     {
+        private static final String BONUS_ID = "console_god";
         private boolean active = true;
         private CombatEngineAPI engine;
 
@@ -64,9 +65,9 @@ public class God implements BaseCommand
                         continue;
                     }
 
-                    ship.getMutableStats().getHullDamageTakenMult().unmodify("console_god");
-                    ship.getMutableStats().getEmpDamageTakenMult().unmodify("console_god");
-                    ship.getMutableStats().getArmorDamageTakenMult().unmodify("console_god");
+                    ship.getMutableStats().getHullDamageTakenMult().unmodify(BONUS_ID);
+                    ship.getMutableStats().getEmpDamageTakenMult().unmodify(BONUS_ID);
+                    ship.getMutableStats().getArmorDamageTakenMult().unmodify(BONUS_ID);
                 }
 
                 engine.removePlugin(this);
@@ -86,9 +87,12 @@ public class God implements BaseCommand
                     continue;
                 }
 
-                ship.getMutableStats().getHullDamageTakenMult().modifyMult("console_god", 0f);
-                ship.getMutableStats().getEmpDamageTakenMult().modifyMult("console_god", 0f);
-                ship.getMutableStats().getArmorDamageTakenMult().modifyMult("console_god", 0f);
+                ship.getMutableStats().getHullDamageTakenMult()
+                        .modifyMult(BONUS_ID, 0f);
+                ship.getMutableStats().getEmpDamageTakenMult()
+                        .modifyMult(BONUS_ID, 0f);
+                ship.getMutableStats().getArmorDamageTakenMult()
+                        .modifyMult(BONUS_ID, 0.00001f);
             }
         }
 

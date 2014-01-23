@@ -3,6 +3,7 @@ package org.lazywizard.console.commands;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
+import com.fs.starfarer.api.combat.FluxTrackerAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.mission.FleetSide;
@@ -65,6 +66,7 @@ public class InfiniteFlux implements BaseCommand
                 return;
             }
 
+            FluxTrackerAPI flux;
             for (ShipAPI ship : engine.getShips())
             {
                 if (ship.isHulk() || ship.isShuttlePod()
@@ -73,8 +75,14 @@ public class InfiniteFlux implements BaseCommand
                     continue;
                 }
 
-                ship.getFluxTracker().setCurrFlux(0f);
-                ship.getFluxTracker().setHardFlux(0f);
+                flux = ship.getFluxTracker();
+                flux.setCurrFlux(0f);
+                flux.setHardFlux(0f);
+
+                if (flux.isOverloaded())
+                {
+                    flux.stopOverload();
+                }
             }
         }
 

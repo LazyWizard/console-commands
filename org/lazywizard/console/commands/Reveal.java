@@ -62,10 +62,8 @@ public class Reveal implements BaseCommand
             }
 
             FogOfWarAPI fow = engine.getFogOfWar(FleetSide.PLAYER.ordinal());
-            float centerX = engine.getMapWidth() / 2f;
-            float centerY = engine.getMapHeight() / 2f;
-            float radius = Math.max(centerX, centerY);
-            fow.revealAroundPoint(this, centerX, centerY, radius);
+            float radius = Math.max(engine.getMapWidth(), engine.getMapHeight());
+            fow.revealAroundPoint(this, 0f, 0f, radius);
         }
 
         @Override
