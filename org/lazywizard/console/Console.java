@@ -5,6 +5,7 @@ import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import java.awt.Color;
 import java.io.IOException;
+import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import org.apache.log4j.Level;
@@ -22,10 +23,17 @@ import org.lwjgl.util.vector.Vector2f;
 
 public class Console
 {
+    // The LWJGL constant of the key that summons the console
     private static int CONSOLE_KEY;
+    // The String (usually a single character) that separates multiple commands
+    private static String COMMAND_SEPARATOR;
+    // The color of the console's output text
     private static Color OUTPUT_COLOR;
+    // How many characters before the output is line-wrapped
     private static int OUTPUT_LINE_LENGTH;
+    // Here to fix a LWJGL input bug that will probably never be fixed
     private static boolean isPressed = false;
+    // Stores the output of the console until it can be displayed
     private static final StringBuilder output = new StringBuilder();
 
     /**
@@ -75,17 +83,16 @@ public class Console
      */
     public static void showException(String message, Throwable ex)
     {
-        if (message == null)
+        StringBuilder stackTrace = new StringBuilder(256);
+
+        // Add message if one was entered
+        if (message != null)
         {
-            message = "Error: ";
-        }
-        else if (!message.endsWith(" "))
-        {
-            message += " ";
+            stackTrace.append(message).append("\n");
         }
 
-        StringBuilder stackTrace = new StringBuilder(message).append(ex.toString()).append("\n");
-
+        // Add stack trace of Throwable
+        stackTrace.append(ex.toString()).append("\n");
         for (StackTraceElement ste : ex.getStackTrace())
         {
             stackTrace.append("at ").append(ste.toString()).append("\n");
@@ -99,6 +106,7 @@ public class Console
         JSONObject settings = Global.getSettings().loadJSON(
                 "data/console/console_settings.json");
         CONSOLE_KEY = settings.getInt("consoleKey");
+        COMMAND_SEPARATOR = Pattern.quote(settings.getString("commandSeparator"));
         OUTPUT_COLOR = JSONUtils.toColor(settings.getJSONArray("outputColor"));
         OUTPUT_LINE_LENGTH = settings.getInt("maxOutputLineLength");
 
@@ -131,15 +139,8 @@ public class Console
         UIManager.put("SplitPane.foreground", color);
     }
 
-    private static void checkInput(CommandContext context)
+    private static void runCommand(String input, CommandContext context)
     {
-        String input = JOptionPane.showInputDialog(null,
-                "Enter command, or 'help' for a list of valid commands.");
-        if (input == null)
-        {
-            return;
-        }
-
         String[] tmp = input.split(" ", 2);
         String com = tmp[0].toLowerCase();
         String args = (tmp.length > 1 ? tmp[1] : "");
@@ -167,6 +168,30 @@ public class Console
         {
             showMessage("Failed to execute command \"" + input
                     + "\" in context " + context, Level.ERROR);
+        }
+    }
+
+    private static void checkInput(CommandContext context)
+    {
+        String rawInput = JOptionPane.showInputDialog(null,
+                "Enter command, or 'help' for a list of valid commands.");
+
+        if (rawInput == null)
+        {
+            return;
+        }
+
+        // Hopefully the ONLY hardcoded command support I'll add to this mod...
+        if (rawInput.length() >= 7 && rawInput.substring(0, 6).equalsIgnoreCase("runcode"))
+        {
+            runCommand(rawInput, context);
+        }
+        else
+        {
+            for (String input : rawInput.split(COMMAND_SEPARATOR))
+            {
+                runCommand(input, context);
+            }
         }
     }
 
