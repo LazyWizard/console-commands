@@ -14,6 +14,10 @@ class LazyLibTemp
             return new Color(array.getInt(0), array.getInt(1), array.getInt(2),
                     (array.length() == 4 ? array.getInt(3) : 255));
         }
+
+        private JSONUtils()
+        {
+        }
     }
 
     static class StringUtils
@@ -141,6 +145,10 @@ class LazyLibTemp
         public static String wrapString(String toWrap, int maxLineLength)
         {
             return wrapString(toWrap, maxLineLength, false, false, null);
+        }
+
+        private StringUtils()
+        {
         }
     }
 }

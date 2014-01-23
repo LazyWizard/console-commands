@@ -13,7 +13,6 @@ import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
-import org.lwjgl.util.vector.Vector2f;
 
 public class Reveal implements BaseCommand
 {
