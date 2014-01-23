@@ -54,6 +54,30 @@ public class God implements BaseCommand
         @Override
         public void advance(float amount, List<InputEventAPI> events)
         {
+            if (!active)
+            {
+                for (ShipAPI ship : engine.getShips())
+                {
+                    if (ship.isHulk() || ship.isShuttlePod()
+                            || !(ship.getOwner() == FleetSide.PLAYER.ordinal()))
+                    {
+                        continue;
+                    }
+
+                    ship.getMutableStats().getHullDamageTakenMult().unmodify("console_god");
+                    ship.getMutableStats().getEmpDamageTakenMult().unmodify("console_god");
+                    ship.getMutableStats().getArmorDamageTakenMult().unmodify("console_god");
+                }
+
+                engine.removePlugin(this);
+                return;
+            }
+
+            if (engine.isPaused())
+            {
+                return;
+            }
+
             for (ShipAPI ship : engine.getShips())
             {
                 if (ship.isHulk() || ship.isShuttlePod()
@@ -62,23 +86,9 @@ public class God implements BaseCommand
                     continue;
                 }
 
-                if (active)
-                {
-                    ship.getMutableStats().getHullDamageTakenMult().modifyMult("console_god", 0f);
-                    ship.getMutableStats().getEmpDamageTakenMult().modifyMult("console_god", 0f);
-                    ship.getMutableStats().getArmorDamageTakenMult().modifyMult("console_god", 0f);
-                }
-                else
-                {
-                    ship.getMutableStats().getHullDamageTakenMult().unmodify("console_god");
-                    ship.getMutableStats().getEmpDamageTakenMult().unmodify("console_god");
-                    ship.getMutableStats().getArmorDamageTakenMult().unmodify("console_god");
-                }
-            }
-
-            if (!active)
-            {
-                engine.removePlugin(this);
+                ship.getMutableStats().getHullDamageTakenMult().modifyMult("console_god", 0f);
+                ship.getMutableStats().getEmpDamageTakenMult().modifyMult("console_god", 0f);
+                ship.getMutableStats().getArmorDamageTakenMult().modifyMult("console_god", 0f);
             }
         }
 
