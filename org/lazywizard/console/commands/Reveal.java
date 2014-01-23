@@ -3,7 +3,7 @@ package org.lazywizard.console.commands;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
-import com.fs.starfarer.api.combat.ShipAPI;
+import com.fs.starfarer.api.combat.FogOfWarAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.mission.FleetSide;
 import java.lang.ref.WeakReference;
@@ -13,10 +13,11 @@ import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import org.lwjgl.util.vector.Vector2f;
 
-public class God implements BaseCommand
+public class Reveal implements BaseCommand
 {
-    private static WeakReference<GodPlugin> plugin;
+    private static WeakReference<RevealPlugin> plugin;
 
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -27,26 +28,26 @@ public class God implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        GodPlugin tmp;
+        RevealPlugin tmp;
         if (plugin == null || plugin.get() == null)
         {
-            tmp = new GodPlugin();
+            tmp = new RevealPlugin();
             plugin = new WeakReference<>(tmp);
             Global.getCombatEngine().addPlugin(tmp);
-            Console.showMessage("God mode enabled.");
+            Console.showMessage("Fog of war disabled.");
         }
         else
         {
             tmp = plugin.get();
             plugin.clear();
             tmp.active = false;
-            Console.showMessage("God mode disabled.");
+            Console.showMessage("Fog of war enabled.");
         }
 
         return CommandResult.SUCCESS;
     }
 
-    private static class GodPlugin implements EveryFrameCombatPlugin
+    private static class RevealPlugin implements EveryFrameCombatPlugin
     {
         private boolean active = true;
         private CombatEngineAPI engine;
@@ -54,32 +55,17 @@ public class God implements BaseCommand
         @Override
         public void advance(float amount, List<InputEventAPI> events)
         {
-            for (ShipAPI ship : engine.getShips())
-            {
-                if (ship.isHulk() || ship.isShuttlePod()
-                        || !(ship.getOwner() == FleetSide.PLAYER.ordinal()))
-                {
-                    continue;
-                }
-
-                if (active)
-                {
-                    ship.getMutableStats().getHullDamageTakenMult().modifyMult("console_god", 0f);
-                    ship.getMutableStats().getEmpDamageTakenMult().modifyMult("console_god", 0f);
-                    ship.getMutableStats().getArmorDamageTakenMult().modifyMult("console_god", 0f);
-                }
-                else
-                {
-                    ship.getMutableStats().getHullDamageTakenMult().unmodify("console_god");
-                    ship.getMutableStats().getEmpDamageTakenMult().unmodify("console_god");
-                    ship.getMutableStats().getArmorDamageTakenMult().unmodify("console_god");
-                }
-            }
-
             if (!active)
             {
                 engine.removePlugin(this);
+                return;
             }
+
+            FogOfWarAPI fow = engine.getFogOfWar(FleetSide.PLAYER.ordinal());
+            float centerX = engine.getMapWidth() / 2f;
+            float centerY = engine.getMapHeight() / 2f;
+            float radius = Math.max(centerX, centerY);
+            fow.revealAroundPoint(this, centerX, centerY, radius);
         }
 
         @Override
