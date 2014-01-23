@@ -1,0 +1,149 @@
+ 2.0 (someday)
+===============
+(this version is not save compatible with earlier versions)
+LazyLib is now required for this mod to function!
+Total rewrite of the mod:
+ - No longer multi-threaded (fixes a load of problems the old mod had)
+ - Utility mod, can be toggled at will, works with total conversions
+Made writing custom commands much simpler:
+ - Existing custom commands will no longer work, will need to be rewritten
+ - Commands must implement the org.lazywizard.console.BaseCommand interface
+ - Commands are registered inside data/console/console_commands.csv
+   - Commands can be in any package now, not just data.scripts.console
+New commands:
+ - Echo, prints a message (mostly for testing)
+ - Reload, reloads all console commands and settings
+Changes to existing commands:
+ - Ported all old commands to new BaseCommand interface
+ - There are no more hard-coded commands - you can overwrite any core command
+ - AllWeapons no longer defaults to player cargo on failure
+ - Home can now teleport your fleet between starsystems
+ - Removed AddConsole as the new ModPlugin system makes it unnecessary
+ - Removed RunScript command (considering RunCode it's pretty superfluous)
+
+
+--------------------------------------------------------------------------------
+
+
+ 1.6b (September 18, 2013)
+===========================
+Fixed bug where NoCooldown prevented projectile weapons from firing in .6a
+
+ 1.6 (July 30, 2013)
+=====================
+Console popup now shows console output
+Console.showError() shows more detail, accepts Throwables
+AddWing now only appends '_wing' to its arguments after it fails without it
+Improvements to the RunCode command:
+ - Added Vector2f to default imports
+ - RunCode can now use LazyLib's classes if LazyLib is tagged in the launcher
+ - If an exception occurs, actual exception details are shown rather than the
+   InvocationTargetException wrapper thrown by Janino's ScriptEvaluator
+
+ 1.5 (February 7, 2013)
+========================
+Toggleable combat commands can now be used on the campaign map
+Certain non-combat commands can now be used in battles (Alias, GC, RunCode, etc)
+You can now copy your console settings to a new savefile:
+ (this process will be improved in future versions)
+ - Step 1: start a new game without this mod active, save and quit
+ - Step 2: activate this mod, load the save with the settings you want
+ - Step 3: without exiting the game, load the new save from step 1
+ - Step 4: use the AddConsole command to activate the console on that save
+
+ 1.4 (January 17, 2012)
+========================
+The cursor for the console pop-up is now visible
+Fixed bug: exception details not displayed when an error occurs
+RunCode works again (ignores separators, can't be used with other commands)
+Multiple changes to the alias command:
+ - More detail is given when the command fails
+ - Fixed several bugs that prevented aliases with multiple commands from working
+ - Fixed bug: could alias alias and cause an infinite loop
+
+ 1.3 (January 14, 2012)
+========================
+You can now add the console to an existing save with 'addconsole'
+Mod info page now has more information to help beginners with this mod
+Godmode no longer fails with systems that increase ships' vulnerability
+New campaign command: AddXP <amount> - adds experience to your character
+New in-battle command: Nuke - destroys all enemies on the battle map
+Added missing text to AddAptitudePoints and AddSkillPoints
+
+ 1.2 (January 12, 2012)
+========================
+Fixed crash when using invincibility cheats
+Fixed position of in-battle messages when using large ships
+
+ 1.1 (January 11, 2012)
+========================
+Fixed bug where the console occasionally stopped working during a campaign
+Generator is more aggressive about activating itself in total conversions
+In-battle message support added, displayed underneath player ship
+In-battle commands are no longer reset after each battle
+Active in-battle commands are listed at the start of combat and when toggled
+Removed Unreveal command, Reveal is now a toggle
+New in-battle commands:
+ - God: Invincibility (somewhat buggy - heavy damage will instantly drop you to
+   zero hull but you won't die, and you get a null crash when ramming ships)
+ - InfiniteFlux: Gives all ships on your side infinite flux
+
+ 1.0 (November 24, 2012)
+=========================
+MASSIVE changes made to the code base for this release - please report any bugs!
+New features:
+ - The console can now be used in combat (limited list of supported commands)
+ - Multi-threaded input: can enter commands when the game is paused/in menus
+ - Full mission support (load a campaign save first to use your custom settings)
+ - You can now issue multiple commands at once (separate them with a semicolon)
+ - Should work out of the box with all mods that don't replace generators.csv
+New campaign commands:
+ - AddAptitudePoints: adds aptitude points to your character
+ - AddSkillPoints: adds skill points to your character
+ - Alias: allows you to create nicknames for existing commands
+ - RunCode: compiles and runs a line of Java code (uses Janino)
+New in-battle commands:
+ - AddCommandPoints: modifies available command points
+ - InfiniteAmmo: toggles infinite ammo for your side
+ - NoCooldown: toggles cooldown for all weapons on your side
+ - Reveal/Unreveal: reveals/unreveals the entire battle map
+Modder-specific changes:
+ - Changed how commands are handled, uses reflection instead of being hard-coded
+ - ConsoleManager has been removed and merged with data.scripts.console.Console
+ - User-made/mod-specific commands can now be registered with the console
+ - Most code is now stored in jars/SFConsole.jar - source is included in the jar
+ - Console variable storage/retrieval is now type-safe
+ - Added protected Class getVarType(String varName) to Console and BaseCommand
+ - Added basic documentation - see JavaDoc.zip in the main folder
+
+ 0.4b beta (October 21, 2012)
+==============================
+Fixed null-pointer exception with mods that have a custom star system
+Added built-in support for Project CAELUS, Project Ironclads, Fight for
+ Universe: Sector Xplo, and Ascendency.
+
+ 0.4 beta (September 30, 2012)
+===============================
+Completely rewrote AddShip:
+ - less strict about capitalization (tries again with different case)
+ - specifying a ship type without a variant will spawn an empty hull
+The various Add<X> commands will accept their arguments in any order
+Added syntax and usage help for all commands
+Removed showMultiLineMessage methods, incorporated into showMessage
+
+ 0.3 beta (September 19, 2012)
+===============================
+You can now rebind the console key in-game (to rebind, press Shift+F1)
+RunScript's script store is now persistent between reloads
+Added the GC command (tells the JVM to run a garbage collection event)
+Minor optimization when reloading a saved game
+Added Console.setManager() method, should make modding the console easier
+Miscellaneous display tweaks
+
+ 0.2 beta (September 18, 2012)
+===============================
+Added missing AddItem command
+
+ 0.1 beta (September 17, 2012)
+===============================
+Initial release, 16 included commands, several features removed to run in .53.1a
