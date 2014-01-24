@@ -23,7 +23,6 @@ public class Nuke implements BaseCommand
         }
 
         CombatEngineAPI engine = Global.getCombatEngine();
-
         for (ShipAPI ship : engine.getShips())
         {
             if (ship.isHulk() || ship.isShuttlePod())

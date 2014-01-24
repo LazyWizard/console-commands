@@ -31,7 +31,7 @@ public class Console
     private static Color OUTPUT_COLOR;
     // How many characters before the output is line-wrapped
     private static int OUTPUT_LINE_LENGTH;
-    // Here to fix a LWJGL input bug that will probably never be fixed
+    // Here to work around a LWJGL input bug that will probably never be fixed
     private static boolean isPressed = false;
     // Stores the output of the console until it can be displayed
     private static final StringBuilder output = new StringBuilder();
