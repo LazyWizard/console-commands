@@ -1,7 +1,6 @@
 package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.Console;
 import org.lazywizard.console.CommonStrings;
@@ -17,8 +16,6 @@ public class AddSkillPoints implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        MutableCharacterStatsAPI character =
-                Global.getSector().getPlayerFleet().getCommanderStats();
         int amount;
 
         try
@@ -31,8 +28,8 @@ public class AddSkillPoints implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
-        character.addSkillPoints(amount);
-        Console.showMessage("Added " + amount + " skill points to character.");
+        Global.getSector().getPlayerFleet().getCommanderStats().addSkillPoints(amount);
+        Console.showMessage("Added " + amount + " skill points to your character.");
         return CommandResult.SUCCESS;
     }
 }
