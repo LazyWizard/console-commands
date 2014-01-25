@@ -9,6 +9,7 @@ import com.fs.starfarer.api.campaign.StarSystemAPI;
 import java.util.ArrayList;
 import java.util.List;
 import org.lazywizard.console.BaseCommand;
+import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
 
@@ -17,18 +18,38 @@ public class Jump implements BaseCommand
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
+        if (context != CommandContext.CAMPAIGN)
+        {
+            Console.showMessage(CommonStrings.ERROR_CAMPAIGN_ONLY);
+            return CommandResult.WRONG_CONTEXT;
+        }
+
         if (args.isEmpty())
         {
             List<StarSystemAPI> systems = Global.getSector().getStarSystems();
             List<String> systemNames = new ArrayList(systems.size());
-            systemNames.add("Hyperspace");
+
+            // Player has used SetHome command
+            if (Global.getSector().getPersistentData()
+                    .get(CommonStrings.DATA_HOME_ID) != null)
+            {
+                systemNames.add("Home");
+            }
+
+            // This check isn't necessary, but just to future-proof this code...
+            if (Global.getSector().getHyperspace() != null)
+            {
+                systemNames.add("Hyperspace");
+            }
+
+            // Add the names of every star system currently loaded
             for (StarSystemAPI system : systems)
             {
                 systemNames.add(system.getName().substring(0,
-                        system.getName().lastIndexOf("Star System")));
+                        system.getName().lastIndexOf(" Star System")));
             }
 
-            Console.showMessage("Available systems:\n"
+            Console.showMessage("Available destinations:\n"
                     + CollectionUtils.implode(systemNames));
             return CommandResult.SUCCESS;
         }
