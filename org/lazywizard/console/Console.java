@@ -50,11 +50,6 @@ public class Console
     public static void showMessage(String message, Level logLevel)
     {
         output.append(StringUtils.wrapString(message, OUTPUT_LINE_LENGTH));
-        if (!message.endsWith("\n"))
-        {
-            output.append("\n");
-        }
-
         Global.getLogger(Console.class).log(logLevel, message);
     }
 
