@@ -6,53 +6,88 @@ import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.campaign.JumpPointAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
+import java.util.ArrayList;
+import java.util.List;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.Console;
+import org.lazywizard.lazylib.CollectionUtils;
 
 public class Jump implements BaseCommand
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
+        if (args.isEmpty())
+        {
+            List<StarSystemAPI> systems = Global.getSector().getStarSystems();
+            List<String> systemNames = new ArrayList(systems.size());
+            systemNames.add("Hyperspace");
+            for (StarSystemAPI system : systems)
+            {
+                systemNames.add(system.getName().substring(0,
+                        system.getName().lastIndexOf("Star System")));
+            }
+
+            Console.showMessage("Available systems:\n"
+                    + CollectionUtils.implode(systemNames));
+            return CommandResult.SUCCESS;
+        }
+
         if ("home".equalsIgnoreCase(args))
         {
             return (new Home().runCommand("", context));
         }
 
-        if (args.equalsIgnoreCase("hyperspace"))
+        CampaignFleetAPI player = Global.getSector().getPlayerFleet();
+        SectorEntityToken destination = null;
+
+        if ("hyperspace".equalsIgnoreCase(args))
         {
-            Console.showMessage("Jumping to hyperspace isn't supported yet!");
-            return CommandResult.ERROR;
-            // TODO: Jump to hyperspace anchor
-            //destLocation = Global.getSector().getHyperspace();
-            //destination = destLocation.
+            if (player.getContainingLocation().isHyperspace())
+            {
+                Console.showMessage("You successfully traveled nowhere.");
+                return CommandResult.SUCCESS;
+            }
+
+            if (player.getContainingLocation() instanceof StarSystemAPI)
+            {
+                StarSystemAPI system = (StarSystemAPI) player.getContainingLocation();
+                destination = system.getHyperspaceAnchor();
+            }
+
+            if (destination == null)
+            {
+                Console.showMessage("Error: can't determine a route to hyperspace!");
+                return CommandResult.ERROR;
+            }
+        }
+        else
+        {
+            StarSystemAPI system = Global.getSector().getStarSystem(args);
+            if (system == null)
+            {
+                Console.showMessage("No system found with the name '" + args + "'!");
+                return CommandResult.ERROR;
+            }
+
+            if (system == player.getContainingLocation())
+            {
+                Console.showMessage("You successfully traveled nowhere.");
+                return CommandResult.SUCCESS;
+            }
+
+            destination = system.getStar();
+            if (destination == null)
+            {
+                destination = system.createToken(0f, 0f);
+            }
         }
 
-        StarSystemAPI system = Global.getSector().getStarSystem(args);
-        if (system == null)
-        {
-            Console.showMessage("No system found with the name '" + args + "'!");
-            return CommandResult.ERROR;
-        }
-
-        CampaignFleetAPI playerFleet = Global.getSector().getPlayerFleet();
-        if (system == playerFleet.getContainingLocation())
-        {
-            Console.showMessage("You successfully traveled nowhere.");
-            return CommandResult.SUCCESS;
-        }
-
-        SectorEntityToken destination = system.getStar();
-        if (destination == null)
-        {
-            destination = system.createToken(0f, 0f);
-        }
-
-        Global.getSector().doHyperspaceTransition(playerFleet, playerFleet,
+        Global.getSector().doHyperspaceTransition(player, player,
                 new JumpPointAPI.JumpDestination(destination, "Jumping to " + args));
-        playerFleet.setNoEngaging(2.0f);
-        playerFleet.clearAssignments();
-        playerFleet.addAssignment(FleetAssignment.GO_TO_LOCATION, destination, 1f);
+        player.setNoEngaging(2.0f);
+        player.clearAssignments();
+        player.addAssignment(FleetAssignment.GO_TO_LOCATION, destination, 1f);
         Console.showMessage("Jumped to " + args + ".");
         return CommandResult.SUCCESS;
     }

@@ -20,7 +20,6 @@ public class AddCrew implements BaseCommand
         }
 
         args = args.toLowerCase();
-
         String[] tmp = args.split(" ");
 
         if (tmp.length == 1)

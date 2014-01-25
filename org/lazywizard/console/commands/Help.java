@@ -25,7 +25,7 @@ public class Help implements BaseCommand
         }
         else
         {
-            StoredCommand command = CommandStore.retrieveCommand(args);
+            StoredCommand command = CommandStore.retrieveCommand(args.toLowerCase());
             if (command == null)
             {
                 Console.showMessage("No such command '" + args + "'!");
