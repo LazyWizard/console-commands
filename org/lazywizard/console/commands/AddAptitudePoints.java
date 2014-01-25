@@ -17,8 +17,6 @@ public class AddAptitudePoints implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        MutableCharacterStatsAPI character =
-                Global.getSector().getPlayerFleet().getCommanderStats();
         int amount;
 
         try
@@ -31,7 +29,7 @@ public class AddAptitudePoints implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
-        character.addAptitudePoints(amount);
+        Global.getSector().getPlayerFleet().getCommanderStats().addAptitudePoints(amount);
         Console.showMessage("Added " + amount + " aptitude points to character.");
         return CommandResult.SUCCESS;
     }

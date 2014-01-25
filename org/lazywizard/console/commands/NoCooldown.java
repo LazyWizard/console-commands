@@ -78,8 +78,7 @@ public class NoCooldown implements BaseCommand
                 {
                     if (wep.getCooldownRemaining() >= 0.1f)
                     {
-                        wep.setRemainingCooldownTo(Math.min(.1f,
-                                wep.getCooldownRemaining()));
+                        wep.setRemainingCooldownTo(0.1f);
                     }
                 }
             }

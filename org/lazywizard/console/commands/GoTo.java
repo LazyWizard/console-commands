@@ -35,7 +35,7 @@ public class GoTo implements BaseCommand
         Vector2f loc = token.getLocation();
         playerFleet.setLocation(loc.x, loc.y);
         playerFleet.clearAssignments();
-        playerFleet.addAssignment(FleetAssignment.GO_TO_LOCATION, token, 1);
+        playerFleet.addAssignment(FleetAssignment.GO_TO_LOCATION, token, 1f);
         Console.showMessage("Teleported to " + args + ".");
         return CommandResult.SUCCESS;
     }

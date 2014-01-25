@@ -49,7 +49,7 @@ public class Home implements BaseCommand
 
         playerFleet.setNoEngaging(2.0f);
         playerFleet.clearAssignments();
-        playerFleet.addAssignment(FleetAssignment.GO_TO_LOCATION, home, 1);
+        playerFleet.addAssignment(FleetAssignment.GO_TO_LOCATION, home, 1f);
         Console.showMessage("Teleported to " + home.getFullName()
                 + " in " + (loc.isHyperspace() ? "hyperspace" : "the "
                 + ((StarSystemAPI) loc).getName() + " system") + " successfully.");

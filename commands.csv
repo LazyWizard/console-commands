@@ -23,6 +23,7 @@ Help,org.lazywizard.console.commands.Help,help [optionalCommand],"Shows a list o
 Home,org.lazywizard.console.commands.Home,home (no arguments),"Teleports the player to their home location.\nHome location is set with the 'sethome' command."
 InfiniteAmmo,org.lazywizard.console.commands.InfiniteAmmo,infiniteammo (no arguments),"Toggles infinite ammunition for all ships on your side."
 InfiniteFlux,org.lazywizard.console.commands.InfiniteFlux,infiniteflux (no arguments),"Toggles infinite flux for all ships on your side."
+Jump,org.lazywizard.console.commands.Jump,jump <system>,"Teleports your fleet to the specified system. You will be brought to that system's star (if it has one). If you want to travel to a specific token you should chain 'goto' after this command. The argument 'home' will function identically to the 'home' command."
 NoCooldown,org.lazywizard.console.commands.NoCooldown,nocooldown (no arguments),"Toggles weapon cooldowns for all ships on your side."
 Nuke,org.lazywizard.console.commands.Nuke,nuke (no arguments),"Destroys all enemies on the battle map."
 #Purge,org.lazywizard.console.commands.Purge,purge <station name> [optionalMaxStacksPerItem],"Removes excess stacks from a station's cargo. By default it will purge down to one stack per item, but you can also use an optional 'max stacks' parameter with this command."
