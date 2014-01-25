@@ -26,9 +26,6 @@ public class AdjustRelationship implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
-        String faction = tmp[0];
-        String towardsFaction = tmp[1];
-
         float newRelationship;
 
         try
@@ -41,6 +38,8 @@ public class AdjustRelationship implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
+        String faction = tmp[0];
+        String towardsFaction = tmp[1];
         FactionAPI fac1 = Global.getSector().getFaction(faction);
         FactionAPI fac2 = Global.getSector().getFaction(towardsFaction);
 

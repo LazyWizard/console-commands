@@ -17,8 +17,6 @@ public class AddXP implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        MutableCharacterStatsAPI character =
-                Global.getSector().getPlayerFleet().getCommanderStats();
         long amount;
 
         try
@@ -31,7 +29,7 @@ public class AddXP implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
-        character.addXP(amount);
+        Global.getSector().getPlayerFleet().getCommanderStats().addXP(amount);
         Console.showMessage("Added " + amount + " experience points to character.");
         return CommandResult.SUCCESS;
     }
