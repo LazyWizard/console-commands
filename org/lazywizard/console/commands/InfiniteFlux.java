@@ -29,7 +29,8 @@ public class InfiniteFlux implements BaseCommand
         }
 
         InfiniteFluxPlugin tmp;
-        if (plugin == null || plugin.get() == null)
+        if (plugin == null || plugin.get() == null
+                || plugin.get().engine != Global.getCombatEngine())
         {
             tmp = new InfiniteFluxPlugin();
             plugin = new WeakReference<>(tmp);

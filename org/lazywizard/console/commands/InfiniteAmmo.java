@@ -29,7 +29,8 @@ public class InfiniteAmmo implements BaseCommand
         }
 
         InfiniteAmmoPlugin tmp;
-        if (plugin == null || plugin.get() == null)
+        if (plugin == null || plugin.get() == null
+                || plugin.get().engine != Global.getCombatEngine())
         {
             tmp = new InfiniteAmmoPlugin();
             plugin = new WeakReference<>(tmp);
