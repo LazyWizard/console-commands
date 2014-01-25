@@ -28,7 +28,8 @@ public class Reveal implements BaseCommand
         }
 
         RevealPlugin tmp;
-        if (plugin == null || plugin.get() == null)
+        if (plugin == null || plugin.get() == null
+                || plugin.get().engine != Global.getCombatEngine())
         {
             tmp = new RevealPlugin();
             plugin = new WeakReference<>(tmp);

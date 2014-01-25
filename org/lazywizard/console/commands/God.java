@@ -28,7 +28,8 @@ public class God implements BaseCommand
         }
 
         GodPlugin tmp;
-        if (plugin == null || plugin.get() == null)
+        if (plugin == null || plugin.get() == null
+                || plugin.get().engine != Global.getCombatEngine())
         {
             tmp = new GodPlugin();
             plugin = new WeakReference<>(tmp);

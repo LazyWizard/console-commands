@@ -21,15 +21,13 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
             return;
         }
 
-        // Don't function on the main menu
+        // Main menu check
         ShipAPI player = engine.getPlayerShip();
-        if (player == null || !engine.isEntityInPlay(player))
+        if (player != null && engine.isEntityInPlay(player))
         {
-            return;
+            // COMBAT_SIMULATION will be added when the API supports it
+            Console.advance(engine.isInCampaign() ? COMBAT_CAMPAIGN : COMBAT_MISSION);
         }
-
-        // COMBAT_SIMULATION will be added when the API supports it
-        Console.advance(engine.isInCampaign() ? COMBAT_CAMPAIGN : COMBAT_MISSION);
     }
 
     @Override

@@ -49,7 +49,7 @@ public class Console
      */
     public static void showMessage(String message, Level logLevel)
     {
-        output.append(message);
+        output.append(StringUtils.wrapString(message, OUTPUT_LINE_LENGTH));
         if (!message.endsWith("\n"))
         {
             output.append("\n");
@@ -205,8 +205,7 @@ public class Console
         {
             if (context == CommandContext.CAMPAIGN)
             {
-                for (String message : StringUtils.wrapString(output.toString(),
-                        OUTPUT_LINE_LENGTH).split("\n"))
+                for (String message : output.toString().split("\n"))
                 {
                     Global.getSector().getCampaignUI().addMessage(message, OUTPUT_COLOR);
                 }
@@ -226,15 +225,15 @@ public class Console
 
                 // TODO: the values here are kind of arbitrary, need to be worked out properly
                 // TODO: add per-frame offset variable so multiple commands while paused don't overlap
-                String[] messages = StringUtils.wrapString(output.toString(),
-                        OUTPUT_LINE_LENGTH).split("\n");
+                String[] messages = output.toString().split("\n");
+                float size = 25f;
                 for (int x = 0; x < messages.length; x++)
                 {
                     engine.addFloatingText(Vector2f.add(
-                            new Vector2f(-output.length() / 20f,
-                                    -(player.getCollisionRadius() + 50 + (x * 25))),
+                            new Vector2f(-OUTPUT_LINE_LENGTH / 2f,
+                                    -(player.getCollisionRadius() + 50 + (x * size))),
                             player.getLocation(), null),
-                            messages[x], 25f, OUTPUT_COLOR, player, 0f, 0f);
+                            messages[x], size, OUTPUT_COLOR, player, 0f, 0f);
                 }
 
                 output.setLength(0);
