@@ -25,6 +25,7 @@ public class Console
 {
     // The LWJGL constant of the key that summons the console
     private static int CONSOLE_KEY;
+    private static boolean REQUIRE_SHIFT, REQUIRE_CONTROL;
     // The String (usually a single character) that separates multiple commands
     private static String COMMAND_SEPARATOR;
     // The color of the console's output text
@@ -101,6 +102,8 @@ public class Console
         JSONObject settings = Global.getSettings().loadJSON(
                 "data/console/console_settings.json");
         CONSOLE_KEY = settings.getInt("consoleKey");
+        REQUIRE_SHIFT = settings.getBoolean("requireShift");
+        REQUIRE_CONTROL = settings.getBoolean("requireControl");
         COMMAND_SEPARATOR = Pattern.quote(settings.getString("commandSeparator"));
         OUTPUT_COLOR = JSONUtils.toColor(settings.getJSONArray("outputColor"));
         OUTPUT_LINE_LENGTH = settings.getInt("maxOutputLineLength");
@@ -240,7 +243,21 @@ public class Console
     {
         if (!isPressed)
         {
-            if (Keyboard.isKeyDown(CONSOLE_KEY))
+            boolean modPressed = true;
+
+            if (REQUIRE_SHIFT && !(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)
+                    || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)))
+            {
+                modPressed = false;
+            }
+
+            if (REQUIRE_CONTROL && !(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)
+                    || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)))
+            {
+                modPressed = false;
+            }
+
+            if (modPressed && Keyboard.isKeyDown(CONSOLE_KEY))
             {
                 isPressed = true;
             }
