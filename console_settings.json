@@ -1,8 +1,10 @@
 {
     # What button to press to summon the console
-    # Key IDs are integers, and can be found in the LWJGL documentation here:
+    # Key IDs are integers and can be found in the LWJGL documentation here:
     # http://www.lwjgl.org/javadoc/constant-values.html#org.lwjgl.input.Keyboard.KEY_0
     "consoleKey":14, # Default: Backspace (14), Tilde would be 41
+    "requireShift":false,
+    "requireControl":true,
 
     # If you want to enter multiple commands at once, separate them with the following
     "commandSeparator":";",
