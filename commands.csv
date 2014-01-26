@@ -28,6 +28,7 @@ NoCooldown,org.lazywizard.console.commands.NoCooldown,nocooldown (no arguments),
 Nuke,org.lazywizard.console.commands.Nuke,nuke (no arguments),"Destroys all enemies on the battle map."
 #Purge,org.lazywizard.console.commands.Purge,purge <station name> [optionalMaxStacksPerItem],"Removes excess stacks from a station's cargo. By default it will purge down to one stack per item, but you can also use an optional 'max stacks' parameter with this command."
 Reload,org.lazywizard.console.commands.Reload,reload (no arguments),"Reloads all console commands and settings."
+Repair,org.lazywizard.console.commands.Repair,repair (no arguments),"Repairs all friendly ships on the battle map if used in combat, or all ships in your fleet on the campaign map."
 Reveal,org.lazywizard.console.commands.Reveal,reveal (no arguments),"Toggles fog of war on the battle map."
 RunCode,org.lazywizard.console.commands.RunCode,runcode <line of code>,"Compiles and runs a line of code. This command has access to most API and LazyLib classes. Does not accept return statements."
 SetHome,org.lazywizard.console.commands.SetHome,sethome [optionalHome],"Sets the point to be teleported to with the 'home' command.\nIf an argument is entered, the command will try to find a token with that name in the system. Otherwise, it will select a nearby object (or raw coordinates if no valid station or planet is found)."

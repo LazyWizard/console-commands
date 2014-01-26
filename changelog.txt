@@ -13,11 +13,13 @@ Made writing custom commands much simpler:
  - Commands are registered inside data/console/console_commands.csv
  - Commands can be in any package now, not just data.scripts.console
    (it is recommended that you DON'T put them in data/scripts, otherwise
-    the game will try to load them even when this mod isn't active)
+    the game will try to load them even when the Console mod isn't active)
 New commands:
  - Echo, prints a message (mostly for testing)
  - Jump, teleports your fleet to another star system or hyperspace
  - Reload, reloads all console commands and settings
+ - Repairs, repairs hull/armor damage of all ships on map (in combat) or
+   in fleet (in campaign)
 Changes to existing commands:
  - Ported all old commands to new BaseCommand interface
  - There are no more hard-coded commands - you can overwrite any core command
