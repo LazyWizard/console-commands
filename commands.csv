@@ -22,6 +22,7 @@ GoTo,org.lazywizard.console.commands.GoTo,goto <locationName>,"Teleports your fl
 Help,org.lazywizard.console.commands.Help,help [optionalCommand],"Shows a list of all commands, or the details on using a specific command if one is entered."
 Home,org.lazywizard.console.commands.Home,home (no arguments),"Teleports the player to their home location.\nHome location is set with the 'sethome' command."
 InfiniteAmmo,org.lazywizard.console.commands.InfiniteAmmo,infiniteammo (no arguments),"Toggles infinite ammunition for all ships on your side."
+InfiniteCR,org.lazywizard.console.commands.InfiniteCR,infinitecr (no arguments),"Toggles the CR timer in combat."
 InfiniteFlux,org.lazywizard.console.commands.InfiniteFlux,infiniteflux (no arguments),"Toggles infinite flux for all ships on your side."
 Jump,org.lazywizard.console.commands.Jump,jump <system>,"Teleports your fleet to the specified system. You will be brought to that system's star (if it has one). If you want to travel to a specific token you should chain 'goto' after this command. The argument 'home' will function identically to the 'home' command."
 NoCooldown,org.lazywizard.console.commands.NoCooldown,nocooldown (no arguments),"Toggles weapon cooldowns for all ships on your side."
