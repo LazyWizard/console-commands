@@ -1,0 +1,30 @@
+ STEP 1 - THE SCRIPT
+=====================
+
+
+
+
+ STEP 2 - THE CSV
+==================
+
+After you have implemented your command's code, you will need to register it
+so the console can find and load it. To do so, you'll need to add your command
+to data/console/commands.csv
+
+This CSV file has the following rows:
+Command: This is what the user enters to use your command.
+Class: This points to the script you wrote in Step 1 above.
+Tags: Used with the 'help' command to find specific commands easier. For
+   example, 'help combat' will return a list of all commands with 'combat'
+   as one of their tags. This doesn't affect how your command works at all.
+Syntax: The basic instructions on how to use this command. Shown when a command
+   returns CommandResult.BAD_SYNTAX, or as part of 'help <command>'
+   <> - This denotes a required field
+   [] - This denotes an optional field
+Help: Detailed instructions on how to use a command. Shown with 'help <command>'
+
+Command and Class are required. Tags, Syntax and Help are optional, but it is
+HIGHLY recommended that you write something here unless this command is for
+personal use only.
+
+(tutorial last updated 2014-01-28)
