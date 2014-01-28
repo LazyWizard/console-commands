@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,7 +17,7 @@ import org.lazywizard.lazylib.CollectionUtils;
 public class CommandStore
 {
     private static final Map<String, StoredCommand> storedCommands = new HashMap<>();
-    private static final Set<String> categories = new HashSet();
+    private static final Set<String> tags = new HashSet();
 
     // Will only throw these exceptions if there is an error loading the CSV
     public static void reloadCommands() throws IOException, JSONException
@@ -30,7 +29,7 @@ public class CommandStore
         ClassLoader loader = Global.getSettings().getScriptClassLoader();
         Class commandClass;
         String commandName, commandSyntax, commandHelp, commandSource;
-        List<String> commandCategories;
+        List<String> commandTags;
         for (int x = 0; x < commandData.length(); x++)
         {
             // Prevents previous command's info showing up in error message
@@ -55,28 +54,29 @@ public class CommandStore
                 commandHelp = tmp.getString("help");
                 commandSource = tmp.getString("fs_rowSource");
 
-                String[] rawCategories = tmp.getString("categories").split(",");
-                commandCategories = new ArrayList<>();
-                for (String category : rawCategories)
+                String[] rawTags = tmp.getString("tags").split(",");
+                commandTags = new ArrayList<>();
+                for (String tag : rawTags)
                 {
-                    category = category.toLowerCase().trim();
-                    if (category.isEmpty())
+                    tag = tag.toLowerCase().trim();
+                    if (tag.isEmpty())
                     {
                         continue;
                     }
-                    
-                    commandCategories.add(category);
 
-                    if (!categories.contains(category))
+                    commandTags.add(tag);
+
+                    // Add to global list of tags
+                    if (!tags.contains(tag))
                     {
-                        categories.add(category);
+                        tags.add(tag);
                     }
                 }
 
                 storedCommands.put(commandName.toLowerCase(),
                         new StoredCommand(commandName, commandClass,
                                 commandSyntax, commandHelp,
-                                commandCategories, commandSource));
+                                commandTags, commandSource));
                 Global.getLogger(CommandStore.class).log(Level.DEBUG,
                         "Loaded command " + commandName + " (class: "
                         + commandClass.getCanonicalName() + ") from " + commandSource);
@@ -104,19 +104,19 @@ public class CommandStore
         return commands;
     }
 
-    public static List getCategories()
+    public static List getKnownTags()
     {
-        return new ArrayList(categories);
+        return new ArrayList(tags);
     }
 
-    public static List getCommandsInCategory(String category)
+    public static List getCommandsWithTag(String tag)
     {
-        category = category.toLowerCase();
+        tag = tag.toLowerCase();
 
         List<String> commands = new ArrayList();
         for (StoredCommand tmp : storedCommands.values())
         {
-            if (tmp.categories.contains(category))
+            if (tmp.tags.contains(tag))
             {
                 commands.add(tmp.getName());
             }
@@ -135,40 +135,20 @@ public class CommandStore
         return null;
     }
 
-    public static String getSyntax(String command)
-    {
-        if (storedCommands.containsKey(command))
-        {
-            return storedCommands.get(command).getSyntax();
-        }
-
-        return null;
-    }
-
-    public static String getHelp(String command)
-    {
-        if (storedCommands.containsKey(command))
-        {
-            return storedCommands.get(command).getHelp();
-        }
-
-        return null;
-    }
-
     public static class StoredCommand
     {
         private final Class<? extends BaseCommand> commandClass;
         private final String name, syntax, help, source;
-        private final List<String> categories;
+        private final List<String> tags;
 
         StoredCommand(String commandName, Class<? extends BaseCommand> commandClass,
-                String syntax, String help, List<String> categories, String source)
+                String syntax, String help, List<String> tags, String source)
         {
             this.name = commandName;
             this.commandClass = commandClass;
             this.syntax = (syntax == null ? "" : syntax);
             this.help = (help == null ? "" : help);
-            this.categories = categories;
+            this.tags = tags;
             this.source = source;
         }
 
@@ -192,9 +172,9 @@ public class CommandStore
             return help;
         }
 
-        public List<String> getCategories()
+        public List<String> getTags()
         {
-            return categories;
+            return tags;
         }
 
         public String getSource()

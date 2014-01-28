@@ -19,24 +19,24 @@ public class Help implements BaseCommand
             Collections.sort(commands);
             Console.showMessage("Loaded commands:\n"
                     + CollectionUtils.implode(commands));
-            List<String> categories = CommandStore.getCategories();
-            Collections.sort(categories);
-            Console.showMessage("\nHelp categories:\n"
-                    + CollectionUtils.implode(categories));
             Console.showMessage("\nYou can use 'help <command>' for more information"
-                    + " on a specific command, or 'help <category>' to list"
-                    + " commands in a specific category.");
+                    + " on a specific command or 'help <tag>' to list"
+                    + " commands that have that tag.\n");
+            List<String> categories = CommandStore.getKnownTags();
+            Collections.sort(categories);
+            Console.showMessage("Valid tags:\n"
+                    + CollectionUtils.implode(categories));
             return CommandResult.SUCCESS;
         }
         else
         {
             args = args.toLowerCase();
 
-            if (CommandStore.getCategories().contains(args))
+            if (CommandStore.getKnownTags().contains(args))
             {
-                List<String> commands = CommandStore.getCommandsInCategory(args);
+                List<String> commands = CommandStore.getCommandsWithTag(args);
                 Collections.sort(commands);
-                Console.showMessage("Commands in category '"+args+"':\n"
+                Console.showMessage("Commands with tag '"+args+"':\n"
                         + CollectionUtils.implode(commands));
                 return CommandResult.SUCCESS;
             }
