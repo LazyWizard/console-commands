@@ -19,13 +19,29 @@ public class Help implements BaseCommand
             Collections.sort(commands);
             Console.showMessage("Loaded commands:\n"
                     + CollectionUtils.implode(commands));
-            Console.showMessage("You can use 'help <command>' for more information"
-                    + " on a specific command.");
+            List<String> categories = CommandStore.getCategories();
+            Collections.sort(categories);
+            Console.showMessage("\nHelp categories:\n"
+                    + CollectionUtils.implode(categories));
+            Console.showMessage("\nYou can use 'help <command>' for more information"
+                    + " on a specific command, or 'help <category>' to list"
+                    + " commands in a specific category.");
             return CommandResult.SUCCESS;
         }
         else
         {
-            StoredCommand command = CommandStore.retrieveCommand(args.toLowerCase());
+            args = args.toLowerCase();
+
+            if (CommandStore.getCategories().contains(args))
+            {
+                List<String> commands = CommandStore.getCommandsInCategory(args);
+                Collections.sort(commands);
+                Console.showMessage("Commands in category '"+args+"':\n"
+                        + CollectionUtils.implode(commands));
+                return CommandResult.SUCCESS;
+            }
+
+            StoredCommand command = CommandStore.retrieveCommand(args);
             if (command == null)
             {
                 Console.showMessage("No such command '" + args + "'!");
