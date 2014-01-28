@@ -1,38 +1,38 @@
 command,class,tags,syntax,help
-AddAptitudePoints,org.lazywizard.console.commands.AddAptitudePoints,campaign,addaptitudepoints <amount>,Adds the specified amount of aptitude points to your character.
-AddCommandPoints,org.lazywizard.console.commands.AddCommandPoints,campaign,addcommandpoints <amount>|remove,Adds the specified amount of command points to your fleet. You can remove the bonus with the argument 'remove'.
-AddCredits,org.lazywizard.console.commands.AddCredits,campaign,addcredits <amount>,Adds the specified amount of credits to your fleet's account.
-AddCrew,org.lazywizard.console.commands.AddCrew,campaign,addcrew <amount> [optionalLevel],"Adds the specified amount of crew.\nYou can optionally choose an experience level for the spawned crew.\nValid levels: green, regular, veteran, and elite\nSupports reversed arguments."
-AddFuel,org.lazywizard.console.commands.AddFuel,campaign,addfuel <amount>,Adds the specified amount of fuel to your fleet's cargo.
-AddItem,org.lazywizard.console.commands.AddItem,campaign,additem <itemID> [optionalAmount],"Adds a resource to your fleet's cargo.\nIf no amount is specified, only one of that item will be given.\nSupports reversed arguments."
-AddMarines,org.lazywizard.console.commands.AddMarines,campaign,addmarines <amount>,Adds the specified amount of marines.
-AddShip,org.lazywizard.console.commands.AddShip,campaign,addship <variantID> [optionalAmount],"Tries to create a ship with the supplied variant ID and adds it to your fleet. This command is case-sensitive, but it will try with different capitalization if it fails. If an amount is given, it will spawn that many ships of that ID in your fleet. Ensure you have the required supplies!\nA ship name with no variant attached will generate an empty hull (the same result as 'addship <shipname>_Hull').\nSupports reversed arguments."
-AddSkillPoints,org.lazywizard.console.commands.AddSkillPoints,campaign,addskillpoints <amount>,Adds the specified amount of skill points to your character.
-AddSupplies,org.lazywizard.console.commands.AddSupplies,campaign,addsupplies <amount>,Adds the specified amount of supplies to your fleet's cargo.
-AddWeapon,org.lazywizard.console.commands.AddWeapon,campaign,addweapon <weaponID> [optionalAmount],"Adds a weapon to your fleet's cargo.\nIf an amount is specified, a stack of that size will be given.\nSupports reversed arguments."
-AddWing,org.lazywizard.console.commands.AddWing,campaign,addwing <variantID> [optionalAmount],"Tries to create a wing with the supplied variant ID and adds it to your fleet. This command is case-sensitive.\nIf an amount is given, it will spawn that many wings of that ID in your fleet. Ensure you have the required supplies!\nSupports reversed arguments."
-AddXP,org.lazywizard.console.commands.AddXP,campaign,addxp <amount>,Adds the specified amount of experience points to your character.
-AdjustRelationship,org.lazywizard.console.commands.AdjustRelationship,campaign,adjustrelationship <faction1> <faction2> <amount>,Modifies the relationship between two factions by the given amount.
-#Alias,org.lazywizard.console.commands.Alias,console,addalias <alias> <command>,"Allows you to set a shortcut for console commands. For example, 'alias ac addcredits' would allow you to later use the command 'ac 5000' as shorthand."
-AllWeapons,org.lazywizard.console.commands.AllWeapons,campaign,allweapons [optionalStation],"Places one of every weapon into your cargo, or a full stack of every weapon into the specified station."
-Echo,org.lazywizard.console.commands.Echo,console,echo <args>,Prints the message you entered. Mostly used to test that the console is functioning.
-GC,org.lazywizard.console.commands.GC,console,gc (no arguments),Tell the Java Virtual Machine to run a garbage collection event (free up unused memory).
-God,org.lazywizard.console.commands.God,combat,god (no arguments),Toggles invincibility for all ships on your side.
-GoTo,org.lazywizard.console.commands.GoTo,campaign,goto <locationName>,"Teleports your fleet to the token with the given name in this system, if any exists. The argument 'home' will function identically to the 'home' command."
-Help,org.lazywizard.console.commands.Help,console,help [optionalCommand],"Shows a list of all commands, or the details on using a specific command if one is entered."
-Home,org.lazywizard.console.commands.Home,campaign,home (no arguments),Teleports the player to their home location.\nHome location is set with the 'sethome' command.
-InfiniteAmmo,org.lazywizard.console.commands.InfiniteAmmo,combat,infiniteammo (no arguments),Toggles infinite ammunition for all ships on your side.
-InfiniteCR,org.lazywizard.console.commands.InfiniteCR,combat,infinitecr (no arguments),Toggles the CR timer in combat.
-InfiniteFlux,org.lazywizard.console.commands.InfiniteFlux,combat,infiniteflux (no arguments),Toggles infinite flux for all ships on your side.
-Jump,org.lazywizard.console.commands.Jump,campaign,jump <system>,Teleports your fleet to the specified system. You will be brought to that system's star (if it has one). If you want to travel to a specific token you should chain 'goto' after this command. The argument 'home' will function identically to the 'home' command.
-NoCooldown,org.lazywizard.console.commands.NoCooldown,combat,nocooldown (no arguments),Toggles weapon cooldowns for all ships on your side.
-Nuke,org.lazywizard.console.commands.Nuke,combat,nuke (no arguments),Destroys all enemies on the battle map.
-#Purge,org.lazywizard.console.commands.Purge,campaign,purge <station name> [optionalMaxStacksPerItem],"Removes excess stacks from a station's cargo. By default it will purge down to one stack per item, but you can also use an optional 'max stacks' parameter with this command."
-Reload,org.lazywizard.console.commands.Reload,console,reload (no arguments),Reloads all console commands and settings.
-Repair,org.lazywizard.console.commands.Repair,"campaign, combat",repair (no arguments),"Repairs all friendly ships on the battle map if used in combat, or all ships in your fleet on the campaign map."
-Reveal,org.lazywizard.console.commands.Reveal,combat,reveal (no arguments),Toggles fog of war on the battle map.
-RunCode,org.lazywizard.console.commands.RunCode,console,runcode <line of code>,Compiles and runs a line of code. This command has access to most API and LazyLib classes. Does not accept return statements.
-SetHome,org.lazywizard.console.commands.SetHome,campaign,sethome [optionalHome],"Sets the point to be teleported to with the 'home' command.\nIf an argument is entered, the command will try to find a token with that name in the system. Otherwise, it will select a nearby object (or raw coordinates if no valid station or planet is found)."
-SetRelationship,org.lazywizard.console.commands.SetRelationship,campaign,setrelationship <faction1> <faction2> <amount>,Sets the relationship between two factions to the given number.
-SpawnFleet,org.lazywizard.console.commands.SpawnFleet,campaign,spawnfleet <faction> <fleetID>,Spawns the designated fleet near the player character. The fleet id must exist in the .faction file of the faction that was entered as an argument.
-Status,org.lazywizard.console.commands.Status,console,status (no arguments),Shows some debug information.
+AddAptitudePoints,org.lazywizard.console.commands.AddAptitudePoints,"core,campaign",addaptitudepoints <amount>,Adds the specified amount of aptitude points to your character.
+AddCommandPoints,org.lazywizard.console.commands.AddCommandPoints,"core,campaign",addcommandpoints <amount>|remove,Adds the specified amount of command points to your fleet. You can remove the bonus with the argument 'remove'.
+AddCredits,org.lazywizard.console.commands.AddCredits,"core,campaign",addcredits <amount>,Adds the specified amount of credits to your fleet's account.
+AddCrew,org.lazywizard.console.commands.AddCrew,"core,campaign",addcrew <amount> [optionalLevel],"Adds the specified amount of crew.\nYou can optionally choose an experience level for the spawned crew.\nValid levels: green, regular, veteran, and elite\nSupports reversed arguments."
+AddFuel,org.lazywizard.console.commands.AddFuel,"core,campaign",addfuel <amount>,Adds the specified amount of fuel to your fleet's cargo.
+AddItem,org.lazywizard.console.commands.AddItem,"core,campaign",additem <itemID> [optionalAmount],"Adds a resource to your fleet's cargo.\nIf no amount is specified, only one of that item will be given.\nSupports reversed arguments."
+AddMarines,org.lazywizard.console.commands.AddMarines,"core,campaign",addmarines <amount>,Adds the specified amount of marines.
+AddShip,org.lazywizard.console.commands.AddShip,"core,campaign",addship <variantID> [optionalAmount],"Tries to create a ship with the supplied variant ID and adds it to your fleet. This command is case-sensitive, but it will try with different capitalization if it fails. If an amount is given, it will spawn that many ships of that ID in your fleet. Ensure you have the required supplies!\nA ship name with no variant attached will generate an empty hull (the same result as 'addship <shipname>_Hull').\nSupports reversed arguments."
+AddSkillPoints,org.lazywizard.console.commands.AddSkillPoints,"core,campaign",addskillpoints <amount>,Adds the specified amount of skill points to your character.
+AddSupplies,org.lazywizard.console.commands.AddSupplies,"core,campaign",addsupplies <amount>,Adds the specified amount of supplies to your fleet's cargo.
+AddWeapon,org.lazywizard.console.commands.AddWeapon,"core,campaign",addweapon <weaponID> [optionalAmount],"Adds a weapon to your fleet's cargo.\nIf an amount is specified, a stack of that size will be given.\nSupports reversed arguments."
+AddWing,org.lazywizard.console.commands.AddWing,"core,campaign",addwing <variantID> [optionalAmount],"Tries to create a wing with the supplied variant ID and adds it to your fleet. This command is case-sensitive.\nIf an amount is given, it will spawn that many wings of that ID in your fleet. Ensure you have the required supplies!\nSupports reversed arguments."
+AddXP,org.lazywizard.console.commands.AddXP,"core,campaign",addxp <amount>,Adds the specified amount of experience points to your character.
+AdjustRelationship,org.lazywizard.console.commands.AdjustRelationship,"core,campaign",adjustrelationship <faction1> <faction2> <amount>,Modifies the relationship between two factions by the given amount.
+#Alias,org.lazywizard.console.commands.Alias,"core,console",addalias <alias> <command>,"Allows you to set a shortcut for console commands. For example, 'alias ac addcredits' would allow you to later use the command 'ac 5000' as shorthand."
+AllWeapons,org.lazywizard.console.commands.AllWeapons,"core,campaign",allweapons [optionalStation],"Places one of every weapon into your cargo, or a full stack of every weapon into the specified station."
+Echo,org.lazywizard.console.commands.Echo,"core,console",echo <args>,Prints the message you entered. Mostly used to test that the console is functioning.
+GC,org.lazywizard.console.commands.GC,"core,console",gc (no arguments),Tell the Java Virtual Machine to run a garbage collection event (free up unused memory).
+God,org.lazywizard.console.commands.God,"core,combat",god (no arguments),Toggles invincibility for all ships on your side.
+GoTo,org.lazywizard.console.commands.GoTo,"core,campaign",goto <locationName>,"Teleports your fleet to the token with the given name in this system, if any exists. The argument 'home' will function identically to the 'home' command."
+Help,org.lazywizard.console.commands.Help,"core,console",help [optionalCommand],"Shows a list of all commands, or the details on using a specific command if one is entered."
+Home,org.lazywizard.console.commands.Home,"core,campaign",home (no arguments),Teleports the player to their home location.\nHome location is set with the 'sethome' command.
+InfiniteAmmo,org.lazywizard.console.commands.InfiniteAmmo,"core,combat",infiniteammo (no arguments),Toggles infinite ammunition for all ships on your side.
+InfiniteCR,org.lazywizard.console.commands.InfiniteCR,"core,combat",infinitecr (no arguments),Toggles the CR timer in combat.
+InfiniteFlux,org.lazywizard.console.commands.InfiniteFlux,"core,combat",infiniteflux (no arguments),Toggles infinite flux for all ships on your side.
+Jump,org.lazywizard.console.commands.Jump,"core,campaign",jump <system>,Teleports your fleet to the specified system. You will be brought to that system's star (if it has one). If you want to travel to a specific token you should chain 'goto' after this command. The argument 'home' will function identically to the 'home' command.
+NoCooldown,org.lazywizard.console.commands.NoCooldown,"core,combat",nocooldown (no arguments),Toggles weapon cooldowns for all ships on your side.
+Nuke,org.lazywizard.console.commands.Nuke,"core,combat",nuke (no arguments),Destroys all enemies on the battle map.
+#Purge,org.lazywizard.console.commands.Purge,"core,campaign",purge <station name> [optionalMaxStacksPerItem],"Removes excess stacks from a station's cargo. By default it will purge down to one stack per item, but you can also use an optional 'max stacks' parameter with this command."
+Reload,org.lazywizard.console.commands.Reload,"core,console",reload (no arguments),Reloads all console commands and settings.
+Repair,org.lazywizard.console.commands.Repair,"core,campaign,combat",repair (no arguments),"Repairs all friendly ships on the battle map if used in combat, or all ships in your fleet on the campaign map."
+Reveal,org.lazywizard.console.commands.Reveal,"core,combat",reveal (no arguments),Toggles fog of war on the battle map.
+RunCode,org.lazywizard.console.commands.RunCode,"core,console",runcode <line of code>,Compiles and runs a line of code. This command has access to most API and LazyLib classes. Does not accept return statements.
+SetHome,org.lazywizard.console.commands.SetHome,"core,campaign",sethome [optionalHome],"Sets the point to be teleported to with the 'home' command.\nIf an argument is entered, the command will try to find a token with that name in the system. Otherwise, it will select a nearby object (or raw coordinates if no valid station or planet is found)."
+SetRelationship,org.lazywizard.console.commands.SetRelationship,"core,campaign",setrelationship <faction1> <faction2> <amount>,Sets the relationship between two factions to the given number.
+SpawnFleet,org.lazywizard.console.commands.SpawnFleet,"core,campaign",spawnfleet <faction> <fleetID>,Spawns the designated fleet near the player character. The fleet id must exist in the .faction file of the faction that was entered as an argument.
+Status,org.lazywizard.console.commands.Status,"core,console",status (no arguments),Shows some debug information.
