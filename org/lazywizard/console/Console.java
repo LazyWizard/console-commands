@@ -201,7 +201,7 @@ public class Console
     {
         if (output.length() > 0)
         {
-            if (context == CommandContext.CAMPAIGN)
+            if (context == CommandContext.CAMPAIGN_MAP)
             {
                 for (String message : output.toString().split("\n"))
                 {

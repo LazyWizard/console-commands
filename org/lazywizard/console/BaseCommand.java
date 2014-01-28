@@ -28,7 +28,7 @@ public interface BaseCommand
         /**
          * Command was entered on the campaign map.
          */
-        CAMPAIGN,
+        CAMPAIGN_MAP,
         /**
          * Command was entered during a battle in the campaign (doesn't include
          * simulation battles).
