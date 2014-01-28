@@ -1,8 +1,23 @@
  STEP 1 - THE SCRIPT
 =====================
 
+all commands are implemented as separate Java classes. These classes must
+implement the org.lazywizard.console.BaseCommand interface. This interface
+contains only one method:
+ - public CommandResult runCommand(String args, CommandContext context)
 
+CommandResult is an enum included in BaseCommand. It has the following values:
+   SUCCESS, returned when a command runs without error
+   BAD_SYNTAX, return this if the player entered improperly formatted arguments
+   WRONG_CONTEXT, if a command was entered in the wrong place (for example,
+   ERROR, if a command used the proper syntax but still failed for some reason
 
+CommandContext is also an enum in BaseCommand, and tells your script where this
+command was used. It has the following values which should be self-explanatory:
+   CAMPAIGN_MAP
+   COMBAT_CAMPAIGN,
+   COMBAT_MISSION,
+   COMBAT_SIMULATION
 
  STEP 2 - THE CSV
 ==================

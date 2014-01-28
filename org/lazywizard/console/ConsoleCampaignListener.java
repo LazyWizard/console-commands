@@ -20,6 +20,6 @@ public class ConsoleCampaignListener implements EveryFrameScript
     @Override
     public void advance(float amount)
     {
-        Console.advance(CommandContext.CAMPAIGN);
+        Console.advance(CommandContext.CAMPAIGN_MAP);
     }
 }

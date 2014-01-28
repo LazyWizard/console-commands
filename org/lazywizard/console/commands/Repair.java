@@ -15,7 +15,7 @@ public class Repair implements BaseCommand
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
-        if (context == CommandContext.CAMPAIGN)
+        if (context == CommandContext.CAMPAIGN_MAP)
         {
             CampaignFleetAPI player = Global.getSector().getPlayerFleet();
             float priorSupplies = player.getCargo().getSupplies();

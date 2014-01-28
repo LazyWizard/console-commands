@@ -16,7 +16,7 @@ public class Nuke implements BaseCommand
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
-        if (context == CommandContext.CAMPAIGN)
+        if (context == CommandContext.CAMPAIGN_MAP)
         {
             Console.showMessage(CommonStrings.ERROR_COMBAT_ONLY);
             return CommandResult.WRONG_CONTEXT;
