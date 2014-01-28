@@ -1,4 +1,4 @@
-command,class,categories,syntax,help
+command,class,tags,syntax,help
 AddAptitudePoints,org.lazywizard.console.commands.AddAptitudePoints,campaign,addaptitudepoints <amount>,Adds the specified amount of aptitude points to your character.
 AddCommandPoints,org.lazywizard.console.commands.AddCommandPoints,campaign,addcommandpoints <amount>|remove,Adds the specified amount of command points to your fleet. You can remove the bonus with the argument 'remove'.
 AddCredits,org.lazywizard.console.commands.AddCredits,campaign,addcredits <amount>,Adds the specified amount of credits to your fleet's account.
