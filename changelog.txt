@@ -19,7 +19,7 @@ New commands:
  - Jump, teleports your fleet to another star system or hyperspace
  - InfiniteCR, prevents CR from draining during combat
  - Reload, reloads all console commands and settings
- - Repairs, repairs hull/armor damage of all ships on map (in combat) or
+ - Repair, repairs hull/armor damage of all ships on map (in combat) or
    in fleet (in campaign)
 Changes to existing commands:
  - Ported all old commands to new BaseCommand interface
