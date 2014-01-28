@@ -1,7 +1,7 @@
  2.0 (someday)
 ===============
 (this version is not save compatible with earlier versions)
-LazyLib is now required for this mod to function!
+LazyLib is required for this mod to function!
 The console is now summoned with control+backspace
  - This and other settings can be changed in data/console/console_settings.json
 Total rewrite of the mod:
@@ -17,6 +17,7 @@ Made writing custom commands much simpler:
 New commands:
  - Echo, prints a message (mostly for testing)
  - Jump, teleports your fleet to another star system or hyperspace
+ - InfiniteCR, prevents CR from draining during combat
  - Reload, reloads all console commands and settings
  - Repairs, repairs hull/armor damage of all ships on map (in combat) or
    in fleet (in campaign)
