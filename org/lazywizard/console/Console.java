@@ -197,7 +197,7 @@ public class Console
         }
     }
 
-    private static void checkShowOutput(CommandContext context)
+    private static void checkOutput(CommandContext context)
     {
         if (output.length() > 0)
         {
@@ -271,7 +271,7 @@ public class Console
             }
         }
 
-        checkShowOutput(context);
+        checkOutput(context);
     }
 
     private Console()

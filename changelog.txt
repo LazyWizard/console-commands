@@ -15,7 +15,6 @@ Made writing custom commands much simpler:
    (it is recommended that you DON'T put them in data/scripts, otherwise
     the game will try to load them even when the Console mod isn't active)
 New commands:
- - Echo, prints a message (mostly for testing)
  - Jump, teleports your fleet to another star system or hyperspace
  - InfiniteCR, prevents CR from draining during combat
  - Reload, reloads all console commands and settings
@@ -26,8 +25,11 @@ Changes to existing commands:
  - There are no more hard-coded commands - you can overwrite any core command
  - AllWeapons no longer defaults to player cargo on failure
  - Home can now teleport your fleet between starsystems
- - Removed AddConsole as the new ModPlugin system makes it unnecessary
- - Removed RunScript command (considering RunCode it's pretty superfluous)
+Removed the following old commands:
+ - AddConsole, as the new ModPlugin system makes it unnecessary
+ - GC, anyone who knows enough Java to know what this does and when to use it
+   could easily do the same thing via RunCode
+ - RunScript, it became superfluous after RunCode was implemented
 
 
 --------------------------------------------------------------------------------

@@ -13,14 +13,14 @@ public interface BaseCommand
          */
         ERROR,
         /**
+         * Command had the wrong arguments passed in.
+         */
+        BAD_SYNTAX,
+        /**
          * Command was used in the wrong context (ex: entering a campaign-only
          * command in a mission).
          */
-        WRONG_CONTEXT,
-        /**
-         * Command had the wrong arguments passed in.
-         */
-        BAD_SYNTAX
+        WRONG_CONTEXT
     }
 
     public static enum CommandContext

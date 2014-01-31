@@ -15,8 +15,6 @@ AddXP,org.lazywizard.console.commands.AddXP,"core,campaign",addxp <amount>,Adds 
 AdjustRelationship,org.lazywizard.console.commands.AdjustRelationship,"core,campaign",adjustrelationship <faction1> <faction2> <amount>,Modifies the relationship between two factions by the given amount.
 #Alias,org.lazywizard.console.commands.Alias,"core,console",addalias <alias> <command>,"Allows you to set a shortcut for console commands. For example, 'alias ac addcredits' would allow you to later use the command 'ac 5000' as shorthand."
 AllWeapons,org.lazywizard.console.commands.AllWeapons,"core,campaign",allweapons [optionalStation],"Places one of every weapon into your cargo, or a full stack of every weapon into the specified station."
-Echo,org.lazywizard.console.commands.Echo,"core,console",echo <args>,Prints the message you entered. Mostly used to test that the console is functioning.
-GC,org.lazywizard.console.commands.GC,"core,console",gc (no arguments),Tell the Java Virtual Machine to run a garbage collection event (free up unused memory).
 God,org.lazywizard.console.commands.God,"core,combat",god (no arguments),Toggles invincibility for all ships on your side.
 GoTo,org.lazywizard.console.commands.GoTo,"core,campaign",goto <locationName>,"Teleports your fleet to the token with the given name in this system, if any exists. The argument 'home' will function identically to the 'home' command."
 Help,org.lazywizard.console.commands.Help,"core,console",help [optionalCommand],"Shows a list of all commands, or the details on using a specific command if one is entered."

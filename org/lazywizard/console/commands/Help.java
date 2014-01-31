@@ -20,12 +20,12 @@ public class Help implements BaseCommand
             Console.showMessage("Loaded commands:\n"
                     + CollectionUtils.implode(commands));
             Console.showMessage("\nYou can use 'help <command>' for more information"
-                    + " on a specific command or 'help <tag>' to list"
+                    + " on a specific command or 'help <tag>' to only list"
                     + " commands that have that tag.\n");
-            List<String> categories = CommandStore.getKnownTags();
-            Collections.sort(categories);
+            List<String> tags = CommandStore.getKnownTags();
+            Collections.sort(tags);
             Console.showMessage("Valid tags:\n"
-                    + CollectionUtils.implode(categories));
+                    + CollectionUtils.implode(tags));
             return CommandResult.SUCCESS;
         }
         else
