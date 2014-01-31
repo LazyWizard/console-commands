@@ -27,7 +27,7 @@ public class Jump implements BaseCommand
         if (args.isEmpty())
         {
             List<StarSystemAPI> systems = Global.getSector().getStarSystems();
-            List<String> systemNames = new ArrayList(systems.size());
+            List<String> systemNames = new ArrayList<>(systems.size());
 
             // Player has used SetHome command
             if (Global.getSector().getPersistentData()

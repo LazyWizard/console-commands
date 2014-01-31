@@ -22,39 +22,24 @@ class LazyLibTemp
 
     static class StringUtils
     {
-        public static String wrapString(String toWrap, int maxLineLength,
-                boolean indentFirstLine, boolean indentFollowingLines, String indent)
+        public static String wrapString(String toWrap, int maxLineLength)
         {
-            if (indent == null)
-            {
-                indent = "";
-            }
-
             if (toWrap == null)
             {
-                return indent;
+                return "";
             }
 
             // Analyse each line of the message seperately
             String[] lines = toWrap.split("\n");
             StringBuilder line = new StringBuilder(maxLineLength);
             StringBuilder message = new StringBuilder((int) (toWrap.length() * 1.1f));
-            boolean shouldIndent = indentFirstLine;
             for (String rawLine : lines)
             {
                 // Check if the string even needs to be broken up
                 if (rawLine.length() <= maxLineLength)
                 {
                     // Entire message fits into a single line
-                    if (shouldIndent)
-                    {
-                        message.append(indent).append(rawLine).append("\n");
-                    }
-                    else
-                    {
-                        message.append(rawLine).append("\n");
-                        shouldIndent = indentFollowingLines;
-                    }
+                    message.append(rawLine).append("\n");
                 }
                 else
                 {
@@ -72,45 +57,19 @@ class LazyLibTemp
                             // Make sure to post the previous line in queue, if any
                             if (line.length() > 0)
                             {
-                                if (shouldIndent)
-                                {
-                                    message.append(indent).append(line.toString()).append("\n");
-                                }
-                                else
-                                {
-                                    message.append(line.toString()).append("\n");
-                                    shouldIndent = indentFollowingLines;
-                                }
-
+                                message.append(line.toString()).append("\n");
                                 line.setLength(0);
                             }
 
                             // TODO: split line at maxLineLength and add dash/newline
-                            if (shouldIndent)
-                            {
-                                message.append(indent).append(words[y]).append("\n");
-                            }
-                            else
-                            {
-                                message.append(words[y]).append("\n");
-                                shouldIndent = indentFollowingLines;
-                            }
+                            message.append(words[y]).append("\n");
                         }
                         // If this word would put us over the length limit, post
                         // the queue and back up a step (re-check this word with
                         // a blank line - this is in case it trips the above block)
                         else if (words[y].length() + line.length() > maxLineLength)
                         {
-                            if (shouldIndent)
-                            {
-                                message.append(indent).append(line.toString()).append("\n");
-                            }
-                            else
-                            {
-                                message.append(line.toString()).append("\n");
-                                shouldIndent = indentFollowingLines;
-                            }
-
+                            message.append(line.toString()).append("\n");
                             line.setLength(0);
                             y--;
                         }
@@ -124,15 +83,7 @@ class LazyLibTemp
                             // that we post the remaining part of the queue
                             if (y == (words.length - 1))
                             {
-                                if (shouldIndent)
-                                {
-                                    message.append(indent).append(line.toString()).append("\n");
-                                }
-                                else
-                                {
-                                    message.append(line.toString()).append("\n");
-                                    shouldIndent = indentFollowingLines;
-                                }
+                                message.append(line.toString()).append("\n");
                             }
                         }
                     }
@@ -140,11 +91,6 @@ class LazyLibTemp
             }
 
             return message.toString();
-        }
-
-        public static String wrapString(String toWrap, int maxLineLength)
-        {
-            return wrapString(toWrap, maxLineLength, false, false, null);
         }
 
         private StringUtils()
