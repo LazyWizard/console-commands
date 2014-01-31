@@ -49,6 +49,10 @@ public class Help implements BaseCommand
             }
 
             Console.showMessage("HELP - " + command.getName().toUpperCase());
+            if (!command.getTags().isEmpty())
+            {
+                Console.showMessage("Tags: " + CollectionUtils.implode(command.getTags()));
+            }
             if (!command.getSyntax().isEmpty())
             {
                 Console.showMessage("Syntax: " + command.getSyntax());
