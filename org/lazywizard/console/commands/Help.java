@@ -21,10 +21,10 @@ public class Help implements BaseCommand
                     + CollectionUtils.implode(commands));
             Console.showMessage("\nYou can use 'help <command>' for more information"
                     + " on a specific command or 'help <tag>' to only list"
-                    + " commands that have that tag.\n");
+                    + " commands that have that tag.");
             List<String> tags = CommandStore.getKnownTags();
             Collections.sort(tags);
-            Console.showMessage("Valid tags:\n"
+            Console.showMessage("\nValid tags: "
                     + CollectionUtils.implode(tags));
             return CommandResult.SUCCESS;
         }

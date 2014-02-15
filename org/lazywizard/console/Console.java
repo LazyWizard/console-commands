@@ -14,10 +14,8 @@ import org.json.JSONObject;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommandStore.StoredCommand;
-import org.lazywizard.console.LazyLibTemp.JSONUtils;
-import org.lazywizard.console.LazyLibTemp.StringUtils;
-//import org.lazywizard.lazylib.JSONUtils;
-//import org.lazywizard.lazylib.StringUtils;
+import org.lazywizard.lazylib.JSONUtils;
+import org.lazywizard.lazylib.StringUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -169,11 +167,8 @@ public class Console
         }
     }
 
-    private static void checkInput(CommandContext context)
+    private static void parseInput(String rawInput, CommandContext context)
     {
-        String rawInput = JOptionPane.showInputDialog(null,
-                "Enter command, or 'help' for a list of valid commands.");
-
         if (rawInput == null)
         {
             return;
@@ -197,7 +192,42 @@ public class Console
         }
     }
 
-    private static void checkOutput(CommandContext context)
+    private static boolean checkInput()
+    {
+        if (!isPressed)
+        {
+            boolean modPressed = true;
+
+            if (REQUIRE_SHIFT && !(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)
+                    || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)))
+            {
+                modPressed = false;
+            }
+
+            if (REQUIRE_CONTROL && !(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)
+                    || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)))
+            {
+                modPressed = false;
+            }
+
+            if (modPressed && Keyboard.isKeyDown(CONSOLE_KEY))
+            {
+                isPressed = true;
+            }
+        }
+        else
+        {
+            if (!Keyboard.isKeyDown(CONSOLE_KEY))
+            {
+                isPressed = false;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static void showOutput(CommandContext context)
     {
         if (output.length() > 0)
         {
@@ -241,37 +271,27 @@ public class Console
 
     static void advance(CommandContext context)
     {
-        if (!isPressed)
+        if (checkInput())
         {
-            boolean modPressed = true;
-
-            if (REQUIRE_SHIFT && !(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)
-                    || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)))
+            // TODO: have CAMPAIGN_MAP call an InteractionDialog instead
+            if (context == CommandContext.CAMPAIGN_MAP)
             {
-                modPressed = false;
+                // TODO: Campaign map, summon dialog
+                String rawInput = JOptionPane.showInputDialog(null,
+                        "Enter command, or 'help' for a list of valid commands.");
+                parseInput(rawInput, context);
             }
-
-            if (REQUIRE_CONTROL && !(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)
-                    || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)))
+            else
             {
-                modPressed = false;
-            }
-
-            if (modPressed && Keyboard.isKeyDown(CONSOLE_KEY))
-            {
-                isPressed = true;
-            }
-        }
-        else
-        {
-            if (!Keyboard.isKeyDown(CONSOLE_KEY))
-            {
-                isPressed = false;
-                checkInput(context);
+                // Combat, summon regular Java input dialog for now
+                // TODO: write an overlay if text rendering is ever added to API
+                String rawInput = JOptionPane.showInputDialog(null,
+                        "Enter command, or 'help' for a list of valid commands.");
+                parseInput(rawInput, context);
             }
         }
 
-        checkOutput(context);
+        showOutput(context);
     }
 
     private Console()
