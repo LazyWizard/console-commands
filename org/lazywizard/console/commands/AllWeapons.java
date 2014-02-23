@@ -12,7 +12,7 @@ import org.lazywizard.console.Console;
 
 public class AllWeapons implements BaseCommand
 {
-    private static final float STACK_SIZE = 10f;
+    private static final int MAX_STACK_SIZE = 10;
 
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -53,8 +53,9 @@ public class AllWeapons implements BaseCommand
 
         for (String id : Global.getSector().getAllWeaponIds())
         {
-            target.addItems(CargoItemType.WEAPONS, id, STACK_SIZE);
-            total += STACK_SIZE;
+            int amount = MAX_STACK_SIZE - target.getNumWeapons(id);
+            target.addItems(CargoItemType.WEAPONS, id, amount);
+            total += amount;
         }
 
         Console.showMessage("Added " + total + " items to " + targetName + ".");
