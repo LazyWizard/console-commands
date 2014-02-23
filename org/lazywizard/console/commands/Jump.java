@@ -104,8 +104,13 @@ public class Jump implements BaseCommand
             }
         }
 
-        Global.getSector().doHyperspaceTransition(player, player,
-                new JumpPointAPI.JumpDestination(destination, "Jumping to " + args));
+        //Global.getSector().doHyperspaceTransition(player, player,
+        //        new JumpPointAPI.JumpDestination(destination, "Jumping to " + args));
+        player.getContainingLocation().removeEntity(player);
+        destination.getContainingLocation().addEntity(player);
+        Global.getSector().setCurrentLocation(destination.getContainingLocation());
+        player.setLocation(destination.getLocation().x,
+                destination.getLocation().y);
         player.setNoEngaging(2.0f);
         player.clearAssignments();
         player.addAssignment(FleetAssignment.GO_TO_LOCATION, destination, 1f);

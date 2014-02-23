@@ -1,6 +1,7 @@
 package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.CargoAPI.CargoItemType;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import org.lazywizard.console.BaseCommand;
@@ -22,35 +23,41 @@ public class AllWeapons implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        SectorEntityToken target;
-        float amount;
+        CargoAPI target;
+        String targetName;
         float total = 0;
 
         if (args == null || args.isEmpty())
         {
-            target = Global.getSector().getPlayerFleet();
-            amount = 1f;
+            target = Storage.retrieveStorage(Global.getSector());
+            targetName = "storage (use 'storage' to retrieve)";
+        }
+        else if ("player".equalsIgnoreCase(args))
+        {
+            target = Global.getSector().getPlayerFleet().getCargo();
+            targetName = "player fleet";
         }
         else
         {
-            target = Global.getSector().getCurrentLocation().getEntityByName(args);
-            amount = STACK_SIZE;
+            SectorEntityToken tmp = Global.getSector().getCurrentLocation().getEntityByName(args);
 
-            if (target == null)
+            if (tmp == null)
             {
                 Console.showMessage(args + " not found!");
                 return CommandResult.ERROR;
             }
+
+            target = tmp.getCargo();
+            targetName = tmp.getFullName();
         }
 
         for (String id : Global.getSector().getAllWeaponIds())
         {
-            target.getCargo().addItems(CargoItemType.WEAPONS, id, amount);
-            total += amount;
+            target.addItems(CargoItemType.WEAPONS, id, STACK_SIZE);
+            total += STACK_SIZE;
         }
 
-        Console.showMessage("Added " + total + " items to "
-                + target.getFullName() + ".");
+        Console.showMessage("Added " + total + " items to " + targetName + ".");
         return CommandResult.SUCCESS;
     }
 }
