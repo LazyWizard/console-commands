@@ -89,10 +89,10 @@ public class Console
         stackTrace.append(ex.toString()).append("\n");
         for (StackTraceElement ste : ex.getStackTrace())
         {
-            stackTrace.append("at ").append(ste.toString()).append("\n");
+            stackTrace.append("\tat ").append(ste.toString()).append("\n");
         }
 
-        showMessage(stackTrace.toString());
+        showMessage(stackTrace.toString(), Level.ERROR);
     }
 
     public static void reloadSettings() throws IOException, JSONException
@@ -162,8 +162,8 @@ public class Console
         }
         catch (Exception ex)
         {
-            showMessage("Failed to execute command \"" + input
-                    + "\" in context " + context, Level.ERROR);
+            showException("Failed to execute command \"" + input
+                    + "\" in context " + context, ex);
         }
     }
 

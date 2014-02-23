@@ -20,10 +20,12 @@ New commands:
  - Reload, reloads all console commands and settings
  - Repair, repairs hull/armor damage of all ships on map (in combat) or
    in fleet (in campaign)
+ - Storage, opens a persistent, infinite-stack cargo container
 Changes to existing commands:
  - Ported all old commands to new BaseCommand interface
  - There are no more hard-coded commands - you can overwrite any core command
- - AllWeapons no longer defaults to player cargo on failure
+ - AllWeapons now defaults to 'storage' instead of player cargo if no
+   arguments are passed in, won't go beyond 10 of each weapon
  - Home can now teleport your fleet between starsystems
 Removed the following old commands:
  - AddConsole, as the new ModPlugin system makes it unnecessary
