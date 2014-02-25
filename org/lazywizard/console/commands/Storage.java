@@ -53,7 +53,9 @@ public class Storage implements BaseCommand
             this.dialog = dialog;
             listener = new StorageInteractionDialogListener();
 
-            //TODO: find way to use showCore cargo/fleet tab w/ infinite stacks
+            // TODO: find way to use showCore cargo/fleet tab w/ infinite stacks
+            // LocationAPI.createToken() doesn't have cargo so won't work,
+            // and I'd rather not muck up the save with an invisible station
             dialog.getVisualPanel().showLoot("Storage",
                     Storage.retrieveStorage(Global.getSector()), listener);
 
