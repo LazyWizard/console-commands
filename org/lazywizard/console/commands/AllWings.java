@@ -2,18 +2,18 @@ package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CargoAPI;
-import com.fs.starfarer.api.campaign.CargoAPI.CargoItemType;
+import com.fs.starfarer.api.campaign.FleetDataAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
+import com.fs.starfarer.api.fleet.FleetMemberType;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
-public class AllWeapons implements BaseCommand
+public class AllWings implements BaseCommand
 {
-    private static final int MAX_STACK_SIZE = 10;
-
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
@@ -23,19 +23,14 @@ public class AllWeapons implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        CargoAPI target;
+        FleetDataAPI target;
         String targetName;
         int total = 0;
 
         if (args == null || args.isEmpty())
         {
-            target = Storage.retrieveStorage(Global.getSector());
+            target = Storage.retrieveStorage(Global.getSector()).getMothballedShips();
             targetName = "storage (use 'storage' to retrieve)";
-        }
-        else if ("player".equalsIgnoreCase(args))
-        {
-            target = Global.getSector().getPlayerFleet().getCargo();
-            targetName = "player fleet";
         }
         else
         {
@@ -47,18 +42,25 @@ public class AllWeapons implements BaseCommand
                 return CommandResult.ERROR;
             }
 
-            target = tmp.getCargo();
+            if (tmp.getCargo().getMothballedShips() == null)
+            {
+                tmp.getCargo().initMothballedShips(tmp.getFaction().getId());
+            }
+
+            target = tmp.getCargo().getMothballedShips();
             targetName = tmp.getFullName();
         }
 
-        for (String id : Global.getSector().getAllWeaponIds())
+        for (String id : Global.getSector().getAllFighterWingIds())
         {
-            int amount = MAX_STACK_SIZE - target.getNumWeapons(id);
-            target.addItems(CargoItemType.WEAPONS, id, amount);
-            total += amount;
+            FleetMemberAPI tmp = Global.getFactory().createFleetMember(
+                    FleetMemberType.FIGHTER_WING, id);
+            tmp.getRepairTracker().setMothballed(true);
+            target.addFleetMember(tmp);
+            total++;
         }
 
-        Console.showMessage("Added " + total + " items to " + targetName + ".");
+        Console.showMessage("Added " + total + " ships to " + targetName + ".");
         return CommandResult.SUCCESS;
     }
 }
