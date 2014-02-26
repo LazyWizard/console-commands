@@ -81,6 +81,10 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
                 SecurityException ex)
         {
             Console.showException("Failed to reset keyboard!", ex);
+
+            // Do things the hard way
+            Keyboard.destroy();
+            Keyboard.create();
         }
     }
 
