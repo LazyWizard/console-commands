@@ -1,34 +1,58 @@
+To add your own commands to the console, you'll need a mod that contains two
+things: your command's script, and a commands.csv to register it.
+
+Sometimes you may want to start with the CSV row to get a better idea of how
+your command will work. Just comment out the row (add a # at the beginning) to
+prevent the game from loading your command until it's finished.
+
+An example mod that adds a simple command can be found in the mod folder.
+
  STEP 1 - THE SCRIPT
 =====================
 
-All commands are contained in their own Java class. These classes must
-implement the org.lazywizard.console.BaseCommand interface. This interface
-contains only one method (plus two enumerations, see below):
- - public CommandResult runCommand(String args, CommandContext context)
+All commands are contained in their own separate Java class. The Console mod
+loads command classes itself, so you can place the java files anywhere you
+want - data/console/commands is a good choice as data/console must already
+exist for commands.csv.
 
-This method returns a CommandResult, which is an enum included in BaseCommand.
-CommandResult has the following values:
- - SUCCESS, returned when a command runs without error
- - BAD_SYNTAX, return this if the player entered improperly formatted arguments
- - WRONG_CONTEXT, if a command was entered in the wrong place (for example,
-   using a campaign-only command during a mission)
- - ERROR, if a command used the proper syntax but still failed for some reason
+It is _highly_ recommended that you do not place these classes in data/scripts
+as Starsector will automatically compile any scripts in this directory, causing
+compilation errors if the Console mod is not active. Placing them elsewhere
+allows you to bundle commands with a regular mod that will only be loaded if
+the console is tagged in the launcher.
+
+First off, make sure your IDE has mods/Console Commands/jars/Console.jar added
+as a library. Just follow the same procedure you did to add starfarer.api.jar.
+
+Your commands must implement the org.lazywizard.console.BaseCommand interface.
+This interface contains only one method (plus two enumerations, see below):
+ - public CommandResult runCommand(String args, CommandContext context)
 
 'args' is the argument(s) the player entered after this command, for example
 the command "addcrew 500 elite" would pass in "500 elite" as a single String.
 Parsing these arguments into something usable is left up to your script.
 
 'context' is a CommandContext passed into your script that tells it where this
-command was used. CommandContext is the other enum included in BaseCommand, and
+command was used. CommandContext is the first enum included in BaseCommand, and
 has the following values (these should be self-explanatory):
  - CAMPAIGN_MAP
  - COMBAT_CAMPAIGN
  - COMBAT_MISSION
  - COMBAT_SIMULATION (unused at the moment due to API limitations)
 
-Console.showMessage(String message) will format and show the String passed in
-to the player using either sector messages or floating text, depending on
-whether the player is in combat or on the campaign map at the time.
+This method returns a CommandResult, which is the other enum included in
+BaseCommand. CommandResult has the following values:
+ - SUCCESS, returned when a command runs without error
+ - BAD_SYNTAX, return this if the player entered improperly formatted arguments
+   (for example, a String where an number was expected)
+ - WRONG_CONTEXT, if a command was entered in the wrong place (for example,
+   using a campaign-only command during a mission)
+ - ERROR, if a command used the proper syntax but still failed for some reason
+
+If you wish to show output to the player, Console.showMessage(String message)
+will format and print the String passed into the player using either sector
+messages or floating text, depending on whether the player is in combat or on
+the campaign map at the time.
 
 With all of this in mind, the basic structure of runCommand() is thus:
  - Check if the context passed in is a valid one for this command. Show a
@@ -36,39 +60,42 @@ With all of this in mind, the basic structure of runCommand() is thus:
    command in the wrong context
  - Parse the arguments passed in. If they don't match what is expected,
    return CommandResult.BAD_SYNTAX (no message is needed; the Console mod itself
-   will show the proper syntax for your command if BAD_SYNTAX is returned)
+   will show the proper syntax from commands.csv if BAD_SYNTAX is returned)
  - Try to run the command with the parsed arguments. If something goes wrong
-   during this, show an error message and return CommandResult.ERROR
+   during this stage, show an error message and return CommandResult.ERROR
  - If everything went well, show a message and return CommandResult.SUCCESS
 
 If you need further help implementing your command, the source files for every
-core command are included in jars/Console.jar (most archivers can open these)
-in the org/lazywizard/console/commands directory. You can also find up-to-date
-source code for this mod at bitbucket.org/LazyWizard/console-commands/src
+core command are included in jars/Console.jar (most modern archive programs can
+open jars) in the org/lazywizard/console/commands directory. You can also find
+the most up-to-date source code at bitbucket.org/LazyWizard/console-commands/src
 
 
  STEP 2 - THE CSV
 ==================
 
 After you have written your command's code, you will need to register it so the
-console can find and load it. To do so, you'll need to add your command to
-data/console/commands.csv.
+console can find it. Once you've done this, the mod will automatically load
+your command when the game starts.
 
-This CSV file has the following columns:
-Command: This is what the user enters to use your command.
-Class: This points to the script you wrote in Step 1 above.
-Tags: Used with the 'help' command to find specific commands easier. For
+Commands are registered in data/console/commands.csv. This CSV file has the
+following columns:
+ - command: This is what the user enters to use your command.
+ - class: This points to the script you wrote in Step 1 above. Use the
+   fully-qualified name of your class (ex: data.console.commands.Example).
+ - tags: Used with the 'help' command to find specific commands easier. For
    example, 'help combat' will return a list of all commands with 'combat'
    as one of their tags. Tags don't affect how or where your command works.
-Syntax: The basic instructions on how to use this command. Shown when a command
-   returns CommandResult.BAD_SYNTAX, or as part of 'help <command>'
+ - syntax: The basic instructions on how to use this command. Shown when a
+   command returns CommandResult.BAD_SYNTAX, or as part of 'help <command>'
    <> - This denotes a required field
    [] - This denotes an optional field
-Help: Detailed instructions on how to use a command. Shown with 'help <command>'
+ - help: Detailed instructions on how to use a command. Shown with 'help
+   <command>'
 
 Command and Class are required. Tags, Syntax and Help can be left empty, but it
-is HIGHLY recommended that you enter something for them unless this command is
-for personal use only.
+is HIGHLY recommended that you enter something in these fields unless this
+command is for personal use only.
 
 
-(tutorial last updated 2014-01-30)
+(tutorial last updated 2014-02-26)
