@@ -1,25 +1,25 @@
-To add your own commands to the console, you'll need a mod that contains two
-things: your command's script, and a commands.csv to register it.
+To add your own commands to the console you'll need a mod that contains two
+things: your command's script, and data/console/commands.csv to register it in.
 
-Sometimes you may want to start with the CSV row to get a better idea of how
-your command will work. Just comment out the row (add a # at the beginning) to
-prevent the game from loading your command until it's finished.
+All commands are contained in their own separate Java class. The console mod
+loads command classes itself, so you can place the java files anywhere in your
+mod folder you want - data/console/commands is a good choice as data/console
+already exists to contain commands.csv.
+
+It is _highly_ recommended that you do not place these classes in data/scripts.
+Starsector will automatically compile any scripts in this directory, causing
+compilation errors if the console mod is not active. Placing them elsewhere
+allows you to bundle commands with a regular mod that will only be loaded if
+the console is tagged in the launcher.
 
 An example mod that adds a simple command can be found in the mod folder.
 
  STEP 1 - THE SCRIPT
 =====================
 
-All commands are contained in their own separate Java class. The Console mod
-loads command classes itself, so you can place the java files anywhere you
-want - data/console/commands is a good choice as data/console must already
-exist for commands.csv.
-
-It is _highly_ recommended that you do not place these classes in data/scripts
-as Starsector will automatically compile any scripts in this directory, causing
-compilation errors if the Console mod is not active. Placing them elsewhere
-allows you to bundle commands with a regular mod that will only be loaded if
-the console is tagged in the launcher.
+(Sometimes you may want to start with the CSV row to get a better idea of how
+your command will work. Just comment out the row by adding a # at the beginning
+to prevent the game from loading your command until it's finished)
 
 First off, make sure your IDE has mods/Console Commands/jars/Console.jar added
 as a library. Just follow the same procedure you did to add starfarer.api.jar.
@@ -59,7 +59,7 @@ With all of this in mind, the basic structure of runCommand() is thus:
    message and return CommandResult.WRONG_CONTEXT if the player used the
    command in the wrong context
  - Parse the arguments passed in. If they don't match what is expected,
-   return CommandResult.BAD_SYNTAX (no message is needed; the Console mod itself
+   return CommandResult.BAD_SYNTAX (no message is needed; the console mod itself
    will show the proper syntax from commands.csv if BAD_SYNTAX is returned)
  - Try to run the command with the parsed arguments. If something goes wrong
    during this stage, show an error message and return CommandResult.ERROR
