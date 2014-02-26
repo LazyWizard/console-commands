@@ -5,14 +5,17 @@ import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import javax.swing.JOptionPane;
 import org.lazywizard.console.BaseCommand.CommandContext;
-import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 
 public class ConsoleCombatListener implements EveryFrameCombatPlugin
 {
+    private static boolean CACHED_RESET = false;
+    private static Method KEYBOARD_RESET;
     private CombatEngineAPI engine;
     private CommandContext context;
 
@@ -58,6 +61,29 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
         return false;
     }
 
+    private static void resetKeyboard()
+    {
+        try
+        {
+            // Because Keyboard.reset() is private for some reason,
+            // we have to go extremely overboard to fix sticky keys...
+            if (!CACHED_RESET)
+            {
+                KEYBOARD_RESET = Keyboard.class.getDeclaredMethod("reset", null);
+                KEYBOARD_RESET.setAccessible(true);
+                CACHED_RESET = true;
+            }
+
+            KEYBOARD_RESET.invoke(null);
+        }
+        catch (IllegalAccessException | IllegalArgumentException |
+                InvocationTargetException | NoSuchMethodException |
+                SecurityException ex)
+        {
+            Console.showException("Failed to reset keyboard!", ex);
+        }
+    }
+
     @Override
     public void advance(float amount, List<InputEventAPI> events)
     {
@@ -82,15 +108,7 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
                 // An unfortunate necessity due to a LWJGL window focus bug
                 // Luckily, there shouldn't be any other input this frame
                 // if the player is trying to summon the console
-                try
-                {
-                    Keyboard.destroy();
-                    Keyboard.create();
-                }
-                catch (LWJGLException ex)
-                {
-                    Console.showException("Failed to reset keyboard!", ex);
-                }
+                resetKeyboard();
             }
 
             // COMBAT_SIMULATION will be added when the API supports it

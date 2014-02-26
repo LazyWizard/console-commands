@@ -18,7 +18,7 @@ import org.lazywizard.lazylib.CollectionUtils;
 public class CommandStore
 {
     private static final Map<String, StoredCommand> storedCommands = new HashMap<>();
-    private static final Set<String> tags = new HashSet();
+    private static final Set<String> tags = new HashSet<>();
 
     // Will only throw these exceptions if there is an error loading the CSV
     public static void reloadCommands() throws IOException, JSONException
@@ -96,7 +96,7 @@ public class CommandStore
 
     public static List<String> getLoadedCommands()
     {
-        List<String> commands = new ArrayList(storedCommands.size());
+        List<String> commands = new ArrayList<>(storedCommands.size());
         for (StoredCommand tmp : storedCommands.values())
         {
             commands.add(tmp.getName());
@@ -105,16 +105,16 @@ public class CommandStore
         return commands;
     }
 
-    public static List getKnownTags()
+    public static List<String> getKnownTags()
     {
-        return new ArrayList(tags);
+        return new ArrayList<>(tags);
     }
 
-    public static List getCommandsWithTag(String tag)
+    public static List<String> getCommandsWithTag(String tag)
     {
         tag = tag.toLowerCase();
 
-        List<String> commands = new ArrayList();
+        List<String> commands = new ArrayList<>();
         for (StoredCommand tmp : storedCommands.values())
         {
             if (tmp.tags.contains(tag))
