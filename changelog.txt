@@ -14,6 +14,7 @@ Made writing custom commands much simpler:
  - Commands can be in any package now, not just data.scripts.console
    (it is recommended that you DON'T put them in data/scripts, otherwise
     the game will try to load them even when the Console mod isn't active)
+ - A basic tutorial on writing custom commands is included in the mod folder
 New commands:
  - AllHulls, adds one of each hull to a station's inventory
  - AllWings, adds one of each fighter wing to a station's inventory
