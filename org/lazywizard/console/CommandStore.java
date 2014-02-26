@@ -3,6 +3,7 @@ package org.lazywizard.console;
 import com.fs.starfarer.api.Global;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -174,7 +175,7 @@ public class CommandStore
 
         public List<String> getTags()
         {
-            return tags;
+            return Collections.unmodifiableList(tags);
         }
 
         public String getSource()

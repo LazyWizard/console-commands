@@ -6,7 +6,7 @@ class KeyStroke
     private final boolean requireShift;
     private final boolean requireControl;
 
-    public KeyStroke(int key, boolean requireShift, boolean requireControl)
+    KeyStroke(int key, boolean requireShift, boolean requireControl)
     {
         this.key = key;
         this.requireShift = requireShift;

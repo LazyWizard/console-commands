@@ -1,10 +1,8 @@
 package org.lazywizard.console;
 
 import com.fs.starfarer.api.EveryFrameScript;
-import com.fs.starfarer.api.input.InputEventAPI;
-import java.util.List;
 import javax.swing.JOptionPane;
-import static org.lazywizard.console.BaseCommand.CommandContext.*;
+import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lwjgl.input.Keyboard;
 
 public class ConsoleCampaignListener implements EveryFrameScript
@@ -24,6 +22,7 @@ public class ConsoleCampaignListener implements EveryFrameScript
         return true;
     }
 
+    // TODO: replace with something much simpler once the dialog is added
     private boolean checkInput()
     {
         KeyStroke key = Console.getConsoleKey();
@@ -71,9 +70,9 @@ public class ConsoleCampaignListener implements EveryFrameScript
             // TODO: write an interaction dialog plugin for this!
             String rawInput = JOptionPane.showInputDialog(null,
                     "Enter command, or 'help' for a list of valid commands.");
-            Console.parseInput(rawInput, CAMPAIGN_MAP);
+            Console.parseInput(rawInput, CommandContext.CAMPAIGN_MAP);
         }
 
-        Console.advance(CAMPAIGN_MAP);
+        Console.advance(CommandContext.CAMPAIGN_MAP);
     }
 }
