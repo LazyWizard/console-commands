@@ -6,7 +6,6 @@ import com.fs.starfarer.api.combat.ShipAPI;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.regex.Pattern;
-import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import org.apache.log4j.Level;
 import org.json.JSONException;
@@ -16,25 +15,62 @@ import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommandStore.StoredCommand;
 import org.lazywizard.lazylib.JSONUtils;
 import org.lazywizard.lazylib.StringUtils;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 
 public class Console
 {
-    // The LWJGL constant of the key that summons the console
-    private static int CONSOLE_KEY;
-    private static boolean REQUIRE_SHIFT, REQUIRE_CONTROL;
+    // The key stroke that summons the console pop-up
+    private static KeyStroke CONSOLE_SUMMON_KEY;
     // The String (usually a single character) that separates multiple commands
     private static String COMMAND_SEPARATOR;
     // The color of the console's output text
     private static Color OUTPUT_COLOR;
     // How many characters before the output is line-wrapped
     private static int OUTPUT_LINE_LENGTH;
-    // Here to work around a LWJGL input bug that will probably never be fixed
-    private static boolean isPressed = false;
     // Stores the output of the console until it can be displayed
     private static final StringBuilder output = new StringBuilder();
 
+    public static void reloadSettings() throws IOException, JSONException
+    {
+        JSONObject settings = Global.getSettings().loadJSON(
+                "data/console/console_settings.json");
+        CONSOLE_SUMMON_KEY = new KeyStroke(settings.getInt("consoleKey"),
+                settings.getBoolean("requireShift"),
+                settings.getBoolean("requireControl"));
+        COMMAND_SEPARATOR = Pattern.quote(settings.getString("commandSeparator"));
+        OUTPUT_COLOR = JSONUtils.toColor(settings.getJSONArray("outputColor"));
+        OUTPUT_LINE_LENGTH = settings.getInt("maxOutputLineLength");
+
+        // What level to log console output at
+        Level logLevel = Level.toLevel(settings.getString("consoleLogLevel"), Level.WARN);
+        Global.getLogger(Console.class).setLevel(logLevel);
+        Global.getLogger(CommandStore.class).setLevel(logLevel);
+        Global.getLogger(ConsoleCampaignListener.class).setLevel(logLevel);
+        Global.getLogger(ConsoleCombatListener.class).setLevel(logLevel);
+
+        // Console pop-up appearance settings (temporary)
+        Color color = JSONUtils.toColor(settings.getJSONArray("backgroundColor"));
+        UIManager.put("Panel.background", color);
+        UIManager.put("OptionPane.background", color);
+        UIManager.put("TextArea.background", color);
+        UIManager.put("TextField.background", color);
+        UIManager.put("Button.background", color);
+        UIManager.put("SplitPane.background", color);
+
+        color = JSONUtils.toColor(settings.getJSONArray("foregroundColor"));
+        UIManager.put("OptionPane.messageForeground", color);
+
+        color = JSONUtils.toColor(settings.getJSONArray("textColor"));
+        UIManager.put("TextArea.foreground", color);
+        UIManager.put("TextField.foreground", color);
+        UIManager.put("TextField.caretForeground", color);
+
+        color = JSONUtils.toColor(settings.getJSONArray("buttonColor"));
+        UIManager.put("Button.foreground", color);
+        UIManager.put("SplitPane.foreground", color);
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="showMessage variants">
     /**
      * Displays a message to the user. The message will be formatted and shown
      * to the player when they reach a section of the game where it can be
@@ -94,45 +130,11 @@ public class Console
 
         showMessage(stackTrace.toString(), Level.ERROR);
     }
+    //</editor-fold>
 
-    public static void reloadSettings() throws IOException, JSONException
+    static KeyStroke getConsoleKey()
     {
-        JSONObject settings = Global.getSettings().loadJSON(
-                "data/console/console_settings.json");
-        CONSOLE_KEY = settings.getInt("consoleKey");
-        REQUIRE_SHIFT = settings.getBoolean("requireShift");
-        REQUIRE_CONTROL = settings.getBoolean("requireControl");
-        COMMAND_SEPARATOR = Pattern.quote(settings.getString("commandSeparator"));
-        OUTPUT_COLOR = JSONUtils.toColor(settings.getJSONArray("outputColor"));
-        OUTPUT_LINE_LENGTH = settings.getInt("maxOutputLineLength");
-
-        // What level to log console output at
-        Level logLevel = Level.toLevel(settings.getString("consoleLogLevel"), Level.WARN);
-        Global.getLogger(Console.class).setLevel(logLevel);
-        Global.getLogger(CommandStore.class).setLevel(logLevel);
-        Global.getLogger(ConsoleCampaignListener.class).setLevel(logLevel);
-        Global.getLogger(ConsoleCombatListener.class).setLevel(logLevel);
-
-        // Console pop-up appearance settings (temporary)
-        Color color = JSONUtils.toColor(settings.getJSONArray("backgroundColor"));
-        UIManager.put("Panel.background", color);
-        UIManager.put("OptionPane.background", color);
-        UIManager.put("TextArea.background", color);
-        UIManager.put("TextField.background", color);
-        UIManager.put("Button.background", color);
-        UIManager.put("SplitPane.background", color);
-
-        color = JSONUtils.toColor(settings.getJSONArray("foregroundColor"));
-        UIManager.put("OptionPane.messageForeground", color);
-
-        color = JSONUtils.toColor(settings.getJSONArray("textColor"));
-        UIManager.put("TextArea.foreground", color);
-        UIManager.put("TextField.foreground", color);
-        UIManager.put("TextField.caretForeground", color);
-
-        color = JSONUtils.toColor(settings.getJSONArray("buttonColor"));
-        UIManager.put("Button.foreground", color);
-        UIManager.put("SplitPane.foreground", color);
+        return CONSOLE_SUMMON_KEY;
     }
 
     private static void runCommand(String input, CommandContext context)
@@ -167,7 +169,7 @@ public class Console
         }
     }
 
-    private static void parseInput(String rawInput, CommandContext context)
+    static void parseInput(String rawInput, CommandContext context)
     {
         if (rawInput == null)
         {
@@ -190,41 +192,6 @@ public class Console
                 }
             }
         }
-    }
-
-    private static boolean checkInput()
-    {
-        if (!isPressed)
-        {
-            boolean modPressed = true;
-
-            if (REQUIRE_SHIFT && !(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)
-                    || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)))
-            {
-                modPressed = false;
-            }
-
-            if (REQUIRE_CONTROL && !(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)
-                    || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)))
-            {
-                modPressed = false;
-            }
-
-            if (modPressed && Keyboard.isKeyDown(CONSOLE_KEY))
-            {
-                isPressed = true;
-            }
-        }
-        else
-        {
-            if (!Keyboard.isKeyDown(CONSOLE_KEY))
-            {
-                isPressed = false;
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private static void showOutput(CommandContext context)
@@ -271,26 +238,7 @@ public class Console
 
     static void advance(CommandContext context)
     {
-        if (checkInput())
-        {
-            // TODO: have CAMPAIGN_MAP call an InteractionDialog instead
-            if (context == CommandContext.CAMPAIGN_MAP)
-            {
-                // TODO: Campaign map, summon dialog
-                String rawInput = JOptionPane.showInputDialog(null,
-                        "Enter command, or 'help' for a list of valid commands.");
-                parseInput(rawInput, context);
-            }
-            else
-            {
-                // Combat, summon regular Java input dialog for now
-                // TODO: write an overlay if text rendering is ever added to API
-                String rawInput = JOptionPane.showInputDialog(null,
-                        "Enter command, or 'help' for a list of valid commands.");
-                parseInput(rawInput, context);
-            }
-        }
-
+        // Just check the output queue for now
         showOutput(context);
     }
 
