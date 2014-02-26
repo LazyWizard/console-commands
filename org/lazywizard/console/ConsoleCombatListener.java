@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import javax.swing.JOptionPane;
 import org.lazywizard.console.BaseCommand.CommandContext;
+import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 
 public class ConsoleCombatListener implements EveryFrameCombatPlugin
@@ -82,9 +83,16 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
         {
             Console.showException("Failed to reset keyboard!", ex);
 
-            // Do things the hard way
-            Keyboard.destroy();
-            Keyboard.create();
+            try
+            {
+                // Do things the hard way
+                Keyboard.destroy();
+                Keyboard.create();
+            }
+            catch (LWJGLException ex1)
+            {
+                Console.showException("Failed to reset keyboard (backup)!", ex);
+            }
         }
     }
 
