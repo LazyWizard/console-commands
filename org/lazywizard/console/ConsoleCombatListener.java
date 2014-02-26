@@ -8,6 +8,7 @@ import com.fs.starfarer.api.input.InputEventAPI;
 import java.util.List;
 import javax.swing.JOptionPane;
 import org.lazywizard.console.BaseCommand.CommandContext;
+import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 
 public class ConsoleCombatListener implements EveryFrameCombatPlugin
@@ -15,18 +16,18 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
     private CombatEngineAPI engine;
     private CommandContext context;
 
-    private static boolean checkInput(List<InputEventAPI> inputs)
+    private static boolean checkInput(List<InputEventAPI> input)
     {
         KeyStroke key = Console.getConsoleKey();
 
-        for (InputEventAPI input : inputs)
+        for (InputEventAPI event : input)
         {
-            if (input.isConsumed())
+            if (event.isConsumed() || event.isMouseEvent())
             {
                 continue;
             }
 
-            if (input.isKeyDownEvent() && input.getEventValue() == key.getKey())
+            if (event.isKeyUpEvent() && (event.getEventValue() == key.getKey()))
             {
                 boolean modPressed = true;
 
@@ -46,7 +47,7 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
 
                 if (modPressed)
                 {
-                    input.consume();
+                    event.consume();
                     return true;
                 }
             }
@@ -77,6 +78,19 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
                 String rawInput = JOptionPane.showInputDialog(null,
                         "Enter command, or 'help' for a list of valid commands.");
                 Console.parseInput(rawInput, context);
+
+                // An unfortunate necessity due to a LWJGL window focus bug
+                // Luckily, there shouldn't be any other input this frame
+                // if the player is trying to summon the console
+                try
+                {
+                    Keyboard.destroy();
+                    Keyboard.create();
+                }
+                catch (LWJGLException ex)
+                {
+                    Console.showException("Failed to reset keyboard!", ex);
+                }
             }
 
             // COMBAT_SIMULATION will be added when the API supports it
