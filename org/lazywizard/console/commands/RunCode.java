@@ -19,14 +19,14 @@ public class RunCode implements BaseCommand
         eval.setReturnType(void.class);
         eval.setParentClassLoader(Global.getSettings().getScriptClassLoader());
         eval.setDefaultImports(new String[]
-                {
-                    "com.fs.starfarer.api.*", "java.util.*",
-                    "com.fs.starfarer.api.campaign.*", "java.awt.Color",
-                    "com.fs.starfarer.api.fleet.*", "data.scripts.*",
-                    "com.fs.starfarer.api.combat.*", "data.scripts.world.*",
-                    "org.lazywizard.lazylib.*", "org.lazywizard.lazylib.combat.*",
-                    "org.lazywizard.lazylib.campaign.*", "org.lwjgl.util.vector.Vector2f"
-                });
+        {
+            "com.fs.starfarer.api.*", "java.util.*",
+            "com.fs.starfarer.api.campaign.*", "java.awt.Color",
+            "com.fs.starfarer.api.fleet.*", "data.scripts.*",
+            "com.fs.starfarer.api.combat.*", "data.scripts.world.*",
+            "org.lazywizard.lazylib.*", "org.lazywizard.lazylib.combat.*",
+            "org.lazywizard.lazylib.campaign.*", "org.lwjgl.util.vector.Vector2f"
+        });
     }
 
     @Override
@@ -64,6 +64,11 @@ public class RunCode implements BaseCommand
         catch (InvocationTargetException ex)
         {
             Console.showException("Execution failed: ", ex.getTargetException());
+            return CommandResult.ERROR;
+        }
+        catch (Exception ex)
+        {
+            Console.showException("Execution failed: ", ex);
             return CommandResult.ERROR;
         }
 
