@@ -6,6 +6,7 @@ import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.mission.FleetSide;
+import com.fs.starfarer.api.util.IntervalUtil;
 import java.lang.ref.WeakReference;
 import java.util.List;
 import org.lazywizard.console.BaseCommand;
@@ -50,6 +51,7 @@ public class God implements BaseCommand
     private static class GodPlugin implements EveryFrameCombatPlugin
     {
         private static final String BONUS_ID = "console_god";
+        private IntervalUtil nextCheck = new IntervalUtil(0.5f, 0.5f);
         private boolean active = true;
         private CombatEngineAPI engine;
 
@@ -80,20 +82,24 @@ public class God implements BaseCommand
                 return;
             }
 
-            for (ShipAPI ship : engine.getShips())
+            nextCheck.advance(amount);
+            if (nextCheck.intervalElapsed())
             {
-                if (ship.isHulk() || ship.isShuttlePod()
-                        || !(ship.getOwner() == FleetSide.PLAYER.ordinal()))
+                for (ShipAPI ship : engine.getShips())
                 {
-                    continue;
-                }
+                    if (ship.isHulk() || ship.isShuttlePod()
+                            || !(ship.getOwner() == FleetSide.PLAYER.ordinal()))
+                    {
+                        continue;
+                    }
 
-                ship.getMutableStats().getHullDamageTakenMult()
-                        .modifyMult(BONUS_ID, 0f);
-                ship.getMutableStats().getEmpDamageTakenMult()
-                        .modifyMult(BONUS_ID, 0f);
-                ship.getMutableStats().getArmorDamageTakenMult()
-                        .modifyMult(BONUS_ID, 0.00001f);
+                    ship.getMutableStats().getHullDamageTakenMult()
+                            .modifyMult(BONUS_ID, 0f);
+                    ship.getMutableStats().getEmpDamageTakenMult()
+                            .modifyMult(BONUS_ID, 0f);
+                    ship.getMutableStats().getArmorDamageTakenMult()
+                            .modifyMult(BONUS_ID, 0.00001f);
+                }
             }
         }
 

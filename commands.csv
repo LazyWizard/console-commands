@@ -36,4 +36,4 @@ SetHome,org.lazywizard.console.commands.SetHome,"core,campaign",sethome [optiona
 SetRelationship,org.lazywizard.console.commands.SetRelationship,"core,campaign",setrelationship <faction1> <faction2> <amount>,Sets the relationship between two factions to the given number.
 SpawnFleet,org.lazywizard.console.commands.SpawnFleet,"core,campaign",spawnfleet <faction> <fleetID>,Spawns the designated fleet near the player character. The fleet id must exist in the .faction file of the faction that was entered as an argument.
 Status,org.lazywizard.console.commands.Status,"core,console",status (no arguments),Shows some debug information.
-Storage,org.lazywizard.console.commands.Storage,"core,campaign",storage (no arguments),"Opens a persistent, infinite-capacity cargo container.."
+Storage,org.lazywizard.console.commands.Storage,"core,campaign",storage (no arguments),"Opens a persistent, infinite-capacity cargo container."

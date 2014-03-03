@@ -7,6 +7,7 @@ import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.WeaponAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.mission.FleetSide;
+import com.fs.starfarer.api.util.IntervalUtil;
 import java.lang.ref.WeakReference;
 import java.util.List;
 import org.lazywizard.console.BaseCommand;
@@ -50,6 +51,7 @@ public class InfiniteAmmo implements BaseCommand
 
     private static class InfiniteAmmoPlugin implements EveryFrameCombatPlugin
     {
+        private IntervalUtil nextCheck = new IntervalUtil(0.1f, 0.1f);
         private boolean active = true;
         private CombatEngineAPI engine;
 
@@ -67,17 +69,21 @@ public class InfiniteAmmo implements BaseCommand
                 return;
             }
 
-            for (ShipAPI ship : engine.getShips())
+            nextCheck.advance(amount);
+            if (nextCheck.intervalElapsed())
             {
-                if (ship.isHulk() || ship.isShuttlePod()
-                        || !(ship.getOwner() == FleetSide.PLAYER.ordinal()))
+                for (ShipAPI ship : engine.getShips())
                 {
-                    continue;
-                }
+                    if (ship.isHulk() || ship.isShuttlePod()
+                            || !(ship.getOwner() == FleetSide.PLAYER.ordinal()))
+                    {
+                        continue;
+                    }
 
-                for (WeaponAPI wep : ship.getAllWeapons())
-                {
-                    wep.resetAmmo();
+                    for (WeaponAPI wep : ship.getAllWeapons())
+                    {
+                        wep.resetAmmo();
+                    }
                 }
             }
         }
