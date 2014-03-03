@@ -8,6 +8,7 @@ import com.fs.starfarer.api.input.InputEventAPI;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lwjgl.LWJGLException;
@@ -96,6 +97,12 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
         }
     }
 
+    private static String getInput()
+    {
+        return JOptionPane.showInputDialog(null,
+                "Enter command, or 'help' for a list of valid commands.");
+    }
+
     @Override
     public void advance(float amount, List<InputEventAPI> events)
     {
@@ -113,8 +120,7 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
             {
                 // Combat, summon regular Java input dialog for now
                 // TODO: write an overlay if text rendering is ever added to API
-                String rawInput = JOptionPane.showInputDialog(null,
-                        "Enter command, or 'help' for a list of valid commands.");
+                String rawInput = getInput();
                 Console.parseInput(rawInput, context);
 
                 // An unfortunate necessity due to a LWJGL window focus bug
@@ -134,5 +140,10 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
         this.engine = engine;
         context = (engine.isInCampaign() ? CommandContext.COMBAT_CAMPAIGN
                 : CommandContext.COMBAT_MISSION);
+    }
+
+    public static void main(String[] args)
+    {
+        System.out.print(getInput());
     }
 }

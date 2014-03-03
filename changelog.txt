@@ -30,6 +30,8 @@ Changes to existing commands:
  - AllWeapons now defaults to 'storage' instead of player cargo if no
    arguments are passed in, won't go beyond 10 of each weapon
  - Home can now teleport your fleet between starsystems
+ - RunCode catches all Exceptions so you don't need to squeeze a try-catch
+   block into your arguments anymore
 Removed the following old commands:
  - AddConsole, as the new ModPlugin system makes it unnecessary
  - GC, anyone who knows enough Java to know what this does and when to use it

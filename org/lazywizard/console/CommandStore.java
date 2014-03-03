@@ -18,6 +18,7 @@ import org.lazywizard.lazylib.CollectionUtils;
 public class CommandStore
 {
     private static final Map<String, StoredCommand> storedCommands = new HashMap<>();
+    //private static final Map<String, String> aliases = new HashMap();
     private static final Set<String> tags = new HashSet<>();
 
     // Will only throw these exceptions if there is an error loading the CSV
