@@ -24,7 +24,7 @@ public class Repair implements BaseCommand
             for (FleetMemberAPI ship : player.getFleetData().getMembersListCopy())
             {
                 RepairTrackerAPI repairs = ship.getRepairTracker();
-                // TODO: Calculate actual supplies needed
+                // It doesn't matter if this is too many; they'll be removed immediately
                 float suppliesNeeded = repairs.getMaxRepairCost();
                 player.getCargo().addSupplies(suppliesNeeded);
                 repairs.performRepairsUsingSupplies(suppliesNeeded);
