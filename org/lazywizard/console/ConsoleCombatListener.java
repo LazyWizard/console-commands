@@ -5,8 +5,6 @@ import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import javax.swing.JOptionPane;
 import org.lazywizard.console.BaseCommand.CommandContext;
@@ -15,8 +13,6 @@ import org.lwjgl.input.Keyboard;
 
 public class ConsoleCombatListener implements EveryFrameCombatPlugin
 {
-    private static boolean IS_RESET_CACHED = false;
-    private static Method RESET_METHOD;
     private CombatEngineAPI engine;
     private CommandContext context;
 
@@ -50,35 +46,16 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
 
     private static void resetKeyboard()
     {
+        // Because Keyboard.reset() doesn't seem to reset modifier keys,
+        // we have to go extremely overboard to fix sticky keys...
         try
         {
-            // Because Keyboard.reset() is private for some reason,
-            // we have to go extremely overboard to fix sticky keys...
-            if (!IS_RESET_CACHED)
-            {
-                RESET_METHOD = Keyboard.class.getDeclaredMethod("reset", null);
-                RESET_METHOD.setAccessible(true);
-                IS_RESET_CACHED = true;
-            }
-
-            RESET_METHOD.invoke(null);
+            Keyboard.destroy();
+            Keyboard.create();
         }
-        catch (IllegalAccessException | IllegalArgumentException |
-                InvocationTargetException | NoSuchMethodException |
-                SecurityException ex)
+        catch (LWJGLException ex2)
         {
-            Console.showException("Failed to reset keyboard!", ex);
-
-            try
-            {
-                // Do things the hard way
-                Keyboard.destroy();
-                Keyboard.create();
-            }
-            catch (LWJGLException ex2)
-            {
-                Console.showException("Failed to reset keyboard (backup)!", ex2);
-            }
+            Console.showException("Failed to reset keyboard (backup)!", ex2);
         }
     }
 
