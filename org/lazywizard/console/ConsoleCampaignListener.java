@@ -45,6 +45,13 @@ public class ConsoleCampaignListener implements EveryFrameScript
                 modPressed = false;
             }
 
+            if (key.requiresAlt()
+                    && !(Keyboard.isKeyDown(Keyboard.KEY_LMENU)
+                    || Keyboard.isKeyDown(Keyboard.KEY_RMENU)))
+            {
+                modPressed = false;
+            }
+
             if (modPressed && Keyboard.isKeyDown(key.getKey()))
             {
                 isPressed = true;

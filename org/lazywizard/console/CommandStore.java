@@ -27,10 +27,11 @@ public class CommandStore
     {
         storedCommands.clear();
         JSONArray commandData = Global.getSettings().getMergedSpreadsheetDataForMod(
-                "command", "data/console/commands.csv", "lw_console");
+                "command", CommonStrings.CSV_PATH, CommonStrings.MOD_ID);
         ClassLoader loader = Global.getSettings().getScriptClassLoader();
         for (int x = 0; x < commandData.length(); x++)
         {
+            // Defined here so we can use them in the catch block
             String commandName = null;
             String commandSource = null;
             String commandPath = null;
@@ -88,9 +89,8 @@ public class CommandStore
             }
             catch (Exception ex)
             {
-                Global.getLogger(CommandStore.class).log(Level.ERROR,
-                        "Failed to load command " + commandName + " (class: "
-                        + commandPath + ") from " + commandSource, ex);
+                Console.showException("Failed to load command " + commandName
+                        + " (class: " + commandPath + ") from " + commandSource, ex);
             }
         }
 
