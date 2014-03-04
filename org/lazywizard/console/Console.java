@@ -17,6 +17,7 @@ import org.lazywizard.lazylib.JSONUtils;
 import org.lazywizard.lazylib.StringUtils;
 import org.lwjgl.util.vector.Vector2f;
 
+// TODO: Javadoc public methods
 public class Console
 {
     // The key stroke that summons the console pop-up

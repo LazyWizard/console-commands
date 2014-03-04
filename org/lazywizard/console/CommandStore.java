@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.lazywizard.lazylib.CollectionUtils;
 
+// TODO: Javadoc public methods
 public class CommandStore
 {
     private static final Map<String, StoredCommand> storedCommands = new HashMap<>();
@@ -56,6 +57,7 @@ public class CommandStore
                 String commandSyntax = row.getString("syntax");
                 String commandHelp = row.getString("help");
 
+                // Generate the tag list
                 String[] rawTags = row.getString("tags").split(",");
                 List<String> commandTags = new ArrayList<>();
                 for (String tag : rawTags)
@@ -138,6 +140,7 @@ public class CommandStore
         return null;
     }
 
+    // TODO: Javadoc public methods
     public static class StoredCommand
     {
         private final Class<? extends BaseCommand> commandClass;
