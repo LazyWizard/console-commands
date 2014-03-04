@@ -27,24 +27,24 @@ public class CommandStore
         storedCommands.clear();
         JSONArray commandData = Global.getSettings().getMergedSpreadsheetDataForMod(
                 "command", "data/console/commands.csv", "lw_console");
-        JSONObject tmp;
         ClassLoader loader = Global.getSettings().getScriptClassLoader();
-        Class commandClass;
-        String commandName, commandSyntax, commandHelp, commandSource;
-        List<String> commandTags;
         for (int x = 0; x < commandData.length(); x++)
         {
-            // Prevents previous command's info showing up in error message
-            commandName = null;
-            commandSource = null;
-            commandClass = null;
+            String commandName = null;
+            String commandSource = null;
+            String commandPath = null;
 
             try
             {
-                tmp = commandData.getJSONObject(x);
-                commandName = tmp.getString("command");
-                commandClass = loader.loadClass(tmp.getString("class"));
+                JSONObject row = commandData.getJSONObject(x);
 
+                // Load these first so we can display them if there's an error
+                commandName = row.getString("command");
+                commandPath = row.getString("class");
+                commandSource = row.getString("fs_rowSource");
+
+                // Check if the class is valid
+                Class commandClass = loader.loadClass(commandPath);
                 if (!BaseCommand.class.isAssignableFrom(commandClass))
                 {
                     throw new Exception(commandClass.getCanonicalName()
@@ -52,12 +52,12 @@ public class CommandStore
                             + BaseCommand.class.getCanonicalName());
                 }
 
-                commandSyntax = tmp.getString("syntax");
-                commandHelp = tmp.getString("help");
-                commandSource = tmp.getString("fs_rowSource");
+                // Class is valid, start building command info
+                String commandSyntax = row.getString("syntax");
+                String commandHelp = row.getString("help");
 
-                String[] rawTags = tmp.getString("tags").split(",");
-                commandTags = new ArrayList<>();
+                String[] rawTags = row.getString("tags").split(",");
+                List<String> commandTags = new ArrayList<>();
                 for (String tag : rawTags)
                 {
                     tag = tag.toLowerCase().trim();
@@ -75,6 +75,7 @@ public class CommandStore
                     }
                 }
 
+                // Built command info, register it in the master command list
                 storedCommands.put(commandName.toLowerCase(),
                         new StoredCommand(commandName, commandClass,
                                 commandSyntax, commandHelp,
@@ -87,7 +88,7 @@ public class CommandStore
             {
                 Global.getLogger(CommandStore.class).log(Level.ERROR,
                         "Failed to load command " + commandName + " (class: "
-                        + commandClass + ") from " + commandSource, ex);
+                        + commandPath + ") from " + commandSource, ex);
             }
         }
 

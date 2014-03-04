@@ -176,6 +176,7 @@ public class Console
             return;
         }
 
+        // Runcode ignores separators
         // Hopefully the ONLY hardcoded command support I'll add to this mod...
         if (rawInput.length() >= 7 && rawInput.substring(0, 7).equalsIgnoreCase("runcode"))
         {
@@ -183,6 +184,8 @@ public class Console
         }
         else
         {
+            // Split the raw input up into the individual commands
+            // The command separator is used to separate multiple commands
             for (String input : rawInput.split(COMMAND_SEPARATOR))
             {
                 input = input.trim();
@@ -198,6 +201,7 @@ public class Console
     {
         if (output.length() > 0)
         {
+            // Showing messages on the campaign map
             if (context == CommandContext.CAMPAIGN_MAP)
             {
                 for (String message : output.toString().split("\n"))
@@ -207,6 +211,7 @@ public class Console
 
                 output.setLength(0);
             }
+            // Showing messages in combat
             else
             {
                 CombatEngineAPI engine = Global.getCombatEngine();
