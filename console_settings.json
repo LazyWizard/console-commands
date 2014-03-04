@@ -5,6 +5,7 @@
     "consoleKey":14, # Default: Backspace (14), Tilde would be 41
     "requireShift":false,
     "requireControl":true,
+    "requireAlt":false,
 
     # If you want to enter multiple commands at once, separate them with the following
     "commandSeparator":";",

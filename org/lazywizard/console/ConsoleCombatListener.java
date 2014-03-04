@@ -15,8 +15,8 @@ import org.lwjgl.input.Keyboard;
 
 public class ConsoleCombatListener implements EveryFrameCombatPlugin
 {
-    private static boolean CACHED_RESET = false;
-    private static Method KEYBOARD_RESET;
+    private static boolean IS_RESET_CACHED = false;
+    private static Method RESET_METHOD;
     private CombatEngineAPI engine;
     private CommandContext context;
 
@@ -26,37 +26,23 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
 
         for (InputEventAPI event : input)
         {
-            if (event.isConsumed() || event.isMouseEvent())
+            // Since remaining input will be nuked on success,
+            // we can safely check both keyboard event types
+            if (event.isConsumed() || !event.isKeyboardEvent()
+                    || event.getEventValue() != key.getKey())
             {
                 continue;
             }
 
-            if (event.isKeyUpEvent() && (event.getEventValue() == key.getKey()))
+            if ((key.requiresShift() && !event.isShiftDown())
+                    || (key.requiresControl() && !event.isCtrlDown())
+                    || (key.requiresAlt() && !event.isAltDown()))
             {
-                boolean modPressed = true;
-
-                if (key.requiresShift()
-                        && !(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)
-                        || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)))
-                {
-                    modPressed = false;
-                }
-
-                if (key.requiresControl()
-                        && !(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)
-                        || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)))
-                {
-                    modPressed = false;
-                }
-
-                if (modPressed)
-                {
-                    event.consume();
-                    return true;
-                }
+                return false;
             }
 
-            return false;
+            event.consume();
+            return true;
         }
 
         return false;
@@ -68,14 +54,14 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
         {
             // Because Keyboard.reset() is private for some reason,
             // we have to go extremely overboard to fix sticky keys...
-            if (!CACHED_RESET)
+            if (!IS_RESET_CACHED)
             {
-                KEYBOARD_RESET = Keyboard.class.getDeclaredMethod("reset", null);
-                KEYBOARD_RESET.setAccessible(true);
-                CACHED_RESET = true;
+                RESET_METHOD = Keyboard.class.getDeclaredMethod("reset", null);
+                RESET_METHOD.setAccessible(true);
+                IS_RESET_CACHED = true;
             }
 
-            KEYBOARD_RESET.invoke(null);
+            RESET_METHOD.invoke(null);
         }
         catch (IllegalAccessException | IllegalArgumentException |
                 InvocationTargetException | NoSuchMethodException |
@@ -89,9 +75,9 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
                 Keyboard.destroy();
                 Keyboard.create();
             }
-            catch (LWJGLException ex1)
+            catch (LWJGLException ex2)
             {
-                Console.showException("Failed to reset keyboard (backup)!", ex);
+                Console.showException("Failed to reset keyboard (backup)!", ex2);
             }
         }
     }
@@ -128,7 +114,6 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
                 resetKeyboard();
             }
 
-            // COMBAT_SIMULATION will be added when the API supports it
             Console.advance(context);
         }
     }
@@ -137,12 +122,8 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
     public void init(CombatEngineAPI engine)
     {
         this.engine = engine;
+        // COMBAT_SIMULATION will be added when the API supports it
         context = (engine.isInCampaign() ? CommandContext.COMBAT_CAMPAIGN
                 : CommandContext.COMBAT_MISSION);
-    }
-
-    public static void main(String[] args)
-    {
-        System.out.print(getInput());
     }
 }

@@ -37,7 +37,8 @@ public class Console
                 "data/console/console_settings.json");
         CONSOLE_SUMMON_KEY = new KeyStroke(settings.getInt("consoleKey"),
                 settings.getBoolean("requireShift"),
-                settings.getBoolean("requireControl"));
+                settings.getBoolean("requireControl"),
+                settings.getBoolean("requireAlt"));
         COMMAND_SEPARATOR = Pattern.quote(settings.getString("commandSeparator"));
         OUTPUT_COLOR = JSONUtils.toColor(settings.getJSONArray("outputColor"));
         OUTPUT_LINE_LENGTH = settings.getInt("maxOutputLineLength");
