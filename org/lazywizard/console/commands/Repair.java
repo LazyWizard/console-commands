@@ -15,42 +15,39 @@ public class Repair implements BaseCommand
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
+        // Used in campaign: repair all ships in fleet (same as station repair)
         if (context == CommandContext.CAMPAIGN_MAP)
         {
             CampaignFleetAPI player = Global.getSector().getPlayerFleet();
             float priorSupplies = player.getCargo().getSupplies();
-            float suppliesNeeded;
-            RepairTrackerAPI repairs;
+
             for (FleetMemberAPI ship : player.getFleetData().getMembersListCopy())
             {
-                repairs = ship.getRepairTracker();
+                RepairTrackerAPI repairs = ship.getRepairTracker();
                 // TODO: Calculate actual supplies needed
-                suppliesNeeded = repairs.getMaxRepairCost();
+                float suppliesNeeded = repairs.getMaxRepairCost();
                 player.getCargo().addSupplies(suppliesNeeded);
                 repairs.performRepairsUsingSupplies(suppliesNeeded);
+                repairs.setCR(repairs.getMaxCR());
                 ship.setStatUpdateNeeded(true);
             }
-            //System.out.println("Removed " + (player.getCargo().getSupplies()
-            //        - priorSupplies) + " supplies.");
-            player.getCargo().removeSupplies(player.getCargo().getSupplies() - priorSupplies);
 
+            player.getCargo().removeSupplies(player.getCargo().getSupplies() - priorSupplies);
             Console.showMessage("All ships in fleet repaired.");
-            return CommandResult.WRONG_CONTEXT;
+            return CommandResult.SUCCESS;
         }
 
-        ArmorGridAPI grid;
-        float sizeX, sizeY;
-        float maxArmor;
+        // Used in combat: repair hull/armor of all friendly ships on the field
         for (ShipAPI ship : Global.getCombatEngine().getShips())
         {
             if (ship.getOwner() == FleetSide.PLAYER.ordinal())
             {
                 ship.setHitpoints(ship.getMaxHitpoints());
 
-                grid = ship.getArmorGrid();
-                maxArmor = grid.getMaxArmorInCell();
-                sizeX = grid.getGrid().length;
-                sizeY = grid.getGrid()[0].length;
+                ArmorGridAPI grid = ship.getArmorGrid();
+                float maxArmor = grid.getMaxArmorInCell();
+                float sizeX = grid.getGrid().length;
+                float sizeY = grid.getGrid()[0].length;
                 for (int x = 0; x < sizeX; x++)
                 {
                     for (int y = 0; y < sizeY; y++)
