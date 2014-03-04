@@ -51,7 +51,6 @@ public class InfiniteFlux implements BaseCommand
 
     private static class InfiniteFluxPlugin implements EveryFrameCombatPlugin
     {
-        private final IntervalUtil nextCheck = new IntervalUtil(0.1f, 0.1f);
         private boolean active = true;
         private CombatEngineAPI engine;
 
@@ -69,25 +68,21 @@ public class InfiniteFlux implements BaseCommand
                 return;
             }
 
-            nextCheck.advance(amount);
-            if (nextCheck.intervalElapsed())
+            for (ShipAPI ship : engine.getShips())
             {
-                for (ShipAPI ship : engine.getShips())
+                if (ship.isHulk() || ship.isShuttlePod()
+                        || !(ship.getOwner() == FleetSide.PLAYER.ordinal()))
                 {
-                    if (ship.isHulk() || ship.isShuttlePod()
-                            || !(ship.getOwner() == FleetSide.PLAYER.ordinal()))
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    FluxTrackerAPI flux = ship.getFluxTracker();
-                    flux.setCurrFlux(0f);
-                    flux.setHardFlux(0f);
+                FluxTrackerAPI flux = ship.getFluxTracker();
+                flux.setCurrFlux(0f);
+                flux.setHardFlux(0f);
 
-                    if (flux.isOverloaded())
-                    {
-                        flux.stopOverload();
-                    }
+                if (flux.isOverloaded())
+                {
+                    flux.stopOverload();
                 }
             }
         }

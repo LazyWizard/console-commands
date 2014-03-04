@@ -50,7 +50,7 @@ public class NoCooldown implements BaseCommand
 
     private static class NoCooldownPlugin implements EveryFrameCombatPlugin
     {
-        private final IntervalUtil nextCheck = new IntervalUtil(0.1f, 0.1f);
+        private final IntervalUtil nextCheck = new IntervalUtil(0.05f, 0.05f);
         private boolean active = true;
         private CombatEngineAPI engine;
 
