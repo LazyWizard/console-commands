@@ -50,7 +50,7 @@ public class InfiniteCR implements BaseCommand
 
     private static class InfiniteCRPlugin implements EveryFrameCombatPlugin
     {
-        private IntervalUtil nextCheck = new IntervalUtil(0.5f, 0.5f);
+        private final IntervalUtil nextCheck = new IntervalUtil(0.5f, 0.5f);
         private boolean active = true;
         private CombatEngineAPI engine;
 

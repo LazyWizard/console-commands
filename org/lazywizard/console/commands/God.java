@@ -51,7 +51,7 @@ public class God implements BaseCommand
     private static class GodPlugin implements EveryFrameCombatPlugin
     {
         private static final String BONUS_ID = "console_god";
-        private IntervalUtil nextCheck = new IntervalUtil(0.5f, 0.5f);
+        private final IntervalUtil nextCheck = new IntervalUtil(0.5f, 0.5f);
         private boolean active = true;
         private CombatEngineAPI engine;
 
