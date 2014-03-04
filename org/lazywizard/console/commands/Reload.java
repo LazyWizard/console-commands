@@ -18,7 +18,7 @@ public class Reload implements BaseCommand
         }
         catch (IOException | JSONException ex)
         {
-            Console.showMessage("Failed to reload console settings!");
+            Console.showException("Failed to reload console settings!", ex);
             return CommandResult.ERROR;
         }
 

@@ -51,7 +51,7 @@ public class InfiniteAmmo implements BaseCommand
 
     private static class InfiniteAmmoPlugin implements EveryFrameCombatPlugin
     {
-        private IntervalUtil nextCheck = new IntervalUtil(0.1f, 0.1f);
+        private final IntervalUtil nextCheck = new IntervalUtil(0.1f, 0.1f);
         private boolean active = true;
         private CombatEngineAPI engine;
 

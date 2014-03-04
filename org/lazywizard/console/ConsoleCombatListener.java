@@ -8,7 +8,6 @@ import com.fs.starfarer.api.input.InputEventAPI;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lwjgl.LWJGLException;

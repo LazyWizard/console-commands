@@ -51,7 +51,7 @@ public class InfiniteFlux implements BaseCommand
 
     private static class InfiniteFluxPlugin implements EveryFrameCombatPlugin
     {
-        private IntervalUtil nextCheck = new IntervalUtil(0.1f, 0.1f);
+        private final IntervalUtil nextCheck = new IntervalUtil(0.1f, 0.1f);
         private boolean active = true;
         private CombatEngineAPI engine;
 
