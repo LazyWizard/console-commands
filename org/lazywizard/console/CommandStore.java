@@ -187,6 +187,8 @@ public class CommandStore
      */
     public static StoredCommand retrieveCommand(String command)
     {
+        command = command.toLowerCase();
+        
         if (storedCommands.containsKey(command))
         {
             return storedCommands.get(command);
