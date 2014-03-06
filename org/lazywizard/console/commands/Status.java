@@ -9,14 +9,16 @@ public class Status implements BaseCommand
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
-        StringBuilder sb = new StringBuilder(64)
+        StringBuilder status = new StringBuilder(128)
                 .append("Console status:\n - Current context: ")
                 .append(context.toString())
                 .append("\n - Loaded commands: ")
-                .append(CommandStore.getLoadedCommands().size());
-        String status = sb.toString();
-        Console.showMessage(status);
-        System.out.println(status);
+                .append(CommandStore.getLoadedCommands().size())
+                .append("\n - Loaded tags: ")
+                .append(CommandStore.getKnownTags().size());
+                //.append("\n - Loaded aliases: ")
+                //.append(CommandStore.getAliases().size());
+        Console.showMessage(status.toString());
         return CommandResult.SUCCESS;
     }
 }

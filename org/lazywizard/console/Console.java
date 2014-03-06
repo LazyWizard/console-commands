@@ -17,7 +17,13 @@ import org.lazywizard.lazylib.JSONUtils;
 import org.lazywizard.lazylib.StringUtils;
 import org.lwjgl.util.vector.Vector2f;
 
-// TODO: Javadoc public methods
+/**
+ * The main class of the console mod. Most of its methods aren't publicly
+ * accessible, so this is mainly used to display messages to the player.
+ * <p>
+ * @author LazyWizard
+ * @since 2.0
+ */
 public class Console
 {
     // The key stroke that summons the console pop-up
@@ -31,10 +37,18 @@ public class Console
     // Stores the output of the console until it can be displayed
     private static final StringBuilder output = new StringBuilder();
 
+    /**
+     * Forces the console to reload its settings from the settings file.
+     *
+     * @throws IOException   if the JSON file at
+     *                       {@link CommonStrings#SETTINGS_PATH} does not exist
+     *                       or can't be opened.
+     * @throws JSONException if the JSON is malformed or missing entries.
+     * @since 2.0
+     */
     public static void reloadSettings() throws IOException, JSONException
     {
-        JSONObject settings = Global.getSettings().loadJSON(
-                "data/console/console_settings.json");
+        JSONObject settings = Global.getSettings().loadJSON(CommonStrings.SETTINGS_PATH);
         CONSOLE_SUMMON_KEY = new KeyStroke(settings.getInt("consoleKey"),
                 settings.getBoolean("requireShift"),
                 settings.getBoolean("requireControl"),

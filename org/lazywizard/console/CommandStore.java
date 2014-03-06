@@ -15,17 +15,36 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.lazywizard.lazylib.CollectionUtils;
 
-// TODO: Javadoc public methods
+/**
+ * The console mod's internal command storage. You can retrieve detailed
+ * information on the loaded commands using this class.
+ * <p>
+ * @author LazyWizard
+ * @since 2.0
+ */
 public class CommandStore
 {
     private static final Map<String, StoredCommand> storedCommands = new HashMap<>();
     //private static final Map<String, String> aliases = new HashMap();
     private static final Set<String> tags = new HashSet<>();
 
+    /**
+     * Forces the console to clear its stored commands and reload them from the
+     * CSV. If a command fails to load, it will <i>not</i> throw an
+     * {@link Exception}. Instead, it will display an error message to the
+     * player and continue to load the rest of the commands normally.
+     *
+     * @throws IOException   if the CSV file at {@link CommonStrings#CSV_PATH}
+     *                       does not exist or can't be opened.
+     * @throws JSONException if the CSV is malformed or missing columns.
+     * @since 2.0
+     */
     // Will only throw these exceptions if there is an error loading the CSV
     public static void reloadCommands() throws IOException, JSONException
     {
         storedCommands.clear();
+        //aliases.clear();
+        tags.clear();
         JSONArray commandData = Global.getSettings().getMergedSpreadsheetDataForMod(
                 "command", CommonStrings.CSV_PATH, CommonStrings.MOD_ID);
         ClassLoader loader = Global.getSettings().getScriptClassLoader();
@@ -98,6 +117,13 @@ public class CommandStore
                 "Loaded commands: " + CollectionUtils.implode(getLoadedCommands()));
     }
 
+    /**
+     * Returns all commands currently loaded by the mod.
+     * <p>
+     * @return A {@link List} containing the names of all loaded commands.
+     * <p>
+     * @since 2.0
+     */
     public static List<String> getLoadedCommands()
     {
         List<String> commands = new ArrayList<>(storedCommands.size());
@@ -109,11 +135,29 @@ public class CommandStore
         return commands;
     }
 
+    /**
+     * Returns all command tags that the mod is currently aware of.
+     * <p>
+     * @return A {@link List} containing all tags used by the currently loaded
+     *         commands.
+     * <p>
+     * @since 2.0
+     */
     public static List<String> getKnownTags()
     {
         return new ArrayList<>(tags);
     }
 
+    /**
+     * Returns all commands with a specific tag.
+     * <p>
+     * @param tag The tag to search for.
+     * <p>
+     * @return A {@link List} containing the names of all loaded commands that
+     *         use the tag {@code tag}.
+     * <p>
+     * @since 2.0
+     */
     public static List<String> getCommandsWithTag(String tag)
     {
         tag = tag.toLowerCase();
@@ -121,7 +165,7 @@ public class CommandStore
         List<String> commands = new ArrayList<>();
         for (StoredCommand tmp : storedCommands.values())
         {
-            if (tmp.tags.contains(tag))
+            if (tmp.getTags().contains(tag))
             {
                 commands.add(tmp.getName());
             }
@@ -130,6 +174,17 @@ public class CommandStore
         return commands;
     }
 
+    /**
+     * Retrieves the raw data for a specific command.
+     * <p>
+     * @param command The name of the command to retrieve.
+     * <p>
+     * @return The {@link StoredCommand} containing all of the data the console
+     *         needs to use this command, such as its name, class, syntax, helpfile, and
+     *         what mod registered it.
+     * <p>
+     * @since 2.0
+     */
     public static StoredCommand retrieveCommand(String command)
     {
         if (storedCommands.containsKey(command))
@@ -140,14 +195,18 @@ public class CommandStore
         return null;
     }
 
-    // TODO: Javadoc public methods
-    public static class StoredCommand
+    /**
+     * Contains detailed information on a loaded command.
+     * <p>
+     * @since 2.0
+     */
+    public static final class StoredCommand
     {
         private final Class<? extends BaseCommand> commandClass;
         private final String name, syntax, help, source;
         private final List<String> tags;
 
-        StoredCommand(String commandName, Class<? extends BaseCommand> commandClass,
+        private StoredCommand(String commandName, Class<? extends BaseCommand> commandClass,
                 String syntax, String help, List<String> tags, String source)
         {
             this.name = commandName;
@@ -158,34 +217,96 @@ public class CommandStore
             this.source = source;
         }
 
+        /**
+         * Returns the class object for this command's implementation.
+         * <p>
+         * @return The {@link Class} of the {@link BaseCommand} implementation
+         *         that will be instantiated when this command is run.
+         * <p>
+         * @since 2.0
+         */
         public Class<? extends BaseCommand> getCommandClass()
         {
             return commandClass;
         }
 
+        /**
+         * Returns the name of this command (what the player would enter to use
+         * it).
+         * <p>
+         * @return The name of this command, taken from the 'name' column of the
+         *         CSV.
+         * <p>
+         * @since 2.0
+         */
         public String getName()
         {
             return name;
         }
 
+        /**
+         * Returns the syntax for this command.
+         * <p>
+         * @return The syntax for this command, taken from the 'syntax' column
+         *         of the CSV.
+         * <p>
+         * @since 2.0
+         */
         public String getSyntax()
         {
             return syntax;
         }
 
+        /**
+         * Returns the detailed usage instructions for this command.
+         * <p>
+         * @return The detailed help for this command, taken from the 'help'
+         *         column of the CSV.
+         * <p>
+         * @since 2.0
+         */
         public String getHelp()
         {
             return help;
         }
 
+        /**
+         * Returns all tags associated with this command.
+         * <p>
+         * @return All tags associated with this command, taken from the 'tags'
+         *         column of the CSV.
+         * <p>
+         * @since 2.0
+         */
         public List<String> getTags()
         {
             return Collections.unmodifiableList(tags);
         }
 
+        /**
+         * Returns the complete file path of the CSV this command was loaded
+         * from (<b>not</b> the relative path). Useful for determining which mod
+         * added this command.
+         * <p>
+         * @return The complete file path of the CSV this command was loaded
+         *         from. There is no other way to retrieve this information in
+         *         the current API.
+         * <p>
+         * @since 2.0
+         */
         public String getSource()
         {
             return source;
+        }
+
+        private StoredCommand()
+        {
+            commandClass = null;
+            name = null;
+            syntax = null;
+            help = null;
+            source = null;
+            tags = null;
         }
     }
 

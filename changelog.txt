@@ -21,11 +21,11 @@ New commands:
  - Jump, teleports your fleet to another star system or hyperspace
  - InfiniteCR, prevents CR from draining during combat
  - Reload, reloads all console commands and settings
- - Repair, repairs hull/armor damage of all your ships on the map (in combat)
-   or in your fleet (in campaign)
- - Storage, opens a persistent, infinite-stack cargo container
+ - Repair, repairs hull/armor/cr of all ships in your fleet (in campaign),
+   or hull/armor damage of all your currently fighting ships (in combat)
+ - Storage, opens a persistent, infinite-stack cargo/fleet container
 Changes to existing commands:
- - Ported all old commands to new BaseCommand interface
+ - Ported all old commands to the new BaseCommand interface
  - There are no more hard-coded commands - you can overwrite any core command
  - AllWeapons now defaults to 'storage' instead of player cargo if no
    arguments are passed in, won't go beyond 10 of each weapon
