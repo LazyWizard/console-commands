@@ -79,7 +79,7 @@ public interface BaseCommand
     }
 
     /**
-     * Executes your command. Called when the player enters your command.
+     * Called when the player enters your command.
      *
      * @param args    The arguments passed into this command. Will be an empty
      *                string if no arguments were entered.
