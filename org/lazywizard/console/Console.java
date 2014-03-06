@@ -241,6 +241,7 @@ public class Console
 
                 // TODO: the values here are kind of arbitrary, need to be worked out properly
                 // TODO: add per-frame offset variable so multiple commands while paused don't overlap
+                // TODO: display to the side of the player's ship furthest from the edge of the screen
                 String[] messages = output.toString().split("\n");
                 float size = 25f;
                 for (int x = 0; x < messages.length; x++)

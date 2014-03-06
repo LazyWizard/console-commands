@@ -78,6 +78,9 @@ public class ConsoleCampaignListener implements EveryFrameScript
             String rawInput = JOptionPane.showInputDialog(null,
                     "Enter command, or 'help' for a list of valid commands.");
             Console.parseInput(rawInput, CommandContext.CAMPAIGN_MAP);
+
+            // Temporary!
+            ConsoleCombatListener.resetKeyboard();
         }
 
         Console.advance(CommandContext.CAMPAIGN_MAP);

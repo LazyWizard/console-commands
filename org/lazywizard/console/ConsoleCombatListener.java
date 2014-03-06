@@ -44,7 +44,7 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
         return false;
     }
 
-    private static void resetKeyboard()
+    static void resetKeyboard()
     {
         try
         {
