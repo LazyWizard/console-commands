@@ -11,9 +11,9 @@ loads command classes itself, so you can place the java files anywhere in your
 mod folder you want - data/console/commands is a good choice as data/console
 already exists to contain commands.csv.
 
-It is _highly_ recommended that you do not place your code in data/scripts.
+It is _highly_ recommended that you do not place your commands in data/scripts.
 Starsector will automatically compile any scripts in this directory or its
-subdirectories, which will cause errors when the console mod is not active.
+subdirectories, and this will cause errors when the console mod is not active.
 Placing them elsewhere allows you to bundle commands with a regular mod that
 will only be loaded if the console is tagged in the launcher.
 

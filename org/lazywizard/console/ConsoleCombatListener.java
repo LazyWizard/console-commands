@@ -46,16 +46,16 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
 
     private static void resetKeyboard()
     {
-        // Because Keyboard.reset() doesn't seem to reset modifier keys,
-        // we have to go extremely overboard to fix sticky keys...
         try
         {
+            // Because Keyboard.reset() doesn't seem to reset modifier keys,
+            // we have to go extremely overboard to fix sticky keys...
             Keyboard.destroy();
             Keyboard.create();
         }
-        catch (LWJGLException ex2)
+        catch (LWJGLException ex)
         {
-            Console.showException("Failed to reset keyboard (backup)!", ex2);
+            Console.showException("Failed to reset keyboard!", ex);
         }
     }
 
