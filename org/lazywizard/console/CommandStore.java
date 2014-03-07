@@ -188,7 +188,7 @@ public class CommandStore
     public static StoredCommand retrieveCommand(String command)
     {
         command = command.toLowerCase();
-        
+
         if (storedCommands.containsKey(command))
         {
             return storedCommands.get(command);
@@ -208,6 +208,22 @@ public class CommandStore
         private final String name, syntax, help, source;
         private final List<String> tags;
 
+        private static String filterModPath(String fullPath)
+        {
+            try
+            {
+                String modPath = fullPath.replace("/", "\\");
+                modPath = modPath.substring(modPath.lastIndexOf("\\mods\\"));
+                modPath = modPath.substring(0, modPath.indexOf("\\", 6)) + "\\";
+                return modPath;
+            }
+            catch (Exception ex)
+            {
+                Console.showException("Failed to reduce modpath '" + fullPath + "'", ex);
+                return fullPath;
+            }
+        }
+
         private StoredCommand(String commandName, Class<? extends BaseCommand> commandClass,
                 String syntax, String help, List<String> tags, String source)
         {
@@ -216,7 +232,7 @@ public class CommandStore
             this.syntax = (syntax == null ? "" : syntax);
             this.help = (help == null ? "" : help);
             this.tags = tags;
-            this.source = source;
+            this.source = filterModPath(source);
         }
 
         /**

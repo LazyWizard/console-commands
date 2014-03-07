@@ -13,37 +13,25 @@ import org.lazywizard.lazylib.StringUtils;
 
 public class Status implements BaseCommand
 {
-    private static String filterModPath(String fullPath)
-    {
-        String modPath = fullPath.replace("/", "\\");
-        modPath = modPath.substring(modPath.lastIndexOf("\\mods\\"));
-        modPath = modPath.substring(0, modPath.indexOf("\\", 6)) + "\\";
-        return modPath;
-    }
-
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
         Set<String> rawSources = new HashSet<>();
         String commands, tags, sources;
+
+        for (String tmp : CommandStore.getLoadedCommands())
+        {
+            rawSources.add(CommandStore.retrieveCommand(tmp).getSource());
+        }
+
         if (args.isEmpty())
         {
-            for (String tmp : CommandStore.getLoadedCommands())
-            {
-                rawSources.add(CommandStore.retrieveCommand(tmp).getSource());
-            }
-
             commands = Integer.toString(CommandStore.getLoadedCommands().size());
             tags = Integer.toString(CommandStore.getKnownTags().size());
             sources = Integer.toString(rawSources.size());
         }
         else if ("detailed".equalsIgnoreCase(args))
         {
-            for (String tmp : CommandStore.getLoadedCommands())
-            {
-                rawSources.add(filterModPath(CommandStore.retrieveCommand(tmp).getSource()));
-            }
-
             List<String> tmp = CommandStore.getLoadedCommands();
             Collections.sort(tmp);
             commands = "(" + tmp.size() + ")\n" + CollectionUtils.implode(tmp);

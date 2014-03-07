@@ -13,7 +13,7 @@ Made writing custom commands much simpler:
  - Commands are registered inside data/console/console_commands.csv
  - Commands can be in any package now, not just data.scripts.console
    (it is recommended that you DON'T put them in data/scripts, otherwise
-    the game will try to load them even when the Console mod isn't active)
+    the game will try to load them even when the console mod isn't active)
  - A basic tutorial on writing custom commands is included in the mod folder
 New commands:
  - AllHulls, adds one of each hull to a station's inventory
@@ -23,6 +23,7 @@ New commands:
  - Reload, reloads all console commands and settings
  - Repair, repairs hull/armor/cr of all ships in your fleet (in campaign),
    or hull/armor damage of all your currently fighting ships (in combat)
+ - SourceOf, shows what mod a specific command came from
  - Storage, opens a persistent, infinite-stack cargo/fleet container
 Changes to existing commands:
  - Ported all old commands to the new BaseCommand interface
