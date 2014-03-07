@@ -23,7 +23,6 @@ public class Storage implements BaseCommand
 {
     public static CargoAPI retrieveStorage(SectorAPI sector)
     {
-
         Map<String, Object> data = sector.getPersistentData();
         if (!data.containsKey(CommonStrings.DATA_STORAGE_ID))
         {
