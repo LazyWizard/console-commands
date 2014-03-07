@@ -1,5 +1,7 @@
 package org.lazywizard.console.commands;
 
+import java.util.Collections;
+import java.util.List;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommandStore;
 import org.lazywizard.console.CommandStore.StoredCommand;
@@ -17,6 +19,16 @@ public class SourceOf implements BaseCommand
 
         if ("all".equalsIgnoreCase(args))
         {
+            Console.showMessage("All commands come from the following mods:");
+            List<String> allCommands = CommandStore.getLoadedCommands();
+            Collections.sort(allCommands);
+            for (String tmp : allCommands)
+            {
+                StoredCommand command = CommandStore.retrieveCommand(tmp);
+                Console.showMessage(" - "+ tmp + ": " + command.getSource());
+            }
+
+            return CommandResult.SUCCESS;
         }
 
         StoredCommand command = CommandStore.retrieveCommand(args);
