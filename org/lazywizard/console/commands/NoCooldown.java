@@ -30,7 +30,8 @@ public class NoCooldown implements BaseCommand
         }
 
         NoCooldownPlugin tmp;
-        if (plugin == null || plugin.get() == null)
+        if (plugin == null || plugin.get() == null
+                || plugin.get().engine != Global.getCombatEngine())
         {
             tmp = new NoCooldownPlugin();
             plugin = new WeakReference<>(tmp);
