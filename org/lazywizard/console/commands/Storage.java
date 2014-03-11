@@ -106,7 +106,7 @@ public class Storage implements BaseCommand
             return null;
         }
 
-        private class StorageInteractionDialogListener implements CoreInteractionListener
+        private static class StorageInteractionDialogListener implements CoreInteractionListener
         {
             boolean isDismissed = false;
 
@@ -117,7 +117,7 @@ public class Storage implements BaseCommand
             }
         }
 
-        private class FakeToken implements SectorEntityToken
+        private static class FakeToken implements SectorEntityToken
         {
             @Override
             public CargoAPI getCargo()
