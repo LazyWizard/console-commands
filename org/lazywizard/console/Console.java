@@ -57,6 +57,9 @@ public class Console
         OUTPUT_COLOR = JSONUtils.toColor(settings.getJSONArray("outputColor"));
         OUTPUT_LINE_LENGTH = settings.getInt("maxOutputLineLength");
 
+        ConsoleCombatListener.setCommandPersistence(
+                settings.getBoolean("persistentCombatCommands"));
+
         // What level to log console output at
         Level logLevel = Level.toLevel(settings.getString("consoleLogLevel"), Level.WARN);
         Global.getLogger(Console.class).setLevel(logLevel);
