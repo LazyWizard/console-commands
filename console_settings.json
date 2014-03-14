@@ -7,6 +7,9 @@
     "requireControl":true,
     "requireAlt":false,
 
+    # Whether combat toggle commands should stay on in subsequent battles
+    "persistentCombatCommands":true, # Unimplemented
+
     # If you want to enter multiple commands at once, separate them with the following
     "commandSeparator":";",
 
@@ -16,7 +19,7 @@
 
     # Valid levels: OFF, FATAL, ERROR, WARN, INFO, DEBUG, ALL
     # INFO and above will save all console output to Starsector.log!
-    "consoleLogLevel":WARN,
+    "consoleLogLevel":ALL, # Default: WARN
 
     # Color settings for the console pop-up (temporary)
     "backgroundColor":[0,0,0],       # Default: black   (0,0,0)

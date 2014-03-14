@@ -5,17 +5,32 @@ import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import javax.swing.JOptionPane;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.Display;
 
 public class ConsoleCombatListener implements EveryFrameCombatPlugin
 {
+    // Whether combat toggle commands should stay on for subsequent battles
+    private static boolean PERSISTENT_COMBAT_COMMANDS = false;
+    private static final Map<String, Class<? extends BaseCombatToggleCommand>> activePlugins = new HashMap<>();
+    private final List<BaseCombatToggleCommand> activeCommands = new ArrayList<>();
     private CombatEngineAPI engine;
     private CommandContext context;
 
+    static void setCommandPersistence(boolean persistent)
+    {
+        PERSISTENT_COMBAT_COMMANDS = persistent;
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="Input handling">
     private static boolean checkInput(List<InputEventAPI> input)
     {
         KeyStroke key = Console.getConsoleKey();
@@ -64,6 +79,7 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
         return JOptionPane.showInputDialog(null,
                 "Enter command, or 'help' for a list of valid commands.");
     }
+    //</editor-fold>
 
     @Override
     public void advance(float amount, List<InputEventAPI> events)
@@ -91,6 +107,7 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
                 resetKeyboard();
             }
 
+            // Advance the console and all combat commands
             Console.advance(context);
         }
     }
@@ -102,5 +119,30 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
         // COMBAT_SIMULATION will be added when the API supports it
         context = (engine.isInCampaign() ? CommandContext.COMBAT_CAMPAIGN
                 : CommandContext.COMBAT_MISSION);
+
+        if (!PERSISTENT_COMBAT_COMMANDS)
+        {
+            activePlugins.clear();
+        }
+        else
+        {
+            for (Iterator<Class<? extends BaseCombatToggleCommand>> iter
+                    = activePlugins.values().iterator(); iter.hasNext();)
+            {
+                Class<? extends BaseCombatToggleCommand> cmdClass = iter.next();
+                try
+                {
+                    BaseCombatToggleCommand cmd = cmdClass.newInstance();
+                    activeCommands.add(cmd);
+                    cmd.onActivate(engine);
+                }
+                catch (InstantiationException | IllegalAccessException ex)
+                {
+                    Console.showException("Failed to instantiate combat plugin '"
+                            + cmdClass.getCanonicalName() + "':", ex);
+                    iter.remove();
+                }
+            }
+        }
     }
 }

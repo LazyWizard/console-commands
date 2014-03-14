@@ -19,7 +19,7 @@ public class SourceOf implements BaseCommand
 
         if ("all".equalsIgnoreCase(args))
         {
-            Console.showMessage("All commands come from the following mods:");
+            Console.showMessage("Loaded commands come from the following mods:");
             List<String> allCommands = CommandStore.getLoadedCommands();
             Collections.sort(allCommands);
             for (String tmp : allCommands)
