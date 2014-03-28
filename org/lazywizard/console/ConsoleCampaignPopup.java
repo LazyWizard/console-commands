@@ -16,21 +16,22 @@ class ConsoleCampaignPopup implements InteractionDialogPlugin
     private static final Object LEAVE = new Object();
     private InteractionDialogAPI dialog;
     private KeyListener keyListener;
+    private float timeOpen = 0f;
 
     @Override
     public void init(InteractionDialogAPI dialog)
     {
         this.dialog = dialog;
         keyListener = new KeyListener();
+        timeOpen = 0f;
 
         dialog.getVisualPanel().showCustomPanel(0f, 0f, keyListener);
-        dialog.getTextPanel().addParagraph(
-                "Enter a command, or 'help' for a list of valid commands.");
+        dialog.getTextPanel().addParagraph(CommonStrings.INPUT_QUERY);
         dialog.setPromptText("Input: ");
 
         dialog.getOptionPanel().addOption("Cancel", LEAVE);
         dialog.setOptionOnEscape("Cancel", LEAVE);
-        /*KeyStroke key = Console.getConsoleKey();
+        /*KeyStroke key = Console.getSettings().getConsoleSummonKey();
          dialog.getOptionPanel().setShortcut(LEAVE,
          key.getKey(), key.requiresControl(), key.requiresAlt(),
          key.requiresShift(), true);*/
@@ -53,7 +54,9 @@ class ConsoleCampaignPopup implements InteractionDialogPlugin
     @Override
     public void advance(float amount)
     {
-        dialog.setPromptText("Input: " + keyListener.currentInput.toString());
+        timeOpen += amount;
+        dialog.setPromptText("Input: " + keyListener.currentInput.toString()
+                + ((((int) timeOpen) & 1) == 0 ? "|" : ""));
     }
 
     @Override
@@ -106,8 +109,30 @@ class ConsoleCampaignPopup implements InteractionDialogPlugin
                 if (event.getEventValue() == Keyboard.KEY_BACK
                         && currentInput.length() > 0)
                 {
-                    currentInput.deleteCharAt(currentInput.length() - 1);
-                    System.out.println(currentInput.toString() + ".");
+                    // Shift+backspace, delete entire line
+                    if (event.isShiftDown())
+                    {
+                        clearInput();
+                    }
+                    // Control+backspace, delete last word
+                    else if (event.isCtrlDown())
+                    {
+                        int lastSpace = currentInput.lastIndexOf(" ");
+                        if (lastSpace == -1)
+                        {
+                            clearInput();
+                        }
+                        else
+                        {
+                            currentInput.delete(lastSpace, currentInput.length());
+                        }
+                    }
+                    // Regular backspace, delete last character
+                    else
+                    {
+                        currentInput.deleteCharAt(currentInput.length() - 1);
+                    }
+
                     event.consume();
                 }
                 else if (event.getEventValue() == Keyboard.KEY_RETURN)

@@ -75,8 +75,7 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
 
     private static String getInput()
     {
-        return JOptionPane.showInputDialog(null,
-                "Enter command, or 'help' for a list of valid commands.");
+        return JOptionPane.showInputDialog(null, CommonStrings.INPUT_QUERY);
     }
     //</editor-fold>
 

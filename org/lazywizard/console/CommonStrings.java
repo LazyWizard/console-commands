@@ -34,7 +34,13 @@ public class CommonStrings
     public static final String CSV_PATH = "data/console/commands.csv";
     //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Common error messages">
+    //<editor-fold defaultstate="collapsed" desc="Common messages">
+    /**
+     * The message the console shows when it's first summoned.
+     * <p>
+     * @since 2.0
+     */
+    public static final String INPUT_QUERY = "Enter a command, or 'help' for a list of valid commands.";
     /**
      * The error message displayed by core commands when a campaign-only command
      * is used elsewhere.
