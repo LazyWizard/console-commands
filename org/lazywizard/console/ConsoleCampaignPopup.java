@@ -6,11 +6,11 @@ import com.fs.starfarer.api.campaign.InteractionDialogPlugin;
 import com.fs.starfarer.api.combat.EngagementResultAPI;
 import com.fs.starfarer.api.graphics.PositionAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
-import java.awt.Color;
 import java.util.List;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lwjgl.input.Keyboard;
 
+// TODO: Hook this into console output
 class ConsoleCampaignPopup implements InteractionDialogPlugin
 {
     private static final Object LEAVE = new Object();
@@ -114,7 +114,7 @@ class ConsoleCampaignPopup implements InteractionDialogPlugin
                 {
                     String command = currentInput.toString();
                     dialog.getTextPanel().addParagraph("Running command \""
-                            + command + "\"", Color.CYAN);
+                            + command + "\"", Console.getSettings().getOutputColor());
                     Console.parseInput(command, CommandContext.CAMPAIGN_MAP);
                     currentInput.setLength(0);
                     event.consume();

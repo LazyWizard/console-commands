@@ -25,7 +25,7 @@ public class ConsoleCampaignListener implements EveryFrameScript
     // TODO: replace with something much simpler once the dialog is added
     private boolean checkInput()
     {
-        KeyStroke key = Console.getConsoleKey();
+        KeyStroke key = Console.getSettings().getConsoleSummonKey();
 
         if (!isPressed)
         {

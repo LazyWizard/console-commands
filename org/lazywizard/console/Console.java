@@ -26,14 +26,7 @@ import org.lwjgl.util.vector.Vector2f;
  */
 public class Console
 {
-    // The key stroke that summons the console pop-up
-    private static KeyStroke CONSOLE_SUMMON_KEY;
-    // The String (usually a single character) that separates multiple commands
-    private static String COMMAND_SEPARATOR;
-    // The color of the console's output text
-    private static Color OUTPUT_COLOR;
-    // How many characters before the output is line-wrapped
-    private static int OUTPUT_LINE_LENGTH;
+    private static ConsoleSettings SETTINGS;
     // Stores the output of the console until it can be displayed
     private static final StringBuilder output = new StringBuilder();
 
@@ -49,13 +42,13 @@ public class Console
     public static void reloadSettings() throws IOException, JSONException
     {
         JSONObject settings = Global.getSettings().loadJSON(CommonStrings.SETTINGS_PATH);
-        CONSOLE_SUMMON_KEY = new KeyStroke(settings.getInt("consoleKey"),
+        SETTINGS = new ConsoleSettings(new KeyStroke(settings.getInt("consoleKey"),
                 settings.getBoolean("requireShift"),
                 settings.getBoolean("requireControl"),
-                settings.getBoolean("requireAlt"));
-        COMMAND_SEPARATOR = Pattern.quote(settings.getString("commandSeparator"));
-        OUTPUT_COLOR = JSONUtils.toColor(settings.getJSONArray("outputColor"));
-        OUTPUT_LINE_LENGTH = settings.getInt("maxOutputLineLength");
+                settings.getBoolean("requireAlt")),
+                Pattern.quote(settings.getString("commandSeparator")),
+                JSONUtils.toColor(settings.getJSONArray("outputColor")),
+                settings.getInt("maxOutputLineLength"));
 
         ConsoleCombatListener.setCommandPersistence(
                 settings.getBoolean("persistentCombatCommands"));
@@ -64,8 +57,6 @@ public class Console
         Level logLevel = Level.toLevel(settings.getString("consoleLogLevel"), Level.WARN);
         Global.getLogger(Console.class).setLevel(logLevel);
         Global.getLogger(CommandStore.class).setLevel(logLevel);
-        Global.getLogger(ConsoleCampaignListener.class).setLevel(logLevel);
-        Global.getLogger(ConsoleCombatListener.class).setLevel(logLevel);
 
         // Console pop-up appearance settings (temporary)
         Color color = JSONUtils.toColor(settings.getJSONArray("backgroundColor"));
@@ -103,7 +94,7 @@ public class Console
      */
     public static void showMessage(String message, Level logLevel)
     {
-        output.append(StringUtils.wrapString(message, OUTPUT_LINE_LENGTH));
+        output.append(StringUtils.wrapString(message, SETTINGS.OUTPUT_MAX_LINE_LENGTH));
         Global.getLogger(Console.class).log(logLevel, message);
     }
 
@@ -151,9 +142,9 @@ public class Console
     }
     //</editor-fold>
 
-    static KeyStroke getConsoleKey()
+    public static ConsoleSettings getSettings()
     {
-        return CONSOLE_SUMMON_KEY;
+        return SETTINGS;
     }
 
     private static void runCommand(String input, CommandContext context)
@@ -171,6 +162,7 @@ public class Console
                 return;
             }
 
+            showMessage("Running command \"" + input + "\"");
             BaseCommand command = stored.getCommandClass().newInstance();
             CommandResult result = command.runCommand(args, context);
 
@@ -205,7 +197,7 @@ public class Console
         {
             // Split the raw input up into the individual commands
             // The command separator is used to separate multiple commands
-            for (String input : rawInput.split(COMMAND_SEPARATOR))
+            for (String input : rawInput.split(SETTINGS.COMMAND_SEPARATOR))
             {
                 input = input.trim();
                 if (!input.isEmpty())
@@ -225,7 +217,7 @@ public class Console
             {
                 for (String message : output.toString().split("\n"))
                 {
-                    Global.getSector().getCampaignUI().addMessage(message, OUTPUT_COLOR);
+                    Global.getSector().getCampaignUI().addMessage(message, SETTINGS.OUTPUT_COLOR);
                 }
 
                 output.setLength(0);
@@ -250,10 +242,10 @@ public class Console
                 for (int x = 0; x < messages.length; x++)
                 {
                     engine.addFloatingText(Vector2f.add(
-                            new Vector2f(-OUTPUT_LINE_LENGTH / 2f,
+                            new Vector2f(-SETTINGS.OUTPUT_MAX_LINE_LENGTH / 2f,
                                     -(player.getCollisionRadius() + 50 + (x * size))),
                             player.getLocation(), null),
-                            messages[x], size, OUTPUT_COLOR, player, 0f, 0f);
+                            messages[x], size, SETTINGS.OUTPUT_COLOR, player, 0f, 0f);
                 }
 
                 output.setLength(0);
@@ -269,5 +261,46 @@ public class Console
 
     private Console()
     {
+    }
+
+    public static class ConsoleSettings
+    {
+        // The key stroke that summons the console pop-up
+        private final KeyStroke CONSOLE_SUMMON_KEY;
+        // The String (usually a single character) that separates multiple commands
+        private final String COMMAND_SEPARATOR;
+        // The color of the console's output text
+        private final Color OUTPUT_COLOR;
+        // How many characters before the output is line-wrapped
+        private final int OUTPUT_MAX_LINE_LENGTH;
+
+        private ConsoleSettings(KeyStroke consoleSummonKey, String commandSeparator,
+                Color outputColor, int outputMaxLineLength)
+        {
+            CONSOLE_SUMMON_KEY = consoleSummonKey;
+            COMMAND_SEPARATOR = commandSeparator;
+            OUTPUT_COLOR = outputColor;
+            OUTPUT_MAX_LINE_LENGTH = outputMaxLineLength;
+        }
+
+        public KeyStroke getConsoleSummonKey()
+        {
+            return CONSOLE_SUMMON_KEY;
+        }
+
+        public String getCommandSeparator()
+        {
+            return COMMAND_SEPARATOR;
+        }
+
+        public Color getOutputColor()
+        {
+            return OUTPUT_COLOR;
+        }
+
+        public int getMaxOutputLineLength()
+        {
+            return OUTPUT_MAX_LINE_LENGTH;
+        }
     }
 }

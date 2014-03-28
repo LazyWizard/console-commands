@@ -14,7 +14,6 @@ import javax.swing.JOptionPane;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.Display;
 
 public class ConsoleCombatListener implements EveryFrameCombatPlugin
 {
@@ -33,7 +32,7 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
     //<editor-fold defaultstate="collapsed" desc="Input handling">
     private static boolean checkInput(List<InputEventAPI> input)
     {
-        KeyStroke key = Console.getConsoleKey();
+        KeyStroke key = Console.getSettings().getConsoleSummonKey();
 
         for (InputEventAPI event : input)
         {
