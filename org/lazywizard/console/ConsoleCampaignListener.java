@@ -12,8 +12,11 @@ import java.util.List;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lwjgl.input.Keyboard;
 
-public class ConsoleCampaignListener implements EveryFrameScript
+public class ConsoleCampaignListener implements EveryFrameScript, BaseConsoleListener
 {
+    private CampaignPopup popup;
+    private boolean isDialogOpen = false;
+
     @Override
     public boolean isDone()
     {
@@ -49,12 +52,7 @@ public class ConsoleCampaignListener implements EveryFrameScript
             modPressed = false;
         }
 
-        if (modPressed && Keyboard.isKeyDown(key.getKey()))
-        {
-            return true;
-        }
-
-        return false;
+        return (modPressed && Keyboard.isKeyDown(key.getKey()));
     }
 
     @Override
@@ -62,11 +60,44 @@ public class ConsoleCampaignListener implements EveryFrameScript
     {
         if (checkInput())
         {
+            isDialogOpen = true;
             Global.getSector().getCampaignUI().showInteractionDialog(
                     new CampaignPopup(), null);
         }
 
-        Console.advance(CommandContext.CAMPAIGN_MAP);
+        if (!isDialogOpen && popup != null)
+        {
+            popup = null;
+        }
+
+        Console.advance(this);
+    }
+
+    @Override
+    public void showOutput(String output)
+    {
+        if (isDialogOpen)
+        {
+            for (String message : output.split("\n"))
+            {
+                popup.getDialog().getTextPanel().addParagraph(message,
+                        Console.getSettings().getOutputColor());
+            }
+        }
+        else
+        {
+            for (String message : output.split("\n"))
+            {
+                Global.getSector().getCampaignUI().addMessage(message,
+                        Console.getSettings().getOutputColor());
+            }
+        }
+    }
+
+    @Override
+    public CommandContext getContext()
+    {
+        return CommandContext.CAMPAIGN_MAP;
     }
 
     // TODO: Hook this into console output
@@ -80,11 +111,13 @@ public class ConsoleCampaignListener implements EveryFrameScript
         @Override
         public void init(InteractionDialogAPI dialog)
         {
+            popup = this;
             this.dialog = dialog;
             keyListener = new KeyListener();
             timeOpen = 0f;
 
             dialog.getVisualPanel().showCustomPanel(0f, 0f, keyListener);
+            //dialog.setTextWidth(Console.getSettings().getMaxOutputLineLength() * 8f);
             dialog.getTextPanel().addParagraph(CommonStrings.INPUT_QUERY);
             dialog.setPromptText("Input: ");
 
@@ -102,6 +135,7 @@ public class ConsoleCampaignListener implements EveryFrameScript
             if (optionData == LEAVE)
             {
                 dialog.dismiss();
+                isDialogOpen = false;
             }
         }
 
@@ -129,14 +163,14 @@ public class ConsoleCampaignListener implements EveryFrameScript
             return null;
         }
 
+        public InteractionDialogAPI getDialog()
+        {
+            return dialog;
+        }
+
         private class KeyListener implements CustomUIPanelPlugin
         {
             StringBuilder currentInput = new StringBuilder();
-
-            public void clearInput()
-            {
-                currentInput.setLength(0);
-            }
 
             @Override
             public void positionChanged(PositionAPI position)
@@ -165,13 +199,14 @@ public class ConsoleCampaignListener implements EveryFrameScript
                         continue;
                     }
 
+                    // Backspace handling
                     if (event.getEventValue() == Keyboard.KEY_BACK
                             && currentInput.length() > 0)
                     {
                         // Shift+backspace, delete entire line
                         if (event.isShiftDown())
                         {
-                            clearInput();
+                            currentInput.setLength(0);
                         }
                         // Control+backspace, delete last word
                         else if (event.isCtrlDown())
@@ -179,7 +214,7 @@ public class ConsoleCampaignListener implements EveryFrameScript
                             int lastSpace = currentInput.lastIndexOf(" ");
                             if (lastSpace == -1)
                             {
-                                clearInput();
+                                currentInput.setLength(0);
                             }
                             else
                             {
@@ -194,18 +229,18 @@ public class ConsoleCampaignListener implements EveryFrameScript
 
                         event.consume();
                     }
+                    // Return key handling
                     else if (event.getEventValue() == Keyboard.KEY_RETURN)
                     {
                         String command = currentInput.toString();
-                        dialog.getTextPanel().addParagraph("Running command \""
-                                + command + "\"", Console.getSettings().getOutputColor());
                         Console.parseInput(command, CommandContext.CAMPAIGN_MAP);
                         currentInput.setLength(0);
                         event.consume();
                     }
+                    // Normal typing
                     else
                     {
-                        // Goodbye, international character support...
+                        // TODO: add international character support
                         char character = event.getEventChar();
                         if (character >= 0x20 && character <= 0x7e)
                         {

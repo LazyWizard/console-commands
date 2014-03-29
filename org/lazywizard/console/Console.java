@@ -28,7 +28,7 @@ public class Console
 {
     private static ConsoleSettings SETTINGS;
     // Stores the output of the console until it can be displayed
-    private static final StringBuilder output = new StringBuilder();
+    private static StringBuilder output = new StringBuilder();
 
     /**
      * Forces the console to reload its settings from the settings file.
@@ -208,55 +208,19 @@ public class Console
         }
     }
 
-    private static void showOutput(CommandContext context)
+    private static void showOutput(BaseConsoleListener listener)
     {
         if (output.length() > 0)
         {
-            // Showing messages on the campaign map
-            if (context == CommandContext.CAMPAIGN_MAP)
-            {
-                for (String message : output.toString().split("\n"))
-                {
-                    Global.getSector().getCampaignUI().addMessage(message, SETTINGS.OUTPUT_COLOR);
-                }
-
-                output.setLength(0);
-            }
-            // Showing messages in combat
-            else
-            {
-                CombatEngineAPI engine = Global.getCombatEngine();
-                ShipAPI player = engine.getPlayerShip();
-
-                if (player == null || !engine.isEntityInPlay(player))
-                {
-                    // Print output later, once there's a player on-screen
-                    return;
-                }
-
-                // TODO: the values here are kind of arbitrary, need to be worked out properly
-                // TODO: add per-frame offset variable so multiple commands while paused don't overlap
-                // TODO: display to the side of the player's ship furthest from the edge of the screen
-                String[] messages = output.toString().split("\n");
-                float size = 25f;
-                for (int x = 0; x < messages.length; x++)
-                {
-                    engine.addFloatingText(Vector2f.add(
-                            new Vector2f(-SETTINGS.OUTPUT_MAX_LINE_LENGTH / 2f,
-                                    -(player.getCollisionRadius() + 50 + (x * size))),
-                            player.getLocation(), null),
-                            messages[x], size, SETTINGS.OUTPUT_COLOR, player, 0f, 0f);
-                }
-
-                output.setLength(0);
-            }
+            listener.showOutput(output.toString());
+            output = new StringBuilder();
         }
     }
 
-    static void advance(CommandContext context)
+    static void advance(BaseConsoleListener listener)
     {
         // Just check the output queue for now
-        showOutput(context);
+        showOutput(listener);
     }
 
     private Console()

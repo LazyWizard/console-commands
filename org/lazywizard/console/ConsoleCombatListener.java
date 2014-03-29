@@ -14,8 +14,9 @@ import javax.swing.JOptionPane;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.util.vector.Vector2f;
 
-public class ConsoleCombatListener implements EveryFrameCombatPlugin
+public class ConsoleCombatListener implements EveryFrameCombatPlugin, BaseConsoleListener
 {
     // Whether combat toggle commands should stay on for subsequent battles
     private static boolean PERSISTENT_COMBAT_COMMANDS = false;
@@ -106,7 +107,7 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
             }
 
             // Advance the console and all combat commands
-            Console.advance(context);
+            Console.advance(this);
         }
     }
 
@@ -141,6 +142,31 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin
                     iter.remove();
                 }
             }
+        }
+    }
+
+    @Override
+    public CommandContext getContext()
+    {
+        return context;
+    }
+
+    @Override
+    public void showOutput(String output)
+    {
+        // TODO: the values here are kind of arbitrary, need to be worked out properly
+        // TODO: add per-frame offset variable so multiple commands while paused don't overlap
+        // TODO: display to the side of the player's ship furthest from the edge of the screen
+        ShipAPI player = engine.getPlayerShip();
+        String[] messages = output.toString().split("\n");
+        float size = 25f;
+        for (int x = 0; x < messages.length; x++)
+        {
+            engine.addFloatingText(Vector2f.add(
+                    new Vector2f(-Console.getSettings().getMaxOutputLineLength() / 2f,
+                            -(player.getCollisionRadius() + 50 + (x * size))),
+                    player.getLocation(), null), messages[x], size,
+                    Console.getSettings().getOutputColor(), player, 0f, 0f);
         }
     }
 }

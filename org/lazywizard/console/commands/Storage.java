@@ -1,5 +1,6 @@
 package org.lazywizard.console.commands;
 
+import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.InteractionDialogImageVisual;
 import com.fs.starfarer.api.campaign.CargoAPI;
@@ -44,8 +45,34 @@ public class Storage implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        Global.getSector().getCampaignUI().showInteractionDialog(
-                new StorageInteractionDialogPlugin(), null);
+        Global.getSector().addScript(new EveryFrameScript()
+        {
+            private boolean isDone = false;
+
+            @Override
+            public boolean isDone()
+            {
+                return isDone;
+            }
+
+            @Override
+            public boolean runWhilePaused()
+            {
+                return false;
+            }
+
+            @Override
+            public void advance(float amount)
+            {
+                if (!isDone)
+                {
+                    Global.getSector().getCampaignUI().showInteractionDialog(
+                            new StorageInteractionDialogPlugin(), null);
+                    isDone = true;
+                }
+            }
+        });
+        Console.showMessage("Storage will be shown when you next unpause on the campaign map.");
         return CommandResult.SUCCESS;
     }
 
@@ -68,7 +95,6 @@ public class Storage implements BaseCommand
             // Use this if FakeToken fails to compile, no ship storage support
             //dialog.getVisualPanel().showLoot("Storage",
             //        Storage.retrieveStorage(Global.getSector()), listener);
-
             // Only here as emergency backup if listener fails
             dialog.getOptionPanel().addOption("Leave", null);
             dialog.setOptionOnEscape("Leave", null);
