@@ -8,14 +8,16 @@ import com.fs.starfarer.api.campaign.InteractionDialogPlugin;
 import com.fs.starfarer.api.combat.EngagementResultAPI;
 import com.fs.starfarer.api.graphics.PositionAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
+import java.awt.Color;
 import java.util.List;
 import org.lazywizard.console.BaseCommand.CommandContext;
+import org.lazywizard.console.ConsoleSettings.KeyStroke;
 import org.lwjgl.input.Keyboard;
 
 public class ConsoleCampaignListener implements EveryFrameScript, BaseConsoleListener
 {
-    private CampaignPopup popup;
-    private boolean isDialogOpen = false;
+    private transient CampaignPopup popup;
+    private transient boolean isDialogOpen = false;
 
     @Override
     public boolean isDone()
@@ -100,13 +102,14 @@ public class ConsoleCampaignListener implements EveryFrameScript, BaseConsoleLis
         return CommandContext.CAMPAIGN_MAP;
     }
 
-    // TODO: Hook this into console output
+    //<editor-fold defaultstate="collapsed" desc="Console popup">
     private class CampaignPopup implements InteractionDialogPlugin
     {
         private final Object LEAVE = new Object();
         private InteractionDialogAPI dialog;
         private KeyListener keyListener;
         private float timeOpen = 0f;
+        private int easterEggLevel = 0;
 
         @Override
         public void init(InteractionDialogAPI dialog)
@@ -116,6 +119,8 @@ public class ConsoleCampaignListener implements EveryFrameScript, BaseConsoleLis
             keyListener = new KeyListener();
             timeOpen = 0f;
 
+            // TODO: Get the text panel to actually take up the whole screen
+            dialog.setTextWidth(600f); // Bugged?
             dialog.getVisualPanel().showCustomPanel(0f, 0f, keyListener);
             //dialog.setTextWidth(Console.getSettings().getMaxOutputLineLength() * 8f);
             dialog.getTextPanel().addParagraph(CommonStrings.INPUT_QUERY);
@@ -150,6 +155,58 @@ public class ConsoleCampaignListener implements EveryFrameScript, BaseConsoleLis
             timeOpen += amount;
             dialog.setPromptText("Input: " + keyListener.currentInput.toString()
                     + ((((int) timeOpen) & 1) == 0 ? "|" : ""));
+
+            // Easter eggs, because why not?
+            if (easterEggLevel == 0 && timeOpen > 180f) // 3 minutes
+            {
+                dialog.getTextPanel().addParagraph("Take your time. I have all"
+                        + " day.", Color.RED);
+                easterEggLevel++;
+            }
+            else if (easterEggLevel == 1 && timeOpen > 300f) // 5 minutes
+            {
+                dialog.getTextPanel().addParagraph("I've heard that if you"
+                        + " enter 'runcode System.exit()', magical things"
+                        + " happen!", Color.RED);
+                easterEggLevel++;
+            }
+            else if (easterEggLevel == 2 && timeOpen > 330f) // 5 1/2 minutes
+            {
+                dialog.getTextPanel().addParagraph("Okay, that was a lie. Can't"
+                        + " fool you, it seems.", Color.RED);
+                easterEggLevel++;
+            }
+
+            // Temporary text area placement test code
+            // TODO: Remove this!
+            float movement = (50f * amount);
+            if (Keyboard.isKeyDown(Keyboard.KEY_SUBTRACT))
+            {
+                System.out.println("Moving by -" + movement);
+                dialog.setXOffset(dialog.getXOffset() - movement);
+            }
+            else if (Keyboard.isKeyDown(Keyboard.KEY_ADD))
+            {
+                System.out.println("Moving by +" + movement);
+                dialog.setXOffset(dialog.getXOffset() + movement);
+            }
+            else if (Keyboard.isKeyDown(Keyboard.KEY_DIVIDE))
+            {
+                System.out.println("Resizing by -" + movement);
+                dialog.setTextWidth(dialog.getTextWidth() - movement);
+            }
+            else if (Keyboard.isKeyDown(Keyboard.KEY_MULTIPLY))
+            {
+                System.out.println("Resizing by +" + movement);
+                dialog.setTextWidth(dialog.getTextWidth() + movement);
+            }
+            else
+            {
+                return;
+            }
+
+            System.out.println("Size: " + dialog.getTextWidth() + " | Pos: "
+                    + dialog.getXOffset());
         }
 
         @Override
@@ -199,7 +256,8 @@ public class ConsoleCampaignListener implements EveryFrameScript, BaseConsoleLis
                         continue;
                     }
 
-                    // Backspace handling
+                    // Backspace handling, imitates vanilla text inputs
+                    // TODO: Add support for holding down backspace
                     if (event.getEventValue() == Keyboard.KEY_BACK
                             && currentInput.length() > 0)
                     {
@@ -252,4 +310,5 @@ public class ConsoleCampaignListener implements EveryFrameScript, BaseConsoleLis
             }
         }
     }
+    //</editor-fold>
 }
