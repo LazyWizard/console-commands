@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
 import org.lazywizard.console.BaseCommand.CommandContext;
+import org.lazywizard.console.ConsoleSettings.KeyStroke;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;

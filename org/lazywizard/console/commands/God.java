@@ -52,7 +52,7 @@ public class God implements BaseCommand
     {
         private static final String BONUS_ID = "console_god";
         private final IntervalUtil nextCheck = new IntervalUtil(0.5f, 0.5f);
-        private boolean active = true;
+        private boolean active = true, firstRun = true;
         private CombatEngineAPI engine;
 
         @Override
@@ -83,8 +83,10 @@ public class God implements BaseCommand
             }
 
             nextCheck.advance(amount);
-            if (nextCheck.intervalElapsed())
+            if (firstRun || nextCheck.intervalElapsed())
             {
+                firstRun = false;
+
                 for (ShipAPI ship : engine.getShips())
                 {
                     if (ship.isHulk() || ship.isShuttlePod()

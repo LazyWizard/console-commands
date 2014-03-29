@@ -52,7 +52,7 @@ public class NoCooldown implements BaseCommand
     private static class NoCooldownPlugin implements EveryFrameCombatPlugin
     {
         private final IntervalUtil nextCheck = new IntervalUtil(0.05f, 0.05f);
-        private boolean active = true;
+        private boolean active = true, firstRun = true;
         private CombatEngineAPI engine;
 
         @Override
@@ -70,8 +70,10 @@ public class NoCooldown implements BaseCommand
             }
 
             nextCheck.advance(amount);
-            if (nextCheck.intervalElapsed())
+            if (firstRun || nextCheck.intervalElapsed())
             {
+                firstRun = false;
+
                 for (ShipAPI ship : engine.getShips())
                 {
                     if (ship.isHulk() || ship.isShuttlePod()

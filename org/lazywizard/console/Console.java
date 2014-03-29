@@ -1,8 +1,6 @@
 package org.lazywizard.console;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.combat.CombatEngineAPI;
-import com.fs.starfarer.api.combat.ShipAPI;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.regex.Pattern;
@@ -13,9 +11,9 @@ import org.json.JSONObject;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommandStore.StoredCommand;
+import org.lazywizard.console.ConsoleSettings.KeyStroke;
 import org.lazywizard.lazylib.JSONUtils;
 import org.lazywizard.lazylib.StringUtils;
-import org.lwjgl.util.vector.Vector2f;
 
 /**
  * The main class of the console mod. Most of its methods aren't publicly
@@ -94,7 +92,7 @@ public class Console
      */
     public static void showMessage(String message, Level logLevel)
     {
-        output.append(StringUtils.wrapString(message, SETTINGS.OUTPUT_MAX_LINE_LENGTH));
+        output.append(StringUtils.wrapString(message, SETTINGS.getMaxOutputLineLength()));
         Global.getLogger(Console.class).log(logLevel, message);
     }
 
@@ -197,7 +195,7 @@ public class Console
         {
             // Split the raw input up into the individual commands
             // The command separator is used to separate multiple commands
-            for (String input : rawInput.split(SETTINGS.COMMAND_SEPARATOR))
+            for (String input : rawInput.split(SETTINGS.getCommandSeparator()))
             {
                 input = input.trim();
                 if (!input.isEmpty())
@@ -225,46 +223,5 @@ public class Console
 
     private Console()
     {
-    }
-
-    public static class ConsoleSettings
-    {
-        // The key stroke that summons the console pop-up
-        private final KeyStroke CONSOLE_SUMMON_KEY;
-        // The String (usually a single character) that separates multiple commands
-        private final String COMMAND_SEPARATOR;
-        // The color of the console's output text
-        private final Color OUTPUT_COLOR;
-        // How many characters before the output is line-wrapped
-        private final int OUTPUT_MAX_LINE_LENGTH;
-
-        private ConsoleSettings(KeyStroke consoleSummonKey, String commandSeparator,
-                Color outputColor, int outputMaxLineLength)
-        {
-            CONSOLE_SUMMON_KEY = consoleSummonKey;
-            COMMAND_SEPARATOR = commandSeparator;
-            OUTPUT_COLOR = outputColor;
-            OUTPUT_MAX_LINE_LENGTH = outputMaxLineLength;
-        }
-
-        public KeyStroke getConsoleSummonKey()
-        {
-            return CONSOLE_SUMMON_KEY;
-        }
-
-        public String getCommandSeparator()
-        {
-            return COMMAND_SEPARATOR;
-        }
-
-        public Color getOutputColor()
-        {
-            return OUTPUT_COLOR;
-        }
-
-        public int getMaxOutputLineLength()
-        {
-            return OUTPUT_MAX_LINE_LENGTH;
-        }
     }
 }

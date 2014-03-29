@@ -5,19 +5,16 @@ import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
-import com.fs.starfarer.api.mission.FleetSide;
 import com.fs.starfarer.api.util.IntervalUtil;
 import java.lang.ref.WeakReference;
 import java.util.List;
 import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.BaseCommand.CommandContext;
-import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
-public class InfiniteCR implements BaseCommand
+public class ShowBounds implements BaseCommand
 {
-    private static WeakReference<InfiniteCRPlugin> plugin;
+   private static WeakReference<ShowBoundsPlugin> plugin;
 
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -28,29 +25,29 @@ public class InfiniteCR implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        InfiniteCRPlugin tmp;
+        ShowBoundsPlugin tmp;
         if (plugin == null || plugin.get() == null
                 || plugin.get().engine != Global.getCombatEngine())
         {
-            tmp = new InfiniteCRPlugin();
+            tmp = new ShowBoundsPlugin();
             plugin = new WeakReference<>(tmp);
             Global.getCombatEngine().addPlugin(tmp);
-            Console.showMessage("CR timers disabled.");
+            Console.showMessage("Bounds rendering enabled.");
         }
         else
         {
             tmp = plugin.get();
             plugin.clear();
             tmp.active = false;
-            Console.showMessage("CR timers enabled.");
+            Console.showMessage("Bounds rendering disabled.");
         }
 
         return CommandResult.SUCCESS;
     }
 
-    private static class InfiniteCRPlugin implements EveryFrameCombatPlugin
+    private static class ShowBoundsPlugin implements EveryFrameCombatPlugin
     {
-        private final IntervalUtil nextCheck = new IntervalUtil(0.5f, 0.5f);
+        private final IntervalUtil nextCheck = new IntervalUtil(1f, 1f);
         private boolean active = true, firstRun = true;
         private CombatEngineAPI engine;
 
@@ -59,12 +56,12 @@ public class InfiniteCR implements BaseCommand
         {
             if (!active)
             {
-                engine.removePlugin(this);
-                return;
-            }
+                for (ShipAPI ship : engine.getShips())
+                {
+                    ship.setRenderBounds(false);
+                }
 
-            if (engine.isPaused())
-            {
+                engine.removePlugin(this);
                 return;
             }
 
@@ -72,19 +69,10 @@ public class InfiniteCR implements BaseCommand
             if (firstRun || nextCheck.intervalElapsed())
             {
                 firstRun = false;
-
+                
                 for (ShipAPI ship : engine.getShips())
                 {
-                    if (ship.isHulk() || ship.isShuttlePod()
-                            || !(ship.getOwner() == FleetSide.PLAYER.ordinal()))
-                    {
-                        continue;
-                    }
-
-                    if (ship.losesCRDuringCombat())
-                    {
-                        ship.setCurrentCR(ship.getCRAtDeployment());
-                    }
+                    ship.setRenderBounds(true);
                 }
             }
         }

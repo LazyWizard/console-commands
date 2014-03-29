@@ -52,7 +52,7 @@ public class InfiniteAmmo implements BaseCommand
     private static class InfiniteAmmoPlugin implements EveryFrameCombatPlugin
     {
         private final IntervalUtil nextCheck = new IntervalUtil(0.1f, 0.1f);
-        private boolean active = true;
+        private boolean active = true, firstRun = true;
         private CombatEngineAPI engine;
 
         @Override
@@ -70,8 +70,10 @@ public class InfiniteAmmo implements BaseCommand
             }
 
             nextCheck.advance(amount);
-            if (nextCheck.intervalElapsed())
+            if (firstRun || nextCheck.intervalElapsed())
             {
+                firstRun = false;
+                
                 for (ShipAPI ship : engine.getShips())
                 {
                     if (ship.isHulk() || ship.isShuttlePod()
