@@ -6,8 +6,8 @@ import com.fs.starfarer.api.campaign.FleetDataAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.fleet.FleetMemberType;
 import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.Console;
 import org.lazywizard.console.CommonStrings;
+import org.lazywizard.console.Console;
 
 public class AddShip implements BaseCommand
 {

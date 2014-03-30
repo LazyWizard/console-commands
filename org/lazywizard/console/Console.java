@@ -11,7 +11,6 @@ import org.json.JSONObject;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommandStore.StoredCommand;
-import org.lazywizard.console.ConsoleSettings.KeyStroke;
 import org.lazywizard.lazylib.JSONUtils;
 import org.lazywizard.lazylib.StringUtils;
 
@@ -24,7 +23,7 @@ import org.lazywizard.lazylib.StringUtils;
  */
 public class Console
 {
-    private static ConsoleSettings SETTINGS;
+    private static ConsoleSettings settings;
     // Stores the output of the console until it can be displayed
     private static StringBuilder output = new StringBuilder();
 
@@ -39,25 +38,26 @@ public class Console
      */
     public static void reloadSettings() throws IOException, JSONException
     {
-        JSONObject settings = Global.getSettings().loadJSON(CommonStrings.SETTINGS_PATH);
-        SETTINGS = new ConsoleSettings(new KeyStroke(settings.getInt("consoleKey"),
-                settings.getBoolean("requireShift"),
-                settings.getBoolean("requireControl"),
-                settings.getBoolean("requireAlt")),
-                Pattern.quote(settings.getString("commandSeparator")),
-                JSONUtils.toColor(settings.getJSONArray("outputColor")),
-                settings.getInt("maxOutputLineLength"));
+        JSONObject settingsFile = Global.getSettings().loadJSON(CommonStrings.SETTINGS_PATH);
+        settings = new ConsoleSettings(settingsFile.getInt("consoleKey"),
+                settingsFile.getBoolean("requireShift"),
+                settingsFile.getBoolean("requireControl"),
+                settingsFile.getBoolean("requireAlt"),
+                Pattern.quote(settingsFile.getString("commandSeparator")),
+                settingsFile.getBoolean("showEnteredCommands"),
+                JSONUtils.toColor(settingsFile.getJSONArray("outputColor")),
+                settingsFile.getInt("maxOutputLineLength"));
 
         ConsoleCombatListener.setCommandPersistence(
-                settings.getBoolean("persistentCombatCommands"));
+                settingsFile.getBoolean("persistentCombatCommands"));
 
         // What level to log console output at
-        Level logLevel = Level.toLevel(settings.getString("consoleLogLevel"), Level.WARN);
+        Level logLevel = Level.toLevel(settingsFile.getString("consoleLogLevel"), Level.WARN);
         Global.getLogger(Console.class).setLevel(logLevel);
         Global.getLogger(CommandStore.class).setLevel(logLevel);
 
         // Console pop-up appearance settings (temporary)
-        Color color = JSONUtils.toColor(settings.getJSONArray("backgroundColor"));
+        Color color = JSONUtils.toColor(settingsFile.getJSONArray("backgroundColor"));
         UIManager.put("Panel.background", color);
         UIManager.put("OptionPane.background", color);
         UIManager.put("TextArea.background", color);
@@ -65,15 +65,15 @@ public class Console
         UIManager.put("Button.background", color);
         UIManager.put("SplitPane.background", color);
 
-        color = JSONUtils.toColor(settings.getJSONArray("foregroundColor"));
+        color = JSONUtils.toColor(settingsFile.getJSONArray("foregroundColor"));
         UIManager.put("OptionPane.messageForeground", color);
 
-        color = JSONUtils.toColor(settings.getJSONArray("textColor"));
+        color = JSONUtils.toColor(settingsFile.getJSONArray("textColor"));
         UIManager.put("TextArea.foreground", color);
         UIManager.put("TextField.foreground", color);
         UIManager.put("TextField.caretForeground", color);
 
-        color = JSONUtils.toColor(settings.getJSONArray("buttonColor"));
+        color = JSONUtils.toColor(settingsFile.getJSONArray("buttonColor"));
         UIManager.put("Button.foreground", color);
         UIManager.put("SplitPane.foreground", color);
     }
@@ -92,7 +92,7 @@ public class Console
      */
     public static void showMessage(String message, Level logLevel)
     {
-        output.append(StringUtils.wrapString(message, SETTINGS.getMaxOutputLineLength()));
+        output.append(StringUtils.wrapString(message, settings.getMaxOutputLineLength()));
         Global.getLogger(Console.class).log(logLevel, message);
     }
 
@@ -142,7 +142,7 @@ public class Console
 
     public static ConsoleSettings getSettings()
     {
-        return SETTINGS;
+        return settings;
     }
 
     private static void runCommand(String input, CommandContext context)
@@ -160,7 +160,11 @@ public class Console
                 return;
             }
 
-            showMessage("Running command \"" + input + "\"");
+            if (settings.getShouldShowEnteredCommands())
+            {
+                showMessage("Running command \"" + input + "\"");
+            }
+
             BaseCommand command = stored.getCommandClass().newInstance();
             CommandResult result = command.runCommand(args, context);
 
@@ -195,7 +199,7 @@ public class Console
         {
             // Split the raw input up into the individual commands
             // The command separator is used to separate multiple commands
-            for (String input : rawInput.split(SETTINGS.getCommandSeparator()))
+            for (String input : rawInput.split(settings.getCommandSeparator()))
             {
                 input = input.trim();
                 if (!input.isEmpty())
@@ -206,7 +210,7 @@ public class Console
         }
     }
 
-    private static void showOutput(BaseConsoleListener listener)
+    private static void showOutput(ConsoleListener listener)
     {
         if (output.length() > 0)
         {
@@ -215,7 +219,7 @@ public class Console
         }
     }
 
-    static void advance(BaseConsoleListener listener)
+    static void advance(ConsoleListener listener)
     {
         // Just check the output queue for now
         showOutput(listener);

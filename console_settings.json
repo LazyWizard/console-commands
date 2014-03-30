@@ -10,6 +10,9 @@
     # Whether combat toggle commands should stay on in subsequent battles
     "persistentCombatCommands":true, # Unimplemented
 
+    # Whether to display each command before it is executed
+    "showEnteredCommands":false, # Default: false
+
     # If you want to enter multiple commands at once, separate them with the following
     "commandSeparator":";",
 
@@ -21,7 +24,7 @@
     # INFO and above will save all console output to Starsector.log!
     "consoleLogLevel":ALL, # Default: WARN
 
-    # Color settings for the console pop-up (temporary)
+    # Color settings for the combat pop-up (temporary, not retrievable in-game)
     "backgroundColor":[0,0,0],       # Default: black   (0,0,0)
     "foregroundColor":[0,255,255],   # Default: cyan    (0,255,255)
     "textColor":[255,255,0],         # Default: yellow  (255,255,0)
