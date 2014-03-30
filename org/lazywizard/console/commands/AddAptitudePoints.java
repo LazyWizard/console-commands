@@ -16,8 +16,12 @@ public class AddAptitudePoints implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        int amount;
+        if (args.isEmpty())
+        {
+            return CommandResult.BAD_SYNTAX;
+        }
 
+        int amount;
         try
         {
             amount = Integer.parseInt(args);

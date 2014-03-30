@@ -18,6 +18,11 @@ public class AddMarines implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
+        if (args.isEmpty())
+        {
+            return CommandResult.BAD_SYNTAX;
+        }
+
         int amt;
         try
         {

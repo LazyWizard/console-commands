@@ -32,6 +32,11 @@ public class RunCode implements BaseCommand
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
+        if (args.isEmpty())
+        {
+            return CommandResult.BAD_SYNTAX;
+        }
+
         // Yes, this is relatively slow. But for obvious security reasons,
         // I'd rather allow only manually-entered code to run
         if (!Console.class.getCanonicalName().equals(

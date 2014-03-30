@@ -18,6 +18,11 @@ public class AddCommandPoints implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
+        if (args.isEmpty())
+        {
+            return CommandResult.BAD_SYNTAX;
+        }
+
         if ("remove".equals(args))
         {
             MutableStat commandPoints = Global.getCombatEngine().getFleetManager(
@@ -28,7 +33,6 @@ public class AddCommandPoints implements BaseCommand
         }
 
         int amount;
-
         try
         {
             amount = Integer.parseInt(args);

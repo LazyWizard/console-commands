@@ -19,6 +19,11 @@ public class SpawnFleet implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
+        if (args.isEmpty())
+        {
+            return CommandResult.BAD_SYNTAX;
+        }
+
         String[] tmp = args.split(" ");
 
         if (tmp.length != 2)
