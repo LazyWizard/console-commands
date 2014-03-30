@@ -19,20 +19,15 @@ public class Repair implements BaseCommand
         if (context == CommandContext.CAMPAIGN_MAP)
         {
             CampaignFleetAPI player = Global.getSector().getPlayerFleet();
-            float priorSupplies = player.getCargo().getSupplies();
 
             for (FleetMemberAPI ship : player.getFleetData().getMembersListCopy())
             {
+                ship.getStatus().repairFully();
                 RepairTrackerAPI repairs = ship.getRepairTracker();
-                // It doesn't matter if this is too many; they'll be removed immediately
-                float suppliesNeeded = repairs.getMaxRepairCost();
-                player.getCargo().addSupplies(suppliesNeeded);
-                repairs.performRepairsUsingSupplies(suppliesNeeded);
                 repairs.setCR(repairs.getMaxCR());
                 ship.setStatUpdateNeeded(true);
             }
 
-            player.getCargo().removeSupplies(player.getCargo().getSupplies() - priorSupplies);
             Console.showMessage("All ships in fleet repaired.");
             return CommandResult.SUCCESS;
         }

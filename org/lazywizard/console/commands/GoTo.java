@@ -20,6 +20,11 @@ public class GoTo implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
+        if (args.isEmpty())
+        {
+            return CommandResult.BAD_SYNTAX;
+        }
+
         if ("home".equalsIgnoreCase(args))
         {
             return (new Home().runCommand("", context));

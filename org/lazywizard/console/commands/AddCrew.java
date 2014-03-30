@@ -19,6 +19,11 @@ public class AddCrew implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
+        if (args.isEmpty())
+        {
+            return CommandResult.BAD_SYNTAX;
+        }
+
         args = args.toLowerCase();
         String[] tmp = args.split(" ");
 
