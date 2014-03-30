@@ -12,6 +12,7 @@ import java.awt.Color;
 import java.util.List;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.ConsoleSettings.KeyStroke;
+import org.lazywizard.lazylib.StringUtils;
 import org.lwjgl.input.Keyboard;
 
 public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListener
@@ -80,6 +81,10 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
     {
         if (isDialogOpen)
         {
+            // Temporary due to text area resize bug
+            // TODO: Remove this when text panel resizing is fixed
+            output = StringUtils.wrapString(output, 40);
+
             for (String message : output.split("\n"))
             {
                 popup.getDialog().getTextPanel().addParagraph(message,
