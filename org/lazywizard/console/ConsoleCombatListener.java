@@ -17,7 +17,7 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 
-public class ConsoleCombatListener implements EveryFrameCombatPlugin, BaseConsoleListener
+public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleListener
 {
     // Whether combat toggle commands should stay on for subsequent battles
     private static boolean PERSISTENT_COMBAT_COMMANDS = false;

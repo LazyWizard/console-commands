@@ -7,7 +7,6 @@ import com.fs.starfarer.api.combat.FluxTrackerAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.mission.FleetSide;
-import com.fs.starfarer.api.util.IntervalUtil;
 import java.lang.ref.WeakReference;
 import java.util.List;
 import org.lazywizard.console.BaseCommand;

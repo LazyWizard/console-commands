@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.lazywizard.console;
 
 import java.awt.Color;
@@ -20,16 +15,21 @@ public class ConsoleSettings
     private final KeyStroke CONSOLE_SUMMON_KEY;
     // The String (usually a single character) that separates multiple commands
     private final String COMMAND_SEPARATOR;
+    // Whether each command should be displayed to the player before executing
+    private final boolean SHOW_ENTERED_COMMANDS;
     // The color of the console's output text
     private final Color OUTPUT_COLOR;
     // How many characters before the output is line-wrapped
     private final int OUTPUT_MAX_LINE_LENGTH;
 
-    ConsoleSettings(KeyStroke consoleSummonKey, String commandSeparator,
+    ConsoleSettings(int consoleSummonKey, boolean requireShift, boolean requireControl,
+            boolean requireAlt, String commandSeparator, boolean showEnteredCommands,
             Color outputColor, int outputMaxLineLength)
     {
-        CONSOLE_SUMMON_KEY = consoleSummonKey;
+        CONSOLE_SUMMON_KEY = new KeyStroke(consoleSummonKey, requireShift,
+                requireControl, requireAlt);
         COMMAND_SEPARATOR = commandSeparator;
+        SHOW_ENTERED_COMMANDS = showEnteredCommands;
         OUTPUT_COLOR = outputColor;
         OUTPUT_MAX_LINE_LENGTH = outputMaxLineLength;
     }
@@ -44,6 +44,11 @@ public class ConsoleSettings
         return COMMAND_SEPARATOR;
     }
 
+    public boolean getShouldShowEnteredCommands()
+    {
+        return SHOW_ENTERED_COMMANDS;
+    }
+
     public Color getOutputColor()
     {
         return OUTPUT_COLOR;
@@ -54,14 +59,14 @@ public class ConsoleSettings
         return OUTPUT_MAX_LINE_LENGTH;
     }
 
-    public static class KeyStroke
+    public class KeyStroke
     {
         private final int key;
         private final boolean requireShift;
         private final boolean requireControl;
         private final boolean requireAlt;
 
-        KeyStroke(int key, boolean requireShift, boolean requireControl,
+        private KeyStroke(int key, boolean requireShift, boolean requireControl,
                 boolean requireAlt)
         {
             this.key = key;

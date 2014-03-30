@@ -14,7 +14,7 @@ import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.ConsoleSettings.KeyStroke;
 import org.lwjgl.input.Keyboard;
 
-public class ConsoleCampaignListener implements EveryFrameScript, BaseConsoleListener
+public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListener
 {
     private transient CampaignPopup popup;
     private transient boolean isDialogOpen = false;
@@ -177,7 +177,7 @@ public class ConsoleCampaignListener implements EveryFrameScript, BaseConsoleLis
                 easterEggLevel++;
             }
 
-            // Temporary text area placement test code
+            // Temporary code to find optimum text area size/placement
             // TODO: Remove this!
             float movement = (50f * amount);
             if (Keyboard.isKeyDown(Keyboard.KEY_SUBTRACT))

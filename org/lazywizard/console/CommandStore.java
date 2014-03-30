@@ -214,7 +214,7 @@ public class CommandStore
             {
                 String modPath = fullPath.replace("/", "\\");
                 modPath = modPath.substring(modPath.lastIndexOf("\\mods\\"));
-                modPath = modPath.substring(0, modPath.indexOf("\\", 6)) + "\\";
+                modPath = modPath.substring(0, modPath.indexOf('\\', 6)) + "\\";
                 return modPath;
             }
             catch (Exception ex)
