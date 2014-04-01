@@ -171,14 +171,14 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
             else if (easterEggLevel == 1 && timeOpen > 300f) // 5 minutes
             {
                 dialog.getTextPanel().addParagraph("I've heard that if you"
-                        + " enter 'runcode System.exit()', magical things"
+                        + " enter 'runcode System.exit(0)' magical things"
                         + " happen!", Color.RED);
                 easterEggLevel++;
             }
             else if (easterEggLevel == 2 && timeOpen > 330f) // 5 1/2 minutes
             {
                 dialog.getTextPanel().addParagraph("Okay, that was a lie. Can't"
-                        + " fool you, it seems.", Color.RED);
+                        + " fool you it seems.", Color.RED);
                 easterEggLevel++;
             }
 

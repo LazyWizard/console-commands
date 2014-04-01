@@ -10,6 +10,8 @@ import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import org.lazywizard.lazylib.CollisionUtils;
+import org.lwjgl.util.vector.Vector2f;
 
 public class Nuke implements BaseCommand
 {
@@ -32,8 +34,27 @@ public class Nuke implements BaseCommand
 
             if (ship.getOwner() == FleetSide.ENEMY.ordinal())
             {
-                engine.applyDamage(ship, ship.getLocation(), 500_000,
-                        DamageType.ENERGY, 500_000, true, false, null);
+                Vector2f hitLoc = ship.getLocation();
+
+                // Ensure we hit (needed for certain oddly-shaped mod ships)
+                if (!CollisionUtils.isPointWithinBounds(ship.getLocation(), ship))
+                {
+                    if (!ship.getAllWeapons().isEmpty())
+                    {
+                        //System.out.println("Using alternate hit location for "
+                        //        + ship.getHullSpec().getHullId());
+                        hitLoc = ship.getAllWeapons().get(0).getLocation();
+                    }
+                    else
+                    {
+                        Console.showMessage("Error nuking " + ship.getHullSpec().getHullId());
+                    }
+                }
+
+                // Ensure a kill
+                ship.setHitpoints(1f);
+                engine.applyDamage(ship, hitLoc, 500_000,
+                        DamageType.OTHER, 500_000, true, false, null);
             }
         }
 
