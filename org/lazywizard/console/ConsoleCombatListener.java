@@ -19,10 +19,12 @@ import org.lwjgl.util.vector.Vector2f;
 
 public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleListener
 {
+    private static final float MESSAGE_SIZE = 25f;
     // Whether combat toggle commands should stay on for subsequent battles
     private static boolean PERSISTENT_COMBAT_COMMANDS = false;
-    private static final Map<String, Class<? extends BaseCombatToggleCommand>> activePlugins = new HashMap<>();
-    private final List<BaseCombatToggleCommand> activeCommands = new ArrayList<>();
+    private static final Map<String, Class<? extends BaseCombatTogglePlugin>> plugins = new HashMap<>();
+    private final List<BaseCombatTogglePlugin> activePlugins = new ArrayList<>();
+    private float offset = 0f;
     private CombatEngineAPI engine;
     private CommandContext context;
 
@@ -90,6 +92,11 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
             return;
         }
 
+        if (!engine.isPaused())
+        {
+            offset = 0f;
+        }
+
         // Main menu check
         ShipAPI player = engine.getPlayerShip();
         if (player != null && engine.isEntityInPlay(player))
@@ -122,18 +129,18 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
 
         if (!PERSISTENT_COMBAT_COMMANDS)
         {
-            activePlugins.clear();
+            plugins.clear();
         }
         else
         {
-            for (Iterator<Class<? extends BaseCombatToggleCommand>> iter
-                    = activePlugins.values().iterator(); iter.hasNext();)
+            for (Iterator<Class<? extends BaseCombatTogglePlugin>> iter
+                    = plugins.values().iterator(); iter.hasNext();)
             {
-                Class<? extends BaseCombatToggleCommand> cmdClass = iter.next();
+                Class<? extends BaseCombatTogglePlugin> cmdClass = iter.next();
                 try
                 {
-                    BaseCombatToggleCommand cmd = cmdClass.newInstance();
-                    activeCommands.add(cmd);
+                    BaseCombatTogglePlugin cmd = cmdClass.newInstance();
+                    activePlugins.add(cmd);
                     cmd.onActivate(engine);
                 }
                 catch (InstantiationException | IllegalAccessException ex)
@@ -156,18 +163,19 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
     public void showOutput(String output)
     {
         // TODO: the values here are kind of arbitrary, need to be worked out properly
-        // TODO: add per-frame offset variable so multiple commands while paused don't overlap
         // TODO: display to the side of the player's ship furthest from the edge of the screen
         ShipAPI player = engine.getPlayerShip();
         String[] messages = output.toString().split("\n");
-        float size = 25f;
         for (int x = 0; x < messages.length; x++)
         {
             engine.addFloatingText(Vector2f.add(
                     new Vector2f(-Console.getSettings().getMaxOutputLineLength() / 2f,
-                            -(player.getCollisionRadius() + 50 + (x * size))),
-                    player.getLocation(), null), messages[x], size,
+                            -(player.getCollisionRadius() + 50
+                            + offset + (x * MESSAGE_SIZE))),
+                    player.getLocation(), null), messages[x], MESSAGE_SIZE,
                     Console.getSettings().getOutputColor(), player, 0f, 0f);
         }
+
+        offset += messages.length * MESSAGE_SIZE;
     }
 }
