@@ -15,6 +15,7 @@ import org.lazywizard.console.ConsoleSettings.KeyStroke;
 import org.lazywizard.lazylib.StringUtils;
 import org.lwjgl.input.Keyboard;
 
+// TODO: add paste support
 public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListener
 {
     private transient CampaignPopup popup;

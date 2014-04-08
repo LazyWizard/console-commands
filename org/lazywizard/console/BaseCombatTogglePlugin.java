@@ -3,7 +3,7 @@ package org.lazywizard.console;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 
 // TODO: Javadoc this and add to changelog and tutorial
-public abstract class BaseCombatToggleCommand
+public abstract class BaseCombatTogglePlugin
 {
     public abstract void onActivate(CombatEngineAPI engine);
 
