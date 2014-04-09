@@ -13,9 +13,9 @@ import java.util.List;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.ConsoleSettings.KeyStroke;
 import org.lazywizard.lazylib.StringUtils;
+import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 
-// TODO: add paste support
 public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListener
 {
     private transient CampaignPopup popup;
@@ -114,8 +114,8 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
         private final Object LEAVE = new Object();
         private InteractionDialogAPI dialog;
         private KeyListener keyListener;
-        private float timeOpen = 0f;
-        private int easterEggLevel = 0;
+        private float timeOpen = 0f; // Used for the blinking cursor
+        private int easterEggLevel = 0; // Set to <0 to disable easter eggs
 
         @Override
         public void init(InteractionDialogAPI dialog)
@@ -132,8 +132,8 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
             dialog.getTextPanel().addParagraph(CommonStrings.INPUT_QUERY);
             dialog.setPromptText("Input: ");
 
-            dialog.getOptionPanel().addOption("Cancel", LEAVE);
-            dialog.setOptionOnEscape("Cancel", LEAVE);
+            dialog.getOptionPanel().addOption("Close", LEAVE);
+            dialog.setOptionOnEscape("Close", LEAVE);
             /*KeyStroke key = Console.getSettings().getConsoleSummonKey();
              dialog.getOptionPanel().setShortcut(LEAVE,
              key.getKey(), key.requiresControl(), key.requiresAlt(),
@@ -184,35 +184,35 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
             }
 
             // Temporary code to find optimum text area size/placement
-            // TODO: Remove this!
-            float movement = (50f * amount);
-            if (Keyboard.isKeyDown(Keyboard.KEY_SUBTRACT))
-            {
-                System.out.println("Moving by -" + movement);
-                dialog.setXOffset(dialog.getXOffset() - movement);
-            }
-            else if (Keyboard.isKeyDown(Keyboard.KEY_ADD))
-            {
-                System.out.println("Moving by +" + movement);
-                dialog.setXOffset(dialog.getXOffset() + movement);
-            }
-            else if (Keyboard.isKeyDown(Keyboard.KEY_DIVIDE))
-            {
-                System.out.println("Resizing by -" + movement);
-                dialog.setTextWidth(dialog.getTextWidth() - movement);
-            }
-            else if (Keyboard.isKeyDown(Keyboard.KEY_MULTIPLY))
-            {
-                System.out.println("Resizing by +" + movement);
-                dialog.setTextWidth(dialog.getTextWidth() + movement);
-            }
-            else
-            {
-                return;
-            }
+            /*
+             float movement = (50f * amount);
+             if (Keyboard.isKeyDown(Keyboard.KEY_SUBTRACT))
+             {
+             System.out.println("Moving by -" + movement);
+             dialog.setXOffset(dialog.getXOffset() - movement);
+             }
+             else if (Keyboard.isKeyDown(Keyboard.KEY_ADD))
+             {
+             System.out.println("Moving by +" + movement);
+             dialog.setXOffset(dialog.getXOffset() + movement);
+             }
+             else if (Keyboard.isKeyDown(Keyboard.KEY_DIVIDE))
+             {
+             System.out.println("Resizing by -" + movement);
+             dialog.setTextWidth(dialog.getTextWidth() - movement);
+             }
+             else if (Keyboard.isKeyDown(Keyboard.KEY_MULTIPLY))
+             {
+             System.out.println("Resizing by +" + movement);
+             dialog.setTextWidth(dialog.getTextWidth() + movement);
+             }
+             else
+             {
+             return;
+             }
 
-            System.out.println("Size: " + dialog.getTextWidth() + " | Pos: "
-                    + dialog.getXOffset());
+             System.out.println("Size: " + dialog.getTextWidth() + " | Pos: "
+             + dialog.getXOffset());*/
         }
 
         @Override
@@ -253,7 +253,6 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
             @Override
             public void processInput(List<InputEventAPI> events)
             {
-                // TODO: temporary test code; this needs cleanup badly
                 for (InputEventAPI event : events)
                 {
                     if (event.isConsumed() || !event.isKeyDownEvent()
@@ -262,9 +261,16 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                         continue;
                     }
 
+                    // Paste handling
+                    if (event.getEventValue() == Keyboard.KEY_V
+                            && event.isCtrlDown())
+                    {
+                        currentInput.append(Sys.getClipboard());
+                        event.consume();
+                    }
                     // Backspace handling, imitates vanilla text inputs
                     // TODO: Add support for holding down backspace
-                    if (event.getEventValue() == Keyboard.KEY_BACK
+                    else if (event.getEventValue() == Keyboard.KEY_BACK
                             && currentInput.length() > 0)
                     {
                         // Shift+backspace, delete entire line
