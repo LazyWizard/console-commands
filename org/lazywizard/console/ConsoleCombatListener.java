@@ -5,11 +5,7 @@ import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import javax.swing.JOptionPane;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.ConsoleSettings.KeyStroke;
@@ -20,18 +16,13 @@ import org.lwjgl.util.vector.Vector2f;
 public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleListener
 {
     private static final float MESSAGE_SIZE = 25f;
-    // Whether combat toggle commands should stay on for subsequent battles
-    private static boolean PERSISTENT_COMBAT_COMMANDS = false;
-    private static final Map<String, Class<? extends BaseCombatTogglePlugin>> plugins = new HashMap<>();
-    private final List<BaseCombatTogglePlugin> activePlugins = new ArrayList<>();
-    private float offset = 0f;
+    // The Y offset of console output this frame, used so
+    // that multiple messages while paused won't overlap
+    private float messageOffset = 0f;
     private CombatEngineAPI engine;
     private CommandContext context;
 
-    static void setCommandPersistence(boolean persistent)
-    {
-        PERSISTENT_COMBAT_COMMANDS = persistent;
-    }
+
 
     //<editor-fold defaultstate="collapsed" desc="Input handling">
     private static boolean checkInput(List<InputEventAPI> input)
@@ -94,7 +85,7 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
 
         if (!engine.isPaused())
         {
-            offset = 0f;
+            messageOffset = 0f;
         }
 
         // Main menu check
@@ -115,7 +106,7 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
             }
 
             // Advance the console and all combat commands
-            Console.advance(this);
+            Console.advance(amount, this);
         }
     }
 
@@ -126,31 +117,6 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
         // COMBAT_SIMULATION will be added when the API supports it
         context = (engine.isInCampaign() ? CommandContext.COMBAT_CAMPAIGN
                 : CommandContext.COMBAT_MISSION);
-
-        if (!PERSISTENT_COMBAT_COMMANDS)
-        {
-            plugins.clear();
-        }
-        else
-        {
-            for (Iterator<Class<? extends BaseCombatTogglePlugin>> iter
-                    = plugins.values().iterator(); iter.hasNext();)
-            {
-                Class<? extends BaseCombatTogglePlugin> cmdClass = iter.next();
-                try
-                {
-                    BaseCombatTogglePlugin cmd = cmdClass.newInstance();
-                    activePlugins.add(cmd);
-                    cmd.onActivate(engine);
-                }
-                catch (InstantiationException | IllegalAccessException ex)
-                {
-                    Console.showException("Failed to instantiate combat plugin '"
-                            + cmdClass.getCanonicalName() + "':", ex);
-                    iter.remove();
-                }
-            }
-        }
     }
 
     @Override
@@ -170,12 +136,12 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
         {
             engine.addFloatingText(Vector2f.add(
                     new Vector2f(-Console.getSettings().getMaxOutputLineLength() / 2f,
-                            -(player.getCollisionRadius() + 50
-                            + offset + (x * MESSAGE_SIZE))),
+                            -(player.getCollisionRadius() + (MESSAGE_SIZE * 2)
+                            + messageOffset + (x * MESSAGE_SIZE))),
                     player.getLocation(), null), messages[x], MESSAGE_SIZE,
                     Console.getSettings().getOutputColor(), player, 0f, 0f);
         }
 
-        offset += messages.length * MESSAGE_SIZE;
+        messageOffset += messages.length * MESSAGE_SIZE;
     }
 }

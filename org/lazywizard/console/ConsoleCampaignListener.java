@@ -74,7 +74,7 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
             popup = null;
         }
 
-        Console.advance(this);
+        Console.advance(amount, this);
     }
 
     @Override
@@ -261,16 +261,9 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                         continue;
                     }
 
-                    // Paste handling
-                    if (event.getEventValue() == Keyboard.KEY_V
-                            && event.isCtrlDown())
-                    {
-                        currentInput.append(Sys.getClipboard());
-                        event.consume();
-                    }
                     // Backspace handling, imitates vanilla text inputs
                     // TODO: Add support for holding down backspace
-                    else if (event.getEventValue() == Keyboard.KEY_BACK
+                    if (event.getEventValue() == Keyboard.KEY_BACK
                             && currentInput.length() > 0)
                     {
                         // Shift+backspace, delete entire line
@@ -305,6 +298,13 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                         String command = currentInput.toString();
                         Console.parseInput(command, CommandContext.CAMPAIGN_MAP);
                         currentInput.setLength(0);
+                        event.consume();
+                    }
+                    // Paste handling
+                    else if (event.getEventValue() == Keyboard.KEY_V
+                            && event.isCtrlDown())
+                    {
+                        currentInput.append(Sys.getClipboard().replace('\n', ' '));
                         event.consume();
                     }
                     // Normal typing
