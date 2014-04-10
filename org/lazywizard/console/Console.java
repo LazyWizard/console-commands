@@ -48,8 +48,9 @@ public class Console
                 JSONUtils.toColor(settingsFile.getJSONArray("outputColor")),
                 settingsFile.getInt("maxOutputLineLength"));
 
-        ConsoleCombatListener.setCommandPersistence(
-                settingsFile.getBoolean("persistentCombatCommands"));
+        // TODO
+        //PersistentCommandManager.setCommandPersistence(
+        //        settingsFile.getBoolean("persistentCombatCommands"));
 
         // What level to log console output at
         Level logLevel = Level.toLevel(settingsFile.getString("consoleLogLevel"), Level.WARN);
@@ -219,9 +220,10 @@ public class Console
         }
     }
 
-    static void advance(ConsoleListener listener)
+    static void advance(float amount, ConsoleListener listener)
     {
         // Just check the output queue for now
+        //PersistentCommandManager.advance(amount, listener);
         showOutput(listener);
     }
 
