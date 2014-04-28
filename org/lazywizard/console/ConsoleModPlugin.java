@@ -3,6 +3,7 @@ package org.lazywizard.console;
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
 import org.apache.log4j.Level;
+import org.lazywizard.console.commands.RunCode;
 import org.lwjgl.opengl.Display;
 
 public class ConsoleModPlugin extends BaseModPlugin
@@ -13,6 +14,7 @@ public class ConsoleModPlugin extends BaseModPlugin
         // Console settings
         Console.reloadSettings();
         CommandStore.reloadCommands();
+        RunCode.loadImports();
 
         Console.showMessage("Console loaded.", Level.INFO);
 
