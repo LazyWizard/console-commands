@@ -1,31 +1,59 @@
 package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import org.codehaus.commons.compiler.CompileException;
 import org.codehaus.janino.ScriptEvaluator;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
+import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
 public class RunCode implements BaseCommand
 {
     private static ScriptEvaluator eval;
 
+    public static void loadImports()
+    {
+        if (eval == null)
+        {
+            createEval();
+        }
+
+        List<String> imports = new ArrayList<>();
+
+        try
+        {
+            JSONArray csv = Global.getSettings().getMergedSpreadsheetDataForMod(
+                    "import", "data/console/runcode_imports.csv", CommonStrings.MOD_ID);
+            for (int x = 0; x < csv.length(); x++)
+            {
+                imports.add(csv.getJSONObject(x).getString("import"));
+            }
+        }
+        catch (IOException | JSONException ex)
+        {
+            Console.showException("Failed to load RunCode imports: ", ex);
+            return;
+        }
+
+        eval.setDefaultImports(imports.toArray(new String[imports.size()]));
+    }
+
     private static void createEval()
     {
         eval = new ScriptEvaluator();
         eval.setReturnType(void.class);
         eval.setParentClassLoader(Global.getSettings().getScriptClassLoader());
-        eval.setDefaultImports(new String[]
+        eval.setThrownExceptions(new Class[]
         {
-            "com.fs.starfarer.api.*", "java.util.*",
-            "com.fs.starfarer.api.campaign.*", "java.awt.Color",
-            "com.fs.starfarer.api.fleet.*", "data.scripts.*",
-            "com.fs.starfarer.api.combat.*", "data.scripts.world.*",
-            "org.lazywizard.lazylib.*", "org.lazywizard.lazylib.combat.*",
-            "org.lazywizard.lazylib.campaign.*", "org.lwjgl.util.vector.Vector2f"
+            Exception.class
         });
     }
 

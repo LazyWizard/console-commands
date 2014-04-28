@@ -15,6 +15,7 @@ public class Reload implements BaseCommand
         {
             Console.reloadSettings();
             CommandStore.reloadCommands();
+            RunCode.loadImports();
         }
         catch (IOException | JSONException ex)
         {
