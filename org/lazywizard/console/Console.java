@@ -48,9 +48,9 @@ public class Console
                 JSONUtils.toColor(settingsFile.getJSONArray("outputColor")),
                 settingsFile.getInt("maxOutputLineLength"));
 
-        // TODO
-        //PersistentCommandManager.setCommandPersistence(
-        //        settingsFile.getBoolean("persistentCombatCommands"));
+        // Set command persistence between battles
+        PersistentCommandManager.setCommandPersistence(
+                settingsFile.getBoolean("persistentCombatCommands"));
 
         // What level to log console output at
         Level logLevel = Level.toLevel(settingsFile.getString("consoleLogLevel"), Level.WARN);
@@ -93,7 +93,13 @@ public class Console
      */
     public static void showMessage(String message, Level logLevel)
     {
-        output.append(StringUtils.wrapString(message, settings.getMaxOutputLineLength()));
+        message = StringUtils.wrapString(message, settings.getMaxOutputLineLength());
+        if (!message.endsWith("\n"))
+        {
+            message += "\n";
+        }
+
+        output.append(message);
         Global.getLogger(Console.class).log(logLevel, message);
     }
 
@@ -223,7 +229,7 @@ public class Console
     static void advance(float amount, ConsoleListener listener)
     {
         // Just check the output queue for now
-        //PersistentCommandManager.advance(amount, listener);
+        PersistentCommandManager.advance(amount, listener);
         showOutput(listener);
     }
 

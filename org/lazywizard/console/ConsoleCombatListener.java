@@ -6,23 +6,28 @@ import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import javax.swing.JOptionPane;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.ConsoleSettings.KeyStroke;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 
 public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleListener
 {
     private static final float MESSAGE_SIZE = 25f;
+    // Controls spawning and assigning threads for the input popup
+    // Multi-threading allows the popup to be on top of the game window
+    private static final Executor exe = Executors.newSingleThreadExecutor();
+    // Stores input from the console popup thread that hasn't been parsed yet
+    private final Queue<String> input = new ConcurrentLinkedQueue<>();
     // The Y offset of console output this frame, used so
     // that multiple messages while paused won't overlap
     private float messageOffset = 0f;
     private CombatEngineAPI engine;
     private CommandContext context;
-
-
 
     //<editor-fold defaultstate="collapsed" desc="Input handling">
     private static boolean checkInput(List<InputEventAPI> input)
@@ -31,9 +36,7 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
 
         for (InputEventAPI event : input)
         {
-            // Since remaining input will be nuked on success,
-            // we can safely check both keyboard event types
-            if (event.isConsumed() || !event.isKeyboardEvent()
+            if (event.isConsumed() || !event.isKeyDownEvent()
                     || event.getEventValue() != key.getKey())
             {
                 continue;
@@ -51,26 +54,6 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
         }
 
         return false;
-    }
-
-    static void resetKeyboard()
-    {
-        try
-        {
-            // Because Keyboard.reset() doesn't seem to reset modifier keys,
-            // we have to go extremely overboard to fix sticky keys...
-            Keyboard.destroy();
-            Keyboard.create();
-        }
-        catch (LWJGLException ex)
-        {
-            Console.showException("Failed to reset keyboard!", ex);
-        }
-    }
-
-    private static String getInput()
-    {
-        return JOptionPane.showInputDialog(null, CommonStrings.INPUT_QUERY);
     }
     //</editor-fold>
 
@@ -92,17 +75,20 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
         ShipAPI player = engine.getPlayerShip();
         if (player != null && engine.isEntityInPlay(player))
         {
+            // Parse stored input
+            synchronized (input)
+            {
+                while (!input.isEmpty())
+                {
+                    Console.parseInput(input.poll(), context);
+                }
+            }
+
             if (checkInput(events))
             {
                 // Combat, summon regular Java input dialog for now
                 // TODO: write an overlay if text rendering is ever added to API
-                String rawInput = getInput();
-                Console.parseInput(rawInput, context);
-
-                // An unfortunate necessity due to a LWJGL window focus bug
-                // Luckily, there shouldn't be any other input this frame
-                // if the player is trying to summon the console
-                resetKeyboard();
+                exe.execute(new ShowInputPopup());
             }
 
             // Advance the console and all combat commands
@@ -131,7 +117,7 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
         // TODO: the values here are kind of arbitrary, need to be worked out properly
         // TODO: display to the side of the player's ship furthest from the edge of the screen
         ShipAPI player = engine.getPlayerShip();
-        String[] messages = output.toString().split("\n");
+        String[] messages = output.split("\n");
         for (int x = 0; x < messages.length; x++)
         {
             engine.addFloatingText(Vector2f.add(
@@ -143,5 +129,14 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
         }
 
         messageOffset += messages.length * MESSAGE_SIZE;
+    }
+
+    private class ShowInputPopup implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            input.add(JOptionPane.showInputDialog(null, CommonStrings.INPUT_QUERY));
+        }
     }
 }
