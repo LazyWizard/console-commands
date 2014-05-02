@@ -36,6 +36,7 @@ Changes to existing commands:
  - Home can now teleport your fleet between starsystems
  - RunCode catches all Exceptions so you don't need to squeeze a try-catch
    block into your arguments anymore
+ - RunCode's imports are customizable, set in data/console/runcode_imports.csv
 Removed the following old commands:
  - AddConsole, as the new ModPlugin system makes it unnecessary
  - GC, anyone who knows enough Java to know what this does and when to use it
