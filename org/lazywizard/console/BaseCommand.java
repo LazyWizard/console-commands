@@ -23,12 +23,6 @@ public interface BaseCommand
          */
         SUCCESS,
         /**
-         * Something went wrong while executing the command.
-         * <p>
-         * @since 2.0
-         */
-        ERROR,
-        /**
          * Command had the wrong arguments passed in.
          * <p>
          * @since 2.0
@@ -40,7 +34,13 @@ public interface BaseCommand
          * <p>
          * @since 2.0
          */
-        WRONG_CONTEXT
+        WRONG_CONTEXT,
+        /**
+         * Something went wrong while executing the command.
+         * <p>
+         * @since 2.0
+         */
+        ERROR
     }
 
     /**

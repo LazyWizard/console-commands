@@ -96,6 +96,7 @@ public class RunCode implements BaseCommand
         }
         catch (InvocationTargetException ex)
         {
+            // Unwrap exception to get at actual error details
             Console.showException("Execution failed: ", ex.getTargetException());
             return CommandResult.ERROR;
         }

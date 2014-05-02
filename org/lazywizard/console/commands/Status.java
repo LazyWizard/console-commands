@@ -11,13 +11,14 @@ import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
 import org.lazywizard.lazylib.StringUtils;
 
+// TODO: Uncomment alias details when aliases are implemented
 public class Status implements BaseCommand
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
         Set<String> rawSources = new HashSet<>();
-        String commands, tags, sources;
+        String commands, tags, sources; //, aliases;
 
         for (String tmp : CommandStore.getLoadedCommands())
         {
@@ -29,6 +30,7 @@ public class Status implements BaseCommand
             commands = Integer.toString(CommandStore.getLoadedCommands().size());
             tags = Integer.toString(CommandStore.getKnownTags().size());
             sources = Integer.toString(rawSources.size());
+            //aliases = Integer.toString(CommandStore.getAliases().size());
         }
         else if ("detailed".equalsIgnoreCase(args))
         {
@@ -44,21 +46,25 @@ public class Status implements BaseCommand
             Collections.sort(tmp);
             sources = "(" + tmp.size() + ")\n"
                     + StringUtils.indent(CollectionUtils.implode(tmp, "\n"), "   ");
+
+            /*tmp = CommandStore.getAliases();
+            Collections.sort(tmp);
+            aliases = "(" + tmp.size() + ")\n"
+                    + StringUtils.indent(CollectionUtils.implode(tmp, "\n"), "   ");*/
         }
         else
         {
             return CommandResult.BAD_SYNTAX;
         }
 
-        StringBuilder status = new StringBuilder(160)
-                .append("Console status:\n - Current context: ").append(context.toString())
-                .append("\n - Loaded commands: ").append(commands)
-                .append("\n - Loaded tags: ").append(tags)
-                //.append("\n - Loaded aliases: ")
-                //.append(CommandStore.getAliases().size());
-                .append("\n - Mods that added commands: ").append(sources);
+        String status = "Console status:"
+                + "\n - Current context: " + context.toString()
+                + "\n - Loaded commands: " + commands
+                + "\n - Loaded tags: " + tags
+                //+ "\n - Loaded aliases: " + aliases
+                + "\n - Mods that added commands: " + sources;
 
-        Console.showMessage(status.toString());
+        Console.showMessage(status);
         return CommandResult.SUCCESS;
     }
 }

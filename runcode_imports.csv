@@ -8,3 +8,8 @@ import
 "java.util.*"
 "java.awt.Color"
 "org.lwjgl.util.vector.Vector2f"
+"org.lazywizard.lazylib.*"
+"org.lazywizard.lazylib.combat.*",
+"org.lazywizard.lazylib.combat.entities.*"
+"org.lazywizard.lazylib.campaign.*"
+"org.lazywizard.lazylib.campaign.orbits.*"

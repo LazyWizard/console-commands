@@ -139,7 +139,11 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
         @Override
         public void run()
         {
-            input.add(JOptionPane.showInputDialog(null, CommonStrings.INPUT_QUERY));
+            String tmp = JOptionPane.showInputDialog(null, CommonStrings.INPUT_QUERY);
+            if (tmp != null)
+            {
+                input.add(tmp);
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FleetDataAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.fleet.FleetMemberType;
+import org.apache.log4j.Level;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
@@ -111,6 +112,8 @@ public class AddShip implements BaseCommand
                         variant = Global.getSettings().loadJSON("data/variants/"
                                 + tmp[0] + ".variant").getString("variantId");
                         ship = fact.createFleetMember(FleetMemberType.SHIP, variant);
+                        Console.showMessage("Warning: variant ID doesn't match"
+                                + " .variant filename!", Level.WARN);
                     }
                     catch (Exception ex4)
                     {
