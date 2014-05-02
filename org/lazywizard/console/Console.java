@@ -3,6 +3,8 @@ package org.lazywizard.console;
 import com.fs.starfarer.api.Global;
 import java.awt.Color;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 import javax.swing.UIManager;
 import org.apache.log4j.Level;
@@ -49,9 +51,8 @@ public class Console
                 settingsFile.getInt("maxOutputLineLength"));
 
         // Set command persistence between battles
-        PersistentCommandManager.setCommandPersistence(
-                settingsFile.getBoolean("persistentCombatCommands"));
-
+        //PersistentCommandManager.setCommandPersistence(
+        //        settingsFile.getBoolean("persistentCombatCommands"));
         // What level to log console output at
         Level logLevel = Level.toLevel(settingsFile.getString("consoleLogLevel"), Level.WARN);
         Global.getLogger(Console.class).setLevel(logLevel);
@@ -152,11 +153,12 @@ public class Console
         return settings;
     }
 
-    private static void runCommand(String input, CommandContext context)
+    private static CommandResult runCommand(String input, CommandContext context)
     {
         String[] tmp = input.split(" ", 2);
         String com = tmp[0].toLowerCase();
         String args = (tmp.length > 1 ? tmp[1] : "");
+        CommandResult result;
 
         try
         {
@@ -164,7 +166,7 @@ public class Console
             if (stored == null)
             {
                 showMessage("No such command \"" + com + "\" registered!", Level.ERROR);
-                return;
+                return CommandResult.ERROR;
             }
 
             if (settings.getShouldShowEnteredCommands())
@@ -173,7 +175,7 @@ public class Console
             }
 
             BaseCommand command = stored.getCommandClass().newInstance();
-            CommandResult result = command.runCommand(args, context);
+            result = command.runCommand(args, context);
 
             if (result == CommandResult.BAD_SYNTAX
                     && !stored.getSyntax().isEmpty())
@@ -186,7 +188,10 @@ public class Console
         {
             showException("Failed to execute command \"" + input
                     + "\" in context " + context, ex);
+            return CommandResult.ERROR;
         }
+
+        return result;
     }
 
     static void parseInput(String rawInput, CommandContext context)
@@ -196,24 +201,51 @@ public class Console
             return;
         }
 
+        CommandResult worstResult;
+
         // Runcode ignores separators
         // Hopefully the ONLY hardcoded command support I'll add to this mod...
         if (rawInput.length() >= 7 && rawInput.substring(0, 7).equalsIgnoreCase("runcode"))
         {
-            runCommand(rawInput, context);
+            worstResult = runCommand(rawInput, context);
         }
         else
         {
             // Split the raw input up into the individual commands
             // The command separator is used to separate multiple commands
+            Set<CommandResult> results = new HashSet<>();
+            worstResult = CommandResult.SUCCESS;
             for (String input : rawInput.split(settings.getCommandSeparator()))
             {
                 input = input.trim();
                 if (!input.isEmpty())
                 {
-                    runCommand(input, context);
+                    results.add(runCommand(input, context));
                 }
             }
+
+            for (CommandResult tmp : results)
+            {
+                if (tmp.ordinal() > worstResult.ordinal())
+                {
+                    worstResult = tmp;
+                }
+            }
+        }
+
+        // Play a sound based on worst error type
+        // TODO: Make this configurable
+        switch (worstResult)
+        {
+            case BAD_SYNTAX:
+                Global.getSoundPlayer().playUISound("cr_allied_malfunction", 1f, 1f);
+                break;
+            case WRONG_CONTEXT:
+                Global.getSoundPlayer().playUISound("cr_allied_warning", 1f, 1f);
+                break;
+            case ERROR:
+                Global.getSoundPlayer().playUISound("cr_allied_critical", 1f, 1f);
+                break;
         }
     }
 
@@ -229,7 +261,7 @@ public class Console
     static void advance(float amount, ConsoleListener listener)
     {
         // Just check the output queue for now
-        PersistentCommandManager.advance(amount, listener);
+        //PersistentCommandManager.advance(amount, listener);
         showOutput(listener);
     }
 

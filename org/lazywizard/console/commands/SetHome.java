@@ -48,13 +48,10 @@ public class SetHome implements BaseCommand
         // Home priorities: stations, then planets, then empty space (raw coords)
         else
         {
-            List toSearch = system.getOrbitalStations();
             Vector2f playerLocation = Global.getSector().getPlayerFleet().getLocation();
-            SectorEntityToken tmp;
 
-            for (int x = 0; x < toSearch.size(); x++)
+            for (SectorEntityToken tmp : system.getOrbitalStations())
             {
-                tmp = (SectorEntityToken) toSearch.get(x);
                 if (isInRange(playerLocation, tmp))
                 {
                     newHome = tmp;
@@ -65,11 +62,8 @@ public class SetHome implements BaseCommand
             // No stations in range, check planets next
             if (newHome == null)
             {
-                toSearch = system.getPlanets();
-
-                for (int y = 0; y < toSearch.size(); y++)
+                for (SectorEntityToken tmp : system.getPlanets())
                 {
-                    tmp = (SectorEntityToken) toSearch.get(y);
                     if (isInRange(playerLocation, tmp))
                     {
                         newHome = tmp;

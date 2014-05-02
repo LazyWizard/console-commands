@@ -30,8 +30,8 @@ public class CommandStore
 
     /**
      * Forces the console to clear its stored commands and reload them from the
-     * CSV. If a command fails to load, it will <i>not</i> throw an
-     * {@link Exception}. Instead, it will display an error message to the
+     * CSV. If a command fails to load it will <i>not</i> throw an
+     * {@link Exception}. Instead it will display an error message to the
      * player and continue to load the rest of the commands normally.
      *
      * @throws IOException   if the CSV file at {@link CommonStrings#CSV_PATH}
@@ -315,16 +315,6 @@ public class CommandStore
         public String getSource()
         {
             return source;
-        }
-
-        private StoredCommand()
-        {
-            commandClass = null;
-            name = null;
-            syntax = null;
-            help = null;
-            source = null;
-            tags = null;
         }
     }
 
