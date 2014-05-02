@@ -1,6 +1,8 @@
 package org.lazywizard.console;
 
 import java.awt.Color;
+import java.util.Map;
+import org.lazywizard.console.BaseCommand.CommandResult;
 
 /**
  * Contains the console settings loaded from the JSON file.
@@ -14,6 +16,8 @@ public class ConsoleSettings
     private final KeyStroke CONSOLE_SUMMON_KEY;
     // The String (usually a single character) that separates multiple commands
     private final String COMMAND_SEPARATOR;
+    // The sound ID to be played when a certain CommandResult is returned
+    private final Map<CommandResult, String> RESULT_SOUNDS;
     // Whether each command should be displayed to the player before executing
     private final boolean SHOW_ENTERED_COMMANDS;
     // The color of the console's output text
@@ -23,7 +27,7 @@ public class ConsoleSettings
 
     ConsoleSettings(int consoleSummonKey, boolean requireShift, boolean requireControl,
             boolean requireAlt, String commandSeparator, boolean showEnteredCommands,
-            Color outputColor, int outputMaxLineLength)
+            Color outputColor, int outputMaxLineLength, Map<CommandResult, String> resultSounds)
     {
         CONSOLE_SUMMON_KEY = new KeyStroke(consoleSummonKey, requireShift,
                 requireControl, requireAlt);
@@ -31,6 +35,7 @@ public class ConsoleSettings
         SHOW_ENTERED_COMMANDS = showEnteredCommands;
         OUTPUT_COLOR = outputColor;
         OUTPUT_MAX_LINE_LENGTH = outputMaxLineLength;
+        RESULT_SOUNDS = resultSounds;
     }
 
     /**
@@ -97,6 +102,23 @@ public class ConsoleSettings
     public int getMaxOutputLineLength()
     {
         return OUTPUT_MAX_LINE_LENGTH;
+    }
+
+    /**
+     * Returns what sound will be played when a command returns a specific
+     * result.
+     * <p>
+     * @param result The {@link CommandResult} to get the sound for.
+     * <p>
+     * @return The ID of the sound that will be played if a command returns that
+     *         {@link CommandResult}, or {@code null} if no sound is set up for
+     *         that result.
+     * <p>
+     * @since 2.0
+     */
+    public String getSoundForResult(CommandResult result)
+    {
+        return RESULT_SOUNDS.get(result);
     }
 
     /**
