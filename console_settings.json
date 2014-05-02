@@ -24,7 +24,9 @@
     # INFO and above will save all console output to Starsector.log!
     "consoleLogLevel":WARN,           # Default: WARN
 
-    # What sound is played for each result
+    # What sound is played when a command returns a specific result code
+    # The IDs for these sounds can be found in data/config/sounds.json
+    # If no sound is entered, no sound will be played for that result
     # If multiple commands are entered at once only the 'worst' sound is played
     "playSoundOnResult":{
         # "SUCCESS":"",
