@@ -24,6 +24,15 @@
     # INFO and above will save all console output to Starsector.log!
     "consoleLogLevel":WARN,           # Default: WARN
 
+    # What sound is played for each result
+    # If multiple commands are entered at once only the 'worst' sound is played
+    "playSoundOnResult":{
+        # "SUCCESS":"",
+        "BAD_SYNTAX":"cr_allied_malfunction",
+        "WRONG_CONTEXT":"cr_allied_warning",
+        "ERROR":"cr_allied_critical"
+    },
+
     # Color settings for the combat pop-up (temporary, not retrievable in-game)
     "backgroundColor":[0,0,0],        # Default: black   (0,0,0)
     "foregroundColor":[0,255,255],    # Default: cyan    (0,255,255)

@@ -3,7 +3,9 @@ package org.lazywizard.console;
 import com.fs.starfarer.api.Global;
 import java.awt.Color;
 import java.io.IOException;
+import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import javax.swing.UIManager;
@@ -29,6 +31,28 @@ public class Console
     // Stores the output of the console until it can be displayed
     private static StringBuilder output = new StringBuilder();
 
+    private static Map<CommandResult, String> parseSoundOptions(JSONObject settings) throws JSONException
+    {
+        Map<CommandResult, String> sounds = new EnumMap<>(CommandResult.class);
+        JSONObject json = settings.getJSONObject("playSoundOnResult");
+
+        for (CommandResult tmp : CommandResult.values())
+        {
+            String resultId = tmp.toString();
+            if (json.has(resultId))
+            {
+                String soundId = json.getString(resultId);
+                if (soundId != null && !soundId.isEmpty())
+                {
+                    sounds.put(tmp, soundId);
+                }
+            }
+        }
+
+        System.out.println(sounds);
+        return sounds;
+    }
+
     /**
      * Forces the console to reload its settings from the settings file.
      *
@@ -48,7 +72,8 @@ public class Console
                 Pattern.quote(settingsFile.getString("commandSeparator")),
                 settingsFile.getBoolean("showEnteredCommands"),
                 JSONUtils.toColor(settingsFile.getJSONArray("outputColor")),
-                settingsFile.getInt("maxOutputLineLength"));
+                settingsFile.getInt("maxOutputLineLength"),
+                parseSoundOptions(settingsFile));
 
         // Set command persistence between battles
         //PersistentCommandManager.setCommandPersistence(
@@ -234,18 +259,10 @@ public class Console
         }
 
         // Play a sound based on worst error type
-        // TODO: Make this configurable
-        switch (worstResult)
+        String sound = settings.getSoundForResult(worstResult);
+        if (sound != null)
         {
-            case BAD_SYNTAX:
-                Global.getSoundPlayer().playUISound("cr_allied_malfunction", 1f, 1f);
-                break;
-            case WRONG_CONTEXT:
-                Global.getSoundPlayer().playUISound("cr_allied_warning", 1f, 1f);
-                break;
-            case ERROR:
-                Global.getSoundPlayer().playUISound("cr_allied_critical", 1f, 1f);
-                break;
+            Global.getSoundPlayer().playUISound(sound, 1f, 1f);
         }
     }
 
