@@ -14,7 +14,7 @@ public class ConsoleModPlugin extends BaseModPlugin
         // Console settings
         Console.reloadSettings();
         CommandStore.reloadCommands();
-        RunCode.loadImports();
+        RunCode.reloadImports();
 
         Console.showMessage("Console loaded.", Level.INFO);
 

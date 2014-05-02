@@ -19,7 +19,7 @@ public class RunCode implements BaseCommand
 {
     private static ScriptEvaluator eval;
 
-    public static void loadImports()
+    public static void reloadImports()
     {
         if (eval == null)
         {
@@ -79,9 +79,10 @@ public class RunCode implements BaseCommand
             args += ";";
         }
 
+        // This is only triggered if imports weren't set somehow
         if (eval == null)
         {
-            createEval();
+            reloadImports();
         }
 
         try

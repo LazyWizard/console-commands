@@ -36,19 +36,19 @@ public class Console
         Map<CommandResult, String> sounds = new EnumMap<>(CommandResult.class);
         JSONObject json = settings.getJSONObject("playSoundOnResult");
 
-        for (CommandResult tmp : CommandResult.values())
+        for (CommandResult result : CommandResult.values())
         {
-            String resultId = tmp.name();
+            String resultId = result.name();
             if (json.has(resultId))
             {
                 String soundId = json.getString(resultId);
                 if (soundId != null && !soundId.isEmpty())
                 {
-                    sounds.put(tmp, soundId);
+                    sounds.put(result, soundId);
                 }
             }
         }
-        
+
         return sounds;
     }
 
@@ -248,6 +248,7 @@ public class Console
                 }
             }
 
+            // Find 'worst' result of executed commands
             for (CommandResult tmp : results)
             {
                 if (tmp.ordinal() > worstResult.ordinal())
