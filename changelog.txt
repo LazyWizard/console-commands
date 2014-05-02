@@ -26,6 +26,7 @@ New commands:
  - Repair, repairs hull/armor/cr of all ships in your fleet (in campaign),
    or hull/armor damage of all your currently fighting ships (in combat)
  - ShowBounds, toggles bounds rendering of all ships in combat
+ - ShowLoc, shows coordinates of player ship/fleet in combat/campaign
  - SourceOf, shows what mod a specific command came from
  - Storage, opens a persistent, infinite-stack cargo/fleet container
 Changes to existing commands:
