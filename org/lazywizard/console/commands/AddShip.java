@@ -105,26 +105,36 @@ public class AddShip implements BaseCommand
                 }
                 catch (Exception ex3)
                 {
+                    // Before we give up, maybe the .variant file doesn't match the ID?
+                    try
+                    {
+                        variant = Global.getSettings().loadJSON("data/variants/"
+                                + tmp[0] + ".variant").getString("variantId");
+                        ship = fact.createFleetMember(FleetMemberType.SHIP, variant);
+                    }
+                    catch (Exception ex4)
+                    {
                         Console.showMessage("No ship found with id '" + tmp[0] + "'!");
                         return CommandResult.ERROR;
                     }
                 }
             }
-
-            fleet.addFleetMember(ship);
-
-            // More than one ship was requested
-            if (amt > 1)
-            {
-                for (int x = 1; x < amt; x++)
-                {
-                    ship = fact.createFleetMember(FleetMemberType.SHIP, variant);
-                    fleet.addFleetMember(ship);
-                }
-            }
-
-            Console.showMessage("Added " + amt + " of ship " + ship.getSpecId()
-                    + " to player fleet.");
-            return CommandResult.SUCCESS;
         }
+
+        fleet.addFleetMember(ship);
+
+        // More than one ship was requested
+        if (amt > 1)
+        {
+            for (int x = 1; x < amt; x++)
+            {
+                ship = fact.createFleetMember(FleetMemberType.SHIP, variant);
+                fleet.addFleetMember(ship);
+            }
+        }
+
+        Console.showMessage("Added " + amt + " of ship " + ship.getSpecId()
+                + " to player fleet.");
+        return CommandResult.SUCCESS;
     }
+}

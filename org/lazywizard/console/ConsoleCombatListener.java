@@ -20,7 +20,7 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
     private static final float MESSAGE_SIZE = 25f;
     // Controls spawning and assigning threads for the input popup
     // Multi-threading allows the popup to be on top of the game window
-    private static final Executor exe = Executors.newSingleThreadExecutor();
+    private final Executor exe = Executors.newSingleThreadExecutor();
     // Stores input from the console popup thread that hasn't been parsed yet
     private final Queue<String> input = new ConcurrentLinkedQueue<>();
     // The Y offset of console output this frame, used so
@@ -103,6 +103,9 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
         // COMBAT_SIMULATION will be added when the API supports it
         context = (engine.isInCampaign() ? CommandContext.COMBAT_CAMPAIGN
                 : CommandContext.COMBAT_MISSION);
+
+        // TODO: Remove this after .6.5a
+        input.clear();
     }
 
     @Override
