@@ -38,7 +38,7 @@ public class Console
 
         for (CommandResult tmp : CommandResult.values())
         {
-            String resultId = tmp.toString();
+            String resultId = tmp.name();
             if (json.has(resultId))
             {
                 String soundId = json.getString(resultId);
@@ -48,8 +48,7 @@ public class Console
                 }
             }
         }
-
-        System.out.println(sounds);
+        
         return sounds;
     }
 

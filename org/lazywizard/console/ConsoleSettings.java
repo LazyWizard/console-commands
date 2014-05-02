@@ -126,7 +126,7 @@ public class ConsoleSettings
      * <p>
      * @since 2.0
      */
-    public class KeyStroke
+    public static class KeyStroke
     {
         private final int key;
         private final boolean requireShift;
