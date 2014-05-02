@@ -32,7 +32,7 @@
         # "SUCCESS":"",
         "BAD_SYNTAX":"cr_allied_malfunction",
         "WRONG_CONTEXT":"cr_allied_warning",
-        "ERROR":"cr_allied_critical"
+        "ERROR":"cr_allied_malfunction"
     },
 
     # Color settings for the combat pop-up (temporary, not retrievable in-game)
