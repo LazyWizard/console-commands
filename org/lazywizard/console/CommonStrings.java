@@ -32,6 +32,13 @@ public class CommonStrings
      * @since 2.0
      */
     public static final String CSV_PATH = "data/console/commands.csv";
+    /**
+     * The path to runcode_imports.csv, used for setting custom imports for the
+     * RunCode command.
+     * <p>
+     * @since 2.0
+     */
+    public static final String RUNCODE_CSV_PATH = "data/console/runcode_imports.csv";
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Common messages">

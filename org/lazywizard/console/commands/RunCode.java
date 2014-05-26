@@ -31,7 +31,7 @@ public class RunCode implements BaseCommand
         try
         {
             JSONArray csv = Global.getSettings().getMergedSpreadsheetDataForMod(
-                    "import", "data/console/runcode_imports.csv", CommonStrings.MOD_ID);
+                    "import", CommonStrings.RUNCODE_CSV_PATH, CommonStrings.MOD_ID);
             for (int x = 0; x < csv.length(); x++)
             {
                 imports.add(csv.getJSONObject(x).getString("import"));
