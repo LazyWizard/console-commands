@@ -5,7 +5,7 @@ LazyLib is required for this mod to function!
 The console is now summoned with control+backspace
  - This and other settings can be changed in data/console/console_settings.json
 Total rewrite of the mod:
- - No longer multi-threaded (fixes a load of problems the old mod had)
+ - Core is no longer multi-threaded (fixes a load of problems the old mod had)
  - Utility mod, can be toggled at will, works with total conversions
  - Campaign input is handled through an interaction dialog, works in fullscreen
    (combat input still requires a popup and thus playing in windowed mode)

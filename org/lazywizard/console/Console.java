@@ -104,6 +104,11 @@ public class Console
         UIManager.put("SplitPane.foreground", color);
     }
 
+    public static ConsoleSettings getSettings()
+    {
+        return settings;
+    }
+
     //<editor-fold defaultstate="collapsed" desc="showMessage variants">
     /**
      * Displays a message to the user. The message will be formatted and shown
@@ -118,14 +123,16 @@ public class Console
      */
     public static void showMessage(String message, Level logLevel)
     {
+        // Paste directly to log
+        Global.getLogger(Console.class).log(logLevel, message);
+
+        // Word-wrap message and add it to the output queue
         message = StringUtils.wrapString(message, settings.getMaxOutputLineLength());
+        output.append(message);
         if (!message.endsWith("\n"))
         {
-            message += "\n";
+            output.append('\n');
         }
-
-        output.append(message);
-        Global.getLogger(Console.class).log(logLevel, message);
     }
 
     /**
@@ -171,11 +178,6 @@ public class Console
         showMessage(stackTrace.toString(), Level.ERROR);
     }
     //</editor-fold>
-
-    public static ConsoleSettings getSettings()
-    {
-        return settings;
-    }
 
     private static CommandResult runCommand(String input, CommandContext context)
     {
