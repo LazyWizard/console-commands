@@ -1,6 +1,8 @@
 package org.lazywizard.console;
 
+import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.InteractionDialogPlugin;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.EnumMap;
@@ -177,6 +179,11 @@ public class Console
 
         showMessage(stackTrace.toString(), Level.ERROR);
     }
+
+    public static void showDialogOnClose(InteractionDialogPlugin dialog)
+    {
+        Global.getSector().addScript(new ShowDialogOnCloseScript(dialog));
+    }
     //</editor-fold>
 
     private static CommandResult runCommand(String input, CommandContext context)
@@ -282,6 +289,40 @@ public class Console
         // Just check the output queue for now
         //PersistentCommandManager.advance(amount, listener);
         showOutput(listener);
+    }
+
+    private static class ShowDialogOnCloseScript implements EveryFrameScript
+    {
+        private InteractionDialogPlugin dialog;
+        private boolean isDone = false;
+
+        private ShowDialogOnCloseScript(InteractionDialogPlugin dialog)
+        {
+            this.dialog = dialog;
+        }
+
+        @Override
+        public boolean isDone()
+        {
+            return isDone;
+        }
+
+        @Override
+        public boolean runWhilePaused()
+        {
+            return false;
+        }
+
+        @Override
+        public void advance(float amount)
+        {
+            if (!isDone)
+            {
+                Global.getSector().getCampaignUI().showInteractionDialog(
+                        dialog, null);
+                isDone = true;
+            }
+        }
     }
 
     private Console()
