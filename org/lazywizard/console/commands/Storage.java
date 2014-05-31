@@ -1,6 +1,5 @@
 package org.lazywizard.console.commands;
 
-import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.InteractionDialogImageVisual;
 import com.fs.starfarer.api.campaign.CargoAPI;
@@ -45,7 +44,7 @@ public class Storage implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        Global.getSector().addScript(new ShowStorageLaterScript());
+        Console.showDialogOnClose(new StorageInteractionDialogPlugin());
         Console.showMessage("Storage will be shown when you next unpause on the campaign map.");
         return CommandResult.SUCCESS;
     }
@@ -208,34 +207,6 @@ public class Storage implements BaseCommand
             public boolean isFreeTransfer()
             {
                 return true;
-            }
-        }
-    }
-
-    private static class ShowStorageLaterScript implements EveryFrameScript
-    {
-        private boolean isDone = false;
-
-        @Override
-        public boolean isDone()
-        {
-            return isDone;
-        }
-
-        @Override
-        public boolean runWhilePaused()
-        {
-            return false;
-        }
-
-        @Override
-        public void advance(float amount)
-        {
-            if (!isDone)
-            {
-                Global.getSector().getCampaignUI().showInteractionDialog(
-                        new StorageInteractionDialogPlugin(), null);
-                isDone = true;
             }
         }
     }
