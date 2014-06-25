@@ -70,6 +70,13 @@ public class AddWing implements BaseCommand
         FleetMemberAPI ship;
         String variant = tmp[0];
 
+        // Fix for improper capitalization
+        for (String id : Global.getSector().getAllFighterWingIds())
+        {
+            if (variant.equalsIgnoreCase(id))
+                variant = id;
+        }
+
         // Add _wing if the command fails
         try
         {

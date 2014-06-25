@@ -167,7 +167,11 @@ public class Console
         // Add message if one was entered
         if (message != null)
         {
-            stackTrace.append(message).append("\n");
+            stackTrace.append(message);
+            if (!message.endsWith("\n"))
+            {
+                stackTrace.append("\n");
+            }
         }
 
         // Add stack trace of Throwable
