@@ -58,7 +58,7 @@ public class Status implements BaseCommand
         }
 
         String status = "Console status:"
-                + "\n - Current context: " + context.toString()
+                + "\n - Current context: " + context.name()
                 + "\n - Loaded commands: " + commands
                 + "\n - Loaded tags: " + tags
                 //+ "\n - Loaded aliases: " + aliases

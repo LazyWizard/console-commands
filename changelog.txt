@@ -20,6 +20,8 @@ Made writing custom commands much simpler:
 New commands:
  - AllHulls, adds one of each hull to a station's inventory
  - AllWings, adds one of each fighter wing to a station's inventory
+ - Find, gives name and location of all entities in the campaign whose
+   name contains the given arguments
  - Jump, teleports your fleet to another star system or hyperspace
  - InfiniteCR, prevents CR from draining during combat
  - Reload, reloads all console commands and settings
