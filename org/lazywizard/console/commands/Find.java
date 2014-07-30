@@ -41,18 +41,18 @@ public class Find implements BaseCommand
         for (LocationAPI location : locations)
         {
             // TODO: Replace this with LocationAPI.getName() after .6.5a is released
-            String name;
+            String locationName;
             if (location instanceof StarSystemAPI)
             {
-                name = ((StarSystemAPI) location).getName();
+                locationName = ((StarSystemAPI) location).getName();
             }
             else if (location == Global.getSector().getHyperspace())
             {
-                name = "Hyperspace";
+                locationName = "Hyperspace";
             }
             else
             {
-                name = "Unknown location";
+                locationName = "Unknown location";
             }
 
             List<SectorEntityToken> tokens = new ArrayList<>();
@@ -62,15 +62,14 @@ public class Find implements BaseCommand
             tokens.addAll(location.getEntities(JumpPointAPI.class));
             //tokens.addAll(location.getEntities(AsteroidAPI.class));
             List<String> results = new ArrayList<>();
-            for (Object tmp : tokens)
+            for (SectorEntityToken token : tokens)
             {
-                System.out.println(tmp.getClass());
-                SectorEntityToken token = (SectorEntityToken) tmp;
+                // Avoid potential NPE crash here with certain entities
                 String tokenName = token.getFullName();
                 if (tokenName != null && tokenName.toLowerCase().contains(searchFor))
                 {
                     Vector2f loc = token.getLocation();
-                    results.add("- " + token.getFullName() + "\n   at {" + loc.x
+                    results.add("- " + tokenName + "\n   at {" + loc.x
                             + ", " + loc.y + "}");
                     totalResults++;
                 }
@@ -79,7 +78,7 @@ public class Find implements BaseCommand
             if (!results.isEmpty())
             {
                 Console.showMessage("Found " + results.size() + " matches in "
-                        + name + ":\n" + StringUtils.indent(CollectionUtils.implode(results,
+                        + locationName + ":\n" + StringUtils.indent(CollectionUtils.implode(results,
                                         "\n"), " "));
             }
         }
