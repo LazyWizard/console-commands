@@ -18,6 +18,7 @@ AllHulls,org.lazywizard.console.commands.AllHulls,"core,campaign",allhulls [opti
 AllWeapons,org.lazywizard.console.commands.AllWeapons,"core,campaign",allweapons [optionalStation],"Places ten of every weapon in the specified station, or in storage if no argument is entered."
 AllWings,org.lazywizard.console.commands.AllWings,"core,campaign",allwings [optionalStation],"Places ten of every fighter wing in the specified station, or in storage if no argument is entered."
 DevMode,org.lazywizard.console.commands.DevMode,core,devmode [optionalOnOrOff],"Enables or disables dev mode. If no argument is given, acts as a toggle."
+Find,org.lazywizard.console.commands.Find,"core,campaign",find <entityName>,"Lists all entities with the given name and their current locations."
 God,org.lazywizard.console.commands.God,"core,combat",god (no arguments),Toggles invincibility for all ships on your side.
 GoTo,org.lazywizard.console.commands.GoTo,"core,campaign",goto <locationName>,"Teleports your fleet to the token with the given name in this system, if any exists. The argument 'home' will function identically to the 'home' command."
 Help,org.lazywizard.console.commands.Help,"core,console",help [optionalCommand],"Shows a list of all commands, or the details on using a specific command if one is entered."
