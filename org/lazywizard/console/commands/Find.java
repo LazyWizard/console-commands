@@ -3,6 +3,7 @@ package org.lazywizard.console.commands;
 import java.util.ArrayList;
 import java.util.List;
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.AsteroidAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.JumpPointAPI;
 import com.fs.starfarer.api.campaign.LocationAPI;
@@ -19,6 +20,47 @@ import org.lwjgl.util.vector.Vector2f;
 
 public class Find implements BaseCommand
 {
+    private static String getName(LocationAPI location)
+    {
+        if (location instanceof StarSystemAPI)
+        {
+            return ((StarSystemAPI) location).getName();
+        }
+
+        return (location == Global.getSector().getHyperspace()
+                ? "Hyperspace" : "Unknown location");
+    }
+
+    private static String getType(SectorEntityToken token)
+    {
+        if (token instanceof AsteroidAPI)
+        {
+            return "(asteroid)";
+        }
+        
+        if (token instanceof CampaignFleetAPI)
+        {
+            return "(fleet)";
+        }
+
+        if (token instanceof PlanetAPI)
+        {
+            return ((PlanetAPI) token).isStar() ? "(star)" : "(planet)";
+        }
+
+        if (token instanceof OrbitalStationAPI)
+        {
+            return "(station)";
+        }
+
+        if (token instanceof JumpPointAPI)
+        {
+            return "(jump point)";
+        }
+
+        return "(misc)";
+    }
+
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
@@ -37,31 +79,20 @@ public class Find implements BaseCommand
         List<LocationAPI> locations = new ArrayList<>();
         locations.addAll(Global.getSector().getStarSystems());
         locations.add(Global.getSector().getHyperspace());
+        StringBuilder results = new StringBuilder();
         int totalResults = 0;
         for (LocationAPI location : locations)
         {
             // TODO: Replace this with LocationAPI.getName() after .6.5a is released
-            String locationName;
-            if (location instanceof StarSystemAPI)
-            {
-                locationName = ((StarSystemAPI) location).getName();
-            }
-            else if (location == Global.getSector().getHyperspace())
-            {
-                locationName = "Hyperspace";
-            }
-            else
-            {
-                locationName = "Unknown location";
-            }
-
+            String locationName = getName(location);
             List<SectorEntityToken> tokens = new ArrayList<>();
             tokens.addAll(location.getEntities(CampaignFleetAPI.class));
             tokens.addAll(location.getEntities(OrbitalStationAPI.class));
             tokens.addAll(location.getEntities(PlanetAPI.class));
             tokens.addAll(location.getEntities(JumpPointAPI.class));
-            //tokens.addAll(location.getEntities(AsteroidAPI.class));
-            List<String> results = new ArrayList<>();
+            tokens.addAll(location.getEntities(AsteroidAPI.class));
+            int numResults = 0;
+            results.setLength(0);
             for (SectorEntityToken token : tokens)
             {
                 // Avoid potential NPE crash here with certain entities
@@ -69,17 +100,19 @@ public class Find implements BaseCommand
                 if (tokenName != null && tokenName.toLowerCase().contains(searchFor))
                 {
                     Vector2f loc = token.getLocation();
-                    results.add("- " + tokenName + "\n   at {" + loc.x
-                            + ", " + loc.y + "}");
-                    totalResults++;
+                    results.append("- ").append(tokenName).append(" ")
+                            .append(getType(token)).append("\n   at {")
+                            .append(loc.x).append(", ").append(loc.y).append("}\n");
+                    numResults++;
                 }
             }
 
-            if (!results.isEmpty())
+            if (numResults > 0)
             {
-                Console.showMessage("Found " + results.size() + " matches in "
-                        + locationName + ":\n" + StringUtils.indent(CollectionUtils.implode(results,
-                                        "\n"), " "));
+                totalResults += numResults;
+                Console.showMessage("Found " + numResults + " matches in "
+                        + locationName + ":\n" + StringUtils.indent(
+                                results.toString(), " "));
             }
         }
 
