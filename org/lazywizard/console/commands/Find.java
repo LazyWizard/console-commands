@@ -14,7 +14,6 @@ import com.fs.starfarer.api.campaign.StarSystemAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
-import org.lazywizard.lazylib.CollectionUtils;
 import org.lazywizard.lazylib.StringUtils;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -37,7 +36,7 @@ public class Find implements BaseCommand
         {
             return "(asteroid)";
         }
-        
+
         if (token instanceof CampaignFleetAPI)
         {
             return "(fleet)";
@@ -76,6 +75,7 @@ public class Find implements BaseCommand
         }
 
         String searchFor = args.toLowerCase();
+        boolean includeAsteroids = "asteroid".contains(searchFor);
         List<LocationAPI> locations = new ArrayList<>();
         locations.addAll(Global.getSector().getStarSystems());
         locations.add(Global.getSector().getHyperspace());
@@ -90,7 +90,13 @@ public class Find implements BaseCommand
             tokens.addAll(location.getEntities(OrbitalStationAPI.class));
             tokens.addAll(location.getEntities(PlanetAPI.class));
             tokens.addAll(location.getEntities(JumpPointAPI.class));
-            tokens.addAll(location.getEntities(AsteroidAPI.class));
+
+            // Let's allow the player to do this if they're actually crazy enough to try
+            if (includeAsteroids)
+            {
+                tokens.addAll(location.getEntities(AsteroidAPI.class));
+            }
+
             int numResults = 0;
             results.setLength(0);
             for (SectorEntityToken token : tokens)
