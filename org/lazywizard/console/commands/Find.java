@@ -98,7 +98,7 @@ public class Find implements BaseCommand
             }
 
             int numResults = 0;
-            results.setLength(0);
+            results.setLength(256);
             for (SectorEntityToken token : tokens)
             {
                 // Avoid potential NPE crash here with certain entities

@@ -1,20 +1,22 @@
 package org.lazywizard.console.commands;
 
+import java.lang.ref.WeakReference;
+import java.util.List;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.ShipAPI;
+import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.util.IntervalUtil;
-import java.lang.ref.WeakReference;
-import java.util.List;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
+// TODO: Show collision/shield radii as well
 public class ShowBounds implements BaseCommand
 {
-   private static WeakReference<ShowBoundsPlugin> plugin;
+    private static WeakReference<ShowBoundsPlugin> plugin;
 
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -69,7 +71,7 @@ public class ShowBounds implements BaseCommand
             if (firstRun || nextCheck.intervalElapsed())
             {
                 firstRun = false;
-                
+
                 for (ShipAPI ship : engine.getShips())
                 {
                     ship.setRenderBounds(true);
@@ -81,6 +83,16 @@ public class ShowBounds implements BaseCommand
         public void init(CombatEngineAPI engine)
         {
             this.engine = engine;
+        }
+
+        @Override
+        public void renderInWorldCoords(ViewportAPI view)
+        {
+        }
+
+        @Override
+        public void renderInUICoords(ViewportAPI view)
+        {
         }
     }
 }

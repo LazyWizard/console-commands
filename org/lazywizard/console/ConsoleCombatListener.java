@@ -1,15 +1,16 @@
 package org.lazywizard.console;
 
-import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.combat.CombatEngineAPI;
-import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
-import com.fs.starfarer.api.combat.ShipAPI;
-import com.fs.starfarer.api.input.InputEventAPI;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.combat.CombatEngineAPI;
+import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
+import com.fs.starfarer.api.combat.ShipAPI;
+import com.fs.starfarer.api.combat.ViewportAPI;
+import com.fs.starfarer.api.input.InputEventAPI;
 import javax.swing.JOptionPane;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.ConsoleSettings.KeyStroke;
@@ -132,6 +133,16 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
         }
 
         messageOffset += messages.length * MESSAGE_SIZE;
+    }
+
+    @Override
+    public void renderInWorldCoords(ViewportAPI view)
+    {
+    }
+
+    @Override
+    public void renderInUICoords(ViewportAPI view)
+    {
     }
 
     private class ShowInputPopup implements Runnable
