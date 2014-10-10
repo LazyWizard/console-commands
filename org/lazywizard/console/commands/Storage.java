@@ -1,5 +1,9 @@
 package org.lazywizard.console.commands;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.InteractionDialogImageVisual;
 import com.fs.starfarer.api.campaign.CargoAPI;
@@ -12,8 +16,10 @@ import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.OrbitAPI;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.campaign.StarSystemAPI;
+import com.fs.starfarer.api.campaign.econ.MarketAPI;
+import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.combat.EngagementResultAPI;
-import java.util.Map;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
@@ -105,6 +111,12 @@ public class Storage implements BaseCommand
             return null;
         }
 
+        @Override
+        public Map<String, MemoryAPI> getMemoryMap()
+        {
+            return null;
+        }
+
         private static class StorageInteractionDialogListener implements CoreInteractionListener
         {
             boolean isDismissed = false;
@@ -142,7 +154,7 @@ public class Storage implements BaseCommand
             }
 
             @Override
-            public Object getName()
+            public String getName()
             {
                 return "Storage";
             }
@@ -207,6 +219,154 @@ public class Storage implements BaseCommand
             public boolean isFreeTransfer()
             {
                 return true;
+            }
+
+            @Override
+            public boolean isPlayerFleet()
+            {
+                return false;
+            }
+
+            @Override
+            public MarketAPI getMarket()
+            {
+                return null;
+            }
+
+            @Override
+            public void setMarket(MarketAPI mapi)
+            {
+            }
+
+            @Override
+            public Vector2f getLocationInHyperspace()
+            {
+                return null;
+            }
+
+            @Override
+            public String getId()
+            {
+                return null;
+            }
+
+            @Override
+            public boolean hasTag(String string)
+            {
+                return false;
+            }
+
+            @Override
+            public void addTag(String string)
+            {
+            }
+
+            @Override
+            public void removeTag(String string)
+            {
+            }
+
+            @Override
+            public Collection<String> getTags()
+            {
+                return Collections.<String>emptyList();
+            }
+
+            @Override
+            public void clearTags()
+            {
+            }
+
+            @Override
+            public void setFixedLocation(float f, float f1)
+            {
+            }
+
+            @Override
+            public void setCircularOrbit(SectorEntityToken set, float f, float f1, float f2)
+            {
+            }
+
+            @Override
+            public void setCircularOrbitPointingDown(SectorEntityToken set, float f, float f1, float f2)
+            {
+            }
+
+            @Override
+            public void setCircularOrbitWithSpin(SectorEntityToken set, float f, float f1, float f2, float f3, float f4)
+            {
+            }
+
+            @Override
+            public MemoryAPI getMemory()
+            {
+                return null;
+            }
+
+            @Override
+            public MemoryAPI getMemoryWithoutUpdate()
+            {
+                return null;
+            }
+
+            @Override
+            public float getFacing()
+            {
+                return 0f;
+            }
+
+            @Override
+            public void setFacing(float f)
+            {
+            }
+
+            @Override
+            public boolean isInHyperspace()
+            {
+                return false;
+            }
+
+            @Override
+            public void addScript(EveryFrameScript efs)
+            {
+            }
+
+            @Override
+            public void removeScript(EveryFrameScript efs)
+            {
+            }
+
+            @Override
+            public void removeScriptsOfClass(Class type)
+            {
+            }
+
+            @Override
+            public boolean isInOrNearSystem(StarSystemAPI ssapi)
+            {
+                return false;
+            }
+
+            @Override
+            public boolean isInCurrentLocation()
+            {
+                return true;
+            }
+
+            @Override
+            public Vector2f getVelocity()
+            {
+                return null;
+            }
+
+            @Override
+            public void setInteractionImage(String string, String string1)
+            {
+            }
+
+            @Override
+            public void setName(String string)
+            {
             }
         }
     }

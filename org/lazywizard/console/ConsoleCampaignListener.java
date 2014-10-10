@@ -1,15 +1,17 @@
 package org.lazywizard.console;
 
+import java.awt.Color;
+import java.util.List;
+import java.util.Map;
 import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CustomUIPanelPlugin;
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogPlugin;
+import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.combat.EngagementResultAPI;
 import com.fs.starfarer.api.graphics.PositionAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
-import java.awt.Color;
-import java.util.List;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.ConsoleSettings.KeyStroke;
 import org.lazywizard.lazylib.StringUtils;
@@ -229,6 +231,12 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
         public InteractionDialogAPI getDialog()
         {
             return dialog;
+        }
+
+        @Override
+        public Map<String, MemoryAPI> getMemoryMap()
+        {
+            return null;
         }
 
         private class KeyListener implements CustomUIPanelPlugin
