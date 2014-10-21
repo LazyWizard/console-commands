@@ -1,8 +1,5 @@
 package org.lazywizard.console;
 
-import com.fs.starfarer.api.EveryFrameScript;
-import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.InteractionDialogPlugin;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.EnumMap;
@@ -10,6 +7,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import com.fs.starfarer.api.EveryFrameScript;
+import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.InteractionDialogPlugin;
 import javax.swing.UIManager;
 import org.apache.log4j.Level;
 import org.json.JSONException;
@@ -322,9 +322,18 @@ public class Console
         {
             if (!isDone)
             {
-                Global.getSector().getCampaignUI().showInteractionDialog(
-                        dialog, null);
                 isDone = true;
+
+                try
+                {
+                    Global.getSector().getCampaignUI().showInteractionDialog(
+                            dialog, Global.getSector().getPlayerFleet());
+                }
+                catch (Exception ex)
+                {
+                    Console.showException("Failed to open dialog "
+                            + dialog.getClass().getCanonicalName(), ex);
+                }
             }
         }
     }
