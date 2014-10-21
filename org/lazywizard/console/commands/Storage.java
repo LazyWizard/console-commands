@@ -8,7 +8,6 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.InteractionDialogImageVisual;
 import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.CoreInteractionListener;
-import com.fs.starfarer.api.campaign.CoreUITabId;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogPlugin;
@@ -68,8 +67,11 @@ public class Storage implements BaseCommand
 
             // Use a fake SectorEntityToken to open the infinite-stack cargo
             // created in the main command, prone to breaking after an update
-            dialog.getVisualPanel().showCore(CoreUITabId.CARGO,
-                    new FakeToken(), listener);
+            // TODO: Fix this (broken after .65a with the introduction of markets)
+            //dialog.getVisualPanel().showCore(CoreUITabId.CARGO,
+            //        new FakeToken(), listener);
+            dialog.getVisualPanel().showLoot("Storage",
+                    retrieveStorage(Global.getSector()), listener);
 
             // Use this if FakeToken fails to compile, no ship storage support
             //dialog.getVisualPanel().showLoot("Storage",
@@ -231,6 +233,7 @@ public class Storage implements BaseCommand
             public MarketAPI getMarket()
             {
                 return null;
+                //return Global.getFactory().createMarket("fake", "Console Storage", 1);
             }
 
             @Override
@@ -241,13 +244,13 @@ public class Storage implements BaseCommand
             @Override
             public Vector2f getLocationInHyperspace()
             {
-                return null;
+                return new Vector2f(0f, 0f);
             }
 
             @Override
             public String getId()
             {
-                return null;
+                return "console-storage";
             }
 
             @Override
@@ -356,7 +359,7 @@ public class Storage implements BaseCommand
             @Override
             public Vector2f getVelocity()
             {
-                return null;
+                return new Vector2f(0f, 0f);
             }
 
             @Override
