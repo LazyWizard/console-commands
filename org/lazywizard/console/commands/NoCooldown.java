@@ -3,10 +3,9 @@ package org.lazywizard.console.commands;
 import java.lang.ref.WeakReference;
 import java.util.List;
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
-import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.ShipAPI;
-import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.combat.WeaponAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.mission.FleetSide;
@@ -50,7 +49,7 @@ public class NoCooldown implements BaseCommand
         return CommandResult.SUCCESS;
     }
 
-    private static class NoCooldownPlugin implements EveryFrameCombatPlugin
+    private static class NoCooldownPlugin extends BaseEveryFrameCombatPlugin
     {
         private final IntervalUtil nextCheck = new IntervalUtil(0.05f, 0.05f);
         private boolean active = true, firstRun = true;
@@ -98,16 +97,6 @@ public class NoCooldown implements BaseCommand
         public void init(CombatEngineAPI engine)
         {
             this.engine = engine;
-        }
-
-        @Override
-        public void renderInWorldCoords(ViewportAPI view)
-        {
-        }
-
-        @Override
-        public void renderInUICoords(ViewportAPI view)
-        {
         }
     }
 }

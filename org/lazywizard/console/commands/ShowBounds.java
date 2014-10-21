@@ -3,10 +3,9 @@ package org.lazywizard.console.commands;
 import java.lang.ref.WeakReference;
 import java.util.List;
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
-import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.ShipAPI;
-import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.util.IntervalUtil;
 import org.lazywizard.console.BaseCommand;
@@ -47,7 +46,7 @@ public class ShowBounds implements BaseCommand
         return CommandResult.SUCCESS;
     }
 
-    private static class ShowBoundsPlugin implements EveryFrameCombatPlugin
+    private static class ShowBoundsPlugin extends BaseEveryFrameCombatPlugin
     {
         private final IntervalUtil nextCheck = new IntervalUtil(1f, 1f);
         private boolean active = true, firstRun = true;
@@ -83,16 +82,6 @@ public class ShowBounds implements BaseCommand
         public void init(CombatEngineAPI engine)
         {
             this.engine = engine;
-        }
-
-        @Override
-        public void renderInWorldCoords(ViewportAPI view)
-        {
-        }
-
-        @Override
-        public void renderInUICoords(ViewportAPI view)
-        {
         }
     }
 }
