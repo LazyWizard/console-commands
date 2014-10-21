@@ -14,7 +14,6 @@ import com.fs.starfarer.api.graphics.PositionAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.ConsoleSettings.KeyStroke;
-import org.lazywizard.lazylib.StringUtils;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 
@@ -68,7 +67,7 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
         {
             isDialogOpen = true;
             Global.getSector().getCampaignUI().showInteractionDialog(
-                    new CampaignPopup(), null);
+                    new CampaignPopup(), Global.getSector().getPlayerFleet());
         }
 
         if (!isDialogOpen && popup != null)
@@ -86,7 +85,7 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
         {
             // Temporary due to text area resize bug
             // TODO: Remove this when text panel resizing is fixed
-            output = StringUtils.wrapString(output, 40);
+            //output = StringUtils.wrapString(output, 40);
 
             for (String message : output.split("\n"))
             {
@@ -127,8 +126,8 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
             keyListener = new KeyListener();
             timeOpen = 0f;
 
-            // TODO: Get the text panel to actually take up the whole screen
-            dialog.setTextWidth(600f); // Bugged?
+            // TODO: Check if this looks good at all resolutions, make dynamic if it doesn't
+            dialog.setTextWidth(800f);
             dialog.getVisualPanel().showCustomPanel(0f, 0f, keyListener);
             //dialog.setTextWidth(Console.getSettings().getMaxOutputLineLength() * 8f);
             dialog.getTextPanel().addParagraph(CommonStrings.INPUT_QUERY);
