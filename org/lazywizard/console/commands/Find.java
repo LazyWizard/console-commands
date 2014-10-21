@@ -83,8 +83,6 @@ public class Find implements BaseCommand
         int totalResults = 0;
         for (LocationAPI location : locations)
         {
-            // TODO: Replace this with LocationAPI.getName() after .6.5a is released
-            String locationName = getName(location);
             List<SectorEntityToken> tokens = new ArrayList<>();
             tokens.addAll(location.getEntities(CampaignFleetAPI.class));
             tokens.addAll(location.getEntities(OrbitalStationAPI.class));
@@ -102,7 +100,7 @@ public class Find implements BaseCommand
             for (SectorEntityToken token : tokens)
             {
                 // Avoid potential NPE crash here with certain entities
-                String tokenName = token.getFullName();
+                String tokenName = token.getName();
                 if (tokenName != null && tokenName.toLowerCase().contains(searchFor))
                 {
                     Vector2f loc = token.getLocation();
@@ -117,7 +115,7 @@ public class Find implements BaseCommand
             {
                 totalResults += numResults;
                 Console.showMessage("Found " + numResults + " matches in "
-                        + locationName + ":\n" + StringUtils.indent(
+                        + location.getName() + ":\n" + StringUtils.indent(
                                 results.toString(), " "));
             }
         }

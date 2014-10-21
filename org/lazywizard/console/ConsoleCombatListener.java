@@ -27,7 +27,6 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
     // The Y offset of console output this frame, used so
     // that multiple messages while paused won't overlap
     private float messageOffset = 0f;
-    private CombatEngineAPI engine;
     private CommandContext context;
 
     //<editor-fold defaultstate="collapsed" desc="Input handling">
@@ -61,12 +60,14 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
     @Override
     public void advance(float amount, List<InputEventAPI> events)
     {
-        // Temp fix for .6.2a bug
-        if (engine != Global.getCombatEngine())
+        CombatEngineAPI engine = Global.getCombatEngine();
+
+        if (engine == null)
         {
             return;
         }
 
+        // Reset new message offset each frame
         if (!engine.isPaused())
         {
             messageOffset = 0f;
@@ -100,13 +101,19 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
     @Override
     public void init(CombatEngineAPI engine)
     {
-        this.engine = engine;
-        // COMBAT_SIMULATION will be added when the API supports it
-        context = (engine.isInCampaign() ? CommandContext.COMBAT_CAMPAIGN
-                : CommandContext.COMBAT_MISSION);
-
-        // TODO: Remove this after .6.5a
-        input.clear();
+        // Determine what context this battle is in
+        if (engine.isSimulation())
+        {
+            context = CommandContext.COMBAT_SIMULATION;
+        }
+        else if (engine.isInCampaign())
+        {
+            context = CommandContext.COMBAT_CAMPAIGN;
+        }
+        else
+        {
+            context = CommandContext.COMBAT_MISSION;
+        }
     }
 
     @Override
@@ -120,11 +127,11 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
     {
         // TODO: the values here are kind of arbitrary, need to be worked out properly
         // TODO: display to the side of the player's ship furthest from the edge of the screen
-        ShipAPI player = engine.getPlayerShip();
+        ShipAPI player = Global.getCombatEngine().getPlayerShip();
         String[] messages = output.split("\n");
         for (int x = 0; x < messages.length; x++)
         {
-            engine.addFloatingText(Vector2f.add(
+            Global.getCombatEngine().addFloatingText(Vector2f.add(
                     new Vector2f(-Console.getSettings().getMaxOutputLineLength() / 2f,
                             -(player.getCollisionRadius() + (MESSAGE_SIZE * 2)
                             + messageOffset + (x * MESSAGE_SIZE))),
