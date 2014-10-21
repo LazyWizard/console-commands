@@ -1,6 +1,6 @@
 command,class,tags,syntax,help
 AddAptitudePoints,org.lazywizard.console.commands.AddAptitudePoints,"core,campaign",addaptitudepoints <amount>,Adds the specified amount of aptitude points to your character.
-AddCommandPoints,org.lazywizard.console.commands.AddCommandPoints,"core,campaign",addcommandpoints <amount>|remove,Adds the specified amount of command points to your fleet. You can remove the bonus with the argument 'remove'.
+AddCommandPoints,org.lazywizard.console.commands.AddCommandPoints,"core,combat",addcommandpoints <amount>|remove,Adds the specified amount of command points to your fleet. You can remove the bonus with the argument 'remove'.
 AddCredits,org.lazywizard.console.commands.AddCredits,"core,campaign",addcredits <amount>,Adds the specified amount of credits to your fleet's account.
 AddCrew,org.lazywizard.console.commands.AddCrew,"core,campaign",addcrew <amount> [optionalLevel],"Adds the specified amount of crew.\nYou can optionally choose an experience level for the spawned crew.\nValid levels: green, regular, veteran, and elite\nSupports reversed arguments."
 AddFuel,org.lazywizard.console.commands.AddFuel,"core,campaign",addfuel <amount>,Adds the specified amount of fuel to your fleet's cargo.
