@@ -41,4 +41,4 @@ ShowLoc,org.lazywizard.console.commands.ShowLoc,"core,campaign,combat",showloc (
 SourceOf,org.lazywizard.console.commands.SourceOf,"core,console",sourceof <command>|all,"Shows what mod a specific command came from, or all commands' sources if all is entered."
 SpawnFleet,org.lazywizard.console.commands.SpawnFleet,"core,campaign",spawnfleet <faction> <fleetID>,Spawns the designated fleet near the player character. The fleet id must exist in the .faction file of the faction that was entered as an argument.
 Status,org.lazywizard.console.commands.Status,"core,console",status [detailed],Shows some debug information about the currently loaded commands. Adding detailed as an argument will provide much more information.
-Storage,org.lazywizard.console.commands.Storage,"core,campaign",storage (no arguments),"Opens a persistent, infinite-capacity cargo container."
+#Storage,org.lazywizard.console.commands.Storage,"core,campaign",storage (no arguments),"Opens a persistent, infinite-capacity cargo container."
