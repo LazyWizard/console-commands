@@ -29,7 +29,14 @@ public class AllWings implements BaseCommand
         if (args == null || args.isEmpty())
         {
             target = Storage.retrieveStorage(Global.getSector()).getMothballedShips();
-            targetName = "storage (use 'storage' to retrieve)";
+            // TODO: Uncomment this after Storage is fixed
+            targetName = "storage";
+            //targetName = "storage (use 'storage' to retrieve)";
+        }
+        else if ("player".equalsIgnoreCase(args))
+        {
+            target = Global.getSector().getPlayerFleet().getCargo().getMothballedShips();
+            targetName = "player fleet";
         }
         else
         {

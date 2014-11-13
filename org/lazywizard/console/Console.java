@@ -9,7 +9,9 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.CampaignUIAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogPlugin;
+import com.fs.starfarer.api.campaign.SectorEntityToken;
 import javax.swing.UIManager;
 import org.apache.log4j.Level;
 import org.json.JSONException;
@@ -190,9 +192,15 @@ public class Console
         showMessage(stackTrace.toString(), Level.ERROR);
     }
 
-    public static void showDialogOnClose(InteractionDialogPlugin dialog)
+    public static void showDialogOnClose(InteractionDialogPlugin dialog,
+            SectorEntityToken token)
     {
-        Global.getSector().addScript(new ShowDialogOnCloseScript(dialog));
+        Global.getSector().addScript(new ShowDialogOnCloseScript(dialog, null));
+    }
+
+    public static void showDialogOnClose(SectorEntityToken token)
+    {
+        Global.getSector().addScript(new ShowDialogOnCloseScript(null, token));
     }
     //</editor-fold>
 
@@ -248,7 +256,7 @@ public class Console
 
         // Runcode ignores separators
         // Hopefully the ONLY hardcoded command support I'll add to this mod...
-                        CommandResult worstResult;
+        CommandResult worstResult;
         if (rawInput.length() >= 7 && rawInput.substring(0, 7).equalsIgnoreCase("runcode"))
         {
             worstResult = runCommand(rawInput, context);
@@ -304,12 +312,15 @@ public class Console
 
     private static class ShowDialogOnCloseScript implements EveryFrameScript
     {
-        private InteractionDialogPlugin dialog;
+        private final SectorEntityToken token;
+        private final InteractionDialogPlugin dialog;
         private boolean isDone = false;
 
-        private ShowDialogOnCloseScript(InteractionDialogPlugin dialog)
+        private ShowDialogOnCloseScript(InteractionDialogPlugin dialog,
+                SectorEntityToken token)
         {
             this.dialog = dialog;
+            this.token = token;
         }
 
         @Override
@@ -333,8 +344,15 @@ public class Console
 
                 try
                 {
-                    Global.getSector().getCampaignUI().showInteractionDialog(
-                            dialog, Global.getSector().getPlayerFleet());
+                    CampaignUIAPI ui = Global.getSector().getCampaignUI();
+                    if (dialog == null)
+                    {
+                        ui.showInteractionDialog(token);
+                    }
+                    else
+                    {
+                        ui.showInteractionDialog(dialog, token);
+                    }
                 }
                 catch (Exception ex)
                 {
