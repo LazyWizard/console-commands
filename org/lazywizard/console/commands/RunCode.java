@@ -1,10 +1,12 @@
 package org.lazywizard.console.commands;
 
-import com.fs.starfarer.api.Global;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import com.fs.starfarer.api.Global;
 import org.codehaus.commons.compiler.CompileException;
 import org.codehaus.janino.ScriptEvaluator;
 import org.json.JSONArray;
@@ -17,14 +19,18 @@ import org.lazywizard.console.Console;
 
 public class RunCode implements BaseCommand
 {
+    private static Map<String, String> macros;
     private static ScriptEvaluator eval;
 
     public static void reloadImports()
     {
-        if (eval == null)
+        eval = new ScriptEvaluator();
+        eval.setReturnType(void.class);
+        eval.setParentClassLoader(Global.getSettings().getScriptClassLoader());
+        eval.setThrownExceptions(new Class[]
         {
-            createEval();
-        }
+            Exception.class
+        });
 
         List<String> imports = new ArrayList<>();
 
@@ -46,15 +52,26 @@ public class RunCode implements BaseCommand
         eval.setDefaultImports(imports.toArray(new String[imports.size()]));
     }
 
-    private static void createEval()
+    public static void reloadMacros()
     {
-        eval = new ScriptEvaluator();
-        eval.setReturnType(void.class);
-        eval.setParentClassLoader(Global.getSettings().getScriptClassLoader());
-        eval.setThrownExceptions(new Class[]
+        macros = new HashMap<>();
+
+        try
         {
-            Exception.class
-        });
+            JSONArray csv = Global.getSettings().getMergedSpreadsheetDataForMod(
+                    "macro", CommonStrings.RUNCODE_MACROS_PATH, CommonStrings.MOD_ID);
+            for (int x = 0; x < csv.length(); x++)
+            {
+                // TODO: Validate for $
+                macros.put(csv.getJSONObject(x).getString("macro"),
+                        csv.getJSONObject(x).getString("replace"));
+            }
+        }
+        catch (IOException | JSONException ex)
+        {
+            Console.showException("Failed to load RunCode macros: ", ex);
+            return;
+        }
     }
 
     @Override
@@ -74,16 +91,23 @@ public class RunCode implements BaseCommand
             return CommandResult.ERROR;
         }
 
+        // Macro support
+        if (args.contains("$"))
+        {
+            System.out.println("Replacing macros");
+            for(Map.Entry<String, String> tmp : macros.entrySet())
+            {
+                System.out.println(tmp.getKey() + ": " + tmp.getValue());
+                args = args.replace(tmp.getKey(), tmp.getValue());
+            }
+        }
+
         if (!args.endsWith(";"))
         {
             args += ";";
         }
 
-        // This is only triggered if imports weren't set somehow
-        if (eval == null)
-        {
-            reloadImports();
-        }
+        System.out.println(args);
 
         try
         {

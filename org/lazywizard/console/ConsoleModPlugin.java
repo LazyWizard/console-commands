@@ -15,8 +15,9 @@ public class ConsoleModPlugin extends BaseModPlugin
         Console.reloadSettings();
         CommandStore.reloadCommands();
         RunCode.reloadImports();
+        RunCode.reloadMacros();
 
-        Console.showMessage("Console loaded.", Level.INFO);
+        Console.showMessage("Console loaded.", Level.DEBUG);
 
         if (Display.isFullscreen())
         {
@@ -29,18 +30,6 @@ public class ConsoleModPlugin extends BaseModPlugin
     @Override
     public void onGameLoad()
     {
-        Global.getSector().addScript(new ConsoleCampaignListener());
-    }
-
-    @Override
-    public void beforeGameSave()
-    {
-        Global.getSector().removeScriptsOfClass(ConsoleCampaignListener.class);
-    }
-
-    @Override
-    public void afterGameSave()
-    {
-        Global.getSector().addScript(new ConsoleCampaignListener());
+        Global.getSector().addTransientScript(new ConsoleCampaignListener());
     }
 }
