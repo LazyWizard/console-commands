@@ -3,6 +3,7 @@ package org.lazywizard.console;
 import java.awt.Color;
 import java.util.Map;
 import org.lazywizard.console.BaseCommand.CommandResult;
+import org.lwjgl.input.Keyboard;
 
 /**
  * Contains the console settings loaded from the JSON file.
@@ -194,6 +195,29 @@ public class ConsoleSettings
         public boolean requiresAlt()
         {
             return requireAlt;
+        }
+
+        @Override
+        public String toString()
+        {
+            String str = Keyboard.getKeyName(key);
+
+            if (requireShift)
+            {
+                str = "Shift+" + str;
+            }
+
+            if (requireAlt)
+            {
+                str = "Alt+" + str;
+            }
+
+            if (requireControl)
+            {
+                str = "Control+" + str;
+            }
+
+            return str;
         }
     }
 }

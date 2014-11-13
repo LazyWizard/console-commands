@@ -1,0 +1,3 @@
+macro,replace
+"$playerShip","com.fs.starfarer.api.Global.getCombatEngine().getPlayerShip()"
+"$playerFleet","com.fs.starfarer.api.Global.getSector().getPlayerFleet()"
