@@ -8,6 +8,7 @@ import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
@@ -48,6 +49,10 @@ public class List_ implements BaseCommand
             case "weapons":
                 ids = sector.getAllWeaponIds();
                 break;
+            case "commodities":
+            case "items":
+                ids = sector.getEconomy().getAllCommodityIds();
+                break;
             case "systems":
             case "locations":
                 ids = new ArrayList<>();
@@ -71,6 +76,13 @@ public class List_ implements BaseCommand
                         .getEntitiesWithTag(Tags.STATION))
                 {
                     ids.add(station.getId());
+                }
+                break;
+            case "markets":
+                ids = new ArrayList<>();
+                for (MarketAPI market : sector.getEconomy().getMarketsCopy())
+                {
+                    ids.add(market.getId());
                 }
                 break;
             default:
