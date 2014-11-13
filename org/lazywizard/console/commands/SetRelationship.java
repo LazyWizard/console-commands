@@ -57,7 +57,7 @@ public class SetRelationship implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        fac1.setRelationship(towardsFaction, newRelationship);
+        fac1.setRelationship(towardsFaction, newRelationship / 100f);
         Console.showMessage("Set relationship of " + faction + " towards "
                 + towardsFaction + " to " + newRelationship + ".");
         return CommandResult.SUCCESS;
