@@ -11,7 +11,7 @@
     "persistentCombatCommands":false, # Unimplemented
 
     # Whether to display each command before it is executed
-    "showEnteredCommands":true,      # Default: false
+    "showEnteredCommands":true,      # Default: true
 
     # If you want to enter multiple commands at once, separate them with the following
     "commandSeparator":";",           # Default: ;
