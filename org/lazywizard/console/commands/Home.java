@@ -3,7 +3,6 @@ package org.lazywizard.console.commands;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.FleetAssignment;
-import com.fs.starfarer.api.campaign.JumpPointAPI.JumpDestination;
 import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
@@ -36,23 +35,21 @@ public class Home implements BaseCommand
 
         CampaignFleetAPI playerFleet = sector.getPlayerFleet();
         LocationAPI loc = home.getContainingLocation();
-        if (loc == playerFleet.getContainingLocation())
+        if (loc != playerFleet.getContainingLocation())
         {
-            Vector2f homeLoc = home.getLocation();
-            playerFleet.setLocation(homeLoc.x, homeLoc.y);
-        }
-        else
-        {
-            sector.doHyperspaceTransition(playerFleet, playerFleet,
-                    new JumpDestination(home, "Teleporting home"));
+            playerFleet.getContainingLocation().removeEntity(playerFleet);
+            loc.addEntity(playerFleet);
+            Global.getSector().setCurrentLocation(loc);
         }
 
+        Vector2f homeLoc = home.getLocation();
+        playerFleet.setLocation(homeLoc.x, homeLoc.y);
         playerFleet.setNoEngaging(2.0f);
         playerFleet.clearAssignments();
         playerFleet.addAssignment(FleetAssignment.GO_TO_LOCATION, home, 1f);
         Console.showMessage("Teleported to " + home.getFullName()
                 + " in " + (loc.isHyperspace() ? "hyperspace" : "the "
-                + ((StarSystemAPI) loc).getName() + " system") + " successfully.");
+                        + ((StarSystemAPI) loc).getName() + " system") + " successfully.");
         return CommandResult.SUCCESS;
     }
 }
