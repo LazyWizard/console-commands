@@ -1,3 +1,7 @@
+ 2.1.1 (November 13, 2014)
+===========================
+Added List command, shows valid IDs for ships/wings/systems/weapons/factions/etc
+
  2.1 (November 12, 2014)
 =========================
 Fixed crash when commands that summon a dialog have an error in said dialog
@@ -18,7 +22,7 @@ Changes to existing commands:
  - ShowBounds now also shows collision and shield radii (grey/blue respectively)
  - RunCode supports macros, see data/console/runcode_macros.csv
  - Fixed Reload failing if RunCode was used this session
- 
+
  2.0 (who knows, I released it like eight times without incrementing version #)
 ================================================================================
 (this version is not save compatible with earlier versions)
