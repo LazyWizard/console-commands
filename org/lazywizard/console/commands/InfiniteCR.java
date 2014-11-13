@@ -35,14 +35,14 @@ public class InfiniteCR implements BaseCommand
             tmp = new InfiniteCRPlugin();
             plugin = new WeakReference<>(tmp);
             Global.getCombatEngine().addPlugin(tmp);
-            Console.showMessage("CR timers disabled.");
+            Console.showMessage("Infinite CR enabled.");
         }
         else
         {
             tmp = plugin.get();
             plugin.clear();
             tmp.active = false;
-            Console.showMessage("CR timers enabled.");
+            Console.showMessage("Infinite CR disabled.");
         }
 
         return CommandResult.SUCCESS;
