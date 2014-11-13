@@ -40,7 +40,6 @@ public class AddWing implements BaseCommand
          {
          tmp[0] = tmp[0] + "_wing";
          }*/
-
         int amt;
 
         try
@@ -74,7 +73,9 @@ public class AddWing implements BaseCommand
         for (String id : Global.getSector().getAllFighterWingIds())
         {
             if (variant.equalsIgnoreCase(id))
+            {
                 variant = id;
+            }
         }
 
         // Add _wing if the command fails

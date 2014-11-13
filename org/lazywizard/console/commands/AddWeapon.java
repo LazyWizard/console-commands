@@ -54,8 +54,16 @@ public class AddWeapon implements BaseCommand
             }
         }
 
-        Global.getSector().getPlayerFleet().getCargo().addItems(
-                CargoItemType.WEAPONS, tmp[0], amt);
+        try
+        {
+            Global.getSector().getPlayerFleet().getCargo().addItems(
+                    CargoItemType.WEAPONS, tmp[0], amt);
+        }
+        catch (Exception ex)
+        {
+            Console.showMessage("No weapon found with id '" + tmp[0] + "'!");
+            return CommandResult.ERROR;
+        }
 
         Console.showMessage("Added " + amt + " of weapon " + tmp[0] + " to player inventory.");
         return CommandResult.SUCCESS;
