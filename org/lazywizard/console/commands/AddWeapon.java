@@ -56,6 +56,8 @@ public class AddWeapon implements BaseCommand
 
         try
         {
+            tmp[0] = _Utils.findBestStringMatch(tmp[0],
+                    Global.getSector().getAllWeaponIds());
             Global.getSector().getPlayerFleet().getCargo().addItems(
                     CargoItemType.WEAPONS, tmp[0], amt);
         }

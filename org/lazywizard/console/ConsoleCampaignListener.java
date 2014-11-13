@@ -264,6 +264,8 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                         continue;
                     }
 
+                    timeOpen = 0f;
+
                     // Load last command when user presses up on keyboard
                     if (event.getEventValue() == Keyboard.KEY_UP
                             && Console.getLastCommand() != null)

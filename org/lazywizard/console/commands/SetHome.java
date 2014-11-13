@@ -39,11 +39,8 @@ public class SetHome implements BaseCommand
         // Manually set a home by name
         if (!args.isEmpty())
         {
-            newHome = system.getEntityByName(args);
-            if (newHome == null)
-            {
-                newHome = system.getEntityById(args);
-            }
+            newHome = _Utils.findTokenInLocation(args,
+                    Global.getSector().getCurrentLocation());
 
             if (newHome == null)
             {
@@ -51,7 +48,7 @@ public class SetHome implements BaseCommand
                 return CommandResult.ERROR;
             }
         }
-        
+
         // Home priorities: stations, then relays, then planets, then empty space (raw coords)
         else
         {

@@ -33,7 +33,8 @@ public class AllWings implements BaseCommand
         }
         else
         {
-            SectorEntityToken tmp = Global.getSector().getCurrentLocation().getEntityByName(args);
+            SectorEntityToken tmp = _Utils.findTokenInLocation(args,
+                    Global.getSector().getCurrentLocation());
 
             if (tmp == null)
             {

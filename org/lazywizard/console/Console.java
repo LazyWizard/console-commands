@@ -340,6 +340,7 @@ public class Console
                 {
                     Console.showException("Failed to open dialog "
                             + dialog.getClass().getCanonicalName(), ex);
+                    Global.getSector().getCampaignUI().getCurrentInteractionDialog().dismiss();
                 }
             }
         }
