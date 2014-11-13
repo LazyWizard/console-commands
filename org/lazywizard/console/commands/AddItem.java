@@ -55,6 +55,8 @@ public class AddItem implements BaseCommand
 
         try
         {
+            tmp[0] = _Utils.findBestStringMatch(tmp[0],
+                    Global.getSector().getEconomy().getAllCommodityIds());
             Global.getSector().getPlayerFleet().getCargo().addItems(
                     CargoItemType.RESOURCES, tmp[0], amt);
         }
