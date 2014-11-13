@@ -33,6 +33,11 @@ public class GoTo implements BaseCommand
         SectorEntityToken token = Global.getSector().getCurrentLocation().getEntityByName(args);
         if (token == null)
         {
+            token = Global.getSector().getCurrentLocation().getEntityById(args);
+        }
+
+        if (token == null)
+        {
             Console.showMessage("Couldn't find a token by the name '" + args + "'!");
             return CommandResult.ERROR;
         }
@@ -48,7 +53,7 @@ public class GoTo implements BaseCommand
         playerFleet.setLocation(loc.x, loc.y);
         playerFleet.clearAssignments();
         playerFleet.addAssignment(FleetAssignment.GO_TO_LOCATION, token, 1f);
-        Console.showMessage("Teleported to " + args + ".");
+        Console.showMessage("Teleported to " + token.getFullName() + ".");
         return CommandResult.SUCCESS;
     }
 }
