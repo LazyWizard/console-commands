@@ -94,10 +94,10 @@ public class RunCode implements BaseCommand
         // Macro support
         if (args.contains("$"))
         {
-            System.out.println("Replacing macros");
+            //System.out.println("Replacing macros");
             for(Map.Entry<String, String> tmp : macros.entrySet())
             {
-                System.out.println(tmp.getKey() + ": " + tmp.getValue());
+                //System.out.println(tmp.getKey() + ": " + tmp.getValue());
                 args = args.replace(tmp.getKey(), tmp.getValue());
             }
         }
@@ -107,7 +107,7 @@ public class RunCode implements BaseCommand
             args += ";";
         }
 
-        System.out.println(args);
+        //System.out.println(args);
 
         try
         {

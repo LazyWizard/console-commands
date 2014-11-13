@@ -32,6 +32,7 @@ public class Console
     private static ConsoleSettings settings;
     // Stores the output of the console until it can be displayed
     private static StringBuilder output = new StringBuilder();
+    private static String lastCommand;
 
     private static Map<CommandResult, String> parseSoundOptions(JSONObject settings) throws JSONException
     {
@@ -109,6 +110,11 @@ public class Console
     public static ConsoleSettings getSettings()
     {
         return settings;
+    }
+
+    static String getLastCommand()
+    {
+        return lastCommand;
     }
 
     //<editor-fold defaultstate="collapsed" desc="showMessage variants">
@@ -238,10 +244,11 @@ public class Console
             return;
         }
 
-        CommandResult worstResult;
+        lastCommand = rawInput;
 
         // Runcode ignores separators
         // Hopefully the ONLY hardcoded command support I'll add to this mod...
+                        CommandResult worstResult;
         if (rawInput.length() >= 7 && rawInput.substring(0, 7).equalsIgnoreCase("runcode"))
         {
             worstResult = runCommand(rawInput, context);
