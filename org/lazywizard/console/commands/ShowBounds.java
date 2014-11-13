@@ -6,13 +6,16 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
+import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.util.IntervalUtil;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import org.lazywizard.lazylib.opengl.DrawUtils;
+import org.lwjgl.opengl.Display;
+import static org.lwjgl.opengl.GL11.*;
 
-// TODO: Show collision/shield radii as well
 public class ShowBounds implements BaseCommand
 {
     private static WeakReference<ShowBoundsPlugin> plugin;
@@ -76,6 +79,48 @@ public class ShowBounds implements BaseCommand
                     ship.setRenderBounds(true);
                 }
             }
+
+            ViewportAPI view = engine.getViewport();
+
+            // Retina display fix
+            int width = (int) (Display.getWidth() * Display.getPixelScaleFactor()),
+                    height = (int) (Display.getHeight() * Display.getPixelScaleFactor());
+
+            // Set OpenGL flags
+            glPushAttrib(GL_ALL_ATTRIB_BITS);
+            glMatrixMode(GL_PROJECTION);
+            glPushMatrix();
+            glLoadIdentity();
+            glViewport(0, 0, width, height);
+            glOrtho(0, width, 0, height, 1, -1);
+            glMatrixMode(GL_MODELVIEW);
+            glPushMatrix();
+            glLoadIdentity();
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+            // Draw the ship's collision and shield radii
+            for (ShipAPI ship : Global.getCombatEngine().getShips())
+            {
+                final float x = view.convertWorldXtoScreenX(ship.getLocation().x),
+                        y = view.convertWorldYtoScreenY(ship.getLocation().y),
+                        mult = view.getViewMult();
+                glColor4f(.5f, .5f, .5f, .25f);
+                DrawUtils.drawCircle(x, y, ship.getCollisionRadius() / mult, 144, true);
+                if (ship.getShield() != null)
+
+                {
+                    glColor4f(0f, .5f, .5f, .25f);
+                    DrawUtils.drawCircle(x, y, ship.getShield().getRadius() / mult, 144, true);
+                }
+            }
+
+            // Finalize drawing
+            glDisable(GL_BLEND);
+            glPopMatrix();
+            glMatrixMode(GL_PROJECTION);
+            glPopMatrix();
+            glPopAttrib();
         }
 
         @Override
