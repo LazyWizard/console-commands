@@ -1,5 +1,26 @@
- 2.0 (someday)
-===============
+ 2.1 (November 12, 2014)
+=========================
+Fixed crash when commands that summon a dialog have an error in said dialog
+Console now defaults to showing entered commands (and logging them as well)
+Up now re-enters the previously entered command (down to undo, campaign only)
+Removed shift+backspace deleting entire line (too easy to hit by accident)
+Lots of minor tweaks and polishing
+Changes to existing commands:
+ - Temporarily removed Storage command (broken since .65a added markets)
+ - AddItem and AddWeapon no longer spam a stack trace when an invalid ID is
+   entered
+ - AdjustRelationship and SetRelationship now properly use -100 to 100 range
+ - GoTo works with token ids as well as names (ex: corvus_pirate_station)
+ - Fixed Home not teleporting player fleet if your home isn't in the same
+   system, now moves your fleet to the containing location first
+ - Fixed SetHome not working with stations after vanilla switched to custom
+   entities in .65a, also works with comm relays now
+ - ShowBounds now also shows collision and shield radii (grey/blue respectively)
+ - RunCode supports macros, see data/console/runcode_macros.csv
+ - Fixed Reload failing if RunCode was used this session
+ 
+ 2.0 (who knows, I released it like eight times without incrementing version #)
+================================================================================
 (this version is not save compatible with earlier versions)
 LazyLib is required for this mod to function!
 The console is now summoned with control+backspace
