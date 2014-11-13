@@ -83,10 +83,6 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
     {
         if (isDialogOpen)
         {
-            // Temporary due to text area resize bug
-            // TODO: Remove this when text panel resizing is fixed
-            //output = StringUtils.wrapString(output, 40);
-
             for (String message : output.split("\n"))
             {
                 popup.getDialog().getTextPanel().addParagraph(message,
@@ -126,7 +122,6 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
             keyListener = new KeyListener();
             timeOpen = 0f;
 
-            // TODO: Check if this looks good at all resolutions, make dynamic if it doesn't
             dialog.setTextWidth(800f);
             dialog.getVisualPanel().showCustomPanel(0f, 0f, keyListener);
             //dialog.setTextWidth(Console.getSettings().getMaxOutputLineLength() * 8f);

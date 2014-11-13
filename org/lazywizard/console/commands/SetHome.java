@@ -1,8 +1,10 @@
 package org.lazywizard.console.commands;
 
+import java.util.List;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
@@ -40,16 +42,25 @@ public class SetHome implements BaseCommand
             newHome = system.getEntityByName(args);
             if (newHome == null)
             {
+                newHome = system.getEntityById(args);
+            }
+
+            if (newHome == null)
+            {
                 Console.showMessage("Couldn't find a token by the name '" + args + "'!");
                 return CommandResult.ERROR;
             }
         }
-        // Home priorities: stations, then planets, then empty space (raw coords)
+        
+        // Home priorities: stations, then relays, then planets, then empty space (raw coords)
         else
         {
             Vector2f playerLocation = Global.getSector().getPlayerFleet().getLocation();
 
-            for (SectorEntityToken tmp : system.getOrbitalStations())
+            List<SectorEntityToken> potentialHomes = system.getEntitiesWithTag(Tags.STATION);
+            potentialHomes.addAll(system.getEntitiesWithTag(Tags.COMM_RELAY));
+            potentialHomes.addAll(system.getEntitiesWithTag(Tags.PLANET));
+            for (SectorEntityToken tmp : potentialHomes)
             {
                 if (isInRange(playerLocation, tmp))
                 {
@@ -58,28 +69,14 @@ public class SetHome implements BaseCommand
                 }
             }
 
-            // No stations in range, check planets next
+            // No stations, relays or planets in range, use raw coordinates
             if (newHome == null)
             {
-                for (SectorEntityToken tmp : system.getPlanets())
-                {
-                    if (isInRange(playerLocation, tmp))
-                    {
-                        newHome = tmp;
-                        break;
-                    }
-                }
-
-                // No stations or planets in range, use raw coordinates
-                if (newHome == null)
-                {
-                    newHome = system.createToken(playerLocation.x, playerLocation.y);
-                }
+                newHome = system.createToken(playerLocation.x, playerLocation.y);
             }
         }
 
-        Global.getSector().getPersistentData()
-                .put(CommonStrings.DATA_HOME_ID, newHome);
+        Global.getSector().getPersistentData().put(CommonStrings.DATA_HOME_ID, newHome);
         Console.showMessage("Home set to " + newHome.getFullName() + ".");
         return CommandResult.SUCCESS;
     }

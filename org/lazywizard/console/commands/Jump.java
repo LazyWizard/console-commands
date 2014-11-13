@@ -1,12 +1,12 @@
 package org.lazywizard.console.commands;
 
+import java.util.ArrayList;
+import java.util.List;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
-import java.util.ArrayList;
-import java.util.List;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
@@ -113,7 +113,7 @@ public class Jump implements BaseCommand
         player.setNoEngaging(2.0f);
         player.clearAssignments();
         player.addAssignment(FleetAssignment.GO_TO_LOCATION, destination, 1f);
-        Console.showMessage("Jumped to " + args + ".");
+        Console.showMessage("Jumped to " + destination.getContainingLocation().getName() + ".");
         return CommandResult.SUCCESS;
     }
 }
