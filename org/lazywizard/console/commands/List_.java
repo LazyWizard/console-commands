@@ -65,7 +65,7 @@ public class List_ implements BaseCommand
                 }
                 break;
             case "stations":
-                args = "stations (in current system only)";
+                args = "stations in current system";
                 ids = new ArrayList<>();
                 for (SectorEntityToken station : sector.getCurrentLocation()
                         .getEntitiesWithTag(Tags.STATION))
@@ -80,7 +80,7 @@ public class List_ implements BaseCommand
         // Format and print the list of valid IDs
         Collections.sort(ids);
         String results = CollectionUtils.implode(ids);
-        Console.showMessage("Known " + args + ":\n"
+        Console.showMessage("Known " + args + " (" + ids.size() + "):\n"
                 + StringUtils.indent(StringUtils.wrapString(results,
                                 Console.getSettings().getMaxOutputLineLength() - 3), "   "));
         return CommandResult.SUCCESS;

@@ -30,11 +30,8 @@ public class GoTo implements BaseCommand
             return (new Home().runCommand("", context));
         }
 
-        SectorEntityToken token = Global.getSector().getCurrentLocation().getEntityByName(args);
-        if (token == null)
-        {
-            token = Global.getSector().getCurrentLocation().getEntityById(args);
-        }
+        SectorEntityToken token = _Utils.findTokenInLocation(args,
+                    Global.getSector().getCurrentLocation());
 
         if (token == null)
         {
