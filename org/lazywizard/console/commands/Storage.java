@@ -5,7 +5,8 @@ import com.fs.starfarer.api.FactoryAPI;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.SectorAPI;
-import com.fs.starfarer.api.campaign.econ.MarketAPI;
+import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Submarkets;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
@@ -15,17 +16,27 @@ public class Storage implements BaseCommand
 {
     private static final boolean IS_BROKEN = true;
 
+    private static SectorEntityToken getAbandonedStation(SectorAPI sector)
+    {
+        StarSystemAPI corvus = sector.getStarSystem("corvus");
+        if (corvus != null)
+        {
+            return corvus.getEntityById("corvus_abandoned_station");
+        }
+
+        return null;
+    }
+
     public static CargoAPI retrieveStorage(SectorAPI sector)
     {
         // TODO: Remove this after Storage is fixed
         if (IS_BROKEN)
         {
             // Check for abandoned station
-            MarketAPI storage = Global.getSector().getEconomy().getMarket(
-                    "corvus_abandoned_station_market");
+            SectorEntityToken storage = getAbandonedStation(sector);
             if (storage != null)
             {
-                return storage.getSubmarket(Submarkets.SUBMARKET_STORAGE).getCargo();
+                return storage.getMarket().getSubmarket(Submarkets.SUBMARKET_STORAGE).getCargo();
             }
 
             // If abandoned station isn't found, return player fleet's cargo
@@ -55,14 +66,17 @@ public class Storage implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        //Console.showDialogOnClose(getStorageContainer());
-        //Console.showDialogOnClose(new StorageInteractionDialogPlugin());
-        //Console.showMessage("Storage will be shown when you next unpause on the campaign map.");
-        //return CommandResult.SUCCESS;
-        Console.showMessage("The Storage command is currently non-functional."
-                + " Any commands that normally place items in storage will instead"
-                + " place them in the Abandoned Terraforming Platform in Corvus,"
-                + " or the player fleet if the ATP is not found.");
-        return CommandResult.ERROR;
+        SectorEntityToken station = getAbandonedStation(Global.getSector());
+        if (station == null)
+        {
+            Console.showMessage("Abandoned station not found! Any commands that"
+                    + " normally place items in storage will instead"
+                    + " place them in the player's cargo.");
+            return CommandResult.ERROR;
+        }
+
+        Console.showDialogOnClose(station);
+        Console.showMessage("Storage will be shown when you next unpause on the campaign map.");
+        return CommandResult.SUCCESS;
     }
 }
