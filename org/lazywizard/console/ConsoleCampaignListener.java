@@ -236,6 +236,7 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
         private class KeyListener implements CustomUIPanelPlugin
         {
             StringBuilder currentInput = new StringBuilder();
+            String lastInput = null;
 
             @Override
             public void positionChanged(PositionAPI position)
@@ -263,15 +264,37 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                         continue;
                     }
 
+                    // Load last command when user presses up on keyboard
+                    if (event.getEventValue() == Keyboard.KEY_UP
+                            && Console.getLastCommand() != null)
+                    {
+                        lastInput = currentInput.toString();
+                        currentInput.replace(0, currentInput.length(),
+                                Console.getLastCommand());
+                        event.consume();
+                        continue;
+                    }
+
+                    // Down restores previous command overwritten by up
+                    if (event.getEventValue() == Keyboard.KEY_DOWN
+                            && lastInput != null)
+                    {
+                        currentInput.replace(0, currentInput.length(), lastInput);
+                        lastInput = null;
+                        event.consume();
+                        continue;
+                    }
+
                     // Backspace handling, imitates vanilla text inputs
                     // TODO: Add support for holding down backspace
                     if (event.getEventValue() == Keyboard.KEY_BACK
                             && currentInput.length() > 0)
                     {
                         // Shift+backspace, delete entire line
+                        // Disabled for now because it was incredibly annoying
                         if (event.isShiftDown())
                         {
-                            currentInput.setLength(0);
+                            //currentInput.setLength(0);
                         }
                         // Control+backspace, delete last word
                         else if (event.isCtrlDown())
@@ -300,6 +323,7 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                         String command = currentInput.toString();
                         Console.parseInput(command, CommandContext.CAMPAIGN_MAP);
                         currentInput.setLength(0);
+                        lastInput = null;
                         event.consume();
                     }
                     // Paste handling
