@@ -7,6 +7,8 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorAPI;
+import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
@@ -60,6 +62,15 @@ public class List_ implements BaseCommand
                 for (FactionAPI faction : sector.getAllFactions())
                 {
                     ids.add(faction.getId());
+                }
+                break;
+            case "stations":
+                args = "stations (in current system only)";
+                ids = new ArrayList<>();
+                for (SectorEntityToken station : sector.getCurrentLocation()
+                        .getEntitiesWithTag(Tags.STATION))
+                {
+                    ids.add(station.getId());
                 }
                 break;
             default:

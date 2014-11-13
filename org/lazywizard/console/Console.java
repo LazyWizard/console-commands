@@ -184,7 +184,7 @@ public class Console
         stackTrace.append(ex.toString()).append("\n");
         for (StackTraceElement ste : ex.getStackTrace())
         {
-            stackTrace.append("\tat ").append(ste.toString()).append("\n");
+            stackTrace.append("   at ").append(ste.toString()).append("\n");
         }
 
         showMessage(stackTrace.toString(), Level.ERROR);
