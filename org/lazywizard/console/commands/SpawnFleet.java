@@ -8,6 +8,7 @@ import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
+// TODO: Fix this to work with new .65a fleet spawning behavior
 public class SpawnFleet implements BaseCommand
 {
     @Override
