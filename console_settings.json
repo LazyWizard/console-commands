@@ -11,7 +11,7 @@
     "persistentCombatCommands":false, # Unimplemented
 
     # Whether to display each command before it is executed
-    "showEnteredCommands":false,      # Default: false
+    "showEnteredCommands":true,      # Default: false
 
     # If you want to enter multiple commands at once, separate them with the following
     "commandSeparator":";",           # Default: ;
@@ -22,7 +22,7 @@
 
     # Valid levels: OFF, FATAL, ERROR, WARN, INFO, DEBUG, ALL
     # INFO and above will save all console output to Starsector.log!
-    "consoleLogLevel":WARN,           # Default: WARN
+    "consoleLogLevel":INFO,           # Default: WARN
 
     # What sound is played when a command returns a specific result code
     # The IDs for these sounds can be found in data/config/sounds.json

@@ -53,8 +53,16 @@ public class AddItem implements BaseCommand
             }
         }
 
-        Global.getSector().getPlayerFleet().getCargo().addItems(
-                CargoItemType.RESOURCES, tmp[0], amt);
+        try
+        {
+            Global.getSector().getPlayerFleet().getCargo().addItems(
+                    CargoItemType.RESOURCES, tmp[0], amt);
+        }
+        catch (Exception ex)
+        {
+            Console.showMessage("No item found with id '" + tmp[0] + "'!");
+            return CommandResult.ERROR;
+        }
 
         Console.showMessage("Added " + amt + " of item " + tmp[0] + " to player inventory.");
         return CommandResult.SUCCESS;
