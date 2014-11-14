@@ -1,4 +1,4 @@
-package org.lazywizard.console.commands;
+package org.lazywizard.console;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,9 +9,10 @@ import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 
-class _Utils
+public class CommandUtils
 {
     private static final boolean ENABLE_TYPO_CORRECTION = true;
+    private static final double SIMILARITY_THRESHOLD = .9f;
 
     /**
      * Returns normalized score, with 0.0 meaning no similarity at all,
@@ -93,82 +94,27 @@ class _Utils
         // it, and Yancey's 2005 paper describes it. However, Winkler's list of
         // test cases in his 2006 paper does not include this modification. So
         // is this part of Jaro-Winkler, or is it not? Hard to say.
-        //
-        //   if (s1.length() >= 5 && // both strings at least 5 characters long
-        //       c - p >= 2 && // at least two common characters besides prefix
-        //       c - p >= ((s1.length() - p) / 2)) // fairly rich in common chars
-        //     {
-        //     System.out.println("ADJUSTED!");
-        //     score = score + ((1 - score) * ((c - (p + 1)) /
-        //                                     ((double) ((s1.length() + s2.length())
-        //                                                - (2 * (p - 1))))));
-        // }
+        /*if (s1.length() >= 5 && // both strings at least 5 characters long
+         c - p >= 2 && // at least two common characters besides prefix
+         c - p >= ((s1.length() - p) / 2)) // fairly rich in common chars
+         {
+         score = score + ((1 - score) * ((c - (p + 1))
+         / ((double) ((s1.length() + s2.length())
+         - (2 * (p - 1))))));
+         }*/
         // (4) similar characters adjustment
         // the same holds for this as for (3) above.
         return score;
     }
 
-    // Stolen from Wikipedia
-    private static int calcLevenshteinDistance(String s, String t)
-    {
-        s = s.toLowerCase();
-        t = t.toLowerCase();
-        // degenerate cases
-        if (s.equals(t))
-        {
-            return 0;
-        }
-        if (s.length() == 0)
-        {
-            return t.length();
-        }
-        if (t.length() == 0)
-        {
-            return s.length();
-        }
-
-        // create two work vectors of integer distances
-        int[] v0 = new int[t.length() + 1];
-        int[] v1 = new int[t.length() + 1];
-
-        // initialize v0 (the previous row of distances)
-        // this row is A[0][i]: edit distance for an empty s
-        // the distance is just the number of characters to delete from t
-        for (int i = 0; i < v0.length; i++)
-        {
-            v0[i] = i;
-        }
-
-        for (int i = 0; i < s.length(); i++)
-        {
-            // calculate v1 (current row distances) from the previous row v0
-            // first element of v1 is A[i+1][0]
-            //   edit distance is delete (i+1) chars from s to match empty t
-            v1[0] = i + 1;
-
-            // use formula to fill in the rest of the row
-            for (int j = 0; j < t.length(); j++)
-            {
-                int cost = (s.charAt(i) == t.charAt(j)) ? 0 : 1;
-                v1[j + 1] = Math.min(Math.min(v1[j] + 1, v0[j + 1] + 1), v0[j] + cost);
-            }
-
-            // copy v1 (current row) to v0 (previous row) for next iteration
-            System.arraycopy(v1, 0, v0, 0, v0.length);
-        }
-
-        return v1[t.length()];
-    }
-
     public static void main(String[] args)
     {
-        String word1 = "corvus_comm_relay";
-        String word2 = "corvas_com_rillay";
-        System.out.println(calcLevenshteinDistance(word1, word2));
-        System.out.println(calcSimilarity(word1, word2));
+        String word1 = "corvus_pirate_station";
+        String word2 = "corvas_pirot_stashun";
+        System.out.println(word1 + "\n" + word2 + "\n" + calcSimilarity(word1, word2));
     }
 
-    static String findBestStringMatch(String id, Collection<String> toSearch)
+    public static String findBestStringMatch(String id, Collection<String> toSearch)
     {
         if (toSearch.contains(id))
         {
@@ -177,7 +123,7 @@ class _Utils
 
         id = id.toLowerCase();
         String bestMatch = null;
-        double closestDistance = .85f; // Threshold
+        double closestDistance = SIMILARITY_THRESHOLD;
 
         for (String str : toSearch)
         {
@@ -192,11 +138,12 @@ class _Utils
         return bestMatch;
     }
 
-    static SectorEntityToken findBestTokenMatch(String name, Collection<SectorEntityToken> toSearch)
+    public static SectorEntityToken findBestTokenMatch(String name,
+            Collection<SectorEntityToken> toSearch)
     {
         name = name.toLowerCase();
         SectorEntityToken bestMatch = null;
-        double closestDistance = .85f; // Threshold
+        double closestDistance = SIMILARITY_THRESHOLD;
 
         for (SectorEntityToken token : toSearch)
         {
@@ -214,7 +161,7 @@ class _Utils
         return bestMatch;
     }
 
-    static List<SectorEntityToken> getEntitiesWithTags(LocationAPI location,
+    public static List<SectorEntityToken> getEntitiesWithTags(LocationAPI location,
             String... tags)
     {
         Set<SectorEntityToken> tokens = new HashSet<>();
@@ -225,7 +172,7 @@ class _Utils
         return new ArrayList<>(tokens);
     }
 
-    static SectorEntityToken findTokenInLocation(String toFind, LocationAPI location)
+    public static SectorEntityToken findTokenInLocation(String toFind, LocationAPI location)
     {
         return findTokenInLocation(toFind, location, Tags.COMM_RELAY,
                 Tags.JUMP_POINT, Tags.PLANET, Tags.STAR, Tags.STATION);
@@ -255,7 +202,7 @@ class _Utils
         return tmp;
     }
 
-    private _Utils()
+    private CommandUtils()
     {
     }
 }

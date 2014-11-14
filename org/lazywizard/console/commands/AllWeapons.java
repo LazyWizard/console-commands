@@ -7,6 +7,7 @@ import com.fs.starfarer.api.campaign.SectorEntityToken;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
+import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
@@ -39,7 +40,7 @@ public class AllWeapons implements BaseCommand
         }
         else
         {
-            SectorEntityToken tmp = _Utils.findTokenInLocation(args,
+            SectorEntityToken tmp = CommandUtils.findTokenInLocation(args,
                     Global.getSector().getCurrentLocation());
 
             if (tmp == null)
