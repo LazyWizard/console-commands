@@ -10,7 +10,6 @@ import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.OrbitalStationAPI;
 import com.fs.starfarer.api.campaign.PlanetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
-import com.fs.starfarer.api.campaign.StarSystemAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
@@ -19,17 +18,6 @@ import org.lwjgl.util.vector.Vector2f;
 
 public class Find implements BaseCommand
 {
-    private static String getName(LocationAPI location)
-    {
-        if (location instanceof StarSystemAPI)
-        {
-            return ((StarSystemAPI) location).getName();
-        }
-
-        return (location == Global.getSector().getHyperspace()
-                ? "Hyperspace" : "Unknown location");
-    }
-
     private static String getType(SectorEntityToken token)
     {
         if (token instanceof AsteroidAPI)

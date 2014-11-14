@@ -12,7 +12,7 @@ import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.MathUtils;
-import org.lwjgl.util.vector.Vector2f; 
+import org.lwjgl.util.vector.Vector2f;
 
 public class SetHome implements BaseCommand
 {
@@ -28,7 +28,7 @@ public class SetHome implements BaseCommand
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
-        if (context == CommandContext.COMBAT_MISSION)
+        if (context != CommandContext.CAMPAIGN_MAP)
         {
             Console.showMessage(CommonStrings.ERROR_CAMPAIGN_ONLY);
             return CommandResult.WRONG_CONTEXT;

@@ -32,7 +32,7 @@ public class AddShip implements BaseCommand
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
-        if (context == CommandContext.COMBAT_MISSION)
+        if (context != CommandContext.CAMPAIGN_MAP)
         {
             Console.showMessage(CommonStrings.ERROR_CAMPAIGN_ONLY);
             return CommandResult.WRONG_CONTEXT;
