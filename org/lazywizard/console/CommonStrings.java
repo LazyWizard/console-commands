@@ -1,6 +1,5 @@
 package org.lazywizard.console;
 
-import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 
 /**
@@ -96,8 +95,8 @@ public class CommonStrings
     public static final String DATA_HOME_ID = DATA_PREFIX + "Home";
 
     /**
-     * The persistent data ID of the {@link CargoAPI} used by the Storage
-     * command.
+     * The persistent data ID of the {@link SectorEntityToken} used by the
+     * Storage command.
      * <p>
      * @since 2.0
      */
