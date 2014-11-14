@@ -127,7 +127,13 @@ public class CommandUtils
 
         for (String str : toSearch)
         {
-            double distance = calcSimilarity(id, str);
+            double distance = calcSimilarity(id, str.toLowerCase());
+
+            if (distance == 1.0)
+            {
+                return str;
+            }
+
             if (distance > closestDistance)
             {
                 closestDistance = distance;
@@ -151,6 +157,12 @@ public class CommandUtils
                     calcSimilarity(name, token.getId().toLowerCase()),
                     calcSimilarity(name, token.getName().toLowerCase())),
                     calcSimilarity(name, token.getFullName().toLowerCase()));
+
+            if (distance == 1.0)
+            {
+                return token;
+            }
+
             if (distance > closestDistance)
             {
                 closestDistance = distance;
