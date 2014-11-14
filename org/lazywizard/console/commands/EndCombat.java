@@ -13,10 +13,17 @@ public class EndCombat implements BaseCommand
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
-        if (context == CommandContext.CAMPAIGN_MAP
-                || context == CommandContext.COMBAT_SIMULATION)
+        if (context == CommandContext.CAMPAIGN_MAP)
         {
             Console.showMessage(CommonStrings.ERROR_COMBAT_ONLY);
+            return CommandResult.WRONG_CONTEXT;
+        }
+
+        // Game crashes if endCombat() is used in simulator, so snark instead
+        if (context == CommandContext.COMBAT_SIMULATION)
+        {
+            Console.showMessage("Oh no, you're trapped! Wait, you can just hit"
+                    + " escape and leave. Duh.");
             return CommandResult.WRONG_CONTEXT;
         }
 
