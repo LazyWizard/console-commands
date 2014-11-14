@@ -30,7 +30,7 @@ public class AllWeapons implements BaseCommand
 
         if (args == null || args.isEmpty())
         {
-            target = Storage.retrieveStorage(Global.getSector());
+            target = Storage.retrieveStorage();
             targetName = "storage (use 'storage' to retrieve)";
         }
         else if ("player".equalsIgnoreCase(args))
