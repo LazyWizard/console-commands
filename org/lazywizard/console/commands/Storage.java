@@ -14,6 +14,7 @@ import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import org.lazywizard.lazylib.campaign.CargoUtils;
 
 public class Storage implements BaseCommand
 {
@@ -21,14 +22,14 @@ public class Storage implements BaseCommand
     {
         // Which abandoned station Storage uses is only set once, ever
         Map<String, Object> data = Global.getSector().getPersistentData();
+        CargoAPI toTransfer = null;
         if (data.containsKey(CommonStrings.DATA_STORAGE_ID))
         {
             // Compatibility fix for those who used the broken Storage command
             Object tmp = data.get(CommonStrings.DATA_STORAGE_ID);
             if (tmp instanceof CargoAPI)
             {
-                Console.showMessage("Removing old Storage data.");
-                data.remove(CommonStrings.DATA_STORAGE_ID);
+                toTransfer = (CargoAPI) tmp;
             }
             else
             {
@@ -63,6 +64,23 @@ public class Storage implements BaseCommand
                     }
                 }
             }
+        }
+
+        // No station found, will search again next time the command is used
+        if (abandonedStation == null)
+        {
+            return null;
+        }
+
+        // Transfer old Storage contents to new station
+        if (toTransfer != null)
+        {
+            Console.showMessage("Transferred old Storage data.");
+            CargoAPI transferTo = abandonedStation.getMarket().getSubmarket(
+                    Submarkets.SUBMARKET_STORAGE).getCargo();
+            CargoUtils.moveCargo(toTransfer, transferTo);
+            CargoUtils.moveMothballedShips(toTransfer, transferTo);
+            data.remove(CommonStrings.DATA_STORAGE_ID);
         }
 
         data.put(CommonStrings.DATA_STORAGE_ID, abandonedStation);
