@@ -1,10 +1,10 @@
 package org.lazywizard.console.commands;
 
-import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
+import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
@@ -45,8 +45,8 @@ public class AdjustRelationship implements BaseCommand
 
         String faction = tmp[0];
         String towardsFaction = tmp[1];
-        FactionAPI fac1 = Global.getSector().getFaction(faction);
-        FactionAPI fac2 = Global.getSector().getFaction(towardsFaction);
+        FactionAPI fac1 = CommandUtils.findBestFactionMatch(faction);
+        FactionAPI fac2 = CommandUtils.findBestFactionMatch(towardsFaction);
 
         if (fac1 == null)
         {
@@ -60,8 +60,9 @@ public class AdjustRelationship implements BaseCommand
         }
 
         fac1.adjustRelationship(towardsFaction, newRelationship / 100f);
-        Console.showMessage("Adjusted relationship of " + faction + " towards "
-                + towardsFaction + " by " + newRelationship + ".");
+        Console.showMessage("Adjusted relationship of "
+                + CommandUtils.getFactionName(fac1) + " towards "
+                + CommandUtils.getFactionName(fac2) + " by " + newRelationship + ".");
         return CommandResult.SUCCESS;
     }
 }

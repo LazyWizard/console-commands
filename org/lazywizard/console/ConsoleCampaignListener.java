@@ -19,7 +19,7 @@ import org.lwjgl.input.Keyboard;
 
 public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListener
 {
-    private transient CampaignPopup popup;
+    private transient CampaignPopup popup = null;
     private transient boolean isDialogOpen = false;
 
     @Override
