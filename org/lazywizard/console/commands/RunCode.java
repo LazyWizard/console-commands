@@ -70,7 +70,6 @@ public class RunCode implements BaseCommand
         catch (IOException | JSONException ex)
         {
             Console.showException("Failed to load RunCode macros: ", ex);
-            return;
         }
     }
 

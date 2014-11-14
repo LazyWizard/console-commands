@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
@@ -87,7 +89,7 @@ public class CommandUtils
         for (; p < last && s1.charAt(p) == s2.charAt(p); p++)
       ;
 
-        score = score + ((p * (1 - score)) / 10);
+        score += ((p * (1 - score)) / 10);
 
         // (3) longer string adjustment
         // I'm confused about this part. Winkler's original source code includes
@@ -105,13 +107,6 @@ public class CommandUtils
         // (4) similar characters adjustment
         // the same holds for this as for (3) above.
         return score;
-    }
-
-    public static void main(String[] args)
-    {
-        String word1 = "corvus_pirate_station";
-        String word2 = "corvas_pirot_stashun";
-        System.out.println(word1 + "\n" + word2 + "\n" + calcSimilarity(word1, word2));
     }
 
     public static String findBestStringMatch(String id, Collection<String> toSearch)
@@ -138,6 +133,33 @@ public class CommandUtils
             {
                 closestDistance = distance;
                 bestMatch = str;
+            }
+        }
+
+        return bestMatch;
+    }
+
+    public static FactionAPI findBestFactionMatch(String name)
+    {
+        name = name.toLowerCase();
+        FactionAPI bestMatch = null;
+        double closestDistance = SIMILARITY_THRESHOLD;
+
+        Global.getSector().getFaction(null);
+        for (FactionAPI faction : Global.getSector().getAllFactions())
+        {
+            double distance = Math.max(calcSimilarity(name, faction.getId().toLowerCase()),
+                    calcSimilarity(name, faction.getDisplayName().toLowerCase()));
+
+            if (distance == 1.0)
+            {
+                return faction;
+            }
+
+            if (distance > closestDistance)
+            {
+                closestDistance = distance;
+                bestMatch = faction;
             }
         }
 
@@ -212,6 +234,16 @@ public class CommandUtils
         }
 
         return tmp;
+    }
+
+    public static String getFactionName(FactionAPI faction)
+    {
+        if (faction.isPlayerFaction())
+        {
+            return "Player";
+        }
+
+        return faction.getDisplayName();
     }
 
     private CommandUtils()

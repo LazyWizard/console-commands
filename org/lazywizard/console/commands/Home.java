@@ -6,7 +6,6 @@ import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
-import com.fs.starfarer.api.campaign.StarSystemAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
@@ -49,7 +48,7 @@ public class Home implements BaseCommand
         playerFleet.addAssignment(FleetAssignment.GO_TO_LOCATION, home, 1f);
         Console.showMessage("Teleported to " + home.getFullName()
                 + " in " + (loc.isHyperspace() ? "hyperspace" : "the "
-                        + ((StarSystemAPI) loc).getName() + " system") + " successfully.");
+                        + loc.getName() + " system") + " successfully.");
         return CommandResult.SUCCESS;
     }
 }
