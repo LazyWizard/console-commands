@@ -37,7 +37,7 @@ public class Storage implements BaseCommand
             }
         }
 
-        // First check if we're in a vanilla-like sector setup
+        // First check if we're in a vanilla sector setup
         // If so, try to find the Abandoned Terraforming Platform
         SectorEntityToken abandonedStation = null;
         StarSystemAPI corvus = Global.getSector().getStarSystem("corvus");
