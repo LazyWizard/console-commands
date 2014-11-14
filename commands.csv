@@ -18,6 +18,7 @@ AllHulls,org.lazywizard.console.commands.AllHulls,"core,campaign",allhulls [opti
 AllWeapons,org.lazywizard.console.commands.AllWeapons,"core,campaign",allweapons [optionalStation],"Places ten of every weapon in the specified station, or in storage if no argument is entered."
 AllWings,org.lazywizard.console.commands.AllWings,"core,campaign",allwings [optionalStation],"Places one of every fighter wing in the specified station, or in storage if no argument is entered."
 DevMode,org.lazywizard.console.commands.DevMode,core,devmode [optionalOnOrOff],"Enables or disables dev mode. If no argument is given, acts as a toggle."
+EndCombat,org.lazywizard.console.commands.EndCombat,"core,combat",endcombat [optionalWinningSide],"Ends combat with the entered side as the winner (player or enemy). If no side is entered, defaults to a player victory."
 #Find,org.lazywizard.console.commands.Find,"core,campaign",find <entityName>,"Lists all campaign entities whose name contains the given arguments (not case-sensitive), as well as their current locations."
 God,org.lazywizard.console.commands.God,"core,combat",god (no arguments),Toggles invincibility for all ships on your side.
 GoTo,org.lazywizard.console.commands.GoTo,"core,campaign",goto <locationName>,"Teleports your fleet to the token with the given name in this system, if any exists. The argument 'home' will function identically to the 'home' command."
@@ -27,7 +28,7 @@ InfiniteAmmo,org.lazywizard.console.commands.InfiniteAmmo,"core,combat",infinite
 InfiniteCR,org.lazywizard.console.commands.InfiniteCR,"core,combat",infinitecr (no arguments),Toggles CR degradation in combat.
 InfiniteFlux,org.lazywizard.console.commands.InfiniteFlux,"core,combat",infiniteflux (no arguments),Toggles infinite flux for all ships on your side.
 Jump,org.lazywizard.console.commands.Jump,"core,campaign",jump <system>,Teleports your fleet to the specified system. You will be brought to that system's star (if it has one). If you want to travel to a specific token you should chain 'goto' after this command. The argument 'home' will function identically to the 'home' command.
-List,org.lazywizard.console.commands.List_,"core,console,campaign",list ships|wings|weapons|items|factions|systems|stations|markets,"Lists all internal IDs of a specific category for use with this mod's commands.\nValid categories: ships, wings, weapons, items, factions, systems, stations, markets"
+List,org.lazywizard.console.commands.List_,"core,campaign",list ships|wings|weapons|items|factions|systems|stations|markets,"Lists all internal IDs of a specific category for use with this mod's commands.\nValid categories: ships, wings, weapons, items, factions, systems, stations, markets"
 NoCooldown,org.lazywizard.console.commands.NoCooldown,"core,combat",nocooldown (no arguments),Toggles weapon cooldowns for all ships on your side.
 Nuke,org.lazywizard.console.commands.Nuke,"core,combat",nuke (no arguments),Destroys all enemies on the battle map.
 #Purge,org.lazywizard.console.commands.Purge,"core,campaign",purge <station name> [optionalMaxStacksPerItem],"Removes excess stacks from a station's cargo. By default it will purge down to one stack per item, but you can also use an optional 'max stacks' parameter with this command."

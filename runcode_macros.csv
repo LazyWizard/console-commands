@@ -1,7 +1,9 @@
 macro,replace
-$playerShip,com.fs.starfarer.api.Global.getCombatEngine().getPlayerShip()
-$playerFleet,com.fs.starfarer.api.Global.getSector().getPlayerFleet()
-$playerFaction,"com.fs.starfarer.api.Global.getSector().getFaction(""player"")"
+$api,com.fs.starfarer.api
+$global,com.fs.starfarer.api.Global
 $combatEngine,com.fs.starfarer.api.Global.getCombatEngine()
 $sector,com.fs.starfarer.api.Global.getSector()
 $loc,com.fs.starfarer.api.Global.getSector().getCurrentLocation()
+$playerShip,com.fs.starfarer.api.Global.getCombatEngine().getPlayerShip()
+$playerFleet,com.fs.starfarer.api.Global.getSector().getPlayerFleet()
+$playerFaction,"com.fs.starfarer.api.Global.getSector().getFaction(""player"")"
