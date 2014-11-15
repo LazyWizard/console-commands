@@ -9,6 +9,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 
 public class CommandUtils
@@ -145,7 +146,6 @@ public class CommandUtils
         FactionAPI bestMatch = null;
         double closestDistance = SIMILARITY_THRESHOLD;
 
-        Global.getSector().getFaction(null);
         for (FactionAPI faction : Global.getSector().getAllFactions())
         {
             double distance = Math.max(calcSimilarity(name, faction.getId().toLowerCase()),
@@ -160,6 +160,32 @@ public class CommandUtils
             {
                 closestDistance = distance;
                 bestMatch = faction;
+            }
+        }
+
+        return bestMatch;
+    }
+
+    public static StarSystemAPI findBestSystemMatch(String name)
+    {
+        name = name.toLowerCase();
+        StarSystemAPI bestMatch = null;
+        double closestDistance = SIMILARITY_THRESHOLD;
+
+        for (StarSystemAPI loc : Global.getSector().getStarSystems())
+        {
+            double distance = Math.max(calcSimilarity(name, loc.getId().toLowerCase()),
+                    calcSimilarity(name, loc.getBaseName().toLowerCase()));
+
+            if (distance == 1.0)
+            {
+                return loc;
+            }
+
+            if (distance > closestDistance)
+            {
+                closestDistance = distance;
+                bestMatch = loc;
             }
         }
 

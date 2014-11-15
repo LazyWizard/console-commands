@@ -8,6 +8,7 @@ import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
 import org.lazywizard.console.BaseCommand;
+import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
@@ -83,7 +84,7 @@ public class Jump implements BaseCommand
         }
         else
         {
-            StarSystemAPI system = Global.getSector().getStarSystem(args);
+            StarSystemAPI system = CommandUtils.findBestSystemMatch(args);
             if (system == null)
             {
                 Console.showMessage("No system found with the name '" + args + "'!");
