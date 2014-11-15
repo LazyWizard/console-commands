@@ -216,6 +216,16 @@ public class Console
             StoredCommand stored = CommandStore.retrieveCommand(com);
             if (stored == null)
             {
+                String bestMatch = CommandUtils.findBestStringMatch(com,
+                        CommandStore.getLoadedCommands());
+                if (bestMatch != null)
+                {
+                    showMessage("No such command \"" + com + "\" registered,"
+                            + " did you mean \"" + bestMatch +"\"?\nYou can"
+                            + " re-enter your last command by pressing up.");
+                    return CommandResult.ERROR;
+                }
+
                 showMessage("No such command \"" + com + "\" registered!", Level.ERROR);
                 return CommandResult.ERROR;
             }
