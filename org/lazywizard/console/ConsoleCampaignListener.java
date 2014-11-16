@@ -16,6 +16,7 @@ import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.ConsoleSettings.KeyStroke;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.Display;
 
 public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListener
 {
@@ -112,7 +113,7 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
         private InteractionDialogAPI dialog;
         private KeyListener keyListener;
         private float timeOpen = 0f; // Used for the blinking cursor
-        private int easterEggLevel = 0; // Set to <0 to disable easter eggs
+        private int easterEggLevel = -1; // Set to <0 to disable easter eggs
 
         @Override
         public void init(InteractionDialogAPI dialog)
@@ -122,18 +123,15 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
             keyListener = new KeyListener();
             timeOpen = 0f;
 
-            dialog.setTextWidth(800f);
+            final int width = Display.getWidth();
+            dialog.setTextWidth(width * .9f);
+            dialog.setXOffset(width * .45f);
             dialog.getVisualPanel().showCustomPanel(0f, 0f, keyListener);
-            //dialog.setTextWidth(Console.getSettings().getMaxOutputLineLength() * 8f);
             dialog.getTextPanel().addParagraph(CommonStrings.INPUT_QUERY);
             dialog.setPromptText("Input: ");
 
             dialog.getOptionPanel().addOption("Close", LEAVE);
             dialog.setOptionOnEscape("Close", LEAVE);
-            /*KeyStroke key = Console.getSettings().getConsoleSummonKey();
-             dialog.getOptionPanel().setShortcut(LEAVE,
-             key.getKey(), key.requiresControl(), key.requiresAlt(),
-             key.requiresShift(), true);*/
         }
 
         @Override
@@ -155,8 +153,20 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
         public void advance(float amount)
         {
             timeOpen += amount;
-            dialog.setPromptText("Input: " + keyListener.currentInput.toString()
-                    + ((((int) timeOpen) & 1) == 0 ? "|" : ""));
+            String input = keyListener.currentInput.toString();
+            String cursor = ((((int) timeOpen) & 1) == 0 ? "|" : " ");
+            int index = keyListener.currentIndex;
+            if (index == input.length())
+            {
+                dialog.setPromptText("Input: " + input + cursor
+                        + " | Index: " + index);
+            }
+            else
+            {
+                dialog.setPromptText("Input: " + input.substring(0, index)
+                        + cursor + input.substring(index, input.length())
+                        + " | Index: " + index);
+            }
 
             // Easter eggs, because why not?
             if (easterEggLevel == 0 && timeOpen > 180f) // 3 minutes
@@ -178,37 +188,6 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                         + " fool you it seems.", Color.RED);
                 easterEggLevel++;
             }
-
-            // Temporary code to find optimum text area size/placement
-            /*
-             float movement = (50f * amount);
-             if (Keyboard.isKeyDown(Keyboard.KEY_SUBTRACT))
-             {
-             System.out.println("Moving by -" + movement);
-             dialog.setXOffset(dialog.getXOffset() - movement);
-             }
-             else if (Keyboard.isKeyDown(Keyboard.KEY_ADD))
-             {
-             System.out.println("Moving by +" + movement);
-             dialog.setXOffset(dialog.getXOffset() + movement);
-             }
-             else if (Keyboard.isKeyDown(Keyboard.KEY_DIVIDE))
-             {
-             System.out.println("Resizing by -" + movement);
-             dialog.setTextWidth(dialog.getTextWidth() - movement);
-             }
-             else if (Keyboard.isKeyDown(Keyboard.KEY_MULTIPLY))
-             {
-             System.out.println("Resizing by +" + movement);
-             dialog.setTextWidth(dialog.getTextWidth() + movement);
-             }
-             else
-             {
-             return;
-             }
-
-             System.out.println("Size: " + dialog.getTextWidth() + " | Pos: "
-             + dialog.getXOffset());*/
         }
 
         @Override
@@ -233,10 +212,12 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
             return null;
         }
 
+        // TODO: Add support for holding down keys
         private class KeyListener implements CustomUIPanelPlugin
         {
             StringBuilder currentInput = new StringBuilder();
             String lastInput = null;
+            int currentIndex = 0, lastIndex = 0;
 
             @Override
             public void positionChanged(PositionAPI position)
@@ -256,6 +237,8 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
             @Override
             public void processInput(List<InputEventAPI> events)
             {
+                int previousLength = currentInput.length();
+
                 for (InputEventAPI event : events)
                 {
                     if (event.isConsumed() || !event.isKeyDownEvent()
@@ -264,42 +247,74 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                         continue;
                     }
 
+                    int keyPressed = event.getEventValue();
                     timeOpen = 0f;
 
                     // Load last command when user presses up on keyboard
-                    if (event.getEventValue() == Keyboard.KEY_UP
-                            && Console.getLastCommand() != null)
+                    if (keyPressed == Keyboard.KEY_UP && Console.getLastCommand() != null)
                     {
                         lastInput = currentInput.toString();
+                        lastIndex = currentIndex;
                         currentInput.replace(0, currentInput.length(),
                                 Console.getLastCommand());
+                        currentIndex = currentInput.length();
                         event.consume();
                         continue;
                     }
 
                     // Down restores previous command overwritten by up
-                    if (event.getEventValue() == Keyboard.KEY_DOWN
-                            && lastInput != null)
+                    if (keyPressed == Keyboard.KEY_DOWN && lastInput != null)
                     {
                         currentInput.replace(0, currentInput.length(), lastInput);
+                        currentIndex = lastIndex;
                         lastInput = null;
+                        lastIndex = currentInput.length();
+                        event.consume();
+                        continue;
+                    }
+
+                    // Left or right move the editing cursor
+                    if (keyPressed == Keyboard.KEY_LEFT)
+                    {
+                        currentIndex = Math.max(0, currentIndex - 1);
+                        event.consume();
+                        continue;
+                    }
+                    if (keyPressed == Keyboard.KEY_RIGHT)
+                    {
+                        currentIndex = Math.min(currentInput.length(),
+                                currentIndex + 1);
+                        event.consume();
+                        continue;
+                    }
+
+                    // Home = move cursor to beginning of line
+                    // End = move cursor to end of line
+                    if (keyPressed == Keyboard.KEY_HOME)
+                    {
+                        currentIndex = 0;
+                        event.consume();
+                        continue;
+                    }
+                    if (keyPressed == Keyboard.KEY_END)
+                    {
+                        currentIndex = currentInput.length();
                         event.consume();
                         continue;
                     }
 
                     // Backspace handling, imitates vanilla text inputs
-                    // TODO: Add support for holding down backspace
-                    if (event.getEventValue() == Keyboard.KEY_BACK
-                            && currentInput.length() > 0)
+                    if (keyPressed == Keyboard.KEY_BACK && currentIndex > 0)
                     {
                         // Shift+backspace, delete entire line
                         // Disabled for now because it was incredibly annoying
-                        if (event.isShiftDown())
-                        {
-                            //currentInput.setLength(0);
-                        }
+                        /*if (event.isShiftDown())
+                         {
+                         currentInput.setLength(0);
+                         }*/
                         // Control+backspace, delete last word
-                        else if (event.isCtrlDown())
+                        // TODO: Add positional editing support
+                        if (event.isCtrlDown())
                         {
                             int lastSpace = currentInput.lastIndexOf(" ");
                             if (lastSpace == -1)
@@ -314,25 +329,35 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                         // Regular backspace, delete last character
                         else
                         {
-                            currentInput.deleteCharAt(currentInput.length() - 1);
+                            currentInput.deleteCharAt(currentIndex - 1);
                         }
 
                         event.consume();
                     }
+                    // Delete key handling
+                    else if (keyPressed == Keyboard.KEY_DELETE
+                            && currentIndex < currentInput.length())
+                    {
+                        currentInput.deleteCharAt(currentIndex);
+                        currentIndex++;
+                        event.consume();
+                    }
                     // Return key handling
-                    else if (event.getEventValue() == Keyboard.KEY_RETURN)
+                    else if (keyPressed == Keyboard.KEY_RETURN)
                     {
                         String command = currentInput.toString();
                         Console.parseInput(command, CommandContext.CAMPAIGN_MAP);
                         currentInput.setLength(0);
+                        currentIndex = 0;
                         lastInput = null;
+                        lastIndex = 0;
                         event.consume();
                     }
                     // Paste handling
-                    else if (event.getEventValue() == Keyboard.KEY_V
-                            && event.isCtrlDown())
+                    else if (keyPressed == Keyboard.KEY_V && event.isCtrlDown())
                     {
-                        currentInput.append(Sys.getClipboard().replace('\n', ' '));
+                        currentInput.insert(currentIndex,
+                                Sys.getClipboard().replace('\n', ' '));
                         event.consume();
                     }
                     // Normal typing
@@ -342,11 +367,16 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                         char character = event.getEventChar();
                         if (character >= 0x20 && character <= 0x7e)
                         {
-                            currentInput.append(character);
+                            currentInput.insert(currentIndex, character);
                             event.consume();
                         }
                     }
                 }
+
+                // Update cursor index based on what changed since last frame
+                currentIndex += currentInput.length() - previousLength;
+                currentIndex = Math.min(Math.max(0, currentIndex),
+                        currentInput.length());
             }
         }
     }

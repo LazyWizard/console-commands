@@ -1,3 +1,20 @@
+ 2.2 (November XX, 2014)
+=========================
+Console popup will now expand to take up the entire screen
+Added typo correction - most commands will find the best match for invalid IDs
+Added positional editing to the campaign input dialog
+Fixed campaign commands being usable in the simulator
+Changes to existing commands:
+ - Typo correction added to the following commands: AddItem, AddWeapon,
+   AdjustRelationship, AllHulls, AllWeapons, AllWings, GoTo, Jump, SetHome,
+   SetRelationship
+ - Added EndCombat command, takes the victorious side as an optional argument
+ - Added several more default RunCode macros
+ - Storage redirects to the Abandoned Terraforming Platform, or the first
+   station it can find with the abandoned market condition in total conversions
+   (if you used AllHulls or AllWeapons in a prior version, those items will be
+    transferred over to the station's storage when you use this command)
+
  2.1.1 (November 13, 2014)
 ===========================
 Added List command, shows valid IDs for ships/wings/systems/weapons/factions/etc

@@ -221,8 +221,7 @@ public class Console
                 if (bestMatch != null)
                 {
                     showMessage("No such command \"" + com + "\" registered,"
-                            + " did you mean \"" + bestMatch +"\"?\nYou can"
-                            + " re-enter your last command by pressing up.");
+                            + " did you mean \"" + bestMatch + "\"?");
                     return CommandResult.ERROR;
                 }
 
