@@ -15,7 +15,6 @@ import com.fs.starfarer.api.impl.campaign.ids.Tags;
 public class CommandUtils
 {
     private static final boolean ENABLE_TYPO_CORRECTION = true;
-    private static final double SIMILARITY_THRESHOLD = .9f;
 
     /**
      * Returns normalized score, with 0.0 meaning no similarity at all,
@@ -119,7 +118,7 @@ public class CommandUtils
 
         id = id.toLowerCase();
         String bestMatch = null;
-        double closestDistance = SIMILARITY_THRESHOLD;
+        double closestDistance = Console.getSettings().getTypoCorrectionThreshold();
 
         for (String str : toSearch)
         {
@@ -144,7 +143,7 @@ public class CommandUtils
     {
         name = name.toLowerCase();
         FactionAPI bestMatch = null;
-        double closestDistance = SIMILARITY_THRESHOLD;
+        double closestDistance = Console.getSettings().getTypoCorrectionThreshold();
 
         for (FactionAPI faction : Global.getSector().getAllFactions())
         {
@@ -170,7 +169,7 @@ public class CommandUtils
     {
         name = name.toLowerCase();
         StarSystemAPI bestMatch = null;
-        double closestDistance = SIMILARITY_THRESHOLD;
+        double closestDistance = Console.getSettings().getTypoCorrectionThreshold();
 
         for (StarSystemAPI loc : Global.getSector().getStarSystems())
         {
@@ -197,7 +196,7 @@ public class CommandUtils
     {
         name = name.toLowerCase();
         SectorEntityToken bestMatch = null;
-        double closestDistance = SIMILARITY_THRESHOLD;
+        double closestDistance = Console.getSettings().getTypoCorrectionThreshold();
 
         for (SectorEntityToken token : toSearch)
         {

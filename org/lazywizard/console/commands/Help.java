@@ -36,7 +36,7 @@ public class Help implements BaseCommand
             {
                 List<String> commands = CommandStore.getCommandsWithTag(args);
                 Collections.sort(commands);
-                Console.showMessage("Commands with tag '"+args+"':\n"
+                Console.showMessage("Commands with tag '" + args + "':\n"
                         + CollectionUtils.implode(commands));
                 return CommandResult.SUCCESS;
             }

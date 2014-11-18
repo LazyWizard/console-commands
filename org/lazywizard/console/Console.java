@@ -75,6 +75,7 @@ public class Console
                 settingsFile.getBoolean("requireAlt"),
                 Pattern.quote(settingsFile.getString("commandSeparator")),
                 settingsFile.getBoolean("showEnteredCommands"),
+                settingsFile.getDouble("typoCorrectionThreshold"),
                 JSONUtils.toColor(settingsFile.getJSONArray("outputColor")),
                 settingsFile.getInt("maxOutputLineLength"),
                 parseSoundOptions(settingsFile));
@@ -195,7 +196,7 @@ public class Console
     public static void showDialogOnClose(InteractionDialogPlugin dialog,
             SectorEntityToken token)
     {
-        Global.getSector().addScript(new ShowDialogOnCloseScript(dialog, null));
+        Global.getSector().addScript(new ShowDialogOnCloseScript(dialog, token));
     }
 
     public static void showDialogOnClose(SectorEntityToken token)
@@ -347,13 +348,13 @@ public class Console
         @Override
         public void advance(float amount)
         {
-            if (!isDone)
+            CampaignUIAPI ui = Global.getSector().getCampaignUI();
+            if (!isDone && !ui.isShowingDialog())
             {
                 isDone = true;
 
                 try
                 {
-                    CampaignUIAPI ui = Global.getSector().getCampaignUI();
                     if (dialog == null)
                     {
                         ui.showInteractionDialog(token);
@@ -363,6 +364,8 @@ public class Console
                         ui.showInteractionDialog(dialog, token);
                     }
                 }
+                // Catching the exception won't actually help
+                // The game is screwed at this point, honestly
                 catch (Exception ex)
                 {
                     Console.showException("Failed to open dialog "
