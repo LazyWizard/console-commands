@@ -1,7 +1,8 @@
- 2.2 (November XX, 2014)
+ 2.2 (November 18, 2014)
 =========================
-Console popup will now expand to take up the entire screen
+Console popup will now expand to take up the entire screen in the campaign
 Added typo correction - most commands will find the best match for invalid IDs
+Added "typoCorrectionThreshold" to data/console/console_settings.json
 Added positional editing to the campaign input dialog
 Fixed campaign commands being usable in the simulator
 Changes to existing commands:
@@ -10,10 +11,11 @@ Changes to existing commands:
    SetRelationship
  - Added EndCombat command, takes the victorious side as an optional argument
  - Added several more default RunCode macros
- - Storage redirects to the Abandoned Terraforming Platform, or the first
-   station it can find with the abandoned market condition in total conversions
-   (if you used AllHulls or AllWeapons in a prior version, those items will be
-    transferred over to the station's storage when you use this command)
+ - Re-added Storage command, redirects to the Abandoned Terraforming Platform,
+   or in total conversions the first station it can find with the "abandoned"
+   market condition (if you used AllHulls or AllWeapons in a prior version,
+   those items will be transferred over to the station's storage when you next
+   use this command)
 
  2.1.1 (November 13, 2014)
 ===========================

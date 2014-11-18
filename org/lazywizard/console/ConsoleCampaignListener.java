@@ -158,14 +158,12 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
             int index = keyListener.currentIndex;
             if (index == input.length())
             {
-                dialog.setPromptText("Input: " + input + cursor
-                        + " | Index: " + index);
+                dialog.setPromptText("Input: " + input + cursor);
             }
             else
             {
                 dialog.setPromptText("Input: " + input.substring(0, index)
-                        + cursor + input.substring(index, input.length())
-                        + " | Index: " + index);
+                        + cursor + input.substring(index, input.length()));
             }
 
             // Easter eggs, because why not?

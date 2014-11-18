@@ -21,6 +21,8 @@ public class ConsoleSettings
     private final Map<CommandResult, String> RESULT_SOUNDS;
     // Whether each command should be displayed to the player before executing
     private final boolean SHOW_ENTERED_COMMANDS;
+    // How similar two strings must be for typo correction to decide they match
+    private final double TYPO_CORRECTION_THRESHOLD;
     // The color of the console's output text
     private final Color OUTPUT_COLOR;
     // How many characters before the output is line-wrapped
@@ -28,12 +30,14 @@ public class ConsoleSettings
 
     ConsoleSettings(int consoleSummonKey, boolean requireShift, boolean requireControl,
             boolean requireAlt, String commandSeparator, boolean showEnteredCommands,
-            Color outputColor, int outputMaxLineLength, Map<CommandResult, String> resultSounds)
+            double typoCorrectionThreshold, Color outputColor, int outputMaxLineLength,
+            Map<CommandResult, String> resultSounds)
     {
         CONSOLE_SUMMON_KEY = new KeyStroke(consoleSummonKey, requireShift,
                 requireControl, requireAlt);
         COMMAND_SEPARATOR = commandSeparator;
         SHOW_ENTERED_COMMANDS = showEnteredCommands;
+        TYPO_CORRECTION_THRESHOLD = typoCorrectionThreshold;
         OUTPUT_COLOR = outputColor;
         OUTPUT_MAX_LINE_LENGTH = outputMaxLineLength;
         RESULT_SOUNDS = resultSounds;
@@ -78,6 +82,20 @@ public class ConsoleSettings
     public boolean getShouldShowEnteredCommands()
     {
         return SHOW_ENTERED_COMMANDS;
+    }
+
+    /**
+     * Returns the threshold for similarity between two strings before one is
+     * considered a typo of the other.
+     * <p>
+     * @return How similar two {@link String}s must be for typo correction to
+     *         consider them a match.
+     * <p>
+     * @since 2.2
+     */
+    public double getTypoCorrectionThreshold()
+    {
+        return TYPO_CORRECTION_THRESHOLD;
     }
 
     /**

@@ -16,6 +16,10 @@
     # If you want to enter multiple commands at once, separate them with the following
     "commandSeparator":";",           # Default: ;
 
+    # How close an argument has to be to a valid ID before the mod assumes
+    # it's a typo and uses that ID instead. Set to 1.0 to disable
+    "typoCorrectionThreshold":0.9,    # Default: 0.9
+
     # The color of the console output text
     "outputColor":[0,255,255],        # Default: cyan    (0,255,255)
     "maxOutputLineLength":80,         # Default: 80
