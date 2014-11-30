@@ -1,7 +1,7 @@
 {
     # What button to press to summon the console
     # Key IDs are integers and can be found in the LWJGL documentation here:
-    # http://www.lwjgl.org/javadoc/constant-values.html#org.lwjgl.input.Keyboard.KEY_0
+    # http://legacy.lwjgl.org/javadoc/constant-values.html#org.lwjgl.input.Keyboard.KEY_0
     "consoleKey":14,                  # Default: Backspace (14), Tilde would be 41
     "requireShift":false,             # Default: false
     "requireControl":true,            # Default: true
