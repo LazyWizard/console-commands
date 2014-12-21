@@ -35,7 +35,7 @@ public class Nuke implements BaseCommand
             }
         }
 
-        Console.showMessage("Nuke activated. All enemy ships destroyed.");
+        Console.showMessage("All enemy ships destroyed.");
         return CommandResult.SUCCESS;
     }
 }

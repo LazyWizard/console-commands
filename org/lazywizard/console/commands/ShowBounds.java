@@ -5,6 +5,7 @@ import java.util.List;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
+import com.fs.starfarer.api.combat.ShieldAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
@@ -102,16 +103,18 @@ public class ShowBounds implements BaseCommand
             // Draw the ship's collision and shield radii
             for (ShipAPI ship : Global.getCombatEngine().getShips())
             {
-                final float x = view.convertWorldXtoScreenX(ship.getLocation().x),
-                        y = view.convertWorldYtoScreenY(ship.getLocation().y),
-                        mult = view.getViewMult();
+                final float mult = view.getViewMult();
                 glColor4f(.5f, .5f, .5f, .25f);
-                DrawUtils.drawCircle(x, y, ship.getCollisionRadius() / mult, 144, true);
-                if (ship.getShield() != null)
-
+                DrawUtils.drawCircle(view.convertWorldXtoScreenX(ship.getLocation().x),
+                        view.convertWorldYtoScreenY(ship.getLocation().y),
+                        ship.getCollisionRadius() / mult, 144, true);
+                ShieldAPI shield = ship.getShield();
+                if (shield != null)
                 {
                     glColor4f(0f, .5f, .5f, .25f);
-                    DrawUtils.drawCircle(x, y, ship.getShield().getRadius() / mult, 144, true);
+                    DrawUtils.drawCircle(view.convertWorldXtoScreenX(shield.getLocation().x),
+                            view.convertWorldYtoScreenY(shield.getLocation().y),
+                            shield.getRadius() / mult, 144, true);
                 }
             }
 
