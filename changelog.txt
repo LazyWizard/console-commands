@@ -3,6 +3,8 @@
 New commands:
  - Kill, destroys your piloted ship's current target
  - Suicide, destroys the currently piloted ship
+Changes to existing commands:
+ - Fixed shield center offset with ShowBounds
 
  2.2 (November 18, 2014)
 =========================
