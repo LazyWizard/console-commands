@@ -1,5 +1,6 @@
  2.3 (December XX, 2014)
 =========================
+Made campaign input popup capable of recovering from certain errors
 New commands:
  - Kill, destroys your piloted ship's current target
  - Suicide, destroys the currently piloted ship

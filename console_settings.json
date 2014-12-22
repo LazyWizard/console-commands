@@ -11,7 +11,10 @@
     "persistentCombatCommands":false, # Unimplemented
 
     # Whether to display each command before it is executed
-    "showEnteredCommands":true,      # Default: true
+    "showEnteredCommands":true,       # Default: true
+
+    # Whether to show the cursor position in the campaign editor (for debugging)
+    "showCursorIndex":false,          # Default: false
 
     # If you want to enter multiple commands at once, separate them with the following
     "commandSeparator":";",           # Default: ;
