@@ -12,6 +12,7 @@ import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.combat.EngagementResultAPI;
 import com.fs.starfarer.api.graphics.PositionAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
+import org.apache.log4j.Level;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.ConsoleSettings.KeyStroke;
 import org.lwjgl.Sys;
@@ -213,7 +214,7 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
         // TODO: Add support for holding down keys
         private class KeyListener implements CustomUIPanelPlugin
         {
-            StringBuilder currentInput = new StringBuilder();
+            final StringBuilder currentInput = new StringBuilder();
             String lastInput = null;
             int currentIndex = 0, lastIndex = 0;
 
@@ -235,146 +236,156 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
             @Override
             public void processInput(List<InputEventAPI> events)
             {
-                int previousLength = currentInput.length();
+                final int previousLength = currentInput.length();
 
-                for (InputEventAPI event : events)
+                try
                 {
-                    if (event.isConsumed() || !event.isKeyDownEvent()
-                            || event.isModifierKey())
+                    for (InputEventAPI event : events)
                     {
-                        continue;
-                    }
-
-                    int keyPressed = event.getEventValue();
-                    timeOpen = 0f;
-
-                    // Load last command when user presses up on keyboard
-                    if (keyPressed == Keyboard.KEY_UP && Console.getLastCommand() != null)
-                    {
-                        lastInput = currentInput.toString();
-                        lastIndex = currentIndex;
-                        currentInput.replace(0, currentInput.length(),
-                                Console.getLastCommand());
-                        currentIndex = currentInput.length();
-                        event.consume();
-                        continue;
-                    }
-
-                    // Down restores previous command overwritten by up
-                    if (keyPressed == Keyboard.KEY_DOWN && lastInput != null)
-                    {
-                        currentInput.replace(0, currentInput.length(), lastInput);
-                        currentIndex = lastIndex;
-                        lastInput = null;
-                        lastIndex = currentInput.length();
-                        event.consume();
-                        continue;
-                    }
-
-                    // Left or right move the editing cursor
-                    if (keyPressed == Keyboard.KEY_LEFT)
-                    {
-                        currentIndex = Math.max(0, currentIndex - 1);
-                        event.consume();
-                        continue;
-                    }
-                    if (keyPressed == Keyboard.KEY_RIGHT)
-                    {
-                        currentIndex = Math.min(currentInput.length(),
-                                currentIndex + 1);
-                        event.consume();
-                        continue;
-                    }
-
-                    // Home = move cursor to beginning of line
-                    // End = move cursor to end of line
-                    if (keyPressed == Keyboard.KEY_HOME)
-                    {
-                        currentIndex = 0;
-                        event.consume();
-                        continue;
-                    }
-                    if (keyPressed == Keyboard.KEY_END)
-                    {
-                        currentIndex = currentInput.length();
-                        event.consume();
-                        continue;
-                    }
-
-                    // Backspace handling, imitates vanilla text inputs
-                    if (keyPressed == Keyboard.KEY_BACK && currentIndex > 0)
-                    {
-                        // Shift+backspace, delete entire line
-                        // Disabled for now because it was incredibly annoying
-                        /*if (event.isShiftDown())
-                         {
-                         currentInput.setLength(0);
-                         }*/
-                        // Control+backspace, delete last word
-                        // TODO: Add positional editing support
-                        if (event.isCtrlDown())
+                        if (event.isConsumed() || !event.isKeyDownEvent()
+                                || event.isModifierKey())
                         {
-                            int lastSpace = currentInput.lastIndexOf(" ");
-                            if (lastSpace == -1)
+                            continue;
+                        }
+
+                        final int keyPressed = event.getEventValue();
+                        timeOpen = 0f;
+
+                        // Load last command when user presses up on keyboard
+                        if (keyPressed == Keyboard.KEY_UP && Console.getLastCommand() != null)
+                        {
+                            lastInput = currentInput.toString();
+                            lastIndex = currentIndex;
+                            currentInput.replace(0, currentInput.length(),
+                                    Console.getLastCommand());
+                            currentIndex = currentInput.length();
+                            event.consume();
+                            continue;
+                        }
+
+                        // Down restores previous command overwritten by up
+                        if (keyPressed == Keyboard.KEY_DOWN && lastInput != null)
+                        {
+                            currentInput.replace(0, currentInput.length(), lastInput);
+                            currentIndex = lastIndex;
+                            lastInput = null;
+                            lastIndex = currentInput.length();
+                            event.consume();
+                            continue;
+                        }
+
+                        // Left or right move the editing cursor
+                        if (keyPressed == Keyboard.KEY_LEFT)
+                        {
+                            currentIndex = Math.max(0, currentIndex - 1);
+                            event.consume();
+                            continue;
+                        }
+                        if (keyPressed == Keyboard.KEY_RIGHT)
+                        {
+                            currentIndex = Math.min(currentInput.length(),
+                                    currentIndex + 1);
+                            event.consume();
+                            continue;
+                        }
+
+                        // Home = move cursor to beginning of line
+                        // End = move cursor to end of line
+                        if (keyPressed == Keyboard.KEY_HOME)
+                        {
+                            currentIndex = 0;
+                            event.consume();
+                            continue;
+                        }
+                        if (keyPressed == Keyboard.KEY_END)
+                        {
+                            currentIndex = currentInput.length();
+                            event.consume();
+                            continue;
+                        }
+
+                        // Backspace handling, imitates vanilla text inputs
+                        if (keyPressed == Keyboard.KEY_BACK && currentIndex > 0)
+                        {
+                            // Control+backspace, delete last word
+                            // TODO: Add positional editing support
+                            if (event.isCtrlDown())
                             {
-                                currentInput.setLength(0);
+                                int lastSpace = currentInput.lastIndexOf(" ");
+                                if (lastSpace == -1)
+                                {
+                                    currentInput.setLength(0);
+                                }
+                                else
+                                {
+                                    currentInput.delete(lastSpace, currentInput.length());
+                                }
                             }
+                            // Regular backspace, delete last character
                             else
                             {
-                                currentInput.delete(lastSpace, currentInput.length());
+                                currentInput.deleteCharAt(currentIndex - 1);
                             }
-                        }
-                        // Regular backspace, delete last character
-                        else
-                        {
-                            currentInput.deleteCharAt(currentIndex - 1);
-                        }
 
-                        event.consume();
-                    }
-                    // Delete key handling
-                    else if (keyPressed == Keyboard.KEY_DELETE
-                            && currentIndex < currentInput.length())
-                    {
-                        currentInput.deleteCharAt(currentIndex);
-                        currentIndex++;
-                        event.consume();
-                    }
-                    // Return key handling
-                    else if (keyPressed == Keyboard.KEY_RETURN)
-                    {
-                        String command = currentInput.toString();
-                        Console.parseInput(command, CommandContext.CAMPAIGN_MAP);
-                        currentInput.setLength(0);
-                        currentIndex = 0;
-                        lastInput = null;
-                        lastIndex = 0;
-                        event.consume();
-                    }
-                    // Paste handling
-                    else if (keyPressed == Keyboard.KEY_V && event.isCtrlDown())
-                    {
-                        currentInput.insert(currentIndex,
-                                Sys.getClipboard().replace('\n', ' '));
-                        event.consume();
-                    }
-                    // Normal typing
-                    else
-                    {
-                        // TODO: add international character support
-                        char character = event.getEventChar();
-                        if (character >= 0x20 && character <= 0x7e)
-                        {
-                            currentInput.insert(currentIndex, character);
                             event.consume();
                         }
+                        // Delete key handling
+                        else if (keyPressed == Keyboard.KEY_DELETE
+                                && currentIndex < currentInput.length())
+                        {
+                            currentInput.deleteCharAt(currentIndex);
+                            currentIndex++;
+                            event.consume();
+                        }
+                        // Return key handling
+                        else if (keyPressed == Keyboard.KEY_RETURN)
+                        {
+                            String command = currentInput.toString();
+                            Console.parseInput(command, CommandContext.CAMPAIGN_MAP);
+                            currentInput.setLength(0);
+                            currentIndex = 0;
+                            lastInput = null;
+                            lastIndex = 0;
+                            event.consume();
+                        }
+                        // Paste handling
+                        else if (keyPressed == Keyboard.KEY_V && event.isCtrlDown())
+                        {
+                            currentInput.insert(currentIndex,
+                                    Sys.getClipboard().replace('\n', ' '));
+                            event.consume();
+                        }
+                        // Normal typing
+                        else
+                        {
+                            // TODO: add international character support
+                            char character = event.getEventChar();
+                            if (character >= 0x20 && character <= 0x7e)
+                            {
+                                currentInput.insert(currentIndex, character);
+                                event.consume();
+                            }
+                        }
                     }
-                }
 
-                // Update cursor index based on what changed since last frame
-                currentIndex += currentInput.length() - previousLength;
-                currentIndex = Math.min(Math.max(0, currentIndex),
-                        currentInput.length());
+                    // Update cursor index based on what changed since last frame
+                    currentIndex += currentInput.length() - previousLength;
+                    currentIndex = Math.min(Math.max(0, currentIndex),
+                            currentInput.length());
+                }
+                catch (ArrayIndexOutOfBoundsException ex)
+                {
+                    Console.showMessage("Something went wrong with the input parser!"
+                            + "Please send a copy of starsector.log to LazyWizard.");
+                    Global.getLogger(KeyListener.class).log(Level.ERROR,
+                            "Input dump:\n - Current input: " + currentInput.toString()
+                            + " | Index: " + currentIndex + "/" + currentInput.length()
+                            + "\n - Last input: " + (lastInput == null ? "null"
+                                    : lastInput + " | Index: "
+                                    + lastIndex + "/" + lastInput.length()), ex);
+                    currentIndex = currentInput.length();
+                    lastIndex = 0;
+                }
             }
         }
     }
