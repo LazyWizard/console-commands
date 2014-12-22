@@ -154,17 +154,20 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
         public void advance(float amount)
         {
             timeOpen += amount;
-            String input = keyListener.currentInput.toString();
-            String cursor = ((((int) timeOpen) & 1) == 0 ? "|" : " ");
-            int index = keyListener.currentIndex;
+            final String input = keyListener.currentInput.toString();
+            final String cursor = ((((int) timeOpen) & 1) == 0 ? "|" : " ");
+            final boolean showIndex = Console.getSettings().getShouldShowCursorIndex();
+            final int index = keyListener.currentIndex;
             if (index == input.length())
             {
-                dialog.setPromptText("Input: " + input + cursor);
+                dialog.setPromptText("Input: " + input + cursor
+                        + (showIndex ? " | Index: " + index + "/" + input.length() : ""));
             }
             else
             {
                 dialog.setPromptText("Input: " + input.substring(0, index)
-                        + cursor + input.substring(index, input.length()));
+                        + cursor + input.substring(index, input.length())
+                        + (showIndex ? " | Index: " + index + "/" + input.length() : ""));
             }
 
             // Easter eggs, because why not?

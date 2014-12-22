@@ -75,6 +75,7 @@ public class Console
                 settingsFile.getBoolean("requireAlt"),
                 Pattern.quote(settingsFile.getString("commandSeparator")),
                 settingsFile.getBoolean("showEnteredCommands"),
+                settingsFile.getBoolean("showCursorIndex"),
                 settingsFile.getDouble("typoCorrectionThreshold"),
                 JSONUtils.toColor(settingsFile.getJSONArray("outputColor")),
                 settingsFile.getInt("maxOutputLineLength"),

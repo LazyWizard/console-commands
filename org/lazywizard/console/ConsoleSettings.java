@@ -21,6 +21,8 @@ public class ConsoleSettings
     private final Map<CommandResult, String> RESULT_SOUNDS;
     // Whether each command should be displayed to the player before executing
     private final boolean SHOW_ENTERED_COMMANDS;
+    // Whether the current cursor index is displayed in the campaign pop-up
+    private final boolean SHOW_CURSOR_INDEX;
     // How similar two strings must be for typo correction to decide they match
     private final double TYPO_CORRECTION_THRESHOLD;
     // The color of the console's output text
@@ -30,13 +32,14 @@ public class ConsoleSettings
 
     ConsoleSettings(int consoleSummonKey, boolean requireShift, boolean requireControl,
             boolean requireAlt, String commandSeparator, boolean showEnteredCommands,
-            double typoCorrectionThreshold, Color outputColor, int outputMaxLineLength,
-            Map<CommandResult, String> resultSounds)
+            boolean showCursorIndex, double typoCorrectionThreshold, Color outputColor,
+            int outputMaxLineLength, Map<CommandResult, String> resultSounds)
     {
         CONSOLE_SUMMON_KEY = new KeyStroke(consoleSummonKey, requireShift,
                 requireControl, requireAlt);
         COMMAND_SEPARATOR = commandSeparator;
         SHOW_ENTERED_COMMANDS = showEnteredCommands;
+        SHOW_CURSOR_INDEX = showCursorIndex;
         TYPO_CORRECTION_THRESHOLD = typoCorrectionThreshold;
         OUTPUT_COLOR = outputColor;
         OUTPUT_MAX_LINE_LENGTH = outputMaxLineLength;
@@ -82,6 +85,11 @@ public class ConsoleSettings
     public boolean getShouldShowEnteredCommands()
     {
         return SHOW_ENTERED_COMMANDS;
+    }
+
+    public boolean getShouldShowCursorIndex()
+    {
+        return SHOW_CURSOR_INDEX;
     }
 
     /**
@@ -237,5 +245,18 @@ public class ConsoleSettings
 
             return str;
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        return "ConsoleSettings{" + "CONSOLE_SUMMON_KEY=" + CONSOLE_SUMMON_KEY
+                + ", COMMAND_SEPARATOR=" + COMMAND_SEPARATOR
+                + ", RESULT_SOUNDS=" + RESULT_SOUNDS
+                + ", SHOW_ENTERED_COMMANDS=" + SHOW_ENTERED_COMMANDS
+                + ", SHOW_CURSOR_INDEX=" + SHOW_CURSOR_INDEX
+                + ", TYPO_CORRECTION_THRESHOLD=" + TYPO_CORRECTION_THRESHOLD
+                + ", OUTPUT_COLOR=" + OUTPUT_COLOR
+                + ", OUTPUT_MAX_LINE_LENGTH=" + OUTPUT_MAX_LINE_LENGTH + '}';
     }
 }
