@@ -368,13 +368,17 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                                 currentInput.insert(currentIndex, character);
                                 event.consume();
                             }
+                            else
+                            {
+                                continue;
+                            }
                         }
-                    }
 
-                    // Update cursor index based on what changed since last frame
-                    currentIndex += currentInput.length() - previousLength;
-                    currentIndex = Math.min(Math.max(0, currentIndex),
-                            currentInput.length());
+                        // Update cursor index based on what changed since last input
+                        currentIndex += currentInput.length() - previousLength;
+                        currentIndex = Math.min(Math.max(0, currentIndex),
+                                currentInput.length());
+                    }
                 }
                 catch (ArrayIndexOutOfBoundsException ex)
                 {
