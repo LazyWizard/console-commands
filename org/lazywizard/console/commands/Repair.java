@@ -24,7 +24,7 @@ public class Repair implements BaseCommand
             {
                 ship.getStatus().repairFully();
                 RepairTrackerAPI repairs = ship.getRepairTracker();
-                repairs.setCR(repairs.getMaxCR());
+                repairs.setCR(Math.max(repairs.getCR(), repairs.getMaxCR()));
                 ship.setStatUpdateNeeded(true);
             }
 
