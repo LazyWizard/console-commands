@@ -213,6 +213,18 @@ public class Console
         String args = (tmp.length > 1 ? tmp[1] : "");
         CommandResult result;
 
+        // Alias support
+        if (CommandStore.getAliases().containsKey(com))
+        {
+            String rawAlias = CommandStore.getAliases().get(com);
+            tmp = rawAlias.split(" ", 2);
+            com = tmp[0];
+            if (tmp.length > 1)
+            {
+                args = tmp[1] + " " + args;
+            }
+        }
+
         try
         {
             StoredCommand stored = CommandStore.retrieveCommand(com);
@@ -278,12 +290,29 @@ public class Console
             // The command separator is used to separate multiple commands
             Set<CommandResult> results = new HashSet<>();
             worstResult = CommandResult.SUCCESS;
+            Map<String, String> aliases = CommandStore.getAliases();
             for (String input : rawInput.split(settings.getCommandSeparator()))
             {
                 input = input.trim();
                 if (!input.isEmpty())
                 {
-                    results.add(runCommand(input, context));
+                    // Alias support
+                    if (aliases.containsKey(input.toLowerCase()))
+                    {
+                        for (String input2 : aliases.get(input).split(settings.getCommandSeparator()))
+                        {
+                            input2 = input2.trim();
+                            if (!input2.isEmpty())
+                            {
+                                results.add(runCommand(input2, context));
+                            }
+                        }
+                    }
+                    // Regular commands
+                    else
+                    {
+                        results.add(runCommand(input, context));
+                    }
                 }
             }
 
