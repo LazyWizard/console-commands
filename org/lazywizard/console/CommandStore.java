@@ -25,7 +25,7 @@ import org.lazywizard.lazylib.CollectionUtils;
 public class CommandStore
 {
     private static final Map<String, StoredCommand> storedCommands = new HashMap<>();
-    //private static final Map<String, String> aliases = new HashMap();
+    private static final Map<String, String> aliases = new HashMap();
     private static final Set<String> tags = new HashSet<>();
 
     /**
@@ -43,7 +43,6 @@ public class CommandStore
     public static void reloadCommands() throws IOException, JSONException
     {
         storedCommands.clear();
-        //aliases.clear();
         tags.clear();
         JSONArray commandData = Global.getSettings().getMergedSpreadsheetDataForMod(
                 "command", CommonStrings.CSV_PATH, CommonStrings.MOD_ID);
@@ -115,6 +114,29 @@ public class CommandStore
 
         Global.getLogger(CommandStore.class).log(Level.INFO,
                 "Loaded commands: " + CollectionUtils.implode(getLoadedCommands()));
+
+        // Populate alias mapping
+        aliases.clear();
+        JSONArray aliasData = Global.getSettings().getMergedSpreadsheetDataForMod(
+                "alias", CommonStrings.ALIAS_PATH, CommonStrings.MOD_ID);
+        for (int x = 0; x < aliasData.length(); x++)
+        {
+            try
+            {
+                JSONObject row = aliasData.getJSONObject(x);
+                String alias = row.getString("alias");
+                String command = row.getString("command");
+
+                aliases.put(alias.toLowerCase(), command);
+            }
+            catch (Exception ex)
+            {
+                Console.showException("Failed to parse aliases", ex);
+            }
+        }
+
+        Global.getLogger(CommandStore.class).log(Level.INFO,
+                "Loaded aliases: " + CollectionUtils.implode(getAliases().keySet()));
     }
 
     /**
@@ -133,6 +155,19 @@ public class CommandStore
         }
 
         return commands;
+    }
+
+    /**
+     * Returns all aliases currently registered by the mod.
+     * <p>
+     * @return A {@link Map} containing all registered aliases as keys, with the
+     *         commands they expand to as values.
+     * <p>
+     * @since 2.4
+     */
+    public static Map<String, String> getAliases()
+    {
+        return new HashMap<>(aliases);
     }
 
     /**

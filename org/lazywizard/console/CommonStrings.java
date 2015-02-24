@@ -32,6 +32,12 @@ public class CommonStrings
      */
     public static final String CSV_PATH = "data/console/commands.csv";
     /**
+     * The path to aliases.csv, used to define aliases.
+     * <p>
+     * @since 2.4
+     */
+    public static final String ALIAS_PATH = "data/console/aliases.csv";
+    /**
      * The path to runcode_imports.csv, used for setting custom imports for the
      * RunCode command.
      * <p>
