@@ -226,21 +226,21 @@ public class ConsoleSettings
         @Override
         public String toString()
         {
-            String str = Keyboard.getKeyName(key);
+            String str = Keyboard.getKeyName(key).toUpperCase();
 
             if (requireShift)
             {
-                str = "Shift+" + str;
+                str = "SHIFT+" + str;
             }
 
             if (requireAlt)
             {
-                str = "Alt+" + str;
+                str = "ALT+" + str;
             }
 
             if (requireControl)
             {
-                str = "Control+" + str;
+                str = "CONTROL+" + str;
             }
 
             return str;

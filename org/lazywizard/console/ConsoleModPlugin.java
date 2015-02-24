@@ -17,7 +17,8 @@ public class ConsoleModPlugin extends BaseModPlugin
         RunCode.reloadImports();
         RunCode.reloadMacros();
 
-        Console.showMessage("Console loaded.", Level.DEBUG);
+        Console.showMessage("Console loaded, summon with "
+                + Console.getSettings().getConsoleSummonKey(), Level.DEBUG);
 
         if (Display.isFullscreen())
         {
