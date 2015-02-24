@@ -11,6 +11,7 @@ import org.codehaus.commons.compiler.CompileException;
 import org.codehaus.janino.ScriptEvaluator;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
@@ -62,9 +63,18 @@ public class RunCode implements BaseCommand
                     "macro", CommonStrings.RUNCODE_MACROS_PATH, CommonStrings.MOD_ID);
             for (int x = 0; x < csv.length(); x++)
             {
-                // TODO: Validate for $
-                macros.put(csv.getJSONObject(x).getString("macro"),
-                        csv.getJSONObject(x).getString("replace"));
+                final JSONObject tmp = csv.getJSONObject(x);
+                final String macro = tmp.getString("macro"),
+                        replaceWith = tmp.getString("replace");
+
+                // Validate for $
+                if (!macro.startsWith("$"))
+                {
+                    Console.showMessage("Macro \"" + macro + "\" doesn't start with an $!");
+                    continue;
+                }
+
+                macros.put(macro, replaceWith);
             }
         }
         catch (IOException | JSONException ex)
@@ -94,7 +104,7 @@ public class RunCode implements BaseCommand
         if (args.contains("$"))
         {
             //System.out.println("Replacing macros");
-            for(Map.Entry<String, String> tmp : macros.entrySet())
+            for (Map.Entry<String, String> tmp : macros.entrySet())
             {
                 //System.out.println(tmp.getKey() + ": " + tmp.getValue());
                 args = args.replace(tmp.getKey(), tmp.getValue());
@@ -107,7 +117,6 @@ public class RunCode implements BaseCommand
         }
 
         //System.out.println(args);
-
         try
         {
             eval.cook(args);
