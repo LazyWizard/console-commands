@@ -8,15 +8,20 @@ import org.lazywizard.console.Console;
 
 public class Reload implements BaseCommand
 {
+    public static void reloadConsole() throws JSONException, IOException
+    {
+        Console.reloadSettings();
+        CommandStore.reloadCommands();
+        RunCode.reloadImports();
+        RunCode.reloadMacros();
+    }
+
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
         try
         {
-            Console.reloadSettings();
-            CommandStore.reloadCommands();
-            RunCode.reloadImports();
-            RunCode.reloadMacros();
+            reloadConsole();
         }
         catch (IOException | JSONException ex)
         {
