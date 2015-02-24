@@ -3,7 +3,7 @@ package org.lazywizard.console;
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
 import org.apache.log4j.Level;
-import org.lazywizard.console.commands.RunCode;
+import org.lazywizard.console.commands.Reload;
 import org.lwjgl.opengl.Display;
 
 public class ConsoleModPlugin extends BaseModPlugin
@@ -12,10 +12,7 @@ public class ConsoleModPlugin extends BaseModPlugin
     public void onApplicationLoad() throws Exception
     {
         // Console settings
-        Console.reloadSettings();
-        CommandStore.reloadCommands();
-        RunCode.reloadImports();
-        RunCode.reloadMacros();
+        Reload.reloadConsole();
 
         Console.showMessage("Console loaded, summon with "
                 + Console.getSettings().getConsoleSummonKey(), Level.DEBUG);
