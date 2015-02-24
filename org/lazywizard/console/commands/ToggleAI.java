@@ -5,6 +5,7 @@ import java.util.WeakHashMap;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.ShipAIPlugin;
 import com.fs.starfarer.api.combat.ShipAPI;
+import com.fs.starfarer.api.combat.ShipCommand;
 import com.fs.starfarer.api.combat.WeaponGroupAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
@@ -49,8 +50,8 @@ public class ToggleAI implements BaseCommand
         {
             System.out.println(target.getShipAI().getClass().getCanonicalName());
             ais.put(target, target.getShipAI());
-            target.setShipAI(new NullAI());
-            
+            target.setShipAI(new NullAI(target));
+
             for (WeaponGroupAPI group : target.getWeaponGroupsCopy())
             {
                 group.toggleOff();
@@ -64,6 +65,13 @@ public class ToggleAI implements BaseCommand
 
     private class NullAI implements ShipAIPlugin
     {
+        private final ShipAPI ship;
+
+        private NullAI(ShipAPI ship)
+        {
+            this.ship = ship;
+        }
+
         @Override
         public void setDoNotFireDelay(float amount)
         {
@@ -77,6 +85,10 @@ public class ToggleAI implements BaseCommand
         @Override
         public void advance(float amount)
         {
+            if (ship.getVelocity().lengthSquared() > 0f)
+            {
+                ship.giveCommand(ShipCommand.DECELERATE, null, 0);
+            }
         }
 
         @Override
