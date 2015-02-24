@@ -19,73 +19,35 @@ public class Respec implements BaseCommand
     private static final Set<String> SKILL_IDS = new HashSet<>();
     private static boolean isLoaded = false;
 
-    /*private static String filterModPath(String fullPath)
-    {
-        if (fullPath.startsWith("null/"))
-        {
-            return "Vanilla";
-        }
-
-        try
-        {
-            String modPath = fullPath.replace("/", "\\");
-            modPath = modPath.substring(modPath.lastIndexOf("\\mods\\"));
-            modPath = modPath.substring(0, modPath.indexOf('\\', 6)) + "\\";
-            return modPath;
-        }
-        catch (Exception ex)
-        {
-            Global.getLogger(Respec.class).log(Level.DEBUG,
-                    "Failed to reduce modpath '" + fullPath + "'", ex);
-            return fullPath;
-        }
-    }*/
-
     public static void reloadCSVData() throws JSONException, IOException
     {
         APTITUDE_IDS.clear();
         SKILL_IDS.clear();
 
-        //Global.getLogger(Respec.class).log(Level.DEBUG,
-        //        "Loading aptitudes...");
         JSONArray aptitudeData = Global.getSettings().getMergedSpreadsheetDataForMod(
                 "id", "data/characters/skills/aptitude_data.csv", "starsector-core");
         for (int x = 0; x < aptitudeData.length(); x++)
         {
             JSONObject tmp = aptitudeData.getJSONObject(x);
             String id = tmp.getString("id");
-            //String source = filterModPath(tmp.optString("fs_rowSource", null));
-            if (id.isEmpty())
+
+            // Ignore empty CSV rows
+            if (!id.isEmpty())
             {
-                //Global.getLogger(Respec.class).log(Level.DEBUG,
-                //        "Ignoring empty CSV row");
-            }
-            else
-            {
-                //Global.getLogger(Respec.class).log(Level.DEBUG,
-                //        "Found aptitude \"" + id + "\" from mod " + source);
                 APTITUDE_IDS.add(id);
             }
         }
 
-        //Global.getLogger(Respec.class).log(Level.DEBUG,
-        //        "Loading skills...");
         JSONArray skillData = Global.getSettings().getMergedSpreadsheetDataForMod(
                 "id", "data/characters/skills/skill_data.csv", "starsector-core");
         for (int x = 0; x < skillData.length(); x++)
         {
             JSONObject tmp = skillData.getJSONObject(x);
             String id = tmp.getString("id");
-            //String source = filterModPath(tmp.optString("fs_rowSource", null));
-            if (id.isEmpty())
+
+            // Ignore empty CSV rows
+            if (!id.isEmpty())
             {
-                //Global.getLogger(Respec.class).log(Level.DEBUG,
-                //        "Ignoring empty CSV row");
-            }
-            else
-            {
-                //Global.getLogger(Respec.class).log(Level.DEBUG,
-                //        "Found skill \"" + id + "\" from mod " + source);
                 SKILL_IDS.add(id);
             }
         }
@@ -120,7 +82,7 @@ public class Respec implements BaseCommand
 
         Console.showMessage("Performing respec...");
 
-        // Remove aptitudes
+        // Refund aptitudes
         int total;
         MutableCharacterStatsAPI player = Global.getSector().getPlayerFleet().getCommanderStats();
         for (String currId : APTITUDE_IDS)
@@ -134,7 +96,7 @@ public class Respec implements BaseCommand
             }
         }
 
-        // Remove skills
+        // Refund skills
         for (String currId : SKILL_IDS)
         {
             total = Math.round(player.getSkillLevel(currId));
