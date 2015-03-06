@@ -31,12 +31,23 @@ public class Kill implements BaseCommand
             }
             else
             {
-                Console.showMessage("Error nuking " + target.getHullSpec().getHullId());
+                if (!target.getEngineController().getShipEngines().isEmpty())
+                {
+                    hitLoc = target.getEngineController().getShipEngines().get(0).getLocation();
+                }
+                else
+                {
+                    Console.showMessage("Error nuking " + target.getHullSpec().getHullId());
+                }
             }
         }
 
         // Ensure a kill
+        target.getMutableStats().getHullDamageTakenMult().unmodify();
+        target.getMutableStats().getArmorDamageTakenMult().unmodify();
         target.setHitpoints(1f);
+        int[] cell = target.getArmorGrid().getCellAtLocation(hitLoc);
+        target.getArmorGrid().setArmorValue(cell[0], cell[1], 0f);
         Global.getCombatEngine().applyDamage(target, hitLoc, 500_000,
                 DamageType.OTHER, 500_000, true, false, null);
     }
@@ -60,7 +71,7 @@ public class Kill implements BaseCommand
         }
 
         killShip(target);
-        Console.showMessage("Destroyed " 
+        Console.showMessage("Destroyed "
                 + target.getVariant().getFullDesignationWithHullName() + ".");
         return CommandResult.SUCCESS;
     }
