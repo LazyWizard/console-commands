@@ -11,7 +11,7 @@ public class ShowLoc implements BaseCommand
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
-        if (context == CommandContext.CAMPAIGN_MAP)
+        if (context.isInCampaign())
         {
             CampaignFleetAPI player = Global.getSector().getPlayerFleet();
             Vector2f loc = player.getLocation();

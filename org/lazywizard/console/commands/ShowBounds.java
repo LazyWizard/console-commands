@@ -24,7 +24,7 @@ public class ShowBounds implements BaseCommand
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
-        if (context == CommandContext.CAMPAIGN_MAP)
+        if (!context.isInCombat())
         {
             Console.showMessage(CommonStrings.ERROR_COMBAT_ONLY);
             return CommandResult.WRONG_CONTEXT;
