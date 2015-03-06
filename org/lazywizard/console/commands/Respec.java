@@ -55,6 +55,7 @@ public class Respec implements BaseCommand
         Global.getLogger(Respec.class).log(Level.INFO,
                 "Found " + APTITUDE_IDS.size() + " aptitudes and "
                 + SKILL_IDS.size() + " skills");
+        isLoaded = true;
     }
 
     @Override
@@ -71,7 +72,6 @@ public class Respec implements BaseCommand
             try
             {
                 reloadCSVData();
-                isLoaded = true;
             }
             catch (JSONException | IOException ex)
             {
