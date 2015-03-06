@@ -44,7 +44,7 @@ SetRelationship,org.lazywizard.console.commands.SetRelationship,"core,campaign",
 ShowBounds,org.lazywizard.console.commands.ShowBounds,"core,combat",showbounds (no arguments),"Toggles rendering of collision bounds, collision radius, and shield radius (if applicable) for all ships on the battle map."
 ShowLoc,org.lazywizard.console.commands.ShowLoc,"core,campaign,combat",showloc (no arguments),Shows the coordinates of your current location.
 SourceOf,org.lazywizard.console.commands.SourceOf,"core,console",sourceof <command>|all,"Shows what mod a specific command came from, or all commands' sources if all is entered."
-#SpawnFleet,org.lazywizard.console.commands.SpawnFleet,"core,campaign",spawnfleet <faction> <fleetID>,Spawns the designated fleet near the player character. The fleet id must exist in the .faction file of the faction that was entered as an argument.
+SpawnFleet,org.lazywizard.console.commands.SpawnFleet,"core,campaign",spawnfleet <faction> <fleetID>,Spawns the designated fleet near the player character. The fleet id must exist in the .faction file of the faction that was entered as an argument.
 Status,org.lazywizard.console.commands.Status,"core,console",status [detailed],Shows some debug information about the currently loaded commands. Adding detailed as an argument will provide much more information.
 Storage,org.lazywizard.console.commands.Storage,"core,campaign",storage (no arguments),"Opens the Abandoned Terraforming Platform's storage from anywhere in the campaign. If the ATP doesn't exist this command will try to find another abandoned station, or open player cargo instead as a last resort."
 Suicide,org.lazywizard.console.commands.Suicide,"core,combat",suicide (no arguments),Kills the currently piloted ship.
