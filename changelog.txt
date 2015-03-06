@@ -1,3 +1,32 @@
+ 2.4 (March XX, 2015)
+======================
+The keystroke to summon the console is now shown when you first load a game
+Added isInCampaign()/isInCombat() to CommandContext enum
+Added alias support, aliases are defined in data/console/aliases.csv
+Default aliases:
+ - aap -> AddAptitudePoints
+ - acp -> AddCommandPoints
+ - aop -> AddOrdnancePoints
+ - asp -> AddSkillPoints
+ - awesome -> God;InfiniteAmmo;InfiniteFlux;Reveal
+New commands:
+ - AddLogistics, modifies the maximum logistics of the player fleet
+ - AddOrdnancePoints, modifies the max OP for all ships in player fleet
+ X ListStorage, lists all stored ships/items in all storages in the sector
+ - Respec, resets player skills/aptitudes to 0 and refunds all spent points
+ - ToggleAI, disables or re-enables the AI of the targeted ship
+ - Traitor, toggles the side of the targeted ship
+Changes to existing commands:
+ - AddWeapon can add built-in and system weapons to your inventory again
+ - Kill works on targets that have god mode active
+ X List accepts "roles", which displays all known fleet roles per faction
+ - Reload now reloads settings, commands, tags, aliases, and RunCode's
+   imports and macros
+ - Repair won't lower your CR on the campaign map if it was over the maximum
+ X SpawnFleet re-added, uses faction followed by fleet role as arguments
+ - Status includes aliases (plus their definitions with "detailed" argument)
+ - Added getStorageStation() to Storage command's script
+
  2.3 (December 22, 2014)
 =========================
 Made campaign input popup capable of recovering from certain errors
