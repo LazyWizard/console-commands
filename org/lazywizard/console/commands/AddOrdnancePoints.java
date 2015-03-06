@@ -2,12 +2,12 @@ package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.MutableStat;
-import com.fs.starfarer.api.combat.MutableStat.StatMod;
+import com.fs.starfarer.api.combat.StatBonus;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
-public class AddLogistics implements BaseCommand
+public class AddOrdnancePoints implements BaseCommand
 {
     private static final String BONUS_ID = CommonStrings.MOD_ID;
 
@@ -22,9 +22,9 @@ public class AddLogistics implements BaseCommand
 
         if ("clear".equalsIgnoreCase(args))
         {
-            Global.getSector().getPlayerPerson().getStats().getLogistics()
+            Global.getSector().getPlayerPerson().getStats().getShipOrdnancePointBonus()
                     .unmodifyFlat(BONUS_ID);
-            Console.showMessage("Logistics bonus removed.");
+            Console.showMessage("Ordnance point bonus removed.");
             return CommandResult.SUCCESS;
         }
 
@@ -35,24 +35,19 @@ public class AddLogistics implements BaseCommand
         }
         catch (NumberFormatException ex)
         {
-            Console.showMessage("Error: logistics bonus must be a whole number!");
+            Console.showMessage("Error: OP bonus must be a whole number!");
             return CommandResult.BAD_SYNTAX;
         }
 
-        final MutableStat logistics = Global.getSector().getPlayerPerson().getStats().getLogistics();
-        final StatMod bonus = logistics.getFlatStatMod(BONUS_ID);
+        final StatBonus ordnance = Global.getSector().getPlayerPerson().getStats().getShipOrdnancePointBonus();
+        final MutableStat.StatMod bonus = ordnance.getFlatBonus(BONUS_ID);
         if (bonus != null)
         {
-            logistics.modifyFlat(BONUS_ID, amount + bonus.value, "Console");
-        }
-        else
-        {
-            logistics.modifyFlat(BONUS_ID, amount, "Console");
+            amount += bonus.value;
         }
 
-        Console.showMessage("Logistics " + (amount >= 0 ? "inc" : "dec") + "reased by "
-                + amount + ", now at " + (int) logistics.getModifiedValue() + ".");
-        Global.getSector().getPlayerFleet().getLogistics().updateRepairUtilizationForUI();
+        ordnance.modifyFlat(BONUS_ID, amount, "Console");
+        Console.showMessage("All ships in player fleet now have " + amount + " extra ordnance points.");
         return CommandResult.SUCCESS;
     }
 }

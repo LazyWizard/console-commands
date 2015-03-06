@@ -1,4 +1,6 @@
 alias,command
 aap,addaptitudepoints
+acp,addcommandpoints
+aop,addordnancepoints
 asp,addskillpoints
 awesome,god;infiniteammo;infiniteflux;reveal
