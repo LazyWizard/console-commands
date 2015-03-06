@@ -20,6 +20,7 @@ New commands:
  - Traitor, toggles the side of the targeted ship
 Changes to existing commands:
  - AddWeapon can add built-in and system weapons to your inventory again
+ - AllHulls, AllWings and AllWeapons work with stations as an argument again
  - Kill works on targets that have god mode active
  X List accepts "roles", which displays all known fleet roles per faction
  - Reload now reloads settings, commands, tags, aliases, and RunCode's
@@ -27,6 +28,8 @@ Changes to existing commands:
  - Repair won't lower your CR on the campaign map if it was over the maximum
  X SpawnFleet re-added, uses faction followed by fleet role as arguments
  - Status includes aliases (plus their definitions with "detailed" argument)
+ - Storage will now use the first station with an unlocked storage tab if
+   there are no abandoned stations in the sector (total conversion support)
  - Added getStorageStation() to Storage command's script
 
  2.3 (December 22, 2014)

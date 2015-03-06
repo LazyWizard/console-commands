@@ -49,7 +49,7 @@ public class AllWeapons implements BaseCommand
                 return CommandResult.ERROR;
             }
 
-            target = tmp.getCargo();
+            target = CommandUtils.getUsableCargo(tmp);
             targetName = tmp.getFullName();
         }
 
