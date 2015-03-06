@@ -6,6 +6,7 @@ import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
+import com.fs.starfarer.api.campaign.SubmarketPlugin.OnClickAction;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Conditions;
@@ -18,7 +19,7 @@ import org.lazywizard.lazylib.campaign.CargoUtils;
 
 public class Storage implements BaseCommand
 {
-    private static SectorEntityToken getAbandonedStation()
+    public static SectorEntityToken getStorageStation()
     {
         // Which abandoned station Storage uses is only set once, ever
         Map<String, Object> data = Global.getSector().getPersistentData();
@@ -39,35 +40,56 @@ public class Storage implements BaseCommand
 
         // First check if we're in a vanilla sector setup
         // If so, try to find the Abandoned Terraforming Platform
-        SectorEntityToken abandonedStation = null;
+        SectorEntityToken storageStation = null;
         StarSystemAPI corvus = Global.getSector().getStarSystem("corvus");
         if (corvus != null)
         {
-            abandonedStation = corvus.getEntityById("corvus_abandoned_station");
+            storageStation = corvus.getEntityById("corvus_abandoned_station");
         }
 
         // ATP not found? Find first available station with the 'abandoned' condition
-        if (abandonedStation == null)
+        // If no abandoned stations are found, find an unlocked storage submarket
+        SectorEntityToken firstUnlockedStation = null;
+        out:
+        if (storageStation == null)
         {
             for (LocationAPI loc : Global.getSector().getStarSystems())
             {
                 for (SectorEntityToken station : loc.getEntitiesWithTag(Tags.STATION))
                 {
                     MarketAPI market = station.getMarket();
-                    if (market != null && market.hasCondition(Conditions.ABANDONED_STATION))
+                    if (market != null)
                     {
                         SubmarketAPI storage = market.getSubmarket(Submarkets.SUBMARKET_STORAGE);
                         if (storage != null)
                         {
-                            abandonedStation = station;
+                            // Prefer the abandoned station above all else
+                            if (market.hasCondition(Conditions.ABANDONED_STATION))
+                            {
+                                storageStation = station;
+                                break out;
+                            }
+
+                            // Otherwise, prefer a station with unlocked storage
+                            if (firstUnlockedStation == null && storage.getPlugin()
+                                    .getOnClickAction(null) == OnClickAction.OPEN_SUBMARKET)
+                            {
+                                firstUnlockedStation = station;
+                            }
                         }
                     }
                 }
             }
         }
 
+        // No abandoned station found, use a station with unlocked storage
+        if (storageStation == null)
+        {
+            storageStation = firstUnlockedStation;
+        }
+
         // No station found, will search again next time the command is used
-        if (abandonedStation == null)
+        if (storageStation == null)
         {
             return null;
         }
@@ -76,21 +98,23 @@ public class Storage implements BaseCommand
         if (toTransfer != null)
         {
             Console.showMessage("Transferred old Storage data.");
-            CargoAPI transferTo = abandonedStation.getMarket().getSubmarket(
+            CargoAPI transferTo = storageStation.getMarket().getSubmarket(
                     Submarkets.SUBMARKET_STORAGE).getCargo();
             CargoUtils.moveCargo(toTransfer, transferTo);
             CargoUtils.moveMothballedShips(toTransfer, transferTo);
             data.remove(CommonStrings.DATA_STORAGE_ID);
         }
 
-        data.put(CommonStrings.DATA_STORAGE_ID, abandonedStation);
-        return abandonedStation;
+        data.put(CommonStrings.DATA_STORAGE_ID, storageStation);
+        Console.showMessage("Storage set to " + storageStation.getFullName()
+                + " in " + storageStation.getContainingLocation().getName() + ".");
+        return storageStation;
     }
 
     public static CargoAPI retrieveStorage()
     {
         // Check for abandoned station
-        SectorEntityToken storage = getAbandonedStation();
+        SectorEntityToken storage = getStorageStation();
         if (storage != null)
         {
             return storage.getMarket().getSubmarket(Submarkets.SUBMARKET_STORAGE).getCargo();
@@ -103,16 +127,17 @@ public class Storage implements BaseCommand
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
-        if (context != CommandContext.CAMPAIGN_MAP)
+        if (!context.isInCampaign())
         {
             Console.showMessage(CommonStrings.ERROR_CAMPAIGN_ONLY);
             return CommandResult.WRONG_CONTEXT;
         }
 
-        SectorEntityToken station = getAbandonedStation();
+        SectorEntityToken station = getStorageStation();
         if (station == null)
         {
-            Console.showMessage("Abandoned station not found! Any commands that"
+            Console.showMessage(
+                    "A valid storage station was not found! Any commands that"
                     + " normally place items in storage will instead"
                     + " place them in the player's cargo.");
             return CommandResult.ERROR;

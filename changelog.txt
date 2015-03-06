@@ -8,7 +8,9 @@ Default aliases:
  - acp -> AddCommandPoints
  - aop -> AddOrdnancePoints
  - asp -> AddSkillPoints
- - awesome -> God;InfiniteAmmo;InfiniteFlux;Reveal
+ - ia -> InfiniteAmmo
+ - if -> InfiniteFlux
+ - nc -> NoCooldown
 New commands:
  - AddLogistics, modifies the maximum logistics of the player fleet
  - AddOrdnancePoints, modifies the max OP for all ships in player fleet
