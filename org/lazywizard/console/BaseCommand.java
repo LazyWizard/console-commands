@@ -75,7 +75,33 @@ public interface BaseCommand
          * <p>
          * @since 2.0
          */
-        COMBAT_SIMULATION
+        COMBAT_SIMULATION;
+
+        /**
+         * Returns whether this context is on the combat map.
+         * <p>
+         * @return {@code true} if the game is on the combat map, {@code false}
+         *         otherwise.
+         * <p>
+         * @since 2.4
+         */
+        public boolean isInCombat()
+        {
+            return (this != CAMPAIGN_MAP);
+        }
+
+        /**
+         * Returns whether this context is on the campaign map.
+         * <p>
+         * @return {@code true} if the game is on the campaign map,
+         *         {@code false} otherwise.
+         * <p>
+         * @since 2.4
+         */
+        public boolean isInCampaign()
+        {
+            return (this == CAMPAIGN_MAP);
+        }
     }
 
     /**

@@ -16,7 +16,7 @@ public class Repair implements BaseCommand
     public CommandResult runCommand(String args, CommandContext context)
     {
         // Used in campaign: repair all ships in fleet (same as station repair)
-        if (context == CommandContext.CAMPAIGN_MAP)
+        if (context.isInCampaign())
         {
             CampaignFleetAPI player = Global.getSector().getPlayerFleet();
 

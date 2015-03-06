@@ -12,7 +12,7 @@ public class Suicide implements BaseCommand
     public CommandResult runCommand(String args, CommandContext context)
     {
         // TODO: Implement suicide in campaign
-        if (context == CommandContext.CAMPAIGN_MAP)
+        if (!context.isInCombat())
         {
             Console.showMessage(CommonStrings.ERROR_COMBAT_ONLY);
             return CommandResult.WRONG_CONTEXT;

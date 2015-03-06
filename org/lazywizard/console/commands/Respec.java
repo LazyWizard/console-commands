@@ -61,7 +61,7 @@ public class Respec implements BaseCommand
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
-        if (context != CommandContext.CAMPAIGN_MAP)
+        if (!context.isInCampaign())
         {
             Console.showMessage(CommonStrings.ERROR_CAMPAIGN_ONLY);
             return CommandResult.WRONG_CONTEXT;
