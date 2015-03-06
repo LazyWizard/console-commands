@@ -50,3 +50,4 @@ Status,org.lazywizard.console.commands.Status,"core,console",status [detailed],S
 Storage,org.lazywizard.console.commands.Storage,"core,campaign",storage (no arguments),"Opens the Abandoned Terraforming Platform's storage from anywhere in the campaign. If the ATP doesn't exist this command will try to find another abandoned station, or open player cargo instead as a last resort."
 Suicide,org.lazywizard.console.commands.Suicide,"core,combat",suicide (no arguments),Kills the currently piloted ship.
 ToggleAI,org.lazywizard.console.commands.ToggleAI,"core,combat",toggleai (no arguments),Toggles the AI of the selected ship.
+Traitor,org.lazywizard.console.commands.Traitor,"core,combat",traitor (no arguments),Toggles the side the selected ship will fight for.
