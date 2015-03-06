@@ -6,10 +6,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
+import com.fs.starfarer.api.campaign.econ.MarketAPI;
+import com.fs.starfarer.api.campaign.econ.SubmarketAPI;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
+import com.fs.starfarer.api.impl.campaign.ids.Submarkets;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 
 public class CommandUtils
@@ -269,6 +274,33 @@ public class CommandUtils
         }
 
         return faction.getDisplayName();
+    }
+
+    // Returns the best cargo to add player-accessible items to
+    public static CargoAPI getUsableCargo(SectorEntityToken token)
+    {
+        // Always return fleet's cargo
+        if (token instanceof FleetMemberAPI)
+        {
+            return token.getCargo();
+        }
+
+        // Return storage tab's cargo, if present
+        MarketAPI market = token.getMarket();
+        if (market != null && !market.getSubmarketsCopy().isEmpty())
+        {
+            SubmarketAPI submarket = market.getSubmarket(Submarkets.SUBMARKET_STORAGE);
+            if (submarket != null)
+            {
+                return submarket.getCargo();
+            }
+
+            // Return first other market found
+            return market.getSubmarketsCopy().get(0).getCargo();
+        }
+
+        // Fallback, won't work in some cases
+        return token.getCargo();
     }
 
     private CommandUtils()

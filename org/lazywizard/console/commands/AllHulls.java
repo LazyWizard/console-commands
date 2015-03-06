@@ -1,6 +1,7 @@
 package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.FleetDataAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
@@ -39,22 +40,23 @@ public class AllHulls implements BaseCommand
         }
         else
         {
-            SectorEntityToken tmp = CommandUtils.findTokenInLocation(args,
+            SectorEntityToken token = CommandUtils.findTokenInLocation(args,
                     Global.getSector().getCurrentLocation());
 
-            if (tmp == null)
+            if (token == null)
             {
                 Console.showMessage(args + " not found!");
                 return CommandResult.ERROR;
             }
 
-            if (tmp.getCargo().getMothballedShips() == null)
+            CargoAPI cargo = CommandUtils.getUsableCargo(token);
+            if (cargo.getMothballedShips() == null)
             {
-                tmp.getCargo().initMothballedShips(tmp.getFaction().getId());
+                cargo.initMothballedShips(token.getFaction().getId());
             }
 
-            target = tmp.getCargo().getMothballedShips();
-            targetName = tmp.getFullName();
+            target = cargo.getMothballedShips();
+            targetName = token.getFullName();
         }
 
         for (String id : Global.getSector().getAllEmptyVariantIds())
