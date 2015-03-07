@@ -70,8 +70,7 @@ public interface BaseCommand
          */
         COMBAT_MISSION,
         /**
-         * Currently unused due to API limitations. Simulations will call
-         * {@link CommandContext#COMBAT_MISSION} instead.
+         * Command was entered during a refit simulation battle.
          * <p>
          * @since 2.0
          */
