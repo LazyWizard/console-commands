@@ -48,7 +48,6 @@ public class ToggleAI implements BaseCommand
         }
         else
         {
-            System.out.println(target.getShipAI().getClass().getCanonicalName());
             ais.put(target, target.getShipAI());
             target.setShipAI(new NullAI(target));
 
