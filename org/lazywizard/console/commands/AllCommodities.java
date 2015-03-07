@@ -5,15 +5,13 @@ import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.CargoAPI.CargoItemType;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.BaseCommand.CommandContext;
-import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
-public class AllWeapons implements BaseCommand
+public class AllCommodities implements BaseCommand
 {
-    private static final int MAX_STACK_SIZE = 10;
+    private static final int MAX_STACK_SIZE = 10_000;
 
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -26,7 +24,7 @@ public class AllWeapons implements BaseCommand
 
         CargoAPI target;
         String targetName;
-        int total = 0;
+        int total = 0, stackSize = MAX_STACK_SIZE;
 
         if (args == null || args.isEmpty())
         {
@@ -36,6 +34,7 @@ public class AllWeapons implements BaseCommand
         else if ("player".equalsIgnoreCase(args))
         {
             target = Global.getSector().getPlayerFleet().getCargo();
+            stackSize = 10;
             targetName = "player fleet";
         }
         else
@@ -53,14 +52,17 @@ public class AllWeapons implements BaseCommand
             targetName = tmp.getFullName();
         }
 
-        for (String id : Global.getSector().getAllWeaponIds())
+        for (String id : Global.getSector().getEconomy().getAllCommodityIds())
         {
-            int amount = MAX_STACK_SIZE - target.getNumWeapons(id);
-            target.addItems(CargoItemType.WEAPONS, id, amount);
-            total += amount;
+            int amount = (int) (stackSize - target.getQuantity(CargoItemType.RESOURCES, id));
+            if (stackSize > 0)
+            {
+                target.addItems(CargoItemType.RESOURCES, id, amount);
+                total += amount;
+            }
         }
 
-        Console.showMessage("Added " + total + " weapons to " + targetName + ".");
+        Console.showMessage("Added " + total + " trade items to " + targetName + ".");
         return CommandResult.SUCCESS;
     }
 }
