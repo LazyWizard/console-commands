@@ -1,4 +1,4 @@
- 2.4 (March 06, 2015)
+ 2.4 (March 06, 2015) 
 ======================
 The keystroke to summon the console is now shown when you first load a game
 Combat output is now centered on the top of the screen, not the player ship
