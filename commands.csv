@@ -22,7 +22,8 @@ AllWings,org.lazywizard.console.commands.AllWings,"core,campaign",allwings [opti
 DevMode,org.lazywizard.console.commands.DevMode,core,devmode [optionalOnOrOff],"Enables or disables dev mode. If no argument is given, acts as a toggle."
 EndCombat,org.lazywizard.console.commands.EndCombat,"core,combat",endcombat [optionalWinningSide],"Ends combat with the entered side as the winner (player or enemy). No ships are damaged by this command. If no side is entered, defaults to a player victory."
 #Find,org.lazywizard.console.commands.Find,"core,campaign",find <entityName>,"Lists all campaign entities whose name contains the given arguments (not case-sensitive), as well as their current locations."
-FindShip,org.lazywizard.console.commands.FindShip,"core,campaign",find <hullId>,"Lists all submarkets and their locations that contain the specified ship."
+FindItem,org.lazywizard.console.commands.FindItem,"core,campaign",find <itemId>,"Lists all submarkets and their locations that currently sell the specified commodity or weapon. Because cargo is updated when you open the market tab, the results are not 100% accurate."
+FindShip,org.lazywizard.console.commands.FindShip,"core,campaign",find <hullId>,"Lists all submarkets and their locations that currently sell the specified ship. Because cargo is updated when you open the market tab, the results are not 100% accurate."
 God,org.lazywizard.console.commands.God,"core,combat",god (no arguments),Toggles invincibility for all ships on your side.
 GoTo,org.lazywizard.console.commands.GoTo,"core,campaign",goto <locationName>,"Teleports your fleet to the token with the given name in this system, if any exists. The argument 'home' will function identically to the 'home' command."
 Help,org.lazywizard.console.commands.Help,"core,console",help [optionalCommand],"Shows a list of all commands, or the details on using a specific command if one is entered as an argument."
