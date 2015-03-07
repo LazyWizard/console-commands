@@ -15,7 +15,7 @@ New commands:
  - AddLogistics, modifies the maximum logistics of the player fleet
  - AddOrdnancePoints, modifies the max OP for all ships in player fleet
  - AllCommodities, adds all trade items to the specified station/player cargo
- X ListStorage, lists all stored ships/items in all storages in the sector
+ - FindShip, lists all markets that sell that ship and their location/faction
  - Respec, resets player skills/aptitudes to 0 and refunds all spent points
  - ToggleAI, disables or re-enables the AI of the targeted ship
  - Traitor, toggles the side of the targeted ship
