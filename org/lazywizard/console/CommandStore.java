@@ -129,7 +129,7 @@ public class CommandStore
 
                 aliases.put(alias.toLowerCase(), command);
             }
-            catch (Exception ex)
+            catch (JSONException ex)
             {
                 Console.showException("Failed to parse aliases", ex);
             }
