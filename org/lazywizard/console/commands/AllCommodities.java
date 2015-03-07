@@ -34,7 +34,7 @@ public class AllCommodities implements BaseCommand
         else if ("player".equalsIgnoreCase(args))
         {
             target = Global.getSector().getPlayerFleet().getCargo();
-            stackSize = 10;
+            stackSize = 100;
             targetName = "player fleet";
         }
         else

@@ -1,5 +1,7 @@
 package org.lazywizard.console.commands;
 
+import java.util.ArrayList;
+import java.util.List;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactory;
@@ -8,10 +10,10 @@ import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import org.lazywizard.lazylib.CollectionUtils;
 import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
 
-// TODO: Fix this to work with new .65a fleet spawning behavior
 public class SpawnFleet implements BaseCommand
 {
     @Override
@@ -30,32 +32,61 @@ public class SpawnFleet implements BaseCommand
 
         String[] tmp = args.split(" ");
 
-        if (tmp.length != 2)
+        if (tmp.length < 3)
         {
             return CommandResult.BAD_SYNTAX;
         }
 
+        if (tmp.length == 3)
+        {
+            return runCommand(args + " Fleet", context);
+        }
+
         String faction = tmp[0];
-        String fleet = tmp[1];
+
+        int totalFP;
+        try
+        {
+            totalFP = Integer.parseInt(tmp[1]);
+        }
+        catch (NumberFormatException ex)
+        {
+
+            return CommandResult.BAD_SYNTAX;
+        }
+
+        float quality;
+        try
+        {
+            quality = Float.parseFloat(tmp[2]);
+        }
+        catch (NumberFormatException ex)
+        {
+            return CommandResult.BAD_SYNTAX;
+        }
+
+        List<String> subNames = new ArrayList<>(tmp.length - 3);
+        for (int x = 3; x < tmp.length; x++)
+        {
+            subNames.add(tmp[x]);
+        }
+        String name = CollectionUtils.implode(subNames, " ");
 
         try
         {
-
-            final CampaignFleetAPI toSpawn
-                    //= Global.getSector().createFleet(faction, fleet);
-                    = FleetFactory.createGenericFleet(faction, fleet, 1f, 100);
+            final CampaignFleetAPI toSpawn = FleetFactory.createGenericFleet(faction, name, quality, totalFP);
             final Vector2f offset = MathUtils.getRandomPointOnCircumference(null, 150f);
             Global.getSector().getCurrentLocation().spawnFleet(
                     Global.getSector().getPlayerFleet(), offset.x, offset.y, toSpawn);
         }
         catch (Exception ex)
         {
-            Console.showMessage("No such fleet '" + fleet + "' for faction '"
+            Console.showMessage("Unable to spawn generic fleet for faction '"
                     + faction + "'!");
             return CommandResult.ERROR;
         }
 
-        Console.showMessage("Fleet '" + fleet + "' successfully spawned!");
+        Console.showMessage("Spawned a " + totalFP + "FP fleet aligned with faction " + faction + ".");
         return CommandResult.SUCCESS;
     }
 }

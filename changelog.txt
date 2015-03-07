@@ -24,11 +24,10 @@ Changes to existing commands:
  - AllHulls, AllWings and AllWeapons work with stations as an argument again
  - AllHulls and AllWings also work with 'player' as the argument again
  - Kill works on targets that have god mode active
- X List accepts "roles", which displays all known fleet roles per faction
  - Reload now reloads settings, commands, tags, aliases, and RunCode's
    imports and macros
  - Repair won't lower your CR on the campaign map if it was over the maximum
- X SpawnFleet re-added, uses faction followed by fleet role as arguments
+ - SpawnFleet re-added, syntax is now "spawnfleet <faction> <totalFP> <quality>
  - Status includes aliases (plus their definitions with "detailed" argument)
  - Storage will now use the first station with an unlocked storage tab if
    there are no abandoned stations in the sector (total conversion support)
