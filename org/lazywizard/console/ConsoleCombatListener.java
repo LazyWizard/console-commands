@@ -27,6 +27,9 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
     // The Y offset of console output this frame, used so
     // that multiple messages while paused won't overlap
     private float messageOffset = 0f;
+    // The position of console output this frame, used so
+    // that the output is always centered on the screen
+    private Vector2f messagePos = null;
     private CommandContext context;
 
     //<editor-fold defaultstate="collapsed" desc="Input handling">
@@ -70,6 +73,7 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
         // Reset new message offset each frame
         if (!engine.isPaused())
         {
+            messagePos = null;
             messageOffset = 0f;
         }
 
@@ -125,17 +129,26 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
     @Override
     public void showOutput(String output)
     {
-        // TODO: the values here are kind of arbitrary, need to be worked out properly
-        // TODO: display to the side of the player's ship furthest from the edge of the screen
+        // TODO: Clean this method up, or comment it more, or... something
         ShipAPI player = Global.getCombatEngine().getPlayerShip();
         String[] messages = output.split("\n");
+
+        // Ensure messages are centered, but don't reset the position
+        // if multiple commands are entered in one frame
+        if (messagePos == null)
+        {
+            ViewportAPI view = Global.getCombatEngine().getViewport();
+            messagePos = new Vector2f(view.getCenter().x,
+                    (view.getLLY() + view.getVisibleHeight()) - (50f * view.getViewMult()));
+        }
+
         for (int x = 0; x < messages.length; x++)
         {
+            // TODO: The values here are kind of arbitrary, need to be worked out properly
             Global.getCombatEngine().addFloatingText(Vector2f.add(
                     new Vector2f(-Console.getSettings().getMaxOutputLineLength() / 2f,
-                            -(player.getCollisionRadius() + (MESSAGE_SIZE * 2)
-                            + messageOffset + (x * MESSAGE_SIZE))),
-                    player.getLocation(), null), messages[x], MESSAGE_SIZE,
+                            -((MESSAGE_SIZE * 2) + messageOffset + (x * MESSAGE_SIZE))),
+                    messagePos, null), messages[x], MESSAGE_SIZE,
                     Console.getSettings().getOutputColor(), player, 0f, 0f);
         }
 
