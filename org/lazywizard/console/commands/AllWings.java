@@ -35,7 +35,7 @@ public class AllWings implements BaseCommand
         }
         else if ("player".equalsIgnoreCase(args))
         {
-            target = Global.getSector().getPlayerFleet().getCargo().getMothballedShips();
+            target = Global.getSector().getPlayerFleet().getFleetData();
             targetName = "player fleet";
         }
         else
@@ -49,13 +49,21 @@ public class AllWings implements BaseCommand
                 return CommandResult.ERROR;
             }
 
-            CargoAPI cargo = CommandUtils.getUsableCargo(token);
-            if (cargo.getMothballedShips() == null)
+            if (token instanceof FleetMemberAPI)
             {
-                cargo.initMothballedShips(token.getFaction().getId());
+                target = ((FleetMemberAPI) token).getFleetData();
+            }
+            else
+            {
+                CargoAPI cargo = CommandUtils.getUsableCargo(token);
+                if (cargo.getMothballedShips() == null)
+                {
+                    cargo.initMothballedShips(token.getFaction().getId());
+                }
+
+                target = cargo.getMothballedShips();
             }
 
-            target = cargo.getMothballedShips();
             targetName = token.getFullName();
         }
 
