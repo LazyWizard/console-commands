@@ -1,10 +1,12 @@
- 2.5 (March XX, 2015)
-======================
-New commands:
+ 2.4b (March 08, 2015)
+=======================
+Fixed crash when entering aliases in mixed case
+New command:
  - ForceMarketUpdate, forces an inventory refresh of all submarkets in the
-   sector. Equivalent to opening the submarket tabs at every market
+   sector. Equivalent to opening each submarket tab at every market
 Changes to existing commands:
  - FindItem now shows the local prices and legality of commodities and weapons
+ - FindShip now shows the local prices and legality of ships and wings
 
  2.4 (March 06, 2015)
 ======================
