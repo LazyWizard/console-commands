@@ -213,7 +213,7 @@ public class Console
         String args = (tmp.length > 1 ? tmp[1] : "");
         CommandResult result;
 
-        // Alias support
+        // Alias with arguments support
         if (CommandStore.getAliases().containsKey(com))
         {
             String rawAlias = CommandStore.getAliases().get(com);
@@ -296,10 +296,11 @@ public class Console
                 input = input.trim();
                 if (!input.isEmpty())
                 {
-                    // Alias support
+                    // Whole-line alias support
                     if (aliases.containsKey(input.toLowerCase()))
                     {
-                        for (String input2 : aliases.get(input).split(settings.getCommandSeparator()))
+                        for (String input2 : aliases.get(input.toLowerCase())
+                                .split(settings.getCommandSeparator()))
                         {
                             input2 = input2.trim();
                             if (!input2.isEmpty())
