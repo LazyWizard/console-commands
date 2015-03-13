@@ -113,7 +113,7 @@ public class FindItem implements BaseCommand
             SubmarketAPI submarket = entry.getKey();
             PriceData data = entry.getValue();
             Console.showMessage(" - " + data.getAvailable() + " available for "
-                    + Math.round(data.getPrice()) + " credits each at "
+                    + Math.round(data.getPrice()) + " credits at "
                     + submarket.getMarket().getName() + "'s "
                     + submarket.getNameOneLine() + " submarket ("
                     + submarket.getFaction().getDisplayName() + ", "
