@@ -3,7 +3,6 @@ package org.lazywizard.console.commands;
 import java.util.Map;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CargoAPI;
-import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.campaign.SubmarketPlugin.OnClickAction;
@@ -11,7 +10,6 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Conditions;
 import com.fs.starfarer.api.impl.campaign.ids.Submarkets;
-import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
@@ -50,33 +48,34 @@ public class Storage implements BaseCommand
         // ATP not found? Find first available station with the 'abandoned' condition
         // If no abandoned stations are found, find an unlocked storage submarket
         SectorEntityToken firstUnlockedStation = null;
-        out:
         if (storageStation == null)
         {
-            for (LocationAPI loc : Global.getSector().getStarSystems())
+            for (MarketAPI market : Global.getSector().getEconomy().getMarketsCopy())
             {
-                for (SectorEntityToken station : loc.getEntitiesWithTag(Tags.STATION))
+                SubmarketAPI storage = market.getSubmarket(Submarkets.SUBMARKET_STORAGE);
+                if (storage != null)
                 {
-                    MarketAPI market = station.getMarket();
-                    if (market != null)
+                    // Ensure there's a token attached to this market
+                    SectorEntityToken station = market.getPrimaryEntity();
+                    if (station == null)
                     {
-                        SubmarketAPI storage = market.getSubmarket(Submarkets.SUBMARKET_STORAGE);
-                        if (storage != null)
-                        {
-                            // Prefer the abandoned station above all else
-                            if (market.hasCondition(Conditions.ABANDONED_STATION))
-                            {
-                                storageStation = station;
-                                break out;
-                            }
+                        continue;
+                    }
 
-                            // Otherwise, prefer a station with unlocked storage
-                            if (firstUnlockedStation == null && storage.getPlugin()
-                                    .getOnClickAction(null) == OnClickAction.OPEN_SUBMARKET)
-                            {
-                                firstUnlockedStation = station;
-                            }
-                        }
+                    System.out.println("Checking " + storage.getNameOneLine());
+
+                    // Prefer the abandoned station above all else
+                    if (market.hasCondition(Conditions.ABANDONED_STATION))
+                    {
+                        storageStation = station;
+                        break;
+                    }
+
+                    // Otherwise, prefer a station with unlocked storage
+                    if (firstUnlockedStation == null && storage.getPlugin()
+                            .getOnClickAction(null) == OnClickAction.OPEN_SUBMARKET)
+                    {
+                        firstUnlockedStation = station;
                     }
                 }
             }
