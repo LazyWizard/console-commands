@@ -1,3 +1,8 @@
+ 2.5 (March XX, 2015)
+======================
+Updated custom command template with more examples + documentation
+Fixed SetRelationship and AdjustRelationship typo correction not working
+
  2.4b (March 08, 2015)
 =======================
 Fixed crash when entering aliases in mixed case
