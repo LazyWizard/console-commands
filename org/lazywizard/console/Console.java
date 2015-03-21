@@ -61,14 +61,14 @@ public class Console
      * Forces the console to reload its settings from the settings file.
      *
      * @throws IOException   if the JSON file at
-     *                       {@link CommonStrings#SETTINGS_PATH} does not exist
+     *                       {@link CommonStrings#PATH_SETTINGS} does not exist
      *                       or can't be opened.
      * @throws JSONException if the JSON is malformed or missing entries.
      * @since 2.0
      */
     public static void reloadSettings() throws IOException, JSONException
     {
-        JSONObject settingsFile = Global.getSettings().loadJSON(CommonStrings.SETTINGS_PATH);
+        JSONObject settingsFile = Global.getSettings().loadJSON(CommonStrings.PATH_SETTINGS);
         settings = new ConsoleSettings(settingsFile.getInt("consoleKey"),
                 settingsFile.getBoolean("requireShift"),
                 settingsFile.getBoolean("requireControl"),

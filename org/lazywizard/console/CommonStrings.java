@@ -24,33 +24,33 @@ public class CommonStrings
      * <p>
      * @since 2.0
      */
-    public static final String SETTINGS_PATH = "data/console/console_settings.json";
+    public static final String PATH_SETTINGS = "data/console/console_settings.json";
     /**
      * The path to commands.csv, used for loading commands.
      * <p>
      * @since 2.0
      */
-    public static final String CSV_PATH = "data/console/commands.csv";
+    public static final String PATH_CSV = "data/console/commands.csv";
     /**
      * The path to aliases.csv, used to define aliases.
      * <p>
      * @since 2.4
      */
-    public static final String ALIAS_PATH = "data/console/aliases.csv";
+    public static final String PATH_ALIAS = "data/console/aliases.csv";
     /**
      * The path to runcode_imports.csv, used for setting custom imports for the
      * RunCode command.
      * <p>
      * @since 2.0
      */
-    public static final String RUNCODE_CSV_PATH = "data/console/runcode_imports.csv";
+    public static final String PATH_RUNCODE_CSV = "data/console/runcode_imports.csv";
     /**
      * The path to runcode_macros.csv, used for setting custom macros for the
      * RunCode command.
      * <p>
      * @since 2.0
      */
-    public static final String RUNCODE_MACROS_PATH = "data/console/runcode_macros.csv";
+    public static final String PATH_RUNCODE_MACROS = "data/console/runcode_macros.csv";
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Common messages">
