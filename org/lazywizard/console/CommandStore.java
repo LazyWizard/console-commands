@@ -34,7 +34,7 @@ public class CommandStore
      * {@link Exception}. Instead it will display an error message to the
      * player and continue to load the rest of the commands normally.
      *
-     * @throws IOException   if the CSV file at {@link CommonStrings#CSV_PATH}
+     * @throws IOException   if the CSV file at {@link CommonStrings#PATH_CSV}
      *                       does not exist or can't be opened.
      * @throws JSONException if the CSV is malformed or missing columns.
      * @since 2.0
@@ -45,7 +45,7 @@ public class CommandStore
         storedCommands.clear();
         tags.clear();
         JSONArray commandData = Global.getSettings().getMergedSpreadsheetDataForMod(
-                "command", CommonStrings.CSV_PATH, CommonStrings.MOD_ID);
+                "command", CommonStrings.PATH_CSV, CommonStrings.MOD_ID);
         ClassLoader loader = Global.getSettings().getScriptClassLoader();
         for (int x = 0; x < commandData.length(); x++)
         {
@@ -118,7 +118,7 @@ public class CommandStore
         // Populate alias mapping
         aliases.clear();
         JSONArray aliasData = Global.getSettings().getMergedSpreadsheetDataForMod(
-                "alias", CommonStrings.ALIAS_PATH, CommonStrings.MOD_ID);
+                "alias", CommonStrings.PATH_ALIAS, CommonStrings.MOD_ID);
         for (int x = 0; x < aliasData.length(); x++)
         {
             try

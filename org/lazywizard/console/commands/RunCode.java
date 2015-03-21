@@ -38,7 +38,7 @@ public class RunCode implements BaseCommand
         try
         {
             JSONArray csv = Global.getSettings().getMergedSpreadsheetDataForMod(
-                    "import", CommonStrings.RUNCODE_CSV_PATH, CommonStrings.MOD_ID);
+                    "import", CommonStrings.PATH_RUNCODE_CSV, CommonStrings.MOD_ID);
             for (int x = 0; x < csv.length(); x++)
             {
                 imports.add(csv.getJSONObject(x).getString("import"));
@@ -60,7 +60,7 @@ public class RunCode implements BaseCommand
         try
         {
             JSONArray csv = Global.getSettings().getMergedSpreadsheetDataForMod(
-                    "macro", CommonStrings.RUNCODE_MACROS_PATH, CommonStrings.MOD_ID);
+                    "macro", CommonStrings.PATH_RUNCODE_MACROS, CommonStrings.MOD_ID);
             for (int x = 0; x < csv.length(); x++)
             {
                 final JSONObject tmp = csv.getJSONObject(x);
