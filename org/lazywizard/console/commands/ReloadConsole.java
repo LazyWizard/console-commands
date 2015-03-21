@@ -6,7 +6,7 @@ import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommandStore;
 import org.lazywizard.console.Console;
 
-public class Reload implements BaseCommand
+public class ReloadConsole implements BaseCommand
 {
     public static void reloadConsole() throws JSONException, IOException
     {
