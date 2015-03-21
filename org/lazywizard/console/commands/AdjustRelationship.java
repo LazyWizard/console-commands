@@ -59,7 +59,7 @@ public class AdjustRelationship implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        fac1.adjustRelationship(towardsFaction, newRelationship / 100f);
+        fac1.adjustRelationship(fac2.getId(), newRelationship / 100f);
         Console.showMessage("Adjusted relationship of "
                 + CommandUtils.getFactionName(fac1) + " towards "
                 + CommandUtils.getFactionName(fac2) + " by " + newRelationship + ".");
