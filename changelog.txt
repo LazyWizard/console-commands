@@ -3,6 +3,8 @@
 Updated custom command template with more examples + documentation
 Renamed Reload to ReloadConsole
 Fixed SetRelationship and AdjustRelationship typo correction not working
+New command:
+ - Clear, clears the text from the campaign pop-up
 
  2.4b (March 08, 2015)
 =======================
