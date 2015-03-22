@@ -25,7 +25,15 @@ public class Clear implements BaseCommand
             return CommandResult.ERROR;
         }
 
+        final float oldXOffset = dialog.getXOffset(),
+                oldYOffset = dialog.getYOffset(),
+                oldTextWidth = dialog.getTextWidth(),
+                oldTextHeight = dialog.getTextHeight();
         dialog.getTextPanel().clear();
+        dialog.setTextWidth(oldTextWidth);
+        dialog.setTextHeight(oldTextHeight);
+        dialog.setXOffset(oldXOffset);
+        dialog.setYOffset(oldYOffset);
         return CommandResult.SUCCESS;
     }
 }
