@@ -135,6 +135,12 @@ public class AddShip implements BaseCommand
             }
         }
 
+        if (ship.isFighterWing())
+        {
+            Console.showMessage("Use AddWing for fighters!");
+            return CommandResult.ERROR;
+        }
+
         fleet.addFleetMember(ship);
 
         // More than one ship was requested
