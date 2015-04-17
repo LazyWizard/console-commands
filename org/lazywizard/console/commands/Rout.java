@@ -2,6 +2,7 @@ package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
+import com.fs.starfarer.api.combat.CombatFleetManagerAPI;
 import com.fs.starfarer.api.mission.FleetSide;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
@@ -25,7 +26,15 @@ public class Rout implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        engine.getFleetManager(FleetSide.ENEMY).orderFullRetreat();
+        CombatFleetManagerAPI fm = engine.getFleetManager(FleetSide.ENEMY);
+
+        if (fm.isInFullRetreat())
+        {
+            Console.showMessage("Enemy side is already retreating!");
+            return CommandResult.ERROR;
+        }
+
+        fm.orderFullRetreat();
         Console.showMessage("Enemy side is now retreating.");
         return CommandResult.SUCCESS;
     }
