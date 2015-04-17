@@ -44,6 +44,7 @@ ReloadConsole,org.lazywizard.console.commands.ReloadConsole,"core,console",reloa
 Repair,org.lazywizard.console.commands.Repair,"core,campaign,combat",repair (no arguments),"Repairs all friendly ships on the battle map if used in combat, or all ships in your fleet on the campaign map."
 Respec,org.lazywizard.console.commands.Respec,"core,campaign",respec (no arguments),Resets skills and attributes to zero and refunds all spent points.
 Reveal,org.lazywizard.console.commands.Reveal,"core,combat",reveal (no arguments),Toggles fog of war on the battle map.
+Rout,org.lazywizard.console.commands.Rout,"core,combat",rout (no arguments),Forces the enemy side to order a full retreat.
 RunCode,org.lazywizard.console.commands.RunCode,"core,console",runcode <line of code>,Compiles and runs a line of code. This command has access to most API and LazyLib classes. Does not accept return statements.
 SetHome,org.lazywizard.console.commands.SetHome,"core,campaign",sethome [optionalHome],"Sets the point to be teleported to with the 'home' command.\nIf an argument is entered, the command will try to find a token with that name in the system. Otherwise, it will select a nearby object (or raw coordinates if no valid station or planet is found)."
 SetRelationship,org.lazywizard.console.commands.SetRelationship,"core,campaign",setrelationship <faction1> <faction2> <amount>,Sets the relationship between two factions to the given number. Arguments range from -100 to 100.
