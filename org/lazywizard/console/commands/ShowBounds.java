@@ -25,6 +25,7 @@ public class ShowBounds implements BaseCommand
     private static final boolean SHOW_COLLISION_RADIUS = true;
     private static final boolean SHOW_SHIELD_RADIUS = true;
     private static final boolean SHOW_TARGET_RADIUS = true;
+    private static final int NUM_POINTS = 144;
     private static WeakReference<ShowBoundsPlugin> plugin;
 
     @Override
@@ -110,7 +111,7 @@ public class ShowBounds implements BaseCommand
                 {
                     glColor4f(.5f, .5f, .5f, .25f);
                     DrawUtils.drawCircle(ship.getLocation().x, ship.getLocation().y,
-                            ship.getCollisionRadius(), 144, true);
+                            ship.getCollisionRadius(), NUM_POINTS, true);
                 }
 
                 if (SHOW_SHIELD_RADIUS)
@@ -120,43 +121,16 @@ public class ShowBounds implements BaseCommand
                     {
                         glColor4f(0f, .5f, .5f, .25f);
                         DrawUtils.drawCircle(shield.getLocation().x, shield.getLocation().y,
-                                shield.getRadius(), 144, true);
+                                shield.getRadius(), NUM_POINTS, true);
                     }
                 }
 
                 if (SHOW_TARGET_RADIUS)
                 {
-                    /*final float radiusU = Misc.getTargetingRadius(
-                     MathUtils.getPointOnCircumference(ship.getLocation(),
-                     ship.getCollisionRadius() * 2f,
-                     ship.getFacing() + 0f), ship, false),
-                     radiusL = Misc.getTargetingRadius(
-                     MathUtils.getPointOnCircumference(ship.getLocation(),
-                     ship.getCollisionRadius() * 2f,
-                     ship.getFacing() + 90f), ship, false),
-                     radiusD = Misc.getTargetingRadius(
-                     MathUtils.getPointOnCircumference(ship.getLocation(),
-                     ship.getCollisionRadius() * 2f,
-                     ship.getFacing() + 180f), ship, false),
-                     radiusR = Misc.getTargetingRadius(
-                     MathUtils.getPointOnCircumference(ship.getLocation(),
-                     ship.getCollisionRadius() * 2f,
-                     ship.getFacing() + 270f), ship, false);
-                     final float offsetX = radiusR - radiusL,
-                     offsetY = radiusU - radiusD;
-                     final Vector2f center = new Vector2f(ship.getLocation());
-                     center.x += offsetX;
-                     center.y += offsetY;
-                     VectorUtils.rotateAroundPivot(center, ship.getLocation(),
-                     ship.getFacing(), center);
-
-                     glColor4f(1f, 1f, 1f, .25f);
-                     DrawUtils.drawEllipse(center.x, center.y, (radiusR + radiusL) / 2f,
-                     (radiusU + radiusD) / 2f, ship.getFacing() - 90f, 144, true);*/
-
                     // TODO: Figure out ellipse bounds and draw using drawEllipse()
-                    List<Vector2f> pointsAroundRadius = new ArrayList<>(144);
-                    for (float x = ship.getFacing(); x < ship.getFacing() + 360f; x += 360f / 144f)
+                    // TODO: Optimize this!
+                    List<Vector2f> pointsAroundRadius = new ArrayList<>(NUM_POINTS);
+                    for (float x = ship.getFacing(); x < ship.getFacing() + 360f; x += 360f / NUM_POINTS)
                     {
                         final float targetRadius = Misc.getTargetingRadius(
                                 MathUtils.getPointOnCircumference(ship.getLocation(),
@@ -174,77 +148,9 @@ public class ShowBounds implements BaseCommand
                         glVertex2f(point.x, point.y);
                     }
                     glEnd();
-
-                    // Draw difference between collision radius and target radius
-                    /*List<Vector2f> pointsAroundRadius = MathUtils.getPointsAlongCircumference(
-                     ship.getLocation(), ship.getCollisionRadius() * 2f, 8, 0f);
-                     for (Vector2f point : pointsAroundRadius)
-                     {
-                     final float distanceNormal = MathUtils.getDistance(ship, point),
-                     distanceMisc = MathUtils.getDistance(ship.getLocation(), point)
-                     - Misc.getTargetingRadius(point, ship, false);
-
-                     final float angleTowards = VectorUtils.getAngle(point, ship.getLocation());
-                     Vector2f endPointNormal = MathUtils.getPointOnCircumference(
-                     point, distanceNormal, angleTowards),
-                     endPointMisc = MathUtils.getPointOnCircumference(
-                     point, distanceMisc, angleTowards);
-
-                     glBegin(GL_LINES);
-                     glColor4f(0f, 1f, 0f, 1f);
-                     glVertex2f(point.x, point.y);
-                     glVertex2f(endPointNormal.x, endPointNormal.y);
-                     glColor4f(1f, 0f, 0f, 1f);
-                     glVertex2f(point.x, point.y);
-                     glVertex2f(endPointMisc.x, endPointMisc.y);
-                     glEnd();
-                     }*/
                 }
             }
 
-            // TODO: Optimize this
-            // TODO: Add to changelog
-            /*final ShipAPI player = engine.getPlayerShip();
-             if (player != null && player.getShipTarget() != null)
-             {
-             final boolean considerShields = false;
-             final ShipAPI target = player.getShipTarget();
-
-             final float angleTowards = VectorUtils.getAngle(
-             player.getLocation(), target.getLocation());
-             final Vector2f startPointNormal = MathUtils.getPointOnCircumference(
-             player.getLocation(), player.getCollisionRadius(), angleTowards),
-             startPointMisc = MathUtils.getPointOnCircumference(
-             player.getLocation(), Misc.getTargetingRadius(
-             target.getLocation(), player, considerShields), angleTowards);
-
-             final float distanceNormal = MathUtils.getDistance(target, startPointNormal),
-             distanceMisc = MathUtils.getDistance(target.getLocation(), startPointMisc)
-             - Misc.getTargetingRadius(player.getLocation(), target, considerShields);
-
-             Vector2f endPointNormal = MathUtils.getPointOnCircumference(
-             startPointNormal, distanceNormal, angleTowards),
-             endPointMisc = MathUtils.getPointOnCircumference(
-             startPointMisc, distanceMisc, angleTowards);
-
-             if (distanceNormal > 0f || distanceMisc > 0f)
-             {
-             glBegin(GL_LINES);
-             if (distanceNormal > 0f)
-             {
-             glColor4f(1f, 0f, 0f, 1f);
-             glVertex2f(startPointNormal.x, startPointNormal.y);
-             glVertex2f(endPointNormal.x, endPointNormal.y);
-             }
-             if (distanceMisc > 0f)
-             {
-             glColor4f(0f, 1f, 0f, 1f);
-             glVertex2f(startPointMisc.x, startPointMisc.y);
-             glVertex2f(endPointMisc.x, endPointMisc.y);
-             }
-             glEnd();
-             }
-             }*/
             // Finalize drawing
             glDisable(GL_BLEND);
             glPopAttrib();
