@@ -30,7 +30,7 @@ public class Rout implements BaseCommand
 
         if (fm.isInFullRetreat())
         {
-            Console.showMessage("Enemy side is already retreating!");
+            Console.showMessage("The enemy is already retreating!");
             return CommandResult.ERROR;
         }
 
