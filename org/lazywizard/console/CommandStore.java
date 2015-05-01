@@ -57,9 +57,15 @@ public class CommandStore
             try
             {
                 JSONObject row = commandData.getJSONObject(x);
+                commandName = row.getString("command");
+                
+                // Skip empty rows
+                if (commandName.isEmpty())
+                {
+                    continue;
+                }
 
                 // Load these first so we can display them if there's an error
-                commandName = row.getString("command");
                 commandPath = row.getString("class");
                 commandSource = row.getString("fs_rowSource");
 
@@ -73,11 +79,11 @@ public class CommandStore
                 }
 
                 // Class is valid, start building command info
-                String commandSyntax = row.getString("syntax");
-                String commandHelp = row.getString("help");
+                String commandSyntax = row.optString("syntax", "");
+                String commandHelp = row.optString("help", "");
 
                 // Generate the tag list
-                String[] rawTags = row.getString("tags").split(",");
+                String[] rawTags = row.optString("tags", "").split(",");
                 List<String> commandTags = new ArrayList<>();
                 for (String tag : rawTags)
                 {
