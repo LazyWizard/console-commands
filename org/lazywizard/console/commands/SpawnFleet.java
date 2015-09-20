@@ -14,6 +14,8 @@ import org.lazywizard.lazylib.CollectionUtils;
 import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
 
+// TODO: Add crew level argument
+// TODO: Add SpawnLeveledFleet command
 public class SpawnFleet implements BaseCommand
 {
     @Override
