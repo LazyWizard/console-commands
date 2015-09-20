@@ -25,6 +25,7 @@ EndCombat,org.lazywizard.console.commands.EndCombat,"core,combat",endcombat [opt
 #Find,org.lazywizard.console.commands.Find,"core,campaign",find <entityName>,"Lists all campaign entities whose name contains the given arguments (not case-sensitive), as well as their current locations."
 FindItem,org.lazywizard.console.commands.FindItem,"core,campaign",find <itemId>,"Lists all submarkets and their locations that currently sell the specified commodity or weapon. Because cargo is updated when you open the market tab, the results are not 100% accurate."
 FindShip,org.lazywizard.console.commands.FindShip,"core,campaign",find <hullId>,"Lists all submarkets and their locations that currently sell the specified ship. Because cargo is updated when you open the market tab, the results are not 100% accurate."
+Flameout,org.lazywizard.console.commands.Flameout,"core,combat",flameout,"Forces a flameout of all engines on your current target, or the player ship if no ship is targeted."
 ForceMarketUpdate,org.lazywizard.console.commands.ForceMarketUpdate,"core,campaign",forcemarketupdate (no arguments),Forces an inventory refresh of all submarkets in the sector.
 God,org.lazywizard.console.commands.God,"core,combat",god (no arguments),Toggles invincibility for all ships on your side.
 GoTo,org.lazywizard.console.commands.GoTo,"core,campaign",goto <locationName>,"Teleports your fleet to the token with the given name in this system, if any exists. The argument 'home' will function identically to the 'home' command."

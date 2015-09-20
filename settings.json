@@ -1,0 +1,5 @@
+{
+	"plugins":{
+		"ConsoleCombatListener":"org.lazywizard.console.ConsoleCombatListener",
+	},
+}
