@@ -83,7 +83,9 @@ public class InfiniteCR implements BaseCommand
 
                     if (ship.losesCRDuringCombat())
                     {
-                        ship.setCurrentCR(ship.getCRAtDeployment());
+                        ship.setCurrentCR(Math.max(ship.getCurrentCR(), ship.getCRAtDeployment()));
+                        ship.getMutableStats().getPeakCRDuration().modifyFlat(
+                                "lw_console", ship.getTimeDeployedForCRReduction());
                     }
                 }
             }
