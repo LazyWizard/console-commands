@@ -1,11 +1,13 @@
 package org.lazywizard.console.commands;
 
+import java.awt.Color;
 import java.lang.ref.WeakReference;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
-import com.fs.starfarer.api.combat.ShieldAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
@@ -15,8 +17,9 @@ import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.MathUtils;
-import org.lazywizard.lazylib.opengl.DrawUtils;
+import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
+import static org.lazywizard.lazylib.opengl.ColorUtils.glColor;
 import static org.lwjgl.opengl.GL11.*;
 
 public class ShowBounds implements BaseCommand
@@ -59,6 +62,7 @@ public class ShowBounds implements BaseCommand
     private static class ShowBoundsPlugin extends BaseEveryFrameCombatPlugin
     {
         private final IntervalUtil nextCheck = new IntervalUtil(1f, 1f);
+        private final Map<ShipAPI, PointRenderer> renderers = new LinkedHashMap<>();
         private boolean active = true, firstRun = true;
         private CombatEngineAPI engine;
 
@@ -81,85 +85,13 @@ public class ShowBounds implements BaseCommand
             {
                 firstRun = false;
 
+                // Recalculate everything occasionally, supports morphing ships
+                renderers.clear();
                 for (ShipAPI ship : engine.getShips())
                 {
                     ship.setRenderBounds(true);
                 }
             }
-        }
-
-        private static void drawCollisionRadius(ShipAPI ship)
-        {
-            glColor4f(.5f, .5f, .5f, .25f);
-            DrawUtils.drawCircle(ship.getLocation().x, ship.getLocation().y,
-                    ship.getCollisionRadius(), NUM_POINTS, true);
-        }
-
-        private static void drawShieldRadius(ShieldAPI shield)
-        {
-            glColor4f(0f, .5f, .5f, .25f);
-            DrawUtils.drawCircle(shield.getLocation().x, shield.getLocation().y,
-                    shield.getRadius(), NUM_POINTS, true);
-        }
-
-        /*private static final float CHECK_DISTANCE = 5000f;
-        private static final Vector2f FRONT = new Vector2f(CHECK_DISTANCE, 0f);
-        private static final Vector2f LEFT = new Vector2f(0f, CHECK_DISTANCE);
-        private static final Vector2f REAR = new Vector2f(-CHECK_DISTANCE, 0f);
-        private static final Vector2f RIGHT = new Vector2f(0f, -CHECK_DISTANCE);*/
-
-        private static void drawTargetRadius(ShipAPI ship)
-        {
-            // TODO: Figure out ellipse bounds and draw using drawEllipse()
-            // TODO: Optimize this!
-
-            final Vector2f origLoc = new Vector2f(ship.getLocation());
-            final float origFacing = ship.getFacing();
-            ship.setFacing(0f);
-            ship.getLocation().set(0f, 0f);
-            /*final float radiusFront = Misc.getTargetingRadius(FRONT, ship, false),
-             radiusLeft = Misc.getTargetingRadius(LEFT, ship, false),
-             radiusRear = Misc.getTargetingRadius(REAR, ship, false),
-             radiusRight = Misc.getTargetingRadius(RIGHT, ship, false);
-             final Vector2f front = MathUtils.getPointOnCircumference(origLoc, radiusFront, origFacing),
-             left = MathUtils.getPointOnCircumference(origLoc, radiusLeft, origFacing + 90f),
-             rear = MathUtils.getPointOnCircumference(origLoc, radiusRear, origFacing + 180f),
-             right = MathUtils.getPointOnCircumference(origLoc, radiusRight, origFacing + 270f);*/
-
-            ship.getLocation().set(origLoc);
-            ship.setFacing(origFacing);
-
-            /*final Vector2f center = MathUtils.getMidpoint(front, rear);
-             glColor4f(1f, 1f, 0f, .25f);
-             DrawUtils.drawEllipse(center.x, center.y, (radiusFront + radiusRear) / 2f,
-             (radiusLeft + radiusRight) / 2f, ship.getFacing(), NUM_POINTS, true);*/
-            final List<Vector2f> pointsAroundRadius = MathUtils.getPointsAlongCircumference(
-                    ship.getLocation(), ship.getCollisionRadius() * 2f,
-                    NUM_POINTS, ship.getFacing());
-            for (int x = 0; x < NUM_POINTS; x++)
-            {
-                final Vector2f tmp = pointsAroundRadius.get(x);
-                tmp.set(MathUtils.getPointOnCircumference(ship.getLocation(),
-                        Misc.getTargetingRadius(tmp, ship, false),
-                        ship.getFacing() + (360f / NUM_POINTS) * x));
-            }
-
-            glColor4f(1f, 0.25f, 0.25f, .25f);
-            glBegin(GL_POLYGON);
-            for (Vector2f point : pointsAroundRadius)
-            {
-                glVertex2f(point.x, point.y);
-            }
-            glEnd();
-
-            /*glColor4f(1f, 1f, 1f, 1f);
-             glPointSize(5f);
-             glBegin(GL_POINTS);
-             glVertex2f(front.x, front.y);
-             glVertex2f(left.x, left.y);
-             glVertex2f(rear.x, rear.y);
-             glVertex2f(right.x, right.y);
-             glEnd();*/
         }
 
         @Override
@@ -185,24 +117,13 @@ public class ShowBounds implements BaseCommand
                     continue;
                 }
 
-                if (SHOW_COLLISION_RADIUS)
+                if (!renderers.containsKey(ship))
                 {
-                    drawCollisionRadius(ship);
+                    renderers.put(ship, new PointRenderer(ship));
+                    System.out.println(ship.getVariant().getFullDesignationWithHullName());
                 }
 
-                if (SHOW_SHIELD_RADIUS)
-                {
-                    ShieldAPI shield = ship.getShield();
-                    if (shield != null)
-                    {
-                        drawShieldRadius(shield);
-                    }
-                }
-
-                if (SHOW_TARGET_RADIUS)
-                {
-                    drawTargetRadius(ship);
-                }
+                renderers.get(ship).draw(ship.getLocation(), ship.getFacing());
             }
 
             // Finalize drawing
@@ -214,6 +135,77 @@ public class ShowBounds implements BaseCommand
         public void init(CombatEngineAPI engine)
         {
             this.engine = engine;
+            renderers.clear();
+        }
+    }
+
+    private static class PointRenderer
+    {
+        private final Map<List<Vector2f>, Color> points = new LinkedHashMap<>();
+
+        private static List<Vector2f> getRotatedPoints(List<Vector2f> originalPoints,
+                Vector2f center, float facing)
+        {
+            final List<Vector2f> rotated = VectorUtils.rotate(originalPoints, facing);
+            for (Vector2f point : rotated)
+            {
+                Vector2f.add(point, center, point);
+            }
+
+            return rotated;
+        }
+
+        private PointRenderer(ShipAPI ship)
+        {
+            if (SHOW_COLLISION_RADIUS)
+            {
+                points.put(MathUtils.getPointsAlongCircumference(
+                        null, ship.getCollisionRadius(), NUM_POINTS, 0f),
+                        new Color(.5f, .5f, .5f, .25f));
+            }
+
+            if (SHOW_SHIELD_RADIUS && ship.getShield() != null)
+            {
+                points.put(MathUtils.getPointsAlongCircumference(
+                        null, ship.getShield().getRadius(), NUM_POINTS, 0f),
+                        new Color(0f, .5f, .5f, .25f));
+            }
+
+            if (SHOW_TARGET_RADIUS)
+            {
+                final Vector2f origLoc = new Vector2f(ship.getLocation());
+                final float origFacing = ship.getFacing();
+                ship.setFacing(0f);
+                ship.getLocation().set(0f, 0f);
+
+                final List<Vector2f> pointsAroundRadius = MathUtils.getPointsAlongCircumference(
+                        null, ship.getCollisionRadius() * 2f, NUM_POINTS, 0f);
+                for (int x = 0; x < NUM_POINTS; x++)
+                {
+                    final Vector2f tmp = pointsAroundRadius.get(x);
+                    tmp.set(MathUtils.getPointOnCircumference(null,
+                            Misc.getTargetingRadius(tmp, ship, false),
+                            (360f / NUM_POINTS) * x));
+                }
+
+                points.put(pointsAroundRadius, new Color(1f, 0.25f, 0.25f, .25f));
+                ship.getLocation().set(origLoc);
+                ship.setFacing(origFacing);
+            }
+        }
+
+        private void draw(Vector2f center, float facing)
+        {
+            for (Map.Entry<List<Vector2f>, Color> entry : points.entrySet())
+            {
+                glColor(entry.getValue());
+                glBegin(GL_POLYGON);
+                for (Vector2f point : getRotatedPoints(entry.getKey(), center, facing))
+                {
+                    glVertex2f(point.x, point.y);
+                }
+                glEnd();
+            }
         }
     }
 }
