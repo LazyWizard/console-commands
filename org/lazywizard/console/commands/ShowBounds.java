@@ -1,7 +1,6 @@
 package org.lazywizard.console.commands;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
@@ -89,6 +88,80 @@ public class ShowBounds implements BaseCommand
             }
         }
 
+        private static void drawCollisionRadius(ShipAPI ship)
+        {
+            glColor4f(.5f, .5f, .5f, .25f);
+            DrawUtils.drawCircle(ship.getLocation().x, ship.getLocation().y,
+                    ship.getCollisionRadius(), NUM_POINTS, true);
+        }
+
+        private static void drawShieldRadius(ShieldAPI shield)
+        {
+            glColor4f(0f, .5f, .5f, .25f);
+            DrawUtils.drawCircle(shield.getLocation().x, shield.getLocation().y,
+                    shield.getRadius(), NUM_POINTS, true);
+        }
+
+        /*private static final float CHECK_DISTANCE = 5000f;
+        private static final Vector2f FRONT = new Vector2f(CHECK_DISTANCE, 0f);
+        private static final Vector2f LEFT = new Vector2f(0f, CHECK_DISTANCE);
+        private static final Vector2f REAR = new Vector2f(-CHECK_DISTANCE, 0f);
+        private static final Vector2f RIGHT = new Vector2f(0f, -CHECK_DISTANCE);*/
+
+        private static void drawTargetRadius(ShipAPI ship)
+        {
+            // TODO: Figure out ellipse bounds and draw using drawEllipse()
+            // TODO: Optimize this!
+
+            final Vector2f origLoc = new Vector2f(ship.getLocation());
+            final float origFacing = ship.getFacing();
+            ship.setFacing(0f);
+            ship.getLocation().set(0f, 0f);
+            /*final float radiusFront = Misc.getTargetingRadius(FRONT, ship, false),
+             radiusLeft = Misc.getTargetingRadius(LEFT, ship, false),
+             radiusRear = Misc.getTargetingRadius(REAR, ship, false),
+             radiusRight = Misc.getTargetingRadius(RIGHT, ship, false);
+             final Vector2f front = MathUtils.getPointOnCircumference(origLoc, radiusFront, origFacing),
+             left = MathUtils.getPointOnCircumference(origLoc, radiusLeft, origFacing + 90f),
+             rear = MathUtils.getPointOnCircumference(origLoc, radiusRear, origFacing + 180f),
+             right = MathUtils.getPointOnCircumference(origLoc, radiusRight, origFacing + 270f);*/
+
+            ship.getLocation().set(origLoc);
+            ship.setFacing(origFacing);
+
+            /*final Vector2f center = MathUtils.getMidpoint(front, rear);
+             glColor4f(1f, 1f, 0f, .25f);
+             DrawUtils.drawEllipse(center.x, center.y, (radiusFront + radiusRear) / 2f,
+             (radiusLeft + radiusRight) / 2f, ship.getFacing(), NUM_POINTS, true);*/
+            final List<Vector2f> pointsAroundRadius = MathUtils.getPointsAlongCircumference(
+                    ship.getLocation(), ship.getCollisionRadius() * 2f,
+                    NUM_POINTS, ship.getFacing());
+            for (int x = 0; x < NUM_POINTS; x++)
+            {
+                final Vector2f tmp = pointsAroundRadius.get(x);
+                tmp.set(MathUtils.getPointOnCircumference(ship.getLocation(),
+                        Misc.getTargetingRadius(tmp, ship, false),
+                        ship.getFacing() + (360f / NUM_POINTS) * x));
+            }
+
+            glColor4f(1f, 0.25f, 0.25f, .25f);
+            glBegin(GL_POLYGON);
+            for (Vector2f point : pointsAroundRadius)
+            {
+                glVertex2f(point.x, point.y);
+            }
+            glEnd();
+
+            /*glColor4f(1f, 1f, 1f, 1f);
+             glPointSize(5f);
+             glBegin(GL_POINTS);
+             glVertex2f(front.x, front.y);
+             glVertex2f(left.x, left.y);
+             glVertex2f(rear.x, rear.y);
+             glVertex2f(right.x, right.y);
+             glEnd();*/
+        }
+
         @Override
         public void renderInWorldCoords(ViewportAPI view)
         {
@@ -107,11 +180,14 @@ public class ShowBounds implements BaseCommand
             // Draw the ship's collision, shield and target radii
             for (ShipAPI ship : Global.getCombatEngine().getShips())
             {
+                if (!view.isNearViewport(ship.getLocation(), ship.getCollisionRadius() + 150f))
+                {
+                    continue;
+                }
+
                 if (SHOW_COLLISION_RADIUS)
                 {
-                    glColor4f(.5f, .5f, .5f, .25f);
-                    DrawUtils.drawCircle(ship.getLocation().x, ship.getLocation().y,
-                            ship.getCollisionRadius(), NUM_POINTS, true);
+                    drawCollisionRadius(ship);
                 }
 
                 if (SHOW_SHIELD_RADIUS)
@@ -119,35 +195,13 @@ public class ShowBounds implements BaseCommand
                     ShieldAPI shield = ship.getShield();
                     if (shield != null)
                     {
-                        glColor4f(0f, .5f, .5f, .25f);
-                        DrawUtils.drawCircle(shield.getLocation().x, shield.getLocation().y,
-                                shield.getRadius(), NUM_POINTS, true);
+                        drawShieldRadius(shield);
                     }
                 }
 
                 if (SHOW_TARGET_RADIUS)
                 {
-                    // TODO: Figure out ellipse bounds and draw using drawEllipse()
-                    // TODO: Optimize this!
-                    List<Vector2f> pointsAroundRadius = new ArrayList<>(NUM_POINTS);
-                    for (float x = ship.getFacing(); x < ship.getFacing() + 360f; x += 360f / NUM_POINTS)
-                    {
-                        final float targetRadius = Misc.getTargetingRadius(
-                                MathUtils.getPointOnCircumference(ship.getLocation(),
-                                        ship.getCollisionRadius() * 2f, x), ship, false);
-
-                        pointsAroundRadius.add(MathUtils.getPointOnCircumference(
-                                ship.getLocation(), targetRadius, x));
-                    }
-
-                    glColor4f(1f, 1f, 1f, 0.15f);
-                    glPointSize(3f);
-                    glBegin(GL_POLYGON);
-                    for (Vector2f point : pointsAroundRadius)
-                    {
-                        glVertex2f(point.x, point.y);
-                    }
-                    glEnd();
+                    drawTargetRadius(ship);
                 }
             }
 
