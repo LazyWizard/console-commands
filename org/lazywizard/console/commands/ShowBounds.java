@@ -2,12 +2,15 @@ package org.lazywizard.console.commands;
 
 import java.awt.Color;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
+import com.fs.starfarer.api.combat.ShieldAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
@@ -16,8 +19,8 @@ import com.fs.starfarer.api.util.Misc;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import org.lazywizard.lazylib.FastTrig;
 import org.lazywizard.lazylib.MathUtils;
-import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
 import static org.lazywizard.lazylib.opengl.ColorUtils.glColor;
 import static org.lwjgl.opengl.GL11.*;
@@ -85,11 +88,17 @@ public class ShowBounds implements BaseCommand
             {
                 firstRun = false;
 
-                // Recalculate everything occasionally, supports morphing ships
-                renderers.clear();
                 for (ShipAPI ship : engine.getShips())
                 {
                     ship.setRenderBounds(true);
+                }
+
+                for (Iterator<ShipAPI> iter = renderers.keySet().iterator(); iter.hasNext();)
+                {
+                    if (!engine.isEntityInPlay(iter.next()))
+                    {
+                        iter.remove();
+                    }
                 }
             }
         }
@@ -120,7 +129,6 @@ public class ShowBounds implements BaseCommand
                 if (!renderers.containsKey(ship))
                 {
                     renderers.put(ship, new PointRenderer(ship));
-                    System.out.println(ship.getVariant().getFullDesignationWithHullName());
                 }
 
                 renderers.get(ship).draw(ship.getLocation(), ship.getFacing());
@@ -141,70 +149,93 @@ public class ShowBounds implements BaseCommand
 
     private static class PointRenderer
     {
-        private final Map<List<Vector2f>, Color> points = new LinkedHashMap<>();
-
-        private static List<Vector2f> getRotatedPoints(List<Vector2f> originalPoints,
-                Vector2f center, float facing)
-        {
-            final List<Vector2f> rotated = VectorUtils.rotate(originalPoints, facing);
-            for (Vector2f point : rotated)
-            {
-                Vector2f.add(point, center, point);
-            }
-
-            return rotated;
-        }
+        private final List<PointData> pointData = new ArrayList<>(3);
 
         private PointRenderer(ShipAPI ship)
         {
+            final Vector2f origLoc = new Vector2f(ship.getLocation());
+            final float origFacing = ship.getFacing();
+            ship.setFacing(0f);
+            ship.getLocation().set(0f, 0f);
+
             if (SHOW_COLLISION_RADIUS)
             {
-                points.put(MathUtils.getPointsAlongCircumference(
-                        null, ship.getCollisionRadius(), NUM_POINTS, 0f),
-                        new Color(.5f, .5f, .5f, .25f));
+                pointData.add(new PointData(MathUtils.getPointsAlongCircumference(
+                        ship.getLocation(), ship.getCollisionRadius(), NUM_POINTS, 0f),
+                        new Color(.5f, .5f, .5f, .25f), false));
             }
 
             if (SHOW_SHIELD_RADIUS && ship.getShield() != null)
             {
-                points.put(MathUtils.getPointsAlongCircumference(
-                        null, ship.getShield().getRadius(), NUM_POINTS, 0f),
-                        new Color(0f, .5f, .5f, .25f));
+                final ShieldAPI shield = ship.getShield();
+                pointData.add(new PointData(MathUtils.getPointsAlongCircumference(
+                        shield.getLocation(), shield.getRadius(), NUM_POINTS, 0f),
+                        new Color(0f, .5f, .5f, .25f), !shield.getLocation().equals(ship.getLocation())));
             }
 
             if (SHOW_TARGET_RADIUS)
             {
-                final Vector2f origLoc = new Vector2f(ship.getLocation());
-                final float origFacing = ship.getFacing();
-                ship.setFacing(0f);
-                ship.getLocation().set(0f, 0f);
 
                 final List<Vector2f> pointsAroundRadius = MathUtils.getPointsAlongCircumference(
-                        null, ship.getCollisionRadius() * 2f, NUM_POINTS, 0f);
+                        ship.getLocation(), ship.getCollisionRadius() * 2f, NUM_POINTS, 0f);
                 for (int x = 0; x < NUM_POINTS; x++)
                 {
                     final Vector2f tmp = pointsAroundRadius.get(x);
-                    tmp.set(MathUtils.getPointOnCircumference(null,
+                    tmp.set(MathUtils.getPointOnCircumference(ship.getLocation(),
                             Misc.getTargetingRadius(tmp, ship, false),
                             (360f / NUM_POINTS) * x));
                 }
 
-                points.put(pointsAroundRadius, new Color(1f, 0.25f, 0.25f, .25f));
-                ship.getLocation().set(origLoc);
-                ship.setFacing(origFacing);
+                pointData.add(new PointData(pointsAroundRadius,
+                        new Color(1f, 0.25f, 0.25f, .25f), true));
             }
+
+            ship.getLocation().set(origLoc);
+            ship.setFacing(origFacing);
         }
 
         private void draw(Vector2f center, float facing)
         {
-            for (Map.Entry<List<Vector2f>, Color> entry : points.entrySet())
+            facing = (float) Math.toRadians(facing);
+            final float cos = (float) FastTrig.cos(facing),
+                    sin = (float) FastTrig.sin(facing);
+            for (PointData data : pointData)
             {
-                glColor(entry.getValue());
-                glBegin(GL_POLYGON);
-                for (Vector2f point : getRotatedPoints(entry.getKey(), center, facing))
+                if (data.shouldRotate)
                 {
-                    glVertex2f(point.x, point.y);
+                    glColor(data.color);
+                    glBegin(GL_POLYGON);
+                    for (Vector2f point : data.points)
+                    {
+                        glVertex2f((point.x * cos) - (point.y * sin) + center.x,
+                                (point.x * sin) + (point.y * cos) + center.y);
+                    }
+                    glEnd();
                 }
-                glEnd();
+                else
+                {
+                    glColor(data.color);
+                    glBegin(GL_POLYGON);
+                    for (Vector2f point : data.points)
+                    {
+                        glVertex2f(point.x + center.x, point.y + center.y);
+                    }
+                    glEnd();
+                }
+            }
+        }
+
+        private class PointData
+        {
+            private final List<Vector2f> points;
+            private final Color color;
+            private final boolean shouldRotate;
+
+            private PointData(List<Vector2f> points, Color color, boolean shouldRotate)
+            {
+                this.points = points;
+                this.color = color;
+                this.shouldRotate = shouldRotate;
             }
         }
     }
