@@ -1,9 +1,10 @@
 package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
 public class Suicide implements BaseCommand
@@ -11,14 +12,21 @@ public class Suicide implements BaseCommand
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
-        // TODO: Implement suicide in campaign
-        if (!context.isInCombat())
+        // Used in campaign: destroy entire player fleet
+        if (context.isInCampaign())
         {
-            Console.showMessage(CommonStrings.ERROR_COMBAT_ONLY);
-            return CommandResult.WRONG_CONTEXT;
+            final CampaignFleetAPI player = Global.getSector().getPlayerFleet();
+            for (FleetMemberAPI member : player.getFleetData().getMembersListCopy())
+            {
+                player.removeFleetMemberWithDestructionFlash(member);
+            }
+
+            Console.showMessage("Destroyed player fleet.");
+            return CommandResult.SUCCESS;
         }
 
-        ShipAPI player = Global.getCombatEngine().getPlayerShip();
+        // Used in combat: kill flagship only
+        final ShipAPI player = Global.getCombatEngine().getPlayerShip();
         Kill.killShip(player);
         Console.showMessage("Destroyed currently piloted ship.");
         return CommandResult.SUCCESS;
