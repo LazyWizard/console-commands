@@ -224,19 +224,19 @@ public class ShowBounds implements BaseCommand
                 }
             }
         }
+    }
 
-        private class PointData
+    private static class PointData
+    {
+        private final List<Vector2f> points;
+        private final Color color;
+        private final boolean shouldRotate;
+
+        private PointData(List<Vector2f> points, Color color, boolean shouldRotate)
         {
-            private final List<Vector2f> points;
-            private final Color color;
-            private final boolean shouldRotate;
-
-            private PointData(List<Vector2f> points, Color color, boolean shouldRotate)
-            {
-                this.points = points;
-                this.color = color;
-                this.shouldRotate = shouldRotate;
-            }
+            this.points = points;
+            this.color = color;
+            this.shouldRotate = shouldRotate;
         }
     }
 }

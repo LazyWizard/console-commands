@@ -1,5 +1,5 @@
- 2.4c (April XX, 2015)
-=======================
+ 2.5 (October XX, 2015)
+========================
 Updated custom command template with more examples + documentation
 Changed some constants in CommonStrings, shouldn't affect any custom commands
 New command:
@@ -12,6 +12,7 @@ Changes to existing commands:
  - ShowBounds optimized, doesn't draw in menus, shows new elliptical target
    radius used by AI in 0.65.2a
  - Storage searches all markets for an unlocked storage tab, not just stations
+ - Suicide works in the campaign, destroys your entire fleet
 
  2.4b (March 08, 2015)
 =======================
