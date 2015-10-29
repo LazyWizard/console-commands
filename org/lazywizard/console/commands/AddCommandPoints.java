@@ -26,7 +26,7 @@ public class AddCommandPoints implements BaseCommand
         if ("remove".equals(args))
         {
             MutableStat commandPoints = Global.getCombatEngine().getFleetManager(
-                    FleetSide.PLAYER).getCommandPointsStat();
+                    FleetSide.PLAYER).getTaskManager(false).getCommandPointsStat();
             commandPoints.unmodify("Console");
             Console.showMessage("Removed command point bonus.");
             return CommandResult.SUCCESS;
@@ -44,7 +44,7 @@ public class AddCommandPoints implements BaseCommand
         }
 
         MutableStat commandPoints = Global.getCombatEngine().getFleetManager(
-                FleetSide.PLAYER).getCommandPointsStat();
+                FleetSide.PLAYER).getTaskManager(false).getCommandPointsStat();
 
         commandPoints.modifyFlat("Console", amount);
         Console.showMessage("Added " + amount + " command points.");

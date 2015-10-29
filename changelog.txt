@@ -1,18 +1,23 @@
  2.5 (October XX, 2015)
 ========================
+Updated to be compatible with Starsector 0.7a
 Updated custom command template with more examples + documentation
 Changed some constants in CommonStrings, shouldn't affect any custom commands
-New command:
+Removed AddLogistics command (logistics no longer exists in current version)
+New commands:
  - Clear, clears the text from the campaign pop-up
+ - Flameout, disables all engines of current target
  - Rout, forces the enemy side into a full retreat
 Changes to existing commands:
  - AddShip won't let you spawn fighter wings as ships anymore
  - AdjustRelationship and SetRelationship typo correction works properly now
+ - InfiniteCR stops the CR timer from counting down, doesn't prevent bonuses
+   from raising your current CR above the max
  - Reload has been named to ReloadConsole
  - ShowBounds optimized, doesn't draw in menus, shows new elliptical target
-   radius used by AI in 0.65.2a
+   radius used by AI since 0.65.2a
  - Storage searches all markets for an unlocked storage tab, not just stations
- - Suicide works in the campaign, destroys your entire fleet
+ - Suicide works on the campaign map, destroys your entire fleet
 
  2.4b (March 08, 2015)
 =======================
