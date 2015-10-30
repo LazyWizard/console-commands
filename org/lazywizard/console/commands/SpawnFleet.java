@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
-import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.CargoAPI.CrewXPLevel;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
+import com.fs.starfarer.api.fleet.RepairTrackerAPI;
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactory;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.BaseCommand.CommandContext;
@@ -101,22 +102,34 @@ public class SpawnFleet implements BaseCommand
                 subNames.add(tmp[x]);
             }
         }
-        String name = CollectionUtils.implode(subNames, " ");
+
+        final String name = (subNames.isEmpty() ? "Fleet" : CollectionUtils.implode(subNames, " "));
 
         try
         {
+            // Create fleet
             final CampaignFleetAPI toSpawn = FleetFactory.createGenericFleet(faction, name, quality, totalFP);
-            final CargoAPI cargo = toSpawn.getCargo();
-            final int totalCrew = cargo.getTotalCrew();
-            cargo.removeCrew(CrewXPLevel.GREEN, cargo.getCrew(CrewXPLevel.GREEN));
-            cargo.removeCrew(CrewXPLevel.REGULAR, cargo.getCrew(CrewXPLevel.REGULAR));
-            cargo.removeCrew(CrewXPLevel.VETERAN, cargo.getCrew(CrewXPLevel.VETERAN));
-            cargo.removeCrew(CrewXPLevel.ELITE, cargo.getCrew(CrewXPLevel.ELITE));
-            cargo.addCrew(crewLevel, totalCrew);
 
-            final Vector2f offset = MathUtils.getRandomPointOnCircumference(null, 150f);
+            // Set crew XP level
+            for (FleetMemberAPI member : toSpawn.getFleetData().getMembersListCopy())
+            {
+                member.setCrewXPLevel(crewLevel);
+            }
+
+            // Spawn fleet around player
+            final Vector2f offset = MathUtils.getRandomPointOnCircumference(null,
+                    Global.getSector().getPlayerFleet().getRadius() + 150f);
             Global.getSector().getCurrentLocation().spawnFleet(
                     Global.getSector().getPlayerFleet(), offset.x, offset.y, toSpawn);
+            Global.getSector().addPing(toSpawn, "danger");
+
+            // Update combat readiness
+            toSpawn.forceSync();
+            for (FleetMemberAPI member : toSpawn.getFleetData().getMembersListCopy())
+            {
+                final RepairTrackerAPI repairs = member.getRepairTracker();
+                repairs.setCR(repairs.getMaxCR());
+            }
         }
         catch (Exception ex)
         {
@@ -125,7 +138,9 @@ public class SpawnFleet implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        Console.showMessage("Spawned a " + totalFP + "FP fleet aligned with faction " + faction + ".");
+        Console.showMessage("Spawned a " + totalFP + "FP "
+                + crewLevel.getPrefix().toLowerCase()
+                + " fleet aligned with faction " + faction + ".");
         return CommandResult.SUCCESS;
     }
 }

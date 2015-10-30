@@ -16,6 +16,8 @@ Changes to existing commands:
  - Reload has been named to ReloadConsole
  - ShowBounds optimized, doesn't draw in menus, shows new elliptical target
    radius used by AI since 0.65.2a
+ - SpawnFleet makes sure there is at least 150 su of space between the player
+   and the new fleet, pings the new fleet to show its position
  - Added optional crew level argument to SpawnFleet command, syntax is now
    "spawnfleet <faction> <totalFP> <quality> [optionalCrewLevel] [optionalName]"
  - Storage searches all markets for an unlocked storage tab, not just stations
