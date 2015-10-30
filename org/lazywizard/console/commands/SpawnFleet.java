@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
+import com.fs.starfarer.api.campaign.CargoAPI;
+import com.fs.starfarer.api.campaign.CargoAPI.CrewXPLevel;
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactory;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.BaseCommand.CommandContext;
@@ -68,15 +70,50 @@ public class SpawnFleet implements BaseCommand
         }
 
         List<String> subNames = new ArrayList<>(tmp.length - 3);
+        CrewXPLevel crewLevel = CrewXPLevel.REGULAR;
         for (int x = 3; x < tmp.length; x++)
         {
-            subNames.add(tmp[x]);
+            // Support for crew XP level argument
+            // If it's not a valid XP level, assume it's part of the name
+            if (x == 3)
+            {
+                switch (tmp[x].toLowerCase())
+                {
+                    case "green":
+                        crewLevel = CrewXPLevel.GREEN;
+                        break;
+                    case "regular":
+                        crewLevel = CrewXPLevel.REGULAR;
+                        break;
+                    case "veteran":
+                        crewLevel = CrewXPLevel.VETERAN;
+                        break;
+                    case "elite":
+                        crewLevel = CrewXPLevel.ELITE;
+                        break;
+                    default:
+                        subNames.add(tmp[x]);
+                        break;
+                }
+            }
+            else
+            {
+                subNames.add(tmp[x]);
+            }
         }
         String name = CollectionUtils.implode(subNames, " ");
 
         try
         {
             final CampaignFleetAPI toSpawn = FleetFactory.createGenericFleet(faction, name, quality, totalFP);
+            final CargoAPI cargo = toSpawn.getCargo();
+            final int totalCrew = cargo.getTotalCrew();
+            cargo.removeCrew(CrewXPLevel.GREEN, cargo.getCrew(CrewXPLevel.GREEN));
+            cargo.removeCrew(CrewXPLevel.REGULAR, cargo.getCrew(CrewXPLevel.REGULAR));
+            cargo.removeCrew(CrewXPLevel.VETERAN, cargo.getCrew(CrewXPLevel.VETERAN));
+            cargo.removeCrew(CrewXPLevel.ELITE, cargo.getCrew(CrewXPLevel.ELITE));
+            cargo.addCrew(crewLevel, totalCrew);
+
             final Vector2f offset = MathUtils.getRandomPointOnCircumference(null, 150f);
             Global.getSector().getCurrentLocation().spawnFleet(
                     Global.getSector().getPlayerFleet(), offset.x, offset.y, toSpawn);
