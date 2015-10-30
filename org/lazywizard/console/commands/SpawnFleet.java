@@ -37,9 +37,14 @@ public class SpawnFleet implements BaseCommand
 
         String[] tmp = args.split(" ");
 
-        if (tmp.length < 3)
+        if (tmp.length < 2)
         {
             return CommandResult.BAD_SYNTAX;
+        }
+
+        if (tmp.length == 2)
+        {
+            return runCommand(args + " 0.6 Fleet", context);
         }
 
         if (tmp.length == 3)

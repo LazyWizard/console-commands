@@ -14,12 +14,13 @@ Changes to existing commands:
  - InfiniteCR stops the CR timer from counting down, doesn't prevent bonuses
    from raising your current CR above the max
  - Reload has been renamed to ReloadConsole
- - ShowBounds optimized, doesn't draw in menus, shows new elliptical target
+ - ShowBounds optimized, doesn't draw in menus, also shows new elliptical target
    radius used by AI since 0.65.2a
  - SpawnFleet makes sure there is at least 150 su of space between the player
    and the new fleet, pings the new fleet to show its position
- - Added optional crew level argument to SpawnFleet command, syntax is now
-   "spawnfleet <faction> <totalFP> <quality> [optionalCrewLevel] [optionalName]"
+ - Added optional crew level argument to SpawnFleet command, made quality
+   optional as well; syntax is now "spawnfleet <faction> <totalFP>
+   [optionalQuality] [optionalCrewLevel] [optionalName]"
  - Storage searches all markets for an unlocked storage tab, not just stations
  - Suicide works on the campaign map, destroys your entire fleet
  - Traitor swaps side of all members of a fighter wing
