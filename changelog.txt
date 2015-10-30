@@ -10,10 +10,10 @@ New commands:
  - Rout, forces the enemy side into a full retreat
 Changes to existing commands:
  - AddShip won't let you spawn fighter wings as ships anymore
- - AdjustRelationship and SetRelationship typo correction works properly now
+ - AdjustRelationship and SetRelationship typo correction work properly now
  - InfiniteCR stops the CR timer from counting down, doesn't prevent bonuses
    from raising your current CR above the max
- - Reload has been named to ReloadConsole
+ - Reload has been renamed to ReloadConsole
  - ShowBounds optimized, doesn't draw in menus, shows new elliptical target
    radius used by AI since 0.65.2a
  - SpawnFleet makes sure there is at least 150 su of space between the player
@@ -22,6 +22,7 @@ Changes to existing commands:
    "spawnfleet <faction> <totalFP> <quality> [optionalCrewLevel] [optionalName]"
  - Storage searches all markets for an unlocked storage tab, not just stations
  - Suicide works on the campaign map, destroys your entire fleet
+ - Traitor swaps side of all members of a fighter wing
  - Traitor also affects any drones currently deployed by the selected ship
 
  2.4b (March 08, 2015)

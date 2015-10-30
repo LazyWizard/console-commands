@@ -10,6 +10,40 @@ import org.lazywizard.console.Console;
 
 public class Traitor implements BaseCommand
 {
+    private static void turnTraitorInternal(ShipAPI ship, int newOwner)
+    {
+        // Switch to the opposite side
+        ship.setOwner(newOwner);
+        ship.getShipAI().forceCircumstanceEvaluation();
+
+        // Also switch sides of any drones (doesn't affect any new ones)
+        if (ship.getDeployedDrones() != null)
+        {
+            for (ShipAPI drone : ship.getDeployedDrones())
+            {
+                drone.setOwner(newOwner);
+                drone.getShipAI().forceCircumstanceEvaluation();
+            }
+        }
+    }
+
+    public static void turnTraitor(ShipAPI ship)
+    {
+        // Switch squadmates if this is a fighter wing
+        final int newOwner = (ship.getOwner() == 0 ? 1 : 0);
+        if (ship.isFighter())
+        {
+            for (ShipAPI member : ship.getWing().getWingMembers())
+            {
+                turnTraitorInternal(member, newOwner);
+            }
+        }
+        else
+        {
+            turnTraitorInternal(ship, newOwner);
+        }
+    }
+
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
@@ -21,7 +55,6 @@ public class Traitor implements BaseCommand
 
         final CombatEngineAPI engine = Global.getCombatEngine();
         final ShipAPI target = engine.getPlayerShip().getShipTarget();
-        final int newOwner = (target.getOwner() == 0 ? 1 : 0);
 
         if (target == null)
         {
@@ -29,20 +62,7 @@ public class Traitor implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        // Switch sides
-        target.setOwner(newOwner);
-        target.getShipAI().forceCircumstanceEvaluation();
-
-        // Also switch sides of any drones (doesn't affect any new ones)
-        if (target.getDeployedDrones() != null)
-        {
-            for (ShipAPI drone : target.getDeployedDrones())
-            {
-                drone.setOwner(newOwner);
-                drone.getShipAI().forceCircumstanceEvaluation();
-            }
-        }
-
+        turnTraitor(target);
         Console.showMessage(target.getVariant().getFullDesignationWithHullName()
                 + " is now fighting for side " + FleetSide.values()[target.getOwner()] + ".");
         return CommandResult.SUCCESS;
