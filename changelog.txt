@@ -20,6 +20,7 @@ Changes to existing commands:
    "spawnfleet <faction> <totalFP> <quality> [optionalCrewLevel] [optionalName]"
  - Storage searches all markets for an unlocked storage tab, not just stations
  - Suicide works on the campaign map, destroys your entire fleet
+ - Traitor also affects any drones currently deployed by the selected ship
 
  2.4b (March 08, 2015)
 =======================

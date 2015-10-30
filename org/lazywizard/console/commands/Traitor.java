@@ -19,8 +19,9 @@ public class Traitor implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        CombatEngineAPI engine = Global.getCombatEngine();
-        ShipAPI target = engine.getPlayerShip().getShipTarget();
+        final CombatEngineAPI engine = Global.getCombatEngine();
+        final ShipAPI target = engine.getPlayerShip().getShipTarget();
+        final int newOwner = (target.getOwner() == 0 ? 1 : 0);
 
         if (target == null)
         {
@@ -29,8 +30,19 @@ public class Traitor implements BaseCommand
         }
 
         // Switch sides
-        target.setOwner(target.getOwner() == 0 ? 1 : 0);
+        target.setOwner(newOwner);
         target.getShipAI().forceCircumstanceEvaluation();
+
+        // Also switch sides of any drones (doesn't affect any new ones)
+        if (target.getDeployedDrones() != null)
+        {
+            for (ShipAPI drone : target.getDeployedDrones())
+            {
+                drone.setOwner(newOwner);
+                drone.getShipAI().forceCircumstanceEvaluation();
+            }
+        }
+
         Console.showMessage(target.getVariant().getFullDesignationWithHullName()
                 + " is now fighting for side " + FleetSide.values()[target.getOwner()] + ".");
         return CommandResult.SUCCESS;
