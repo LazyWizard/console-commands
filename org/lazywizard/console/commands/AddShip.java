@@ -10,6 +10,7 @@ import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
 // TODO: Once the global list of variants is retrievable through the API, this should be much simpler
+// TODO: Redirect wings to AddWing instead of snarking at the user
 public class AddShip implements BaseCommand
 {
     private int tryNumber = 0;
