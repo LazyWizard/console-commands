@@ -14,6 +14,7 @@ import com.fs.starfarer.api.campaign.InteractionDialogPlugin;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import javax.swing.UIManager;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.lazywizard.console.BaseCommand.CommandContext;
@@ -31,6 +32,7 @@ import org.lazywizard.lazylib.StringUtils;
  */
 public class Console
 {
+    private static final Logger Log = Global.getLogger(Console.class);
     private static ConsoleSettings settings;
     // Stores the output of the console until it can be displayed
     private static StringBuilder output = new StringBuilder();
@@ -135,8 +137,8 @@ public class Console
      */
     public static void showMessage(String message, Level logLevel)
     {
-        // Paste directly to log
-        Global.getLogger(Console.class).log(logLevel, message);
+        // Also add to Starsector's log
+        Log.log(logLevel, message);
 
         // Word-wrap message and add it to the output queue
         message = StringUtils.wrapString(message, settings.getMaxOutputLineLength());

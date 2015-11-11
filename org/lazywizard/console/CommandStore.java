@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import com.fs.starfarer.api.Global;
-import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,6 +24,7 @@ import org.lazywizard.lazylib.CollectionUtils;
  */
 public class CommandStore
 {
+    private static final Logger Log = Global.getLogger(CommandStore.class);
     private static final Map<String, StoredCommand> storedCommands = new HashMap<>();
     private static final Map<String, String> aliases = new HashMap();
     private static final Set<String> tags = new HashSet<>();
@@ -58,7 +59,7 @@ public class CommandStore
             {
                 JSONObject row = commandData.getJSONObject(x);
                 commandName = row.getString("command");
-                
+
                 // Skip empty rows
                 if (commandName.isEmpty())
                 {
@@ -107,8 +108,7 @@ public class CommandStore
                         new StoredCommand(commandName, commandClass,
                                 commandSyntax, commandHelp,
                                 commandTags, commandSource));
-                Global.getLogger(CommandStore.class).log(Level.DEBUG,
-                        "Loaded command " + commandName + " (class: "
+                Log.debug("Loaded command " + commandName + " (class: "
                         + commandClass.getCanonicalName() + ") from " + commandSource);
             }
             catch (Exception ex)
@@ -118,8 +118,7 @@ public class CommandStore
             }
         }
 
-        Global.getLogger(CommandStore.class).log(Level.INFO,
-                "Loaded commands: " + CollectionUtils.implode(getLoadedCommands()));
+        Log.info("Loaded commands: " + CollectionUtils.implode(getLoadedCommands()));
 
         // Populate alias mapping
         aliases.clear();
@@ -141,8 +140,7 @@ public class CommandStore
             }
         }
 
-        Global.getLogger(CommandStore.class).log(Level.INFO,
-                "Loaded aliases: " + CollectionUtils.implode(getAliases().keySet()));
+        Log.info("Loaded aliases: " + CollectionUtils.implode(getAliases().keySet()));
     }
 
     /**
