@@ -22,8 +22,8 @@ public class Home implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        SectorAPI sector = Global.getSector();
-        SectorEntityToken home = (SectorEntityToken) sector.getPersistentData()
+        final SectorAPI sector = Global.getSector();
+        final SectorEntityToken home = (SectorEntityToken) sector.getPersistentData()
                 .get(CommonStrings.DATA_HOME_ID);
 
         if (home == null)
@@ -32,8 +32,8 @@ public class Home implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        CampaignFleetAPI playerFleet = sector.getPlayerFleet();
-        LocationAPI loc = home.getContainingLocation();
+        final CampaignFleetAPI playerFleet = sector.getPlayerFleet();
+        final LocationAPI loc = home.getContainingLocation();
         if (loc != playerFleet.getContainingLocation())
         {
             playerFleet.getContainingLocation().removeEntity(playerFleet);
@@ -41,7 +41,7 @@ public class Home implements BaseCommand
             Global.getSector().setCurrentLocation(loc);
         }
 
-        Vector2f homeLoc = home.getLocation();
+        final Vector2f homeLoc = home.getLocation();
         playerFleet.setLocation(homeLoc.x, homeLoc.y);
         playerFleet.setNoEngaging(2.0f);
         playerFleet.clearAssignments();

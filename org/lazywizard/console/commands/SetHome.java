@@ -35,7 +35,7 @@ public class SetHome implements BaseCommand
         }
 
         SectorEntityToken newHome = null;
-        LocationAPI system = Global.getSector().getCurrentLocation();
+        final LocationAPI system = Global.getSector().getCurrentLocation();
 
         // Manually set a home by name
         if (!args.isEmpty())
@@ -53,7 +53,7 @@ public class SetHome implements BaseCommand
         // Home priorities: stations, then relays, then planets, then empty space (raw coords)
         else
         {
-            Vector2f playerLocation = Global.getSector().getPlayerFleet().getLocation();
+            final Vector2f playerLocation = Global.getSector().getPlayerFleet().getLocation();
 
             List<SectorEntityToken> potentialHomes = system.getEntitiesWithTag(Tags.STATION);
             potentialHomes.addAll(system.getEntitiesWithTag(Tags.COMM_RELAY));
@@ -75,7 +75,8 @@ public class SetHome implements BaseCommand
         }
 
         Global.getSector().getPersistentData().put(CommonStrings.DATA_HOME_ID, newHome);
-        Console.showMessage("Home set to " + newHome.getFullName() + ".");
+        Console.showMessage("Home set to " + newHome.getFullName() + " in "
+                + system.getName() + ".");
         return CommandResult.SUCCESS;
     }
 }
