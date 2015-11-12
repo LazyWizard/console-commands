@@ -18,6 +18,7 @@ Changes to existing commands:
    radius used by AI since 0.65.2a
  - SpawnFleet makes sure there is at least 150 su of space between the player
    and the new fleet, pings the new fleet to show its position
+ - SpawnFleet supports typo correction for faction argument
  - Added optional crew level argument to SpawnFleet command, made quality
    optional as well; syntax is now "spawnfleet <faction> <totalFP>
    [optionalQuality] [optionalCrewLevel] [optionalName]"
