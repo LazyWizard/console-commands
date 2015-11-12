@@ -40,7 +40,7 @@ Kill,org.lazywizard.console.commands.Kill,"core,combat",kill (no arguments),Kill
 List,org.lazywizard.console.commands.List_,"core,campaign",list ships|wings|weapons|items|factions|systems|stations|markets,"Lists all internal IDs of a specific category for use with this mod's commands.\nValid categories: ships, wings, weapons, items, factions, systems, stations, markets"
 NoCooldown,org.lazywizard.console.commands.NoCooldown,"core,combat",nocooldown (no arguments),Toggles weapon cooldowns for all ships on your side.
 Nuke,org.lazywizard.console.commands.Nuke,"core,combat",nuke (no arguments),Destroys all enemies on the battle map.
-ReloadConsole,org.lazywizard.console.commands.ReloadConsole,"core,console",reloadconsole (no arguments),Reloads all console commands and settings.
+Reload,org.lazywizard.console.commands.ReloadConsole,"core,console",reload (no arguments),Reloads all console commands and settings.
 Repair,org.lazywizard.console.commands.Repair,"core,campaign,combat",repair (no arguments),"Repairs all friendly ships on the battle map if used in combat, or all ships in your fleet on the campaign map."
 Respec,org.lazywizard.console.commands.Respec,"core,campaign",respec (no arguments),Resets skills and attributes to zero and refunds all spent points.
 Reveal,org.lazywizard.console.commands.Reveal,"core,combat",reveal (no arguments),Toggles fog of war on the battle map.

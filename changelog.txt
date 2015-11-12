@@ -1,5 +1,5 @@
- 2.5 (October XX, 2015)
-========================
+ 2.5 (November XX, 2015)
+=========================
 Updated to be compatible with Starsector 0.7a
 Updated custom command template with more examples + documentation
 Changed some constants in CommonStrings, shouldn't affect any custom commands
@@ -12,16 +12,20 @@ Changes to existing commands:
  - AddShip won't let you spawn fighter wings as ships anymore
  - AdjustRelationship and SetRelationship typo correction work properly now
  - InfiniteCR stops the CR timer from counting down, doesn't prevent bonuses
-   from raising your current CR above the max
- - Reload has been renamed to ReloadConsole
+   from raising your current CR above the ship's maximum
  - ShowBounds optimized, doesn't draw in menus, also shows new elliptical target
    radius used by AI since 0.65.2a
  - SpawnFleet makes sure there is at least 150 su of space between the player
    and the new fleet, pings the new fleet to show its position
  - SpawnFleet supports typo correction for faction argument
  - Added optional crew level argument to SpawnFleet command, made quality
-   optional as well; syntax is now "spawnfleet <faction> <totalFP>
+   optional as well; syntax is now "spawnfleet <faction> <totalFleetPoints>
    [optionalQuality] [optionalCrewLevel] [optionalName]"
+   Examples of valid syntax:
+    "spawnfleet hegemony 150"
+    "spawnfleet hegemony 150 0.6"
+    "spawnfleet hegemony 150 0.6 veteran"
+    "spawnfleet hegemony 150 0.6 veteran System Defense Fleet"
  - Storage searches all markets for an unlocked storage tab, not just stations
  - Suicide works on the campaign map, destroys your entire fleet
  - Traitor swaps side of all members of a fighter wing
