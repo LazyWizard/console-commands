@@ -5,22 +5,26 @@ import java.util.List;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.CargoAPI.CrewXPLevel;
+import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.fleet.RepairTrackerAPI;
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactory;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
+import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
 import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
 
-// TODO: Add crew level argument
 // TODO: Add SpawnLeveledFleet command
 public class SpawnFleet implements BaseCommand
 {
+    private static final String DEFAULT_QUALITY = " 0.6";
+    private static final String DEFAULT_NAME = " Fleet";
+
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
@@ -44,15 +48,20 @@ public class SpawnFleet implements BaseCommand
 
         if (tmp.length == 2)
         {
-            return runCommand(args + " 0.6 Fleet", context);
+            return runCommand(args + DEFAULT_QUALITY + DEFAULT_NAME, context);
         }
 
         if (tmp.length == 3)
         {
-            return runCommand(args + " Fleet", context);
+            return runCommand(args + DEFAULT_NAME, context);
         }
 
-        String faction = tmp[0];
+        FactionAPI faction = CommandUtils.findBestFactionMatch(tmp[0]);
+        if (faction == null)
+        {
+            Console.showMessage("No such faction '" + tmp[0] + "'!");
+            return CommandResult.ERROR;
+        }
 
         int totalFP;
         try
@@ -61,7 +70,7 @@ public class SpawnFleet implements BaseCommand
         }
         catch (NumberFormatException ex)
         {
-
+            Console.showMessage("Fleet points must be a whole number!");
             return CommandResult.BAD_SYNTAX;
         }
 
@@ -72,6 +81,7 @@ public class SpawnFleet implements BaseCommand
         }
         catch (NumberFormatException ex)
         {
+            Console.showMessage("Quality must be a decimal, preferably between 0 and 1.");
             return CommandResult.BAD_SYNTAX;
         }
 
@@ -113,7 +123,8 @@ public class SpawnFleet implements BaseCommand
         try
         {
             // Create fleet
-            final CampaignFleetAPI toSpawn = FleetFactory.createGenericFleet(faction, name, quality, totalFP);
+            final CampaignFleetAPI toSpawn = FleetFactory.createGenericFleet(
+                    faction.getId(), name, quality, totalFP);
 
             // Set crew XP level
             for (FleetMemberAPI member : toSpawn.getFleetData().getMembersListCopy())
@@ -139,13 +150,13 @@ public class SpawnFleet implements BaseCommand
         catch (Exception ex)
         {
             Console.showMessage("Unable to spawn generic fleet for faction '"
-                    + faction + "'!");
+                    + faction.getId() + "'!");
             return CommandResult.ERROR;
         }
 
         Console.showMessage("Spawned a " + totalFP + "FP "
                 + crewLevel.getPrefix().toLowerCase()
-                + " fleet aligned with faction " + faction + ".");
+                + " fleet aligned with faction " + faction.getId() + ".");
         return CommandResult.SUCCESS;
     }
 }

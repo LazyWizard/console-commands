@@ -228,7 +228,7 @@ public class CommandUtils
     public static List<SectorEntityToken> getEntitiesWithTags(LocationAPI location,
             String... tags)
     {
-        Set<SectorEntityToken> tokens = new HashSet<>();
+        final Set<SectorEntityToken> tokens = new HashSet<>();
         for (String tag : tags)
         {
             tokens.addAll(location.getEntitiesWithTag(tag));
@@ -254,7 +254,7 @@ public class CommandUtils
 
         if (tmp == null && ENABLE_TYPO_CORRECTION)
         {
-            Set<SectorEntityToken> toSearch = new HashSet<>();
+            final Set<SectorEntityToken> toSearch = new HashSet<>();
             for (String tag : validTags)
             {
                 toSearch.addAll(location.getEntitiesWithTag(tag));
@@ -286,7 +286,7 @@ public class CommandUtils
         }
 
         // Return storage tab's cargo, if present
-        MarketAPI market = token.getMarket();
+        final MarketAPI market = token.getMarket();
         if (market != null && !market.getSubmarketsCopy().isEmpty())
         {
             SubmarketAPI submarket = market.getSubmarket(Submarkets.SUBMARKET_STORAGE);
