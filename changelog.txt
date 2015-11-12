@@ -26,6 +26,15 @@ Changes to existing commands:
  - Suicide works on the campaign map, destroys your entire fleet
  - Traitor swaps side of all members of a fighter wing
  - Traitor also affects any drones currently deployed by the selected ship
+Greatly expanded the bundled Example Mod-Added Commands mini-mod:
+ - This can be found in a zip in the main folder and contains sample
+   implementations of some simple commands (mostly jokes)
+ - Echo, the most basic example. Just prints the entered text to the console.
+ - DogPile, causes all hostile fleets in the system to attempt to intercept
+   the player
+ - FlipShips, flips all ships on the battle map 180 degrees
+ - FlakJacket, causes a constant circle of flak to rain around your flagship
+ - ForeverAlone, prevents you from touching other fleets and vice versa
 
  2.4b (March 08, 2015)
 =======================
