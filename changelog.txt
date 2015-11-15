@@ -11,17 +11,19 @@ New commands:
  - SetRespawn, sets your fleet's respawn coordinates to your current position
 Changes to existing commands:
  - AddShip won't let you spawn fighter wings as ships anymore
+ - AddShip uses list of all variants added to the API in 0.7a, more forgiving
+   of typos/miscapitalizations in variant IDs
  - AdjustRelationship and SetRelationship typo correction work properly now
  - InfiniteCR stops the CR timer from counting down, doesn't prevent bonuses
    from raising your current CR above the ship's maximum
  - ShowBounds optimized, doesn't draw in menus, also shows new elliptical target
    radius used by AI since 0.65.2a
- - SpawnFleet makes sure there is at least 150 su of space between the player
-   and the new fleet, pings the new fleet to show its position
+ - SpawnFleet ensures there is at least 150 su of space between the player and
+   the new fleet, pings the new fleet to show its position
  - SpawnFleet supports typo correction for faction argument
  - Added optional crew level argument to SpawnFleet command, made quality
    optional as well; syntax is now "spawnfleet <faction> <totalFleetPoints>
-   [optionalQuality] [optionalCrewLevel] [optionalName]"
+   [optionalQuality] [optionalCrewLevel] [optionalFleetName]"
    Examples of valid syntax:
     "spawnfleet hegemony 150"
     "spawnfleet hegemony 150 0.6"
