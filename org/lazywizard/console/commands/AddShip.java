@@ -12,18 +12,6 @@ import org.lazywizard.console.Console;
 
 public class AddShip implements BaseCommand
 {
-    private static FleetMemberAPI tryCreate(String variantId)
-    {
-        try
-        {
-            return Global.getFactory().createFleetMember(FleetMemberType.SHIP, variantId);
-        }
-        catch (Exception ex)
-        {
-            return null;
-        }
-    }
-
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
