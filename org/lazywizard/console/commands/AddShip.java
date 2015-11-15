@@ -6,6 +6,7 @@ import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.fleet.FleetMemberType;
 import org.apache.log4j.Level;
 import org.lazywizard.console.BaseCommand;
+import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
@@ -74,20 +75,8 @@ public class AddShip implements BaseCommand
             return CommandResult.SUCCESS;
         }
 
-        FleetDataAPI fleet = Global.getSector().getPlayerFleet().getFleetData();
-        FleetMemberAPI ship;
-        String variant = null;
-
-        // Fix for improper capitalization
         // TODO: Test this once 0.7a lands
-        final String withHull = variant + "_Hull";
-        for (String id : Global.getSector().getAllVariantIds())
-        {
-            if (tmp[0].equalsIgnoreCase(id) || withHull.equalsIgnoreCase(id))
-            {
-                variant = id;
-            }
-        }
+        String variant = CommandUtils.findBestStringMatch(tmp[0], Global.getSector().getAllVariantIds());
 
         // Before we give up, maybe the .variant file doesn't match the ID?
         if (variant == null)
@@ -107,6 +96,7 @@ public class AddShip implements BaseCommand
         }
 
         // We've finally verified the variant id, now create the actual ship
+        FleetMemberAPI ship;
         try
         {
             ship = Global.getFactory().createFleetMember(FleetMemberType.SHIP, variant);
@@ -124,6 +114,7 @@ public class AddShip implements BaseCommand
             return CommandResult.ERROR;
         }
 
+        final FleetDataAPI fleet = Global.getSector().getPlayerFleet().getFleetData();
         fleet.addFleetMember(ship);
 
         // More than one ship was requested
