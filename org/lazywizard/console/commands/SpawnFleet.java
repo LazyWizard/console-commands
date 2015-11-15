@@ -79,6 +79,7 @@ public class SpawnFleet implements BaseCommand
         {
             quality = Float.parseFloat(tmp[2]);
         }
+        // TODO: If not a number, use default quality and assume tmp[2] is part of name/crew level
         catch (NumberFormatException ex)
         {
             Console.showMessage("Quality must be a decimal, preferably between 0 and 1.");
