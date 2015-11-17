@@ -8,7 +8,6 @@ New commands:
  - Clear, clears the text from the campaign pop-up
  - Flameout, disables all engines of current target
  - Rout, forces the enemy side into a full retreat
- - SetRespawn, sets your fleet's respawn coordinates to your current position
 Changes to existing commands:
  - AddShip won't let you spawn fighter wings as ships anymore
  - AddShip uses list of all variants added to the API in 0.7a, more forgiving
