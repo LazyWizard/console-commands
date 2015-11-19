@@ -6,6 +6,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.ShipAIPlugin;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.ShipCommand;
+import com.fs.starfarer.api.combat.ShipwideAIFlags;
 import com.fs.starfarer.api.combat.WeaponGroupAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
@@ -65,10 +66,12 @@ public class ToggleAI implements BaseCommand
     private class NullAI implements ShipAIPlugin
     {
         private final ShipAPI ship;
+        private final ShipwideAIFlags flags;
 
         private NullAI(ShipAPI ship)
         {
             this.ship = ship;
+            flags = new ShipwideAIFlags();
         }
 
         @Override
@@ -94,6 +97,12 @@ public class ToggleAI implements BaseCommand
         public boolean needsRefit()
         {
             return false;
+        }
+
+        @Override
+        public ShipwideAIFlags getAIFlags()
+        {
+            return flags;
         }
     }
 }
