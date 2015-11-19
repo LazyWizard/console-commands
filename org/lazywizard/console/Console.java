@@ -70,7 +70,7 @@ public class Console
      */
     public static void reloadSettings() throws IOException, JSONException
     {
-        JSONObject settingsFile = Global.getSettings().loadJSON(CommonStrings.PATH_SETTINGS);
+        final JSONObject settingsFile = Global.getSettings().loadJSON(CommonStrings.PATH_SETTINGS);
         settings = new ConsoleSettings(settingsFile.getInt("consoleKey"),
                 settingsFile.getBoolean("requireShift"),
                 settingsFile.getBoolean("requireControl"),
@@ -87,11 +87,11 @@ public class Console
         //PersistentCommandManager.setCommandPersistence(
         //        settingsFile.getBoolean("persistentCombatCommands"));
         // What level to log console output at
-        Level logLevel = Level.toLevel(settingsFile.getString("consoleLogLevel"), Level.WARN);
+        final Level logLevel = Level.toLevel(settingsFile.getString("consoleLogLevel"), Level.WARN);
         Global.getLogger(Console.class).setLevel(logLevel);
         Global.getLogger(CommandStore.class).setLevel(logLevel);
 
-        // Console pop-up appearance settings (temporary)
+        // Console combat pop-up appearance settings (temporary)
         Color color = JSONUtils.toColor(settingsFile.getJSONArray("backgroundColor"));
         UIManager.put("Panel.background", color);
         UIManager.put("OptionPane.background", color);
