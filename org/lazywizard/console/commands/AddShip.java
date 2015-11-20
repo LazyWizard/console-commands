@@ -6,12 +6,30 @@ import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.fleet.FleetMemberType;
 import org.apache.log4j.Level;
 import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
+// TODO: Once the global list of variants is retrievable through the API, this should be much simpler
+// TODO: Redirect wings to AddWing instead of snarking at the user
 public class AddShip implements BaseCommand
 {
+    private int tryNumber = 0;
+
+    private FleetMemberAPI tryCreate(String variantId)
+    {
+        tryNumber++;
+        Global.getLogger(AddShip.class).log(Level.DEBUG,
+                "Try #" + tryNumber + ": " + variantId);
+        try
+        {
+            return Global.getFactory().createFleetMember(FleetMemberType.SHIP, variantId);
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
+
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
@@ -63,46 +81,67 @@ public class AddShip implements BaseCommand
             return CommandResult.SUCCESS;
         }
 
-        // TODO: Test this once 0.7a lands
-        String variant = CommandUtils.findBestStringMatch(tmp[0], Global.getSector().getAllVariantIds());
-
-        // Before we give up, maybe the .variant file doesn't match the ID?
-        if (variant == null)
-        {
-            try
-            {
-                variant = Global.getSettings().loadJSON("data/variants/"
-                        + tmp[0] + ".variant").getString("variantId");
-                Console.showMessage("Warning: variant ID doesn't match"
-                        + " .variant filename!", Level.WARN);
-            }
-            catch (Exception ex)
-            {
-                Console.showMessage("No ship found with id '" + tmp[0] + "'!");
-                return CommandResult.ERROR;
-            }
-        }
-
-        // We've finally verified the variant id, now create the actual ship
+        FleetDataAPI fleet = Global.getSector().getPlayerFleet().getFleetData();
         FleetMemberAPI ship;
-        try
+        String variant = tmp[0];
+
+        // No variant given = spawn empty hull
+        if (variant.indexOf('_') == -1)
         {
-            ship = Global.getFactory().createFleetMember(FleetMemberType.SHIP, variant);
-        }
-        catch (Exception ex)
-        {
-            Console.showException("Failed to create variant '" + variant + "'!", ex);
-            return CommandResult.ERROR;
+            variant += "_Hull";
         }
 
-        // TODO: Redirect wings to AddWing instead of snarking at the user
+        // Catch common capitalization errors
+        ship = tryCreate(variant);
+        if (ship == null)
+        {
+            // Capitalize first character of variant name
+            int lastUnderscore = variant.lastIndexOf('_');
+            variant = variant.substring(0, lastUnderscore + 1)
+                    + Character.toUpperCase(variant.charAt(lastUnderscore + 1))
+                    + variant.substring(lastUnderscore + 2);
+            ship = tryCreate(variant);
+
+            if (ship == null)
+            {
+                // Capitalize the ship itself
+                variant = Character.toUpperCase(variant.charAt(0))
+                        + variant.substring(1);
+                ship = tryCreate(variant);
+
+                if (ship == null)
+                {
+                    // Try adding _Hull to the end
+                    variant = tmp[0] + "_Hull";
+                    ship = tryCreate(variant);
+
+                    if (ship == null)
+                    {
+                        try
+                        {
+                            // Before we give up, maybe the .variant file doesn't match the ID?
+                            variant = Global.getSettings().loadJSON("data/variants/"
+                                    + tmp[0] + ".variant").getString("variantId");
+                            ship = tryCreate(variant);
+                            Console.showMessage("Warning: variant ID doesn't match"
+                                    + " .variant filename!", Level.WARN);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.showMessage("No ship found with id '" + tmp[0] + "'!");
+                            return CommandResult.ERROR;
+                        }
+                    }
+                }
+            }
+        }
+
         if (ship.isFighterWing())
         {
             Console.showMessage("Use AddWing for fighters!");
             return CommandResult.ERROR;
         }
 
-        final FleetDataAPI fleet = Global.getSector().getPlayerFleet().getFleetData();
         fleet.addFleetMember(ship);
 
         // More than one ship was requested
