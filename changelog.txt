@@ -1,4 +1,4 @@
- 2.5 (November XX, 2015)
+ 2.5 (November 19, 2015)
 =========================
 Updated to be compatible with Starsector 0.7a
 Updated custom command template with more examples + documentation
