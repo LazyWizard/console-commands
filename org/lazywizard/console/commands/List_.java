@@ -41,17 +41,20 @@ public class List_ implements BaseCommand
                     ids.add(id.substring(0, id.lastIndexOf("_Hull")));
                 }
                 break;
+            case "variants":
+                ids = new ArrayList<>(Global.getSettings().getAllVariantIds());
+                break;
             case "wings":
             case "fighters":
             case "squadrons":
-                ids = sector.getAllFighterWingIds();
+                ids = new ArrayList<>(sector.getAllFighterWingIds());
                 break;
             case "weapons":
-                ids = sector.getAllWeaponIds();
+                ids = new ArrayList<>(sector.getAllWeaponIds());
                 break;
             case "commodities":
             case "items":
-                ids = sector.getEconomy().getAllCommodityIds();
+                ids = new ArrayList<>(sector.getEconomy().getAllCommodityIds());
                 break;
             case "systems":
             case "locations":
