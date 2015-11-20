@@ -37,7 +37,7 @@ InfiniteFlux,org.lazywizard.console.commands.InfiniteFlux,"core,combat",infinite
 InfiniteSupplies,org.lazywizard.console.commands.InfiniteSupplies,"core,campaign",infinitesupplies (no arguments),Toggles infinite supplies for your fleet. Buying/selling and quest rewards still function normally.
 Jump,org.lazywizard.console.commands.Jump,"core,campaign",jump <system>,Teleports your fleet to the specified system. You will be brought to that system's star (if it has one). If you want to travel to a specific token you should chain 'goto' after this command. The argument 'home' will function identically to the 'home' command.
 Kill,org.lazywizard.console.commands.Kill,"core,combat",kill (no arguments),Kills the target of the currently piloted ship.
-List,org.lazywizard.console.commands.List_,"core,campaign",list ships|wings|weapons|items|factions|systems|stations|markets,"Lists all internal IDs of a specific category for use with this mod's commands.\nValid categories: ships, wings, weapons, items, factions, systems, stations, markets"
+List,org.lazywizard.console.commands.List_,"core,campaign",list ships|variants|wings|weapons|items|factions|systems|stations|markets,"Lists all internal IDs of a specific category for use with this mod's commands.\nValid categories: ships, variants, wings, weapons, items, factions, systems, stations, markets"
 NoCooldown,org.lazywizard.console.commands.NoCooldown,"core,combat",nocooldown (no arguments),Toggles weapon cooldowns for all ships on your side.
 Nuke,org.lazywizard.console.commands.Nuke,"core,combat",nuke (no arguments),Destroys all enemies on the battle map.
 Reload,org.lazywizard.console.commands.ReloadConsole,"core,console",reload (no arguments),Reloads all console commands and settings.
