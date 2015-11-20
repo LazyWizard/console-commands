@@ -5,6 +5,7 @@ import java.util.List;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.FleetAssignment;
+import com.fs.starfarer.api.campaign.PlanetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
 import org.lazywizard.console.BaseCommand;
@@ -12,6 +13,8 @@ import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
+import org.lazywizard.lazylib.MathUtils;
+import org.lwjgl.util.vector.Vector2f;
 
 public class Jump implements BaseCommand
 {
@@ -78,8 +81,8 @@ public class Jump implements BaseCommand
 
             if (destination == null)
             {
-                Console.showMessage("Error: can't determine a route to hyperspace!");
-                return CommandResult.ERROR;
+                Console.showMessage("Couldn't determine a route to hyperspace!");
+                destination = Global.getSector().getHyperspace().createToken(0f, 0f);
             }
         }
         else
@@ -101,6 +104,15 @@ public class Jump implements BaseCommand
             if (destination == null)
             {
                 destination = system.createToken(0f, 0f);
+            }
+            else
+            {
+                // Don't appear within a star's corona effect!
+                final PlanetAPI star = (PlanetAPI) destination;
+                final float distance = 2f * (star.getRadius()
+                        + star.getSpec().getCoronaSize()) + 200f;
+                final Vector2f offset = MathUtils.getRandomPointOnCircumference(null, distance);
+                destination = system.createToken(offset.x, offset.y);
             }
         }
 
