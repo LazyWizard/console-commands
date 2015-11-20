@@ -75,6 +75,7 @@ public class AddWing implements BaseCommand
             if (variant.equalsIgnoreCase(id))
             {
                 variant = id;
+                break;
             }
         }
 

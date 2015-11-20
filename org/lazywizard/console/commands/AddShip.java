@@ -66,10 +66,9 @@ public class AddShip implements BaseCommand
         String variant = null;
 
         // Test for variants
-        final String toLower = tmp[0].toLowerCase();
         for (String id : Global.getSettings().getAllVariantIds())
         {
-            if (toLower.equals(id.toLowerCase()))
+            if (tmp[0].equalsIgnoreCase(id))
             {
                 variant = id;
                 break;
@@ -79,10 +78,10 @@ public class AddShip implements BaseCommand
         // Test for empty hulls
         if (variant == null)
         {
-            final String withHull = toLower + "_hull";
+            final String withHull = tmp[0] + "_Hull";
             for (String id : Global.getSettings().getAllVariantIds())
             {
-                if (withHull.equals(id.toLowerCase()))
+                if (withHull.equalsIgnoreCase(id))
                 {
                     variant = id;
                     break;
