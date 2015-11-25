@@ -1,5 +1,8 @@
  2.6 (November XX, 2015)
 =========================
+New features:
+ - Command auto-completion. Press TAB to cycle through all matches for the
+   current command from the cursor onwards (campaign only)
 New commands:
  - AddOfficer, adds a skilled officer to the player fleet
 Changes to existing commands:

@@ -1,6 +1,7 @@
 package org.lazywizard.console;
 
 import java.awt.Color;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import com.fs.starfarer.api.EveryFrameScript;
@@ -273,6 +274,59 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                             currentIndex = lastIndex;
                             lastInput = null;
                             lastIndex = currentInput.length();
+                            event.consume();
+                            continue;
+                        }
+
+                        // Tab auto-completes the command
+                        if (keyPressed == Keyboard.KEY_TAB)
+                        {
+                            // Only auto-complete if arguments haven't been entered
+                            if (currentInput.indexOf(" ") != -1)
+                            {
+                                event.consume();
+                                continue;
+                            }
+
+                            // Used for comparisons, ugly but efficient
+                            final String toIndex = currentInput.substring(0, currentIndex).toLowerCase(),
+                                    fullCommand = currentInput.toString().toLowerCase();
+                            final List<String> commands = CommandStore.getLoadedCommands();
+                            Collections.sort(commands);
+
+                            // Cycle through matching commands from current index forward
+                            // If no further matches are found, start again from beginning
+                            String firstMatch = null, nextMatch = null;
+                            for (int i = 0; i < commands.size(); i++)
+                            {
+                                final String command = commands.get(i),
+                                        toLower = command.toLowerCase();
+                                if (toLower.startsWith(toIndex))
+                                {
+                                    // Used to cycle back to the beginning when no more matches are found
+                                    if (firstMatch == null)
+                                    {
+                                        firstMatch = command;
+                                    }
+
+                                    // Find next matching command
+                                    if (toLower.compareTo(fullCommand) > 0)
+                                    {
+                                        nextMatch = command;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (nextMatch != null)
+                            {
+                                currentInput.replace(0, currentInput.length(), nextMatch);
+                            }
+                            else if (firstMatch != null)
+                            {
+                                currentInput.replace(0, currentInput.length(), firstMatch);
+                            }
+
                             event.consume();
                             continue;
                         }
