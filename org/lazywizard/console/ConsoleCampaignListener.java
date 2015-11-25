@@ -288,20 +288,18 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                                 continue;
                             }
 
-                            // Used for comparisons, ugly but efficient
-                            final String toIndex = currentInput.substring(0, currentIndex).toLowerCase(),
-                                    fullCommand = currentInput.toString().toLowerCase();
-                            final List<String> commands = CommandStore.getLoadedCommands();
-                            Collections.sort(commands);
+                            // Used for comparisons
+                            final String toIndex = currentInput.substring(0, currentIndex),
+                                    fullCommand = currentInput.toString();
 
                             // Cycle through matching commands from current index forward
                             // If no further matches are found, start again from beginning
                             String firstMatch = null, nextMatch = null;
-                            for (int i = 0; i < commands.size(); i++)
+                            final List<String> commands = CommandStore.getLoadedCommands();
+                            Collections.sort(commands);
+                            for (String command : commands)
                             {
-                                final String command = commands.get(i),
-                                        toLower = command.toLowerCase();
-                                if (toLower.startsWith(toIndex))
+                                if (command.regionMatches(true, 0, toIndex, 0, toIndex.length()))
                                 {
                                     // Used to cycle back to the beginning when no more matches are found
                                     if (firstMatch == null)
@@ -310,7 +308,7 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                                     }
 
                                     // Find next matching command
-                                    if (toLower.compareTo(fullCommand) > 0)
+                                    if (command.compareToIgnoreCase(fullCommand) > 0)
                                     {
                                         nextMatch = command;
                                         break;
