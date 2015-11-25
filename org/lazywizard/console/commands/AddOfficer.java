@@ -8,6 +8,7 @@ import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import static com.fs.starfarer.api.impl.campaign.ids.Personalities.*;
 
 // Faction personality level
 public class AddOfficer implements BaseCommand
@@ -50,8 +51,26 @@ public class AddOfficer implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        // TODO: Verify personality
-        String personality = tmp[1];
+        // Verify personality
+        String personality;
+        switch (tmp[1].toLowerCase())
+        {
+            case TIMID:
+                personality = TIMID;
+                break;
+            case CAUTIOUS:
+                personality = CAUTIOUS;
+                break;
+            case STEADY:
+                personality = STEADY;
+                break;
+            case AGGRESSIVE:
+                personality = AGGRESSIVE;
+                break;
+            default:
+                Console.showMessage("Unsupported personality: '" + tmp[1] + "'.");
+                return CommandResult.ERROR;
+        }
 
         int level;
         try
