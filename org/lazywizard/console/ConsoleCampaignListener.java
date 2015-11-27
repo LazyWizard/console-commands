@@ -307,7 +307,7 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                                         firstMatch = command;
                                     }
 
-                                    // Find next matching command
+                                    // Found next matching command
                                     if (command.compareToIgnoreCase(fullCommand) > 0)
                                     {
                                         nextMatch = command;

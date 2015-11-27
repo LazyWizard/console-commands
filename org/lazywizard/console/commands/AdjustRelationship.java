@@ -26,6 +26,11 @@ public class AdjustRelationship implements BaseCommand
 
         String[] tmp = args.split(" ");
 
+        if (tmp.length == 2)
+        {
+            return runCommand(tmp[0] + " player " + tmp[1], context);
+        }
+
         if (tmp.length != 3)
         {
             return CommandResult.BAD_SYNTAX;
