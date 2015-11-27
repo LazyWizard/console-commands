@@ -7,3 +7,7 @@ ia,infiniteammo
 if,infiniteflux
 nc,nocooldown
 tc,god;infiniteammo;infiniteflux;reveal
+setrelationship,setrelation
+adjustrelationship,adjustrelation
+sr,setrelation
+ar,adjustrelation
