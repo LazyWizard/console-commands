@@ -62,10 +62,8 @@ public class AddShip implements BaseCommand
             return CommandResult.SUCCESS;
         }
 
-        // TODO: Test this once 0.7a lands
-        String variant = null;
-
         // Test for variants
+        String variant = null;
         for (String id : Global.getSettings().getAllVariantIds())
         {
             if (tmp[0].equalsIgnoreCase(id))
