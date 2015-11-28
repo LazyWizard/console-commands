@@ -20,6 +20,8 @@ Changes to existing commands:
    - If only one faction is entered, use player faction as the target
    - If "all" is entered as argument, changes relation with all other factions
    - RepLevels are allowed as an argument ("friendly", "hostile", etc)
+ - SpawnFleet adds officers to the created fleet, levels based on quality factor
+   (note: SpawnFleet no longer matches vanilla fleet compositions post-0.7a)
 New aliases:
  - ar -> AdjustRelation
  - sr -> SetRelation
