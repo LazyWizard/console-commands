@@ -36,8 +36,8 @@ public class Reveal implements BaseCommand
                 return CommandResult.SUCCESS;
             }
 
-            rangeMod.modifyFlat(CommonStrings.MOD_ID, 99_999f, "Console");
-            strengthMod.modifyFlat(CommonStrings.MOD_ID, 99_999f, "Console");
+            rangeMod.modifyFlat(CommonStrings.MOD_ID, 999_999f, "Console");
+            strengthMod.modifyFlat(CommonStrings.MOD_ID, 999_999f, "Console");
             Console.showMessage("Sensor strength maximized.");
             return CommandResult.SUCCESS;
         }

@@ -64,8 +64,7 @@ public class FindItem implements BaseCommand
             for (SubmarketAPI submarket : market.getSubmarketsCopy())
             {
                 int total = (int) submarket.getCargo().getQuantity(
-                        (isWeapon ? CargoItemType.WEAPONS : CargoItemType.RESOURCES),
-                        id);
+                        (isWeapon ? CargoItemType.WEAPONS : CargoItemType.RESOURCES), id);
                 if (total > 0)
                 {
                     float price;
@@ -76,22 +75,19 @@ public class FindItem implements BaseCommand
                         price = 0;
                         isIllegal = false;
                     }
+                    else if (isWeapon)
+                    {
+                        price = stack.getBaseValuePerUnit() * weaponPriceMod;
+                        price += (price * submarket.getTariff());
+                        isIllegal = submarket.getPlugin().isIllegalOnSubmarket(
+                                stack, SubmarketPlugin.TransferAction.PLAYER_BUY);
+                    }
                     else
                     {
-                        if (isWeapon)
-                        {
-                            price = stack.getBaseValuePerUnit() * weaponPriceMod;
-                            price += (price * submarket.getTariff());
-                            isIllegal = submarket.getPlugin().isIllegalOnSubmarket(
-                                    stack, SubmarketPlugin.TransferAction.PLAYER_BUY);
-                        }
-                        else
-                        {
-                            price = market.getSupplyPrice(id, 1f, true);
-                            price += (price * submarket.getTariff());
-                            isIllegal = submarket.getPlugin().isIllegalOnSubmarket(
-                                    id, SubmarketPlugin.TransferAction.PLAYER_BUY);
-                        }
+                        price = market.getSupplyPrice(id, 1f, true);
+                        price += (price * submarket.getTariff());
+                        isIllegal = submarket.getPlugin().isIllegalOnSubmarket(
+                                id, SubmarketPlugin.TransferAction.PLAYER_BUY);
                     }
 
                     found.put(submarket, new PriceData(price, total, isIllegal));
