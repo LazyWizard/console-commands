@@ -1,5 +1,6 @@
 package org.lazywizard.console.commands;
 
+import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.RepLevel;
 import org.lazywizard.console.BaseCommand;
@@ -35,9 +36,6 @@ public class SetRelationship implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
-        final String faction = tmp[0];
-        final String towardsFaction = tmp[1];
-
         float newRelationship;
         try
         {
@@ -61,24 +59,48 @@ public class SetRelationship implements BaseCommand
             }
         }
 
-        FactionAPI fac1 = CommandUtils.findBestFactionMatch(faction);
-        FactionAPI fac2 = CommandUtils.findBestFactionMatch(towardsFaction);
-
-        if (fac1 == null)
+        final String factionId = tmp[0];
+        final String towardsFactionId = tmp[1];
+        if ("all".equalsIgnoreCase(towardsFactionId) && !"all".equalsIgnoreCase(factionId))
         {
-            Console.showMessage("Error: no such faction '" + faction + "'!");
-            return CommandResult.ERROR;
-        }
-        if (fac2 == null)
-        {
-            Console.showMessage("Error: no such faction '" + towardsFaction + "'!");
-            return CommandResult.ERROR;
+            return runCommand(tmp[1] + " " + tmp[0] + " " + tmp[2], context);
         }
 
-        fac1.setRelationship(fac2.getId(), newRelationship / 100f);
+        final FactionAPI towardsFaction = CommandUtils.findBestFactionMatch(towardsFactionId);
+        if (towardsFaction == null)
+        {
+            Console.showMessage("Error: no such faction '" + towardsFactionId + "'!");
+            return CommandResult.ERROR;
+        }
+
+        if ("all".equalsIgnoreCase(factionId))
+        {
+            int totalFactions = 0;
+            for (FactionAPI faction : Global.getSector().getAllFactions())
+            {
+                if (faction != towardsFaction)
+                {
+                    faction.setRelationship(towardsFaction.getId(), newRelationship / 100f);
+                    totalFactions++;
+                }
+            }
+
+            Console.showMessage("Set relationship of " + totalFactions + " factions towards "
+                    + CommandUtils.getFactionName(towardsFaction) + " to " + newRelationship + ".");
+            return CommandResult.SUCCESS;
+        }
+
+        FactionAPI faction = CommandUtils.findBestFactionMatch(factionId);
+        if (faction == null)
+        {
+            Console.showMessage("Error: no such faction '" + factionId + "'!");
+            return CommandResult.ERROR;
+        }
+
+        faction.setRelationship(towardsFaction.getId(), newRelationship / 100f);
         Console.showMessage("Set relationship of "
-                + CommandUtils.getFactionName(fac1) + " towards "
-                + CommandUtils.getFactionName(fac2) + " to " + newRelationship + ".");
+                + CommandUtils.getFactionName(faction) + " towards "
+                + CommandUtils.getFactionName(towardsFaction) + " to " + newRelationship + ".");
         return CommandResult.SUCCESS;
     }
 }

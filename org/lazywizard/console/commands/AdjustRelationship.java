@@ -1,5 +1,6 @@
 package org.lazywizard.console.commands;
 
+import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.BaseCommand.CommandContext;
@@ -48,26 +49,48 @@ public class AdjustRelationship implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
-        String faction = tmp[0];
-        String towardsFaction = tmp[1];
-        FactionAPI fac1 = CommandUtils.findBestFactionMatch(faction);
-        FactionAPI fac2 = CommandUtils.findBestFactionMatch(towardsFaction);
-
-        if (fac1 == null)
+        final String factionId = tmp[0];
+        final String towardsFactionId = tmp[1];
+        if ("all".equalsIgnoreCase(towardsFactionId) && !"all".equalsIgnoreCase(factionId))
         {
-            Console.showMessage("Error: no such faction '" + faction + "'!");
-            return CommandResult.ERROR;
+            return runCommand(tmp[1] + " " + tmp[0] + " " + tmp[2], context);
         }
-        if (fac2 == null)
+
+        final FactionAPI towardsFaction = CommandUtils.findBestFactionMatch(towardsFactionId);
+        if (towardsFaction == null)
         {
-            Console.showMessage("Error: no such faction '" + towardsFaction + "'!");
+            Console.showMessage("Error: no such faction '" + towardsFactionId + "'!");
             return CommandResult.ERROR;
         }
 
-        fac1.adjustRelationship(fac2.getId(), newRelationship / 100f);
+        if ("all".equalsIgnoreCase(factionId))
+        {
+            int totalFactions = 0;
+            for (FactionAPI faction : Global.getSector().getAllFactions())
+            {
+                if (faction != towardsFaction)
+                {
+                    faction.adjustRelationship(towardsFaction.getId(), newRelationship / 100f);
+                    totalFactions++;
+                }
+            }
+
+            Console.showMessage("Adjusted relationship of " + totalFactions + " factions towards "
+                    + CommandUtils.getFactionName(towardsFaction) + " by " + newRelationship + ".");
+            return CommandResult.SUCCESS;
+        }
+
+        FactionAPI faction = CommandUtils.findBestFactionMatch(factionId);
+        if (faction == null)
+        {
+            Console.showMessage("Error: no such faction '" + factionId + "'!");
+            return CommandResult.ERROR;
+        }
+
+        faction.adjustRelationship(towardsFaction.getId(), newRelationship / 100f);
         Console.showMessage("Adjusted relationship of "
-                + CommandUtils.getFactionName(fac1) + " towards "
-                + CommandUtils.getFactionName(fac2) + " by " + newRelationship + ".");
+                + CommandUtils.getFactionName(faction) + " towards "
+                + CommandUtils.getFactionName(towardsFaction) + " by " + newRelationship + ".");
         return CommandResult.SUCCESS;
     }
 }
