@@ -6,6 +6,8 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.FogOfWarAPI;
+import com.fs.starfarer.api.combat.StatBonus;
+import com.fs.starfarer.api.fleet.MutableFleetStatsAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.mission.FleetSide;
 import org.lazywizard.console.BaseCommand;
@@ -21,10 +23,23 @@ public class Reveal implements BaseCommand
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
-        if (!context.isInCombat())
+        if (context.isInCampaign())
         {
-            Console.showMessage(CommonStrings.ERROR_COMBAT_ONLY);
-            return CommandResult.WRONG_CONTEXT;
+            final MutableFleetStatsAPI stats = Global.getSector().getPlayerFleet().getStats();
+            final StatBonus rangeMod = stats.getSensorRangeMod();
+            final StatBonus strengthMod = stats.getSensorStrengthMod();
+            if (rangeMod.getFlatBonus(CommonStrings.MOD_ID) != null)
+            {
+                rangeMod.unmodify(CommonStrings.MOD_ID);
+                strengthMod.unmodify(CommonStrings.MOD_ID);
+                Console.showMessage("Sensors returned to normal.");
+                return CommandResult.SUCCESS;
+            }
+
+            rangeMod.modifyFlat(CommonStrings.MOD_ID, 99_999f, "Console");
+            strengthMod.modifyFlat(CommonStrings.MOD_ID, 99_999f, "Console");
+            Console.showMessage("Sensor strength maximized.");
+            return CommandResult.SUCCESS;
         }
 
         RevealPlugin tmp;
