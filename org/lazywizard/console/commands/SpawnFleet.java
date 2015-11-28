@@ -9,6 +9,7 @@ import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.fleet.RepairTrackerAPI;
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactory;
+import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV2;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
@@ -124,8 +125,27 @@ public class SpawnFleet implements BaseCommand
         try
         {
             // Create fleet
-            final CampaignFleetAPI toSpawn = FleetFactory.createGenericFleet(
-                    faction.getId(), name, quality, totalFP);
+            // TODO: Rip this out and replace entirey with FleetFactoryV2
+            final CampaignFleetAPI toSpawn
+                    = FleetFactory.createGenericFleet(faction.getId(), name, quality, totalFP);
+            FleetFactoryV2.addCommanderAndOfficers(Math.max(1, toSpawn.getFleetSizeCount() / 4),
+                    1f, Math.min(20f, 15f * quality), toSpawn, null, MathUtils.getRandom());
+
+            /*FleetFactoryV2.createFleet(new FleetParams(
+                    hyperspaceLocation,
+                    market,
+                    faction.getId(),
+                    fleetType,
+                    combatFP,
+                    freighterPts,
+                    tankerPts,
+                    transportPts,
+                    linerPts,
+                    civilianPts,
+                    utilityPts,
+                    qualityBonus,
+                    qualityOverride))
+            );*/
 
             // Set crew XP level
             for (FleetMemberAPI member : toSpawn.getFleetData().getMembersListCopy())
@@ -141,6 +161,7 @@ public class SpawnFleet implements BaseCommand
             Global.getSector().addPing(toSpawn, "danger");
 
             // Update combat readiness
+            toSpawn.getFleetData().sort();
             toSpawn.forceSync();
             for (FleetMemberAPI member : toSpawn.getFleetData().getMembersListCopy())
             {
