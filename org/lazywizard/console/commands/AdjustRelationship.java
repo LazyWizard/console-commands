@@ -8,7 +8,7 @@ import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
-public class AdjustRelation implements BaseCommand
+public class AdjustRelationship implements BaseCommand
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)

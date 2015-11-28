@@ -20,32 +20,43 @@ public class Respec implements BaseCommand
         Console.showMessage("Performing respec...");
 
         // Refund aptitudes
-        int total;
-        MutableCharacterStatsAPI player = Global.getSector().getPlayerFleet().getCommanderStats();
-        for (String currId : Global.getSettings().getSortedAbilityIds())
+        final MutableCharacterStatsAPI player
+                = Global.getSector().getPlayerPerson().getStats();
+        int aptRefunded = 0;
+        for (final String aptitude : Global.getSettings().getAptitudeIds())
         {
-            total = Math.round(player.getAptitudeLevel(currId));
+            final int total = (int) player.getAptitudeLevel(aptitude);
             if (total > 0)
             {
-                Console.showMessage(" - removed " + total + " points from aptitude " + currId);
-                player.setAptitudeLevel(currId, 0f);
+                Console.showMessage(" - removed " + total + " points from aptitude " + aptitude);
+                player.setAptitudeLevel(aptitude, 0f);
                 player.addAptitudePoints(total);
+                aptRefunded += total;
             }
         }
 
         // Refund skills
-        for (String currId : Global.getSettings().getSortedSkillIds())
+        int skillRefunded = 0;
+        for (final String skill : Global.getSettings().getSortedSkillIds())
         {
-            total = Math.round(player.getSkillLevel(currId));
+            // Ignore aptitudes (included in list because officers treat them as skills)
+            if (Global.getSettings().getSkillSpec(skill).isAptitudeEffect())
+            {
+                continue;
+            }
+
+            final int total = (int) player.getSkillLevel(skill);
             if (total > 0)
             {
-                Console.showMessage(" - removed " + total + " points from skill " + currId);
-                player.setSkillLevel(currId, 0f);
+                Console.showMessage(" - removed " + total + " points from skill " + skill);
+                player.setSkillLevel(skill, 0f);
                 player.addSkillPoints(total);
+                skillRefunded += total;
             }
         }
 
-        Console.showMessage("Respec complete.");
+        Console.showMessage("Respec complete, refunded " + aptRefunded
+                + " aptitude and " + skillRefunded + " skill points.");
         return CommandResult.SUCCESS;
     }
 }
