@@ -1,6 +1,7 @@
 package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.campaign.FactionAPI;
+import com.fs.starfarer.api.campaign.RepLevel;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
@@ -34,8 +35,8 @@ public class SetRelationship implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
-        String faction = tmp[0];
-        String towardsFaction = tmp[1];
+        final String faction = tmp[0];
+        final String towardsFaction = tmp[1];
 
         float newRelationship;
         try
@@ -44,8 +45,20 @@ public class SetRelationship implements BaseCommand
         }
         catch (NumberFormatException ex)
         {
-            Console.showMessage("Error: relationship amount must be a number!");
-            return CommandResult.BAD_SYNTAX;
+            try
+            {
+                final RepLevel level = RepLevel.valueOf(tmp[2].toUpperCase());
+                newRelationship = 1 + (level.getMin() * 100f);
+                if (level.isNegative())
+                {
+                    newRelationship *= -1f;
+                }
+            }
+            catch (IllegalArgumentException ex2)
+            {
+                Console.showMessage("Error: relationship amount must be a number or RepLevel!");
+                return CommandResult.BAD_SYNTAX;
+            }
         }
 
         FactionAPI fac1 = CommandUtils.findBestFactionMatch(faction);
