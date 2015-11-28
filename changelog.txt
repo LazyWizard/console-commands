@@ -13,6 +13,8 @@ Changes to existing commands:
    teleport you to the center of hyperspace
  - List accepts argument "variants", shows all loaded variants (VERY spammy)
  - Respec properly refunds aptitude points again
+ - Reveal works on the campaign map, maximizes sensor range and strength
+   (both have a hard cap, so revealing the entire map isn't feasible)
 
  2.5 (November 19, 2015)
 =========================
