@@ -11,7 +11,8 @@ Changes to existing commands:
  - Jump positions the player fleet a safe distance away from the system's star
  - Jumps to hyperspace in systems without a hyperspace anchor will work,
    teleport you to the center of hyperspace
- - List accepts argument "variants", shows all loaded variants (VERY spammy)
+ - List accepts arguments "planets" and "variants" (VERY spammy), "markets" now
+   shows the owning faction and their relationship with the player
  - Respec properly refunds aptitude points again
  - Reveal works on the campaign map, maximizes sensor range and strength
    (both have a hard cap, so revealing the entire map isn't feasible)

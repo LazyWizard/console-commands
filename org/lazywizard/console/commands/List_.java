@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.LocationAPI;
+import com.fs.starfarer.api.campaign.PlanetAPI;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
@@ -29,7 +31,9 @@ public class List_ implements BaseCommand
 
         // Get all valid IDs for the specified type
         args = args.toLowerCase();
-        SectorAPI sector = Global.getSector();
+        final SectorAPI sector = Global.getSector();
+        final LocationAPI loc = sector.getCurrentLocation();
+        final CampaignFleetAPI player = sector.getPlayerFleet();
         List<String> ids;
         switch (args)
         {
@@ -55,6 +59,13 @@ public class List_ implements BaseCommand
             case "commodities":
             case "items":
                 ids = new ArrayList<>(sector.getEconomy().getAllCommodityIds());
+                break;
+            case "planets":
+                ids = new ArrayList<>();
+                for (PlanetAPI planet : loc.getPlanets())
+                {
+                    ids.add(planet.getId() + (planet.isStar() ? " (star)" : ""));
+                }
                 break;
             case "systems":
             case "locations":
@@ -85,7 +96,10 @@ public class List_ implements BaseCommand
                 ids = new ArrayList<>();
                 for (MarketAPI market : sector.getEconomy().getMarketsCopy())
                 {
-                    ids.add(market.getId());
+                    ids.add(market.getId() + "(" + market.getFaction().getDisplayName()
+                            + ", " + (market.getFaction() == null ? "no faction)"
+                                    : market.getFaction().getRelationshipLevel(
+                                            player.getFaction()).getDisplayName() + ")"));
                 }
                 break;
             default:
@@ -97,7 +111,7 @@ public class List_ implements BaseCommand
         String results = CollectionUtils.implode(ids);
         Console.showMessage("Known " + args + " (" + ids.size() + "):\n"
                 + StringUtils.indent(StringUtils.wrapString(results,
-                                Console.getSettings().getMaxOutputLineLength() - 3), "   "));
+                        Console.getSettings().getMaxOutputLineLength() - 3), "   "));
         return CommandResult.SUCCESS;
     }
 }
