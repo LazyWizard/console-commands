@@ -34,6 +34,7 @@ public class List_ implements BaseCommand
         final SectorAPI sector = Global.getSector();
         final LocationAPI loc = sector.getCurrentLocation();
         final CampaignFleetAPI player = sector.getPlayerFleet();
+        boolean newLinePerItem = false;
         List<String> ids;
         switch (args)
         {
@@ -93,11 +94,13 @@ public class List_ implements BaseCommand
                 }
                 break;
             case "markets":
+                newLinePerItem = true;
                 ids = new ArrayList<>();
                 for (MarketAPI market : sector.getEconomy().getMarketsCopy())
                 {
-                    ids.add(market.getId() + "(" + market.getFaction().getDisplayName()
-                            + ", " + (market.getFaction() == null ? "no faction)"
+                    ids.add(market.getId() + " in " + market.getContainingLocation().getName()
+                            + " (" + market.getFaction().getDisplayName() + ", "
+                            + (market.getFaction() == null ? "no faction)"
                                     : market.getFaction().getRelationshipLevel(
                                             player.getFaction()).getDisplayName() + ")"));
                 }
@@ -108,7 +111,7 @@ public class List_ implements BaseCommand
 
         // Format and print the list of valid IDs
         Collections.sort(ids);
-        String results = CollectionUtils.implode(ids);
+        final String results = CollectionUtils.implode(ids, (newLinePerItem ? "\n" : ", "));
         Console.showMessage("Known " + args + " (" + ids.size() + "):\n"
                 + StringUtils.indent(StringUtils.wrapString(results,
                         Console.getSettings().getMaxOutputLineLength() - 3), "   "));
