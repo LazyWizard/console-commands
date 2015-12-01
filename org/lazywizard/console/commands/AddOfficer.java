@@ -2,8 +2,10 @@ package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FactionAPI;
+import com.fs.starfarer.api.campaign.FleetDataAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent;
+import com.fs.starfarer.api.plugins.OfficerLevelupPlugin;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
@@ -64,7 +66,7 @@ public class AddOfficer implements BaseCommand
                 return CommandResult.ERROR;
         }
 
-        int level;
+        final int level;
         try
         {
             level = Integer.parseInt(tmp[1]);
@@ -82,11 +84,15 @@ public class AddOfficer implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        final PersonAPI person = OfficerManagerEvent.createOfficer(faction, level, false);
+        final PersonAPI person = OfficerManagerEvent.createOfficer(faction, 1, false);
+        final FleetDataAPI fleetData = Global.getSector().getPlayerFleet().getFleetData();
+        final OfficerLevelupPlugin plugin
+                = (OfficerLevelupPlugin) Global.getSettings().getPlugin("officerLevelUp");
         person.setPersonality(personality);
-        Global.getSector().getPlayerFleet().getFleetData().addOfficer(person);
+        fleetData.addOfficer(person);
+        fleetData.getOfficerData(person).addXP(plugin.getXPForLevel(level));
 
-        Console.showMessage("Created officer " + person.getName().getFullName() + ".");
+        Console.showMessage("Created " + personality + " officer " + person.getName().getFullName() + ".");
         return CommandResult.SUCCESS;
     }
 }
