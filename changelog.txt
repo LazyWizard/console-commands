@@ -5,8 +5,9 @@ New features:
    current command from the cursor onwards (campaign input dialog only)
 New commands:
  - AddOfficer, adds a skilled officer to the player fleet
- - Hide, minimizes the player fleet's sensor profile
- X ListStorage, lists everything you've left in a storage tab and its location
+ - Hide, makes the player fleet invisible to other fleets
+ - ListStorage, lists everything you've left in a storage tab and its location
+ - OpenMarket, opens any market's interaction dialog from any system
 Changes to existing commands:
  - AddShip uses list of all variants added to the API in 0.7a, doesn't care
    about miscapitalizations in variant IDs (requires 0.7a-RC10 hotfix)

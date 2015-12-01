@@ -43,6 +43,7 @@ List,org.lazywizard.console.commands.List_,"core,campaign",list ships|variants|w
 #ListStorage,org.lazywizard.console.commands.ListStorage,"core,campaign",liststorage (no arguments),"Lists every ship and item you have left in a storage tab, as well as their locations."
 NoCooldown,org.lazywizard.console.commands.NoCooldown,"core,combat",nocooldown (no arguments),Toggles weapon cooldowns for all ships on your side.
 Nuke,org.lazywizard.console.commands.Nuke,"core,combat",nuke (no arguments),Destroys all enemies on the battle map.
+OpenMarket,org.lazywizard.console.commands.OpenMarket,"core,campaign",openmarket <marketId>,Opens a market's interaction dialog after you close the console.
 Reload,org.lazywizard.console.commands.ReloadConsole,"core,console",reload (no arguments),Reloads all console commands and settings.
 Repair,org.lazywizard.console.commands.Repair,"core,campaign,combat",repair (no arguments),"Repairs all friendly ships on the battle map if used in combat, or all ships in your fleet on the campaign map."
 Respec,org.lazywizard.console.commands.Respec,"core,campaign",respec (no arguments),Resets skills and attributes to zero and refunds all spent points.
