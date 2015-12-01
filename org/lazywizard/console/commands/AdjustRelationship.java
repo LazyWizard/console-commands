@@ -1,5 +1,7 @@
 package org.lazywizard.console.commands;
 
+import java.util.ArrayList;
+import java.util.List;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import org.lazywizard.console.BaseCommand;
@@ -8,6 +10,7 @@ import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import org.lazywizard.lazylib.CollectionUtils;
 
 public class AdjustRelationship implements BaseCommand
 {
@@ -59,7 +62,14 @@ public class AdjustRelationship implements BaseCommand
         final FactionAPI towardsFaction = CommandUtils.findBestFactionMatch(towardsFactionId);
         if (towardsFaction == null)
         {
-            Console.showMessage("Error: no such faction '" + towardsFactionId + "'!");
+            final List ids = new ArrayList<>();
+            for (FactionAPI faction : Global.getSector().getAllFactions())
+            {
+                ids.add(faction.getId());
+            }
+
+            Console.showMessage("Error: no such faction '" + towardsFactionId
+                    + "'! Valid factions: " + CollectionUtils.implode(ids) + ".");
             return CommandResult.ERROR;
         }
 

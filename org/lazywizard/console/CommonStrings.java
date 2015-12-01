@@ -81,6 +81,13 @@ public class CommonStrings
      * @since 2.0
      */
     public static final String ERROR_MISSION_ONLY = "Error: This command is mission-only.";
+    /**
+     * The error message displayed by core commands when a simulation-only
+     * command is used elsewhere.
+     * <p>
+     * @since 2.6
+     */
+    public static final String ERROR_SIMULATION_ONLY = "Error: This command is simulation-only.";
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Persistent data IDs used by default commands">
