@@ -30,6 +30,7 @@ ForceMarketUpdate,org.lazywizard.console.commands.ForceMarketUpdate,"core,campai
 God,org.lazywizard.console.commands.God,"core,combat",god (no arguments),Toggles invincibility for all ships on your side.
 GoTo,org.lazywizard.console.commands.GoTo,"core,campaign",goto <locationName>,"Teleports your fleet to the token with the given name in this system, if any exists. The argument 'home' will function identically to the 'home' command."
 Help,org.lazywizard.console.commands.Help,"core,console",help [optionalCommand],"Shows a list of all commands, or the details on using a specific command if one is entered as an argument."
+Hide,org.lazywizard.console.commands.Hide,"core,campaign",hide (no arguments),"Makes your fleet invisible to other fleets."
 Home,org.lazywizard.console.commands.Home,"core,campaign",home (no arguments),Teleports the player to their home location.\nHome location is set with the 'sethome' command.
 InfiniteAmmo,org.lazywizard.console.commands.InfiniteAmmo,"core,combat",infiniteammo (no arguments),Toggles infinite ammunition for all ships on your side.
 InfiniteCR,org.lazywizard.console.commands.InfiniteCR,"core,combat",infinitecr (no arguments),Toggles CR degradation in combat.

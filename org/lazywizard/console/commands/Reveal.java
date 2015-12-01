@@ -25,19 +25,20 @@ public class Reveal implements BaseCommand
     {
         if (context.isInCampaign())
         {
+            final String bonusId = CommonStrings.MOD_ID + "_reveal";
             final MutableFleetStatsAPI stats = Global.getSector().getPlayerFleet().getStats();
             final StatBonus rangeMod = stats.getSensorRangeMod();
             final StatBonus strengthMod = stats.getSensorStrengthMod();
-            if (rangeMod.getFlatBonus(CommonStrings.MOD_ID) != null)
+            if (rangeMod.getFlatBonus(bonusId) != null)
             {
-                rangeMod.unmodify(CommonStrings.MOD_ID);
-                strengthMod.unmodify(CommonStrings.MOD_ID);
+                rangeMod.unmodify(bonusId);
+                strengthMod.unmodify(bonusId);
                 Console.showMessage("Sensors returned to normal.");
                 return CommandResult.SUCCESS;
             }
 
-            rangeMod.modifyFlat(CommonStrings.MOD_ID, 999_999f, "Console");
-            strengthMod.modifyFlat(CommonStrings.MOD_ID, 999_999f, "Console");
+            rangeMod.modifyFlat(bonusId, 999_999f, "Console");
+            strengthMod.modifyFlat(bonusId, 999_999f, "Console");
             Console.showMessage("Sensor strength maximized.");
             return CommandResult.SUCCESS;
         }
