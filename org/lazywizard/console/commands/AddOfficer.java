@@ -10,7 +10,6 @@ import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import static com.fs.starfarer.api.impl.campaign.ids.Personalities.*;
 
-// Faction personality level
 public class AddOfficer implements BaseCommand
 {
     @Override
@@ -24,7 +23,7 @@ public class AddOfficer implements BaseCommand
 
         if (args.isEmpty())
         {
-            return runCommand("player steady 1", context);
+            return runCommand("steady 1 player", context);
         }
 
         final String[] tmp = args.split(" ");
@@ -36,24 +35,17 @@ public class AddOfficer implements BaseCommand
 
         if (tmp.length == 1)
         {
-            return runCommand(args + " steady 1", context);
+            return runCommand(args + " 1 player", context);
         }
 
         if (tmp.length == 2)
         {
-            return runCommand(args + " 1", context);
-        }
-
-        final FactionAPI faction = CommandUtils.findBestFactionMatch(tmp[0]);
-        if (faction == null)
-        {
-            Console.showMessage("No faction found with id '" + tmp[0] + "'!");
-            return CommandResult.ERROR;
+            return runCommand(args + " player", context);
         }
 
         // Verify personality
         String personality;
-        switch (tmp[1].toLowerCase())
+        switch (tmp[0].toLowerCase())
         {
             case TIMID:
                 personality = TIMID;
@@ -68,19 +60,26 @@ public class AddOfficer implements BaseCommand
                 personality = AGGRESSIVE;
                 break;
             default:
-                Console.showMessage("Unsupported personality: '" + tmp[1] + "'.");
+                Console.showMessage("Unsupported personality: '" + tmp[0] + "'.");
                 return CommandResult.ERROR;
         }
 
         int level;
         try
         {
-            level = Integer.parseInt(tmp[2]);
+            level = Integer.parseInt(tmp[1]);
         }
         catch (NumberFormatException ex)
         {
             Console.showMessage("Error: starting level must be a whole number!");
             return CommandResult.BAD_SYNTAX;
+        }
+
+        final FactionAPI faction = CommandUtils.findBestFactionMatch(tmp[2]);
+        if (faction == null)
+        {
+            Console.showMessage("No faction found with id '" + tmp[2] + "'!");
+            return CommandResult.ERROR;
         }
 
         final PersonAPI person = OfficerManagerEvent.createOfficer(faction, level, false);
