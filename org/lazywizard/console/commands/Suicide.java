@@ -27,7 +27,7 @@ public class Suicide implements BaseCommand
 
         // Used in combat: kill flagship only
         final ShipAPI player = Global.getCombatEngine().getPlayerShip();
-        Kill.killShip(player);
+        Kill.killShip(player, true);
         Console.showMessage("Destroyed currently piloted ship.");
         return CommandResult.SUCCESS;
     }

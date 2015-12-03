@@ -9,6 +9,7 @@ New commands:
  - Hide, makes the player fleet invisible to other fleets
  - ListStorage, lists everything you've left in a storage tab and its location
  - OpenMarket, opens any market's interaction dialog from any system
+ - RemoveHulks, destroys all hulks on the battle map
 Changes to existing commands:
  - AddShip uses list of all variants added to the API in 0.7a, doesn't care
    about miscapitalizations in variant IDs (requires 0.7a-RC10 hotfix)
