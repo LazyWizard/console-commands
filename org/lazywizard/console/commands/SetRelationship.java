@@ -27,11 +27,12 @@ public class SetRelationship implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
+        final String playerFaction = Global.getSector().getPlayerFleet().getFaction().getId();
         String[] tmp = args.split(" ");
 
         if (tmp.length == 2)
         {
-            return runCommand(tmp[0] + " player " + tmp[1], context);
+            return runCommand(tmp[0] + " " + playerFaction + " " + tmp[1], context);
         }
 
         if (tmp.length != 3)
@@ -104,6 +105,12 @@ public class SetRelationship implements BaseCommand
         if (faction == null)
         {
             Console.showMessage("Error: no such faction '" + factionId + "'!");
+            return CommandResult.ERROR;
+        }
+
+        if (towardsFaction == faction)
+        {
+            Console.showMessage("You can't change how a faction views itself!");
             return CommandResult.ERROR;
         }
 
