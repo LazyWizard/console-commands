@@ -297,6 +297,11 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                             String firstMatch = null, nextMatch = null;
                             final List<String> commands = CommandStore.getLoadedCommands();
                             Collections.sort(commands);
+                            // Reverse order when shift is held down
+                            if (event.isShiftDown())
+                            {
+                                Collections.reverse(commands);
+                            }
                             for (String command : commands)
                             {
                                 if (command.regionMatches(true, 0, toIndex, 0, toIndex.length()))
@@ -414,7 +419,7 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                         else
                         {
                             // TODO: add international character support
-                            char character = event.getEventChar();
+                            final char character = event.getEventChar();
                             if (character >= 0x20 && character <= 0x7e)
                             {
                                 currentInput.insert(currentIndex, character);
