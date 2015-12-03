@@ -12,7 +12,7 @@ import org.lwjgl.util.vector.Vector2f;
 
 public class Kill implements BaseCommand
 {
-    public static void killShip(ShipAPI target)
+    public static void killShip(ShipAPI target, boolean assignKillToPlayer)
     {
         if (target == null)
         {
@@ -70,7 +70,7 @@ public class Kill implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        killShip(target);
+        killShip(target, false);
         Console.showMessage("Destroyed "
                 + target.getVariant().getFullDesignationWithHullName() + ".");
         return CommandResult.SUCCESS;
