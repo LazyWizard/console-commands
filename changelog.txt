@@ -23,7 +23,7 @@ Changes to existing commands:
  - AdjustRelationship/SetRelationship changes:
    - Renamed to AdjustRelation/SetRelation
    - If a non-existent faction is entered, show list of valid faction IDs
-   - If only one faction is entered, use player faction as the target
+   - If only one faction is entered, use player's current faction as the target
    - If "all" is entered as argument, changes relation with all other factions
    - RepLevels are allowed as an argument ("friendly", "hostile", etc)
  - SpawnFleet adds officers to the created fleet, levels based on quality factor
