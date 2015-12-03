@@ -2,7 +2,8 @@
 =========================
 New features:
  - Command tab completion. Press tab to cycle through all matches for the
-   current command from the cursor onwards (campaign input dialog only)
+   current command from the cursor onwards, shift+tab to reverse order
+   (does not work for arguments, available in the campaign input dialog only)
 New commands:
  - AddOfficer, adds a skilled officer to the player fleet
  - Hide, makes the player fleet invisible to other fleets
@@ -21,6 +22,7 @@ Changes to existing commands:
    (both have a hard cap, so revealing the entire map isn't feasible)
  - AdjustRelationship/SetRelationship changes:
    - Renamed to AdjustRelation/SetRelation
+   - If a non-existent faction is entered, show list of valid faction IDs
    - If only one faction is entered, use player faction as the target
    - If "all" is entered as argument, changes relation with all other factions
    - RepLevels are allowed as an argument ("friendly", "hostile", etc)

@@ -61,13 +61,6 @@ public class List_ implements BaseCommand
             case "items":
                 ids = new ArrayList<>(sector.getEconomy().getAllCommodityIds());
                 break;
-            case "planets":
-                ids = new ArrayList<>();
-                for (PlanetAPI planet : loc.getPlanets())
-                {
-                    ids.add(planet.getId() + (planet.isStar() ? " (star)" : ""));
-                }
-                break;
             case "systems":
             case "locations":
                 ids = new ArrayList<>();
@@ -82,6 +75,14 @@ public class List_ implements BaseCommand
                 for (FactionAPI faction : sector.getAllFactions())
                 {
                     ids.add(faction.getId());
+                }
+                break;
+            case "planets":
+                args = "planets in current system";
+                ids = new ArrayList<>();
+                for (PlanetAPI planet : loc.getPlanets())
+                {
+                    ids.add(planet.getId() + (planet.isStar() ? " (star)" : ""));
                 }
                 break;
             case "stations":
