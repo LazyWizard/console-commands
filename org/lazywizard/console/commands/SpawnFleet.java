@@ -128,7 +128,8 @@ public class SpawnFleet implements BaseCommand
             // TODO: Rip this out and replace entirey with FleetFactoryV2
             final CampaignFleetAPI toSpawn
                     = FleetFactory.createGenericFleet(faction.getId(), name, quality, totalFP);
-            FleetFactoryV2.addCommanderAndOfficers(Math.max(1, toSpawn.getFleetSizeCount() / 4),
+            FleetFactoryV2.addCommanderAndOfficers(Math.max(1,
+                    (toSpawn.getFleetSizeCount() - toSpawn.getNumFighters()) / 3),
                     1f, Math.min(20f, 15f * quality), toSpawn, null, MathUtils.getRandom());
 
             /*FleetFactoryV2.createFleet(new FleetParams(
@@ -146,7 +147,6 @@ public class SpawnFleet implements BaseCommand
                     qualityBonus,
                     qualityOverride))
             );*/
-
             // Set crew XP level
             for (FleetMemberAPI member : toSpawn.getFleetData().getMembersListCopy())
             {
