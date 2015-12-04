@@ -1,7 +1,7 @@
- 2.6 (December XX, 2015)
+ 2.6 (December 03, 2015)
 =========================
 Console output in combat uses combat messages instead of floating text
-CommandUtils findBestXMatch() check all IDs before names (fixes Nexerelin issue)
+CommandUtils findBestXMatch() checks IDs before names (fixes Nexerelin issue)
 New features:
  - Command tab completion. Press tab to cycle through all matches for the
    current command from the cursor onwards, shift+tab to reverse order
@@ -14,9 +14,11 @@ New commands:
 Changes to existing commands:
  - AddShip uses list of all variants added to the API in 0.7a, doesn't care
    about miscapitalizations in variant IDs (requires 0.7a-RC10 hotfix)
+ - AllHulls won't add any hulls that already exist in the target's cargo
+ - AllWeapons gives up to 1,000 of each weapon (used to give 10)
  - Jump positions the player fleet a safe distance away from the system's star
- - Jumps to hyperspace in systems without a hyperspace anchor will work,
-   teleport you to the center of hyperspace
+ - Jumps to hyperspace in systems without a hyperspace anchor will teleport you
+   to the center of hyperspace as a fallback
  - List accepts arguments "planets" and "variants" (VERY spammy), "markets" now
    shows the location, owning faction, and their relationship with the player
  - Respec properly refunds aptitude points again
@@ -31,6 +33,7 @@ Changes to existing commands:
    - RepLevels are allowed as an argument ("friendly", "hostile", etc)
  - SpawnFleet adds officers to the created fleet, levels based on quality factor
    (note: SpawnFleet no longer matches vanilla fleet compositions post-0.7a)
+ - SpawnFleet properly sorts fleet members of created fleets
 New aliases:
  - ar -> AdjustRelation
  - sr -> SetRelation
