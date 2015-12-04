@@ -315,7 +315,8 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                                     }
 
                                     // Found next matching command
-                                    if (command.compareToIgnoreCase(fullCommand) > 0)
+                                    if ((event.isShiftDown() && command.compareToIgnoreCase(fullCommand) < 0)
+                                            || (!event.isShiftDown() && command.compareToIgnoreCase(fullCommand) > 0))
                                     {
                                         nextMatch = command;
                                         break;
