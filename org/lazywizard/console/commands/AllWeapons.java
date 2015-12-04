@@ -13,7 +13,7 @@ import org.lazywizard.console.Console;
 
 public class AllWeapons implements BaseCommand
 {
-    private static final int MAX_STACK_SIZE = 10;
+    private static final int MAX_STACK_SIZE = 1000;
 
     @Override
     public CommandResult runCommand(String args, CommandContext context)

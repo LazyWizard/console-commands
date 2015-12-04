@@ -1,5 +1,7 @@
 package org.lazywizard.console.commands;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.FleetDataAPI;
@@ -67,7 +69,16 @@ public class AllHulls implements BaseCommand
             targetName = token.getFullName();
         }
 
-        for (String id : Global.getSector().getAllEmptyVariantIds())
+        final Set<String> ids = new LinkedHashSet<>(Global.getSector().getAllEmptyVariantIds());
+        for (FleetMemberAPI tmp : target.getMembersListCopy())
+        {
+            if (!tmp.isFighterWing() && tmp.getVariant().isEmptyHullVariant())
+            {
+                ids.remove(tmp.getVariant().getHullVariantId());
+            }
+        }
+
+        for (String id : ids)
         {
             FleetMemberAPI tmp = Global.getFactory().createFleetMember(
                     FleetMemberType.SHIP, id);
