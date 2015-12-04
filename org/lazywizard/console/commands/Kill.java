@@ -12,7 +12,7 @@ import org.lwjgl.util.vector.Vector2f;
 
 public class Kill implements BaseCommand
 {
-    public static void killShip(ShipAPI target, boolean assignKillToPlayer)
+    public static void killShip(ShipAPI target, boolean creditKillToPlayer)
     {
         if (target == null)
         {
@@ -29,16 +29,13 @@ public class Kill implements BaseCommand
                 //        + ship.getHullSpec().getHullId());
                 hitLoc = target.getAllWeapons().get(0).getLocation();
             }
+            else if (!target.getEngineController().getShipEngines().isEmpty())
+            {
+                hitLoc = target.getEngineController().getShipEngines().get(0).getLocation();
+            }
             else
             {
-                if (!target.getEngineController().getShipEngines().isEmpty())
-                {
-                    hitLoc = target.getEngineController().getShipEngines().get(0).getLocation();
-                }
-                else
-                {
-                    Console.showMessage("Error nuking " + target.getHullSpec().getHullId());
-                }
+                Console.showMessage("Couldn't kill " + target.getHullSpec().getHullId());
             }
         }
 
@@ -49,7 +46,8 @@ public class Kill implements BaseCommand
         int[] cell = target.getArmorGrid().getCellAtLocation(hitLoc);
         target.getArmorGrid().setArmorValue(cell[0], cell[1], 0f);
         Global.getCombatEngine().applyDamage(target, hitLoc, 500_000,
-                DamageType.OTHER, 500_000, true, false, null);
+                DamageType.OTHER, 500_000, true, false, (creditKillToPlayer
+                        ? Global.getCombatEngine().getPlayerShip() : null));
     }
 
     @Override
