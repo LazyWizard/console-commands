@@ -20,7 +20,6 @@ import org.lazywizard.lazylib.CollectionUtils;
 import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
 
-// TODO: Add SpawnLeveledFleet command
 public class SpawnFleet implements BaseCommand
 {
     private static final String DEFAULT_QUALITY = " 0.6";
@@ -121,16 +120,17 @@ public class SpawnFleet implements BaseCommand
         }
 
         final String name = (subNames.isEmpty() ? "Fleet" : CollectionUtils.implode(subNames, " "));
-
+        int totalOfficers = 0;
         try
         {
             // Create fleet
             // TODO: Rip this out and replace entirey with FleetFactoryV2
             final CampaignFleetAPI toSpawn
                     = FleetFactory.createGenericFleet(faction.getId(), name, quality, totalFP);
-            FleetFactoryV2.addCommanderAndOfficers(Math.max(1,
-                    (toSpawn.getFleetSizeCount() - toSpawn.getNumFighters()) / 3),
-                    1f, Math.min(20f, 15f * quality), toSpawn, null, MathUtils.getRandom());
+            totalOfficers = Math.min(15, Math.max(2, (int) (toSpawn.getFleetData()
+                    .getCombatReadyMembersListCopy().size() / 8f)));
+            FleetFactoryV2.addCommanderAndOfficers(totalOfficers, 1f,
+                    Math.min(20f, 15f * quality), toSpawn, null, MathUtils.getRandom());
 
             /*FleetFactoryV2.createFleet(new FleetParams(
                     hyperspaceLocation,
@@ -155,7 +155,8 @@ public class SpawnFleet implements BaseCommand
 
             // Spawn fleet around player
             final Vector2f offset = MathUtils.getRandomPointOnCircumference(null,
-                    Global.getSector().getPlayerFleet().getRadius() + 150f);
+                    Global.getSector().getPlayerFleet().getRadius()
+                    + toSpawn.getRadius() + 150f);
             Global.getSector().getCurrentLocation().spawnFleet(
                     Global.getSector().getPlayerFleet(), offset.x, offset.y, toSpawn);
             Global.getSector().addPing(toSpawn, "danger");
@@ -177,8 +178,8 @@ public class SpawnFleet implements BaseCommand
         }
 
         Console.showMessage("Spawned a " + totalFP + "FP "
-                + crewLevel.getPrefix().toLowerCase()
-                + " fleet aligned with faction " + faction.getId() + ".");
+                + crewLevel.getPrefix().toLowerCase() + " fleet with "
+                + totalOfficers + " officers, aligned with faction " + faction.getId() + ".");
         return CommandResult.SUCCESS;
     }
 }

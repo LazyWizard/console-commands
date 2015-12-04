@@ -1,3 +1,11 @@
+ 2.6b (December 04, 2015)
+==========================
+Changes to existing commands:
+ - AllWings won't add any wings that already exist in the target's cargo
+ - SpawnFleet gives an actually playable ratio of officers:
+   Adds 1 officer per 8 combat-ready ships (minimum 2, maximum 15 officers)
+ - SpawnFleet ensures massive fleets aren't spawned touching the player fleet
+
  2.6 (December 03, 2015)
 =========================
 Console output in combat uses combat messages instead of floating text
