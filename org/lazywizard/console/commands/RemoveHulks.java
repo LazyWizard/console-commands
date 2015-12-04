@@ -22,7 +22,7 @@ public class RemoveHulks implements BaseCommand
         {
             if (ship.isHulk())
             {
-                Kill.killShip(ship, false);
+                Global.getCombatEngine().removeEntity(ship);
                 numHulks++;
             }
         }
