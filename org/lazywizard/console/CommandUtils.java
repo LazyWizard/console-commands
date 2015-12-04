@@ -150,10 +150,10 @@ public class CommandUtils
         FactionAPI bestMatch = null;
         double closestDistance = Console.getSettings().getTypoCorrectionThreshold();
 
+        // Check IDs first in case multiple factions share the same name
         for (FactionAPI faction : Global.getSector().getAllFactions())
         {
-            double distance = Math.max(calcSimilarity(name, faction.getId().toLowerCase()),
-                    calcSimilarity(name, faction.getDisplayName().toLowerCase()));
+            double distance = calcSimilarity(name, faction.getId().toLowerCase());
 
             if (distance == 1.0)
             {
@@ -167,6 +167,26 @@ public class CommandUtils
             }
         }
 
+        // Search again by name if no matching ID is found
+        if (bestMatch == null)
+        {
+            for (FactionAPI faction : Global.getSector().getAllFactions())
+            {
+                double distance = calcSimilarity(name, faction.getDisplayName().toLowerCase());
+
+                if (distance == 1.0)
+                {
+                    return faction;
+                }
+
+                if (distance > closestDistance)
+                {
+                    closestDistance = distance;
+                    bestMatch = faction;
+                }
+            }
+        }
+
         return bestMatch;
     }
 
@@ -176,10 +196,10 @@ public class CommandUtils
         StarSystemAPI bestMatch = null;
         double closestDistance = Console.getSettings().getTypoCorrectionThreshold();
 
+        // Check IDs first in case multiple tokens share the same name
         for (StarSystemAPI loc : Global.getSector().getStarSystems())
         {
-            double distance = Math.max(calcSimilarity(name, loc.getId().toLowerCase()),
-                    calcSimilarity(name, loc.getBaseName().toLowerCase()));
+            double distance = calcSimilarity(name, loc.getId().toLowerCase());
 
             if (distance == 1.0)
             {
@@ -193,6 +213,26 @@ public class CommandUtils
             }
         }
 
+        // Search again by name if no matching ID is found
+        if (bestMatch == null)
+        {
+            for (StarSystemAPI loc : Global.getSector().getStarSystems())
+            {
+                double distance = calcSimilarity(name, loc.getBaseName().toLowerCase());
+
+                if (distance == 1.0)
+                {
+                    return loc;
+                }
+
+                if (distance > closestDistance)
+                {
+                    closestDistance = distance;
+                    bestMatch = loc;
+                }
+            }
+        }
+
         return bestMatch;
     }
 
@@ -203,12 +243,10 @@ public class CommandUtils
         SectorEntityToken bestMatch = null;
         double closestDistance = Console.getSettings().getTypoCorrectionThreshold();
 
+        // Check IDs first in case multiple tokens share the same name
         for (SectorEntityToken token : toSearch)
         {
-            double distance = Math.max(Math.max(
-                    calcSimilarity(name, token.getId().toLowerCase()),
-                    calcSimilarity(name, token.getName().toLowerCase())),
-                    calcSimilarity(name, token.getFullName().toLowerCase()));
+            double distance = calcSimilarity(name, token.getId().toLowerCase());
 
             if (distance == 1.0)
             {
@@ -219,6 +257,27 @@ public class CommandUtils
             {
                 closestDistance = distance;
                 bestMatch = token;
+            }
+        }
+
+        // Search again by name/full name if no matching ID is found
+        if (bestMatch == null)
+        {
+            for (SectorEntityToken token : toSearch)
+            {
+                double distance = Math.max(calcSimilarity(name, token.getName().toLowerCase()),
+                        calcSimilarity(name, token.getFullName().toLowerCase()));
+
+                if (distance == 1.0)
+                {
+                    return token;
+                }
+
+                if (distance > closestDistance)
+                {
+                    closestDistance = distance;
+                    bestMatch = token;
+                }
             }
         }
 
@@ -238,7 +297,7 @@ public class CommandUtils
 
     public static SectorEntityToken findTokenInLocation(String toFind, LocationAPI location)
     {
-        return findTokenInLocation(toFind, location, Tags.COMM_RELAY,
+        return findTokenInLocation(toFind, location, Tags.COMM_RELAY, Tags.GATE,
                 Tags.JUMP_POINT, Tags.PLANET, Tags.STAR, Tags.STATION);
     }
 

@@ -1,5 +1,7 @@
  2.6 (December XX, 2015)
 =========================
+Console output in combat uses combat messages instead of floating text
+CommandUtils findBestXMatch() check all IDs before names (fixes Nexerelin issue)
 New features:
  - Command tab completion. Press tab to cycle through all matches for the
    current command from the cursor onwards, shift+tab to reverse order
@@ -7,7 +9,6 @@ New features:
 New commands:
  - AddOfficer, adds a skilled officer to the player fleet
  - Hide, makes the player fleet invisible to other fleets
- - ListStorage, lists everything you've left in a storage tab and its location
  - OpenMarket, opens any market's interaction dialog from any system
  - RemoveHulks, destroys all hulks on the battle map
 Changes to existing commands:
