@@ -199,12 +199,12 @@ public class Console
     public static void showDialogOnClose(InteractionDialogPlugin dialog,
             SectorEntityToken token)
     {
-        Global.getSector().addScript(new ShowDialogOnCloseScript(dialog, token));
+        Global.getSector().addTransientScript(new ShowDialogOnCloseScript(dialog, token));
     }
 
     public static void showDialogOnClose(SectorEntityToken token)
     {
-        Global.getSector().addScript(new ShowDialogOnCloseScript(null, token));
+        Global.getSector().addTransientScript(new ShowDialogOnCloseScript(null, token));
     }
     //</editor-fold>
 
@@ -380,7 +380,7 @@ public class Console
         @Override
         public void advance(float amount)
         {
-            CampaignUIAPI ui = Global.getSector().getCampaignUI();
+            final CampaignUIAPI ui = Global.getSector().getCampaignUI();
             if (!isDone && !ui.isShowingDialog())
             {
                 isDone = true;
