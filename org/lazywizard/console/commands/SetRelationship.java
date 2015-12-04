@@ -73,7 +73,7 @@ public class SetRelationship implements BaseCommand
         final FactionAPI towardsFaction = CommandUtils.findBestFactionMatch(towardsFactionId);
         if (towardsFaction == null)
         {
-            final List ids = new ArrayList<>();
+            final List<String> ids = new ArrayList<>();
             for (FactionAPI faction : Global.getSector().getAllFactions())
             {
                 ids.add(faction.getId());
@@ -97,7 +97,8 @@ public class SetRelationship implements BaseCommand
             }
 
             Console.showMessage("Set relationship of " + totalFactions + " factions towards "
-                    + CommandUtils.getFactionName(towardsFaction) + " to " + newRelationship + ".");
+                    + CommandUtils.getFactionName(towardsFaction) + " (ID: "
+                    + towardsFaction.getId() + ") to " + newRelationship + ".");
             return CommandResult.SUCCESS;
         }
 
@@ -115,9 +116,10 @@ public class SetRelationship implements BaseCommand
         }
 
         faction.setRelationship(towardsFaction.getId(), newRelationship / 100f);
-        Console.showMessage("Set relationship of "
-                + CommandUtils.getFactionName(faction) + " towards "
-                + CommandUtils.getFactionName(towardsFaction) + " to " + newRelationship + ".");
+        Console.showMessage("Set relationship of " + CommandUtils.getFactionName(faction)
+                + " (ID: " + faction.getId() + ") towards "
+                + CommandUtils.getFactionName(towardsFaction) + " (ID: "
+                + towardsFaction.getId() + ") to " + newRelationship + ".");
         return CommandResult.SUCCESS;
     }
 }

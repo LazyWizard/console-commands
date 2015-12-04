@@ -63,7 +63,7 @@ public class AdjustRelationship implements BaseCommand
         final FactionAPI towardsFaction = CommandUtils.findBestFactionMatch(towardsFactionId);
         if (towardsFaction == null)
         {
-            final List ids = new ArrayList<>();
+            final List<String> ids = new ArrayList<>();
             for (FactionAPI faction : Global.getSector().getAllFactions())
             {
                 ids.add(faction.getId());
@@ -87,7 +87,8 @@ public class AdjustRelationship implements BaseCommand
             }
 
             Console.showMessage("Adjusted relationship of " + totalFactions + " factions towards "
-                    + CommandUtils.getFactionName(towardsFaction) + " by " + newRelationship + ".");
+                    + CommandUtils.getFactionName(towardsFaction) + " (ID: "
+                    + towardsFaction.getId() + ") by " + newRelationship + ".");
             return CommandResult.SUCCESS;
         }
 
@@ -105,9 +106,10 @@ public class AdjustRelationship implements BaseCommand
         }
 
         faction.adjustRelationship(towardsFaction.getId(), newRelationship / 100f);
-        Console.showMessage("Adjusted relationship of "
-                + CommandUtils.getFactionName(faction) + " towards "
-                + CommandUtils.getFactionName(towardsFaction) + " by " + newRelationship + ".");
+        Console.showMessage("Adjusted relationship of " + CommandUtils.getFactionName(faction)
+                + " (ID: " + faction.getId() + ") towards "
+                + CommandUtils.getFactionName(towardsFaction) + " (ID: "
+                + towardsFaction.getId() + ") by " + newRelationship + ".");
         return CommandResult.SUCCESS;
     }
 }
