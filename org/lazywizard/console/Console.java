@@ -339,9 +339,8 @@ public class Console
 
     private static void showOutput(ConsoleListener listener)
     {
-        if (output.length() > 0)
+        if (output.length() > 0 && listener.showOutput(output.toString()))
         {
-            listener.showOutput(output.toString());
             output = new StringBuilder();
         }
     }

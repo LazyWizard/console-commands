@@ -1,5 +1,7 @@
 package org.lazywizard.console;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -7,6 +9,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
+import com.fs.starfarer.api.combat.CombatUIAPI;
 import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.combat.ViewportAPI;
@@ -14,7 +17,6 @@ import com.fs.starfarer.api.input.InputEventAPI;
 import javax.swing.JOptionPane;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.ConsoleSettings.KeyStroke;
-import org.lwjgl.util.vector.Vector2f;
 
 public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleListener
 {
@@ -24,12 +26,6 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
     private final Executor exe = Executors.newSingleThreadExecutor();
     // Stores input from the console popup thread that hasn't been parsed yet
     private final Queue<String> input = new ConcurrentLinkedQueue<>();
-    // The Y offset of console output this frame, used so
-    // that multiple messages while paused won't overlap
-    private float messageOffset = 0f;
-    // The position of console output this frame, used so
-    // that the output is always centered on the screen
-    private Vector2f messagePos = null;
     private CommandContext context;
 
     //<editor-fold defaultstate="collapsed" desc="Input handling">
@@ -68,13 +64,6 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
         if (engine == null)
         {
             return;
-        }
-
-        // Reset new message offset each frame
-        if (!engine.isPaused())
-        {
-            messagePos = null;
-            messageOffset = 0f;
         }
 
         // Main menu check
@@ -127,32 +116,22 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
     }
 
     @Override
-    public void showOutput(String output)
+    public boolean showOutput(String output)
     {
-        // TODO: Clean this method up, or comment it more, or... something
-        ShipAPI player = Global.getCombatEngine().getPlayerShip();
-        String[] messages = output.split("\n");
-
-        // Ensure messages are centered, but don't reset the position
-        // if multiple commands are entered in one frame
-        if (messagePos == null)
+        final CombatUIAPI ui = Global.getCombatEngine().getCombatUI();
+        if (ui == null)
         {
-            ViewportAPI view = Global.getCombatEngine().getViewport();
-            messagePos = new Vector2f(view.getCenter().x,
-                    (view.getLLY() + view.getVisibleHeight()) - (50f * view.getViewMult()));
+            return false;
         }
 
+        final String[] messages = output.split("\n");
+        Collections.reverse(Arrays.asList(messages));
         for (int x = 0; x < messages.length; x++)
         {
-            // TODO: The values here are kind of arbitrary, need to be worked out properly
-            Global.getCombatEngine().addFloatingText(Vector2f.add(
-                    new Vector2f(-Console.getSettings().getMaxOutputLineLength() / 2f,
-                            -((MESSAGE_SIZE * 2) + messageOffset + (x * MESSAGE_SIZE))),
-                    messagePos, null), messages[x], MESSAGE_SIZE,
-                    Console.getSettings().getOutputColor(), player, 0f, 0f);
+            ui.addMessage(0, Console.getSettings().getOutputColor(), messages[x]);
         }
 
-        messageOffset += messages.length * MESSAGE_SIZE;
+        return true;
     }
 
     @Override

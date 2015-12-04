@@ -82,7 +82,7 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
     }
 
     @Override
-    public void showOutput(String output)
+    public boolean showOutput(String output)
     {
         if (isDialogOpen)
         {
@@ -100,6 +100,8 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                         Console.getSettings().getOutputColor());
             }
         }
+
+        return true;
     }
 
     @Override
