@@ -63,6 +63,7 @@ public class Kill implements BaseCommand
     {
         if (context.isInCampaign())
         {
+            Global.getSector().removeScriptsOfClass(KillOnClickScript.class);
             Global.getSector().addTransientScript(new KillOnClickScript());
             Console.showMessage("Click on fleets to destroy them. Press escape when you are finished.");
             return CommandResult.SUCCESS;
@@ -137,6 +138,9 @@ public class Kill implements BaseCommand
                         if (MathUtils.isWithinRange(target, fleet.getLocation(),
                                 fleet.getRadius()))
                         {
+                            ui.addMessage("Destroyed " + fleet.getFullName()
+                                    + " (" + fleet.getFleetPoints() + " FP).",
+                                    Console.getSettings().getOutputColor());
                             for (FleetMemberAPI member : fleet.getFleetData().getMembersListCopy())
                             {
                                 fleet.removeFleetMemberWithDestructionFlash(member);
