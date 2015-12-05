@@ -1,13 +1,21 @@
 package org.lazywizard.console.commands;
 
+import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.CampaignFleetAPI;
+import com.fs.starfarer.api.campaign.CampaignUIAPI;
+import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.DamageType;
 import com.fs.starfarer.api.combat.ShipAPI;
+import com.fs.starfarer.api.combat.ViewportAPI;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollisionUtils;
+import org.lazywizard.lazylib.MathUtils;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
 
 public class Kill implements BaseCommand
@@ -53,10 +61,11 @@ public class Kill implements BaseCommand
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
-        if (!context.isInCombat())
+        if (context.isInCampaign())
         {
-            Console.showMessage(CommonStrings.ERROR_COMBAT_ONLY);
-            return CommandResult.WRONG_CONTEXT;
+            Global.getSector().addTransientScript(new KillOnClickScript());
+            Console.showMessage("Click on fleets to destroy them. Press escape when you are finished.");
+            return CommandResult.SUCCESS;
         }
 
         CombatEngineAPI engine = Global.getCombatEngine();
@@ -69,8 +78,84 @@ public class Kill implements BaseCommand
         }
 
         killShip(target, false);
-        Console.showMessage("Destroyed "
-                + target.getVariant().getFullDesignationWithHullName() + ".");
+        Console.showMessage("Destroyed " + target.getVariant().getFullDesignationWithHullName() + ".");
         return CommandResult.SUCCESS;
+    }
+
+    private static class KillOnClickScript implements EveryFrameScript
+    {
+        private static final float TIME_BETWEEN_NOTIFICATIONS = 15f;
+        private float nextNotify = 0f, timeUntilEscapeRegisters = 1f;
+        private boolean buttonDown = false, isDone = false;
+
+        @Override
+        public boolean isDone()
+        {
+            return isDone;
+        }
+
+        @Override
+        public boolean runWhilePaused()
+        {
+            return true;
+        }
+
+        @Override
+        public void advance(float amount)
+        {
+            final CampaignUIAPI ui = Global.getSector().getCampaignUI();
+            if (isDone || ui.isShowingDialog() || ui.isShowingMenu())
+            {
+                return;
+            }
+
+            timeUntilEscapeRegisters -= amount;
+            if (timeUntilEscapeRegisters <= 0f && Keyboard.isKeyDown(Keyboard.KEY_ESCAPE))
+            {
+                isDone = true;
+                ui.addMessage("Cancelled.", Console.getSettings().getOutputColor());
+                return;
+            }
+
+            if (Mouse.isButtonDown(0))
+            {
+                if (!buttonDown)
+                {
+                    buttonDown = true;
+                    nextNotify = TIME_BETWEEN_NOTIFICATIONS;
+                    final LocationAPI loc = Global.getSector().getCurrentLocation();
+                    final ViewportAPI view = Global.getSector().getViewport();
+                    final Vector2f target = new Vector2f(view.convertScreenXToWorldX(Mouse.getX()),
+                            view.convertScreenYToWorldY(Mouse.getY()));
+                    for (CampaignFleetAPI fleet : loc.getFleets())
+                    {
+                        if (fleet.isPlayerFleet())
+                        {
+                            continue;
+                        }
+
+                        if (MathUtils.isWithinRange(target, fleet.getLocation(),
+                                fleet.getRadius()))
+                        {
+                            for (FleetMemberAPI member : fleet.getFleetData().getMembersListCopy())
+                            {
+                                fleet.removeFleetMemberWithDestructionFlash(member);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                buttonDown = false;
+                nextNotify -= amount;
+                if (nextNotify <= 0f)
+                {
+                    ui.addMessage("Click on fleets to destroy them, or press"
+                            + " escape to cancel...", Console.getSettings().getOutputColor());
+                    nextNotify = TIME_BETWEEN_NOTIFICATIONS;
+                }
+            }
+        }
     }
 }
