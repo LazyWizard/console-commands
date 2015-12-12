@@ -2,6 +2,7 @@ package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FleetDataAPI;
+import com.fs.starfarer.api.combat.ShipAPI.HullSize;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.fleet.FleetMemberType;
 import org.apache.log4j.Level;
@@ -117,7 +118,7 @@ public class AddShip implements BaseCommand
         }
 
         // TODO: Redirect wings to AddWing instead of snarking at the user
-        if (ship.isFighterWing())
+        if (ship.isFighterWing() || ship.getHullSpec().getHullSize() == HullSize.FIGHTER)
         {
             Console.showMessage("Use AddWing for fighters!");
             return CommandResult.ERROR;

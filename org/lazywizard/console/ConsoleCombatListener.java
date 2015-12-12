@@ -126,9 +126,9 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
 
         final String[] messages = output.split("\n");
         Collections.reverse(Arrays.asList(messages));
-        for (int x = 0; x < messages.length; x++)
+        for (String message : messages)
         {
-            ui.addMessage(0, Console.getSettings().getOutputColor(), messages[x]);
+            ui.addMessage(0, Console.getSettings().getOutputColor(), message);
         }
 
         return true;

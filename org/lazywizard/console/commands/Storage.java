@@ -62,8 +62,6 @@ public class Storage implements BaseCommand
                         continue;
                     }
 
-                    System.out.println("Checking " + storage.getNameOneLine());
-
                     // Prefer the abandoned station above all else
                     if (market.hasCondition(Conditions.ABANDONED_STATION))
                     {
