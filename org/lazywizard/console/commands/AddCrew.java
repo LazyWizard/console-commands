@@ -1,16 +1,50 @@
 package org.lazywizard.console.commands;
 
+import java.util.HashMap;
+import java.util.Map;
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.CampaignFleetAPI;
+import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.CargoAPI.CrewXPLevel;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
+import com.fs.starfarer.api.fleet.RepairTrackerAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
+import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
 // TODO: If no number is passed in, add crew up to number needed to function
 public class AddCrew implements BaseCommand
 {
+    public static int addNeededCrew(CampaignFleetAPI fleet, CrewXPLevel level)
+    {
+        final CargoAPI cargo = fleet.getCargo();
+        final Map<FleetMemberAPI, Float> crMap = new HashMap<>();
+        int total = 0;
+        for (FleetMemberAPI member : fleet.getFleetData().getMembersListCopy())
+        {
+            if (!member.isMothballed() && member.getNeededCrew() > 0)
+            {
+                crMap.put(member, member.getRepairTracker().getMaxCR());
+                total += member.getNeededCrew();
+            }
+        }
+
+        cargo.addCrew(level, total);
+
+        // Restore only as much CR as the crew adds
+        for (Map.Entry<FleetMemberAPI, Float> entry : crMap.entrySet())
+        {
+            final RepairTrackerAPI tracker = entry.getKey().getRepairTracker();
+            tracker.setCR(tracker.getCR() + (tracker.getMaxCR() - entry.getValue()));
+        }
+
+        fleet.forceSync();
+        return total;
+    }
+
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
@@ -22,7 +56,7 @@ public class AddCrew implements BaseCommand
 
         if (args.isEmpty())
         {
-            return CommandResult.BAD_SYNTAX;
+            return runCommand("regular", context);
         }
 
         args = args.toLowerCase();
@@ -30,7 +64,25 @@ public class AddCrew implements BaseCommand
 
         if (tmp.length == 1)
         {
-            return runCommand(args + " regular", context);
+            if (CommandUtils.isInteger(tmp[0]))
+            {
+                return runCommand(tmp[0] + " regular", context);
+            }
+
+            try
+            {
+                final CrewXPLevel level = Enum.valueOf(
+                        CrewXPLevel.class, tmp[0].toUpperCase());
+                int amt = addNeededCrew(Global.getSector().getPlayerFleet(), level);
+                Console.showMessage("Added " + (amt <= 0 ? "no additional"
+                        : amt + " " + level.name().toLowerCase())
+                        + " crew to player fleet.");
+                return CommandResult.SUCCESS;
+            }
+            catch (IllegalArgumentException ex)
+            {
+                return CommandResult.BAD_SYNTAX;
+            }
         }
 
         if (tmp.length != 2)
