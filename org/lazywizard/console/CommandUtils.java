@@ -1,10 +1,12 @@
 package org.lazywizard.console;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.FactionAPI;
@@ -20,6 +22,52 @@ import com.fs.starfarer.api.impl.campaign.ids.Tags;
 public class CommandUtils
 {
     private static final boolean ENABLE_TYPO_CORRECTION = true;
+
+    public static void main(String[] args)
+    {
+        final int NUM_TESTS = 10_000_000;
+        System.out.println("Running " + DecimalFormat.getIntegerInstance()
+                .format(NUM_TESTS) + " tests...");
+
+        long startTime = System.nanoTime();
+        final List<String> testStrings = new ArrayList<>(NUM_TESTS);
+        System.out.println("Time taken (instantiate): "
+                + ((System.nanoTime() - startTime) / 1000000000.0d) + " seconds");
+
+        startTime = System.nanoTime();
+        for (int x = 0; x < NUM_TESTS; x++)
+        {
+            testStrings.add(Double.toString(((.5d - Math.random()) * 1_000_000.0d)));
+        }
+        System.out.println("Time taken (populate): "
+                + ((System.nanoTime() - startTime) / 1000000000.0d) + " seconds");
+
+        System.out.println(testStrings.subList(0, 100));
+
+        startTime = System.nanoTime();
+        for (String str : testStrings)
+        {
+            if (!isInteger(str))
+            {
+                //throw new RuntimeException("Not int (stackoverflow): " + str);
+            }
+        }
+        System.out.println("Time taken (int): "
+                + ((System.nanoTime() - startTime) / 1000000000.0d) + " seconds");
+
+        startTime = System.nanoTime();
+        for (String str : testStrings)
+        {
+            if (!isDecimal(str))
+            {
+                throw new RuntimeException("Not dec: " + str);
+            }
+        }
+        System.out.println("Time taken (regex): "
+                + ((System.nanoTime() - startTime) / 1000000000.0d) + " seconds");
+        //System.out.println(test + " (isInt: " + isInteger(test)
+        //        +" | isDec: " + isDecimal(test));
+    }
 
     /**
      * Returns normalized score, with 0.0 meaning no similarity at all,
@@ -142,6 +190,48 @@ public class CommandUtils
         }
 
         return bestMatch;
+    }
+
+    // Taken from StackOverflow answer https://stackoverflow.com/a/5439547
+    public static boolean isInteger(String arg)
+    {
+        if (arg.isEmpty())
+        {
+            return false;
+        }
+
+        for (int i = 0; i < arg.length(); i++)
+        {
+            if ((i == 0) && (arg.charAt(i) == '-'))
+            {
+                if (arg.length() == 1)
+                {
+                    return false;
+                }
+                else
+                {
+                    continue;
+                }
+            }
+
+            if (Character.digit(arg.charAt(i), 10) < 0)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Taken directly from the Java documentation, don't blame me for this monstrosity!
+    private static final Pattern DOUBLE_REGEX = Pattern.compile(
+            "[\\x00-\\x20]*[+-]?(NaN|Infinity|((((\\p{Digit}+)(\\.)?((\\p{Digit}+)?)"
+            + "([eE][+-]?(\\p{Digit}+))?)|(\\.((\\p{Digit}+))([eE][+-]?(\\p{Digit}+))?)|"
+            + "(((0[xX](\\p{XDigit}+)(\\.)?)|(0[xX](\\p{XDigit}+)?(\\.)(\\p{XDigit}+)))"
+            + "[pP][+-]?(\\p{Digit}+)))[fFdD]?))[\\x00-\\x20]*");
+
+    public static boolean isDecimal(String arg)
+    {
+        return DOUBLE_REGEX.matcher(arg).matches();
     }
 
     public static FactionAPI findBestFactionMatch(String name)
