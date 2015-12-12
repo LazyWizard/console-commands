@@ -1,6 +1,8 @@
 package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.CampaignFleetAPI;
+import com.fs.starfarer.api.campaign.CargoAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
@@ -9,6 +11,23 @@ import org.lazywizard.console.Console;
 
 public class AddSupplies implements BaseCommand
 {
+    public static int addSupplies(CampaignFleetAPI fleet, float maxCargoFraction)
+    {
+        final float spacePerSupply = Global.getSector().getEconomy()
+                .getCommoditySpec("supplies").getCargoSpace();
+        final CargoAPI cargo = fleet.getCargo();
+        int total = (int) Math.min(cargo.getSpaceLeft(), Math.max(0f,
+                ((cargo.getMaxCapacity() * maxCargoFraction))
+                - (cargo.getSupplies() * spacePerSupply)));
+
+        if (total > 0)
+        {
+            cargo.addSupplies(total);
+        }
+
+        return total;
+    }
+
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
@@ -20,7 +39,10 @@ public class AddSupplies implements BaseCommand
 
         if (args.isEmpty())
         {
-            return CommandResult.BAD_SYNTAX;
+            int amount = addSupplies(Global.getSector().getPlayerFleet(), 0.5f);
+            Console.showMessage("Added " + (amount > 0 ? amount : "no")
+                    + " supplies to player inventory.");
+            return CommandResult.SUCCESS;
         }
 
         int amount;
