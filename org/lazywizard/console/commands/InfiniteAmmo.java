@@ -6,6 +6,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
+import com.fs.starfarer.api.combat.ShipSystemAPI;
 import com.fs.starfarer.api.combat.WeaponAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.mission.FleetSide;
@@ -85,6 +86,12 @@ public class InfiniteAmmo implements BaseCommand
                     for (WeaponAPI wep : ship.getAllWeapons())
                     {
                         wep.resetAmmo();
+                    }
+
+                    final ShipSystemAPI system = ship.getSystem();
+                    if (system != null && system.getAmmo() < system.getMaxAmmo())
+                    {
+                        system.setAmmo(system.getMaxAmmo());
                     }
                 }
             }
