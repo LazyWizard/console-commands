@@ -1,3 +1,15 @@
+ 2.7 (December XX, 2015)
+=========================
+Updated the custom command tutorial
+Changes to existing commands:
+ - AddCrew without a quantity will fill all empty space in your crew complement
+ - AddFuel without a quantity will top off your fleet's fuel tanks
+ - AddShip: fixed regression that allowed you to spawn single fighters again
+ - AddSupplies without a quantity will give up to 50% cargo space as supplies
+ - InfiniteAmmo applies to ship systems that have limited uses
+ - Kill works on the campaign map, destroys any fleet you click on until you
+   press escape or enter a menu
+
  2.6b (December 04, 2015)
 ==========================
 Changes to existing commands:
