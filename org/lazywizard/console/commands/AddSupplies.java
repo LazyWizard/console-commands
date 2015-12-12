@@ -13,12 +13,10 @@ public class AddSupplies implements BaseCommand
 {
     public static int addSupplies(CampaignFleetAPI fleet, float maxCargoFraction)
     {
-        final float spacePerSupply = Global.getSector().getEconomy()
-                .getCommoditySpec("supplies").getCargoSpace();
         final CargoAPI cargo = fleet.getCargo();
         int total = (int) Math.min(cargo.getSpaceLeft(), Math.max(0f,
-                ((cargo.getMaxCapacity() * maxCargoFraction))
-                - (cargo.getSupplies() * spacePerSupply)));
+                ((cargo.getMaxCapacity() * maxCargoFraction) - cargo.getSupplies())));
+        total /= Global.getSector().getEconomy().getCommoditySpec("supplies").getCargoSpace();
 
         if (total > 0)
         {

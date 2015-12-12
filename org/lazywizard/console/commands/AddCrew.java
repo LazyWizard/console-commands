@@ -15,7 +15,6 @@ import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
-// TODO: If no number is passed in, add crew up to number needed to function
 public class AddCrew implements BaseCommand
 {
     public static int addNeededCrew(CampaignFleetAPI fleet, CrewXPLevel level)
