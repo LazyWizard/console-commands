@@ -81,7 +81,8 @@ public class CommandStore
 
                 // Class is valid, start building command info
                 String commandSyntax = row.optString("syntax", "");
-                String commandHelp = row.optString("help", "");
+                String commandHelp = row.optString("help", "")
+                        .replace("\\n", "\n");
 
                 // Generate the tag list
                 String[] rawTags = row.optString("tags", "").split(",");
