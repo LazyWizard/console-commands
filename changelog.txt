@@ -1,6 +1,6 @@
  2.7 (December XX, 2015)
 =========================
-Updated the custom command tutorial
+Updated the custom command tutorial in the base folder
 Newlines (\n) in a command's 'help' column are parsed correctly
 Changes to existing commands:
  - AddCrew without a quantity will fill remaining skeleton crew in your fleet
@@ -11,6 +11,9 @@ Changes to existing commands:
  - InfiniteAmmo also applies to ship systems that have limited uses
  - Kill works on the campaign map, destroys any fleet you click on until you
    press escape or enter a menu (kills are not credited to the player)
+ - List accepts a second argument, used to filter out any IDs that don't start
+   with that argument ("list variants exi_" will show only Exigency variants,
+   for example)
 
  2.6b (December 04, 2015)
 ==========================
@@ -181,8 +184,8 @@ Changes to existing commands:
    SetRelationship
  - Added several more default RunCode macros
 
- 2.1.1 (November 13, 2014)
-===========================
+ 2.1b (November 13, 2014)
+==========================
 Added List command, shows valid IDs for ships/wings/systems/weapons/factions/etc
 
  2.1 (November 12, 2014)

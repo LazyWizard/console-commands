@@ -2,6 +2,7 @@ package org.lazywizard.console.commands;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
@@ -29,14 +30,21 @@ public class List_ implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
+        if (args.isEmpty())
+        {
+            return CommandResult.BAD_SYNTAX;
+        }
+
         // Get all valid IDs for the specified type
         args = args.toLowerCase();
+        String[] tmp = args.split(" ");
+        String param = tmp[0];
         final SectorAPI sector = Global.getSector();
         final LocationAPI loc = sector.getCurrentLocation();
         final CampaignFleetAPI player = sector.getPlayerFleet();
         boolean newLinePerItem = false;
         List<String> ids;
-        switch (args)
+        switch (param)
         {
             case "ships":
             case "hulls":
@@ -78,7 +86,7 @@ public class List_ implements BaseCommand
                 }
                 break;
             case "planets":
-                args = "planets in current system";
+                param = "planets in current system";
                 ids = new ArrayList<>();
                 for (PlanetAPI planet : loc.getPlanets())
                 {
@@ -86,7 +94,7 @@ public class List_ implements BaseCommand
                 }
                 break;
             case "stations":
-                args = "stations in current system";
+                param = "stations in current system";
                 ids = new ArrayList<>();
                 for (SectorEntityToken station : sector.getCurrentLocation()
                         .getEntitiesWithTag(Tags.STATION))
@@ -110,10 +118,26 @@ public class List_ implements BaseCommand
                 return CommandResult.BAD_SYNTAX;
         }
 
+        // Support for further filtering results
+        if (tmp.length > 1)
+        {
+            final String filter = args.substring(args.indexOf(' ') + 1);
+            param += " starting with \"" + filter + "\"";
+
+            for (Iterator<String> iter = ids.iterator(); iter.hasNext();)
+            {
+                String id = iter.next().toLowerCase();
+                if (!id.startsWith(filter))
+                {
+                    iter.remove();
+                }
+            }
+        }
+
         // Format and print the list of valid IDs
         Collections.sort(ids);
         final String results = CollectionUtils.implode(ids, (newLinePerItem ? "\n" : ", "));
-        Console.showMessage("Known " + args + " (" + ids.size() + "):\n"
+        Console.showMessage("Known " + param + " (" + ids.size() + "):\n"
                 + StringUtils.indent(StringUtils.wrapString(results,
                         Console.getSettings().getMaxOutputLineLength() - 3), "   "));
         return CommandResult.SUCCESS;
