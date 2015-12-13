@@ -3,7 +3,7 @@
 Updated the custom command tutorial in the base folder
 Newlines (\n) in a command's 'help' column are parsed correctly
 Changes to existing commands:
- - AddCrew without a quantity will fill remaining skeleton crew in your fleet
+ - AddCrew without a quantity will add all needed skeleton crew to your fleet
  - AddFuel without a quantity will top off your fleet's fuel tanks
  - AddShip: fixed regression that allowed you to spawn single fighters again
  - AddSupplies without a quantity will fill half the player cargo with supplies
@@ -12,8 +12,9 @@ Changes to existing commands:
  - Kill works on the campaign map, destroys any fleet you click on until you
    press escape or enter a menu (kills are not credited to the player)
  - List accepts a second argument, used to filter out any IDs that don't start
-   with that argument ("list variants exi_" will show only Exigency variants,
-   for example)
+   with that argument (ex: "list variants exi_" will show all Exigency variants,
+   "list variants hound" will show all hound and hound subskin variants)
+ - Traitor affects guided missiles fired by that ship (no more targeting itself)
 
  2.6b (December 04, 2015)
 ==========================

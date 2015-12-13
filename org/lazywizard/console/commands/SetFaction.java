@@ -42,8 +42,18 @@ public class SetFaction implements BaseCommand
         }
 
         Global.getSector().getPlayerFleet().setFaction(towardsFaction.getId());
-        Console.showMessage("Set player faction to " + towardsFaction.getDisplayName() + ".");
-        Global.getSector().addTransientScript(new FactionRelationMirror());
+
+        if (towardsFaction.isPlayerFaction())
+        {
+            Console.showMessage("Reset player faction.");
+            Global.getSector().removeScriptsOfClass(FactionRelationMirror.class);
+        }
+        else
+        {
+            Console.showMessage("Set player faction to " + towardsFaction.getDisplayName() + ".");
+            Global.getSector().addTransientScript(new FactionRelationMirror());
+        }
+
         return CommandResult.SUCCESS;
     }
 

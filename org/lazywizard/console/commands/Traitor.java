@@ -14,7 +14,13 @@ public class Traitor implements BaseCommand
     {
         // Switch to the opposite side
         ship.setOwner(newOwner);
-        ship.getShipAI().forceCircumstanceEvaluation();
+        ship.setOriginalOwner(newOwner);
+
+        // Force AI to re-evaluate surroundings
+        if (ship.getShipAI() != null)
+        {
+            ship.getShipAI().forceCircumstanceEvaluation();
+        }
 
         // Also switch sides of any drones (doesn't affect any new ones)
         if (ship.getDeployedDrones() != null)
