@@ -2,6 +2,8 @@
 =========================
 Updated the custom command tutorial in the base folder
 Newlines (\n) in a command's 'help' column are parsed correctly
+Exception stack traces are no longer shown by default
+Added "showExceptionDetails" to console.settings.json
 Changes to existing commands:
  - AddCrew without a quantity will add all needed skeleton crew to your fleet
  - AddFuel without a quantity will top off your fleet's fuel tanks

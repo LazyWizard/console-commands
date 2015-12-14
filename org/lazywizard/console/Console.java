@@ -78,6 +78,7 @@ public class Console
                 Pattern.quote(settingsFile.getString("commandSeparator")),
                 settingsFile.getBoolean("showEnteredCommands"),
                 settingsFile.getBoolean("showCursorIndex"),
+                settingsFile.getBoolean("showExceptionDetails"),
                 settingsFile.getDouble("typoCorrectionThreshold"),
                 JSONUtils.toColor(settingsFile.getJSONArray("outputColor")),
                 settingsFile.getInt("maxOutputLineLength"),
@@ -188,9 +189,12 @@ public class Console
 
         // Add stack trace of Throwable
         stackTrace.append(ex.toString()).append("\n");
-        for (StackTraceElement ste : ex.getStackTrace())
+        if (settings.getShouldShowExceptionStackTraces())
         {
-            stackTrace.append("   at ").append(ste.toString()).append("\n");
+            for (StackTraceElement ste : ex.getStackTrace())
+            {
+                stackTrace.append("   at ").append(ste.toString()).append("\n");
+            }
         }
 
         showMessage(stackTrace.toString(), Level.ERROR);
