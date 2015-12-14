@@ -23,6 +23,8 @@ public class ConsoleSettings
     private final boolean SHOW_ENTERED_COMMANDS;
     // Whether the current cursor index is displayed in the campaign pop-up
     private final boolean SHOW_CURSOR_INDEX;
+    // Whether to show full exception stack traces or just the class/message
+    private final boolean SHOW_EXCEPTION_TRACE;
     // How similar two strings must be for typo correction to decide they match
     private final double TYPO_CORRECTION_THRESHOLD;
     // The color of the console's output text
@@ -32,14 +34,15 @@ public class ConsoleSettings
 
     ConsoleSettings(int consoleSummonKey, boolean requireShift, boolean requireControl,
             boolean requireAlt, String commandSeparator, boolean showEnteredCommands,
-            boolean showCursorIndex, double typoCorrectionThreshold, Color outputColor,
-            int outputMaxLineLength, Map<CommandResult, String> resultSounds)
+            boolean showCursorIndex, boolean showStackTrace, double typoCorrectionThreshold,
+            Color outputColor, int outputMaxLineLength, Map<CommandResult, String> resultSounds)
     {
         CONSOLE_SUMMON_KEY = new KeyStroke(consoleSummonKey, requireShift,
                 requireControl, requireAlt);
         COMMAND_SEPARATOR = commandSeparator;
         SHOW_ENTERED_COMMANDS = showEnteredCommands;
         SHOW_CURSOR_INDEX = showCursorIndex;
+        SHOW_EXCEPTION_TRACE = showStackTrace;
         TYPO_CORRECTION_THRESHOLD = typoCorrectionThreshold;
         OUTPUT_COLOR = outputColor;
         OUTPUT_MAX_LINE_LENGTH = outputMaxLineLength;
@@ -87,9 +90,34 @@ public class ConsoleSettings
         return SHOW_ENTERED_COMMANDS;
     }
 
+    /**
+     * Returns whether the campaign pop-up shows the current index (for input
+     * debugging purposes).
+     * <p>
+     * @return {@code true} if the campaign popup shows the cursor index,
+     *         {@code false} otherwise.
+     * <p>
+     * @since 2.3
+     */
     public boolean getShouldShowCursorIndex()
     {
         return SHOW_CURSOR_INDEX;
+    }
+
+    /**
+     * Returns whether
+     * {@link Console#showException(java.lang.String, java.lang.Throwable)}
+     * shows the full exception trace.
+     * <p>
+     * @return {@code true} if full exception stack traces are shown with
+     *         {@link Console#showException(java.lang.String, java.lang.Throwable)}, {@code false}
+     *         otherwise.
+     * <p>
+     * @since 2.7
+     */
+    public boolean getShouldShowExceptionStackTraces()
+    {
+        return SHOW_EXCEPTION_TRACE;
     }
 
     /**
