@@ -8,6 +8,8 @@ Changes to existing commands:
  - AddShip: fixed regression that allowed you to spawn single fighters again
  - AddSupplies without a quantity will fill half the player cargo with supplies
    (won't go over cargo capacity, won't go over 50% total cargo as supplies)
+ - ForceMarketUpdate actually forces a market refresh each time you use it
+   (previously only refreshed stock if the market would have done so on a visit)
  - InfiniteAmmo also applies to ship systems that have limited uses
  - Kill works on the campaign map, destroys any fleet you click on until you
    press escape or enter a menu (kills are not credited to the player)
