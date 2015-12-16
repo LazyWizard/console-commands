@@ -11,7 +11,12 @@ Changes to existing commands:
  - AddSupplies without a quantity will fill half the player cargo with supplies
    (won't go over cargo capacity, won't go over 50% total cargo as supplies)
  - AllHulls and AllWings won't cause an error if used in a total conversion
-   that lacks an unlocked storage
+   that lacks an unlocked storage tab
+ - FindItem/FindShip list goods in free transfer submarkets last (useful for
+   reminding yourself which storage tab you left a specific ship/weapon in)
+   Note: due to API limitations this does not include anything in storage in the
+   Abandoned Terraforming Platform or any other market that doesn't participate
+   in the economy!
  - ForceMarketUpdate actually forces a market refresh each time you use it
    (previously only refreshed stock if the market would have done so on a visit)
  - InfiniteAmmo also applies to ship systems that have limited uses
