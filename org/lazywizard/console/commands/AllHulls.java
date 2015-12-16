@@ -32,7 +32,7 @@ public class AllHulls implements BaseCommand
 
         if (args == null || args.isEmpty())
         {
-            target = Storage.retrieveStorage().getMothballedShips();
+            target = Storage.retrieveStorageFleetData();
             targetName = "storage (use 'storage' to retrieve)";
         }
         else if ("player".equalsIgnoreCase(args))
