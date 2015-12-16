@@ -1,4 +1,4 @@
- 2.7 (December XX, 2015)
+ 2.7 (December 16, 2015)
 =========================
 Newlines (\n) in a command's 'help' column are displayed correctly
 Exception stack traces are no longer shown by default
