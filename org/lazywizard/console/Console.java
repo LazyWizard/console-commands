@@ -196,6 +196,10 @@ public class Console
                 stackTrace.append("   at ").append(ste.toString()).append("\n");
             }
         }
+        else
+        {
+            Log.error("Console ran into exception: ", ex);
+        }
 
         showMessage(stackTrace.toString(), Level.ERROR);
     }

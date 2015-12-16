@@ -254,7 +254,8 @@ public class ConsoleSettings
         @Override
         public String toString()
         {
-            String str = Keyboard.getKeyName(key).toUpperCase();
+            String str = (key == Keyboard.KEY_BACK ? "BACKSPACE"
+                    : Keyboard.getKeyName(key).toUpperCase());
 
             if (requireShift)
             {
