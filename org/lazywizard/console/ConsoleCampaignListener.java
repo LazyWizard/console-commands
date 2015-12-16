@@ -22,6 +22,7 @@ import org.lwjgl.opengl.Display;
 
 public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListener
 {
+    private transient float timeUntilNotify = 0.5f;
     private transient CampaignPopup popup = null;
     private transient boolean isDialogOpen = false;
 
@@ -66,6 +67,11 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
     @Override
     public void advance(float amount)
     {
+        if (timeUntilNotify > 0f)
+        {
+            timeUntilNotify -= amount;
+        }
+
         if (checkInput())
         {
             isDialogOpen = true;
@@ -84,6 +90,11 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
     @Override
     public boolean showOutput(String output)
     {
+        if (timeUntilNotify > 0f)
+        {
+            return false;
+        }
+
         if (isDialogOpen)
         {
             for (String message : output.split("\n"))
