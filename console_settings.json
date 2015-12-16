@@ -20,7 +20,7 @@
     "commandSeparator":";",           # Default: ;
 
     # Whether errors that report an exception should show the full stack trace
-    # If set to false, only show the exception name and message
+    # If set to false, only shows the exception name and message (see starsector.log for trace)
     "showExceptionDetails":false,     # Default: false
 
     # How close an argument has to be to a valid ID before the mod assumes
