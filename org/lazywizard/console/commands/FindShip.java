@@ -38,7 +38,7 @@ public class FindShip implements BaseCommand
 
         float shipPriceMod = Global.getSettings().getFloat("shipBuyPriceMult");
 
-        Map<SubmarketAPI, PriceData> found = new HashMap<>();
+        final Map<SubmarketAPI, PriceData> found = new HashMap<>(), foundFree = new HashMap<>();
         for (MarketAPI market : Global.getSector().getEconomy().getMarketsCopy())
         {
             for (SubmarketAPI submarket : market.getSubmarketsCopy())
@@ -46,7 +46,7 @@ public class FindShip implements BaseCommand
                 int total = 0;
                 boolean isFirstFound = true;
                 float price = 0f;
-                boolean isIllegal = false;
+                boolean isIllegal = false, isFree = false;
                 for (FleetMemberAPI member : submarket.getCargo().getMothballedShips().getMembersListCopy())
                 {
                     if (member.getHullId().equalsIgnoreCase(args))
@@ -57,7 +57,14 @@ public class FindShip implements BaseCommand
                         {
                             isFirstFound = false;
 
-                            if (!submarket.getPlugin().isFreeTransfer())
+                            if (submarket.getPlugin().isFreeTransfer())
+                            {
+                                price = 0;
+                                isIllegal = false;
+                                isFree = true;
+                                System.out.println("Found free in " + submarket.getName());
+                            }
+                            else
                             {
                                 price = member.getBaseBuyValue();
                                 price += (price * submarket.getTariff());
@@ -70,32 +77,60 @@ public class FindShip implements BaseCommand
 
                 if (total > 0)
                 {
-                    found.put(submarket, new PriceData(price, total, isIllegal));
+                    if (isFree)
+                    {
+                        foundFree.put(submarket, new PriceData(price, total, isIllegal));
+                    }
+                    else
+                    {
+                        found.put(submarket, new PriceData(price, total, isIllegal));
+                    }
                 }
             }
         }
 
-        if (found.isEmpty())
+        if (found.isEmpty() && foundFree.isEmpty())
         {
             Console.showMessage("No ships with id '" + args + "' found!");
             return CommandResult.SUCCESS;
         }
 
-        Console.showMessage("Found " + found.size() + " markets with "
-                + Character.toUpperCase(args.charAt(0)) + args.substring(1) + "s for sale:");
-        for (Map.Entry<SubmarketAPI, PriceData> entry : found.entrySet())
+        if (!found.isEmpty())
         {
-            SubmarketAPI submarket = entry.getKey();
-            PriceData data = entry.getValue();
-            Console.showMessage(" - " + data.getAvailable() + " available for "
-                    + Math.round(data.getPrice()) + " credits at "
-                    + submarket.getMarket().getName() + "'s "
-                    + submarket.getNameOneLine() + " submarket ("
-                    + submarket.getFaction().getDisplayName() + ", "
-                    + submarket.getMarket().getPrimaryEntity()
-                    .getContainingLocation().getName()
-                    + (data.isIllegal() ? ", restricted)" : ")"));
+            Console.showMessage("Found " + found.size() + " markets with an "
+                    + Character.toUpperCase(args.charAt(0)) + args.substring(1) + " for sale:");
+            for (Map.Entry<SubmarketAPI, PriceData> entry : found.entrySet())
+            {
+                SubmarketAPI submarket = entry.getKey();
+                PriceData data = entry.getValue();
+                Console.showMessage(" - " + data.getAvailable() + " available for "
+                        + Math.round(data.getPrice()) + " credits at "
+                        + submarket.getMarket().getName() + "'s "
+                        + submarket.getNameOneLine() + " submarket ("
+                        + submarket.getFaction().getDisplayName() + ", "
+                        + submarket.getMarket().getPrimaryEntity()
+                        .getContainingLocation().getName()
+                        + (data.isIllegal() ? ", restricted)" : ")"));
+            }
         }
+
+        if (!foundFree.isEmpty())
+        {
+            Console.showMessage("Found " + foundFree.size() + " storage tabs with an "
+                    + Character.toUpperCase(args.charAt(0)) + args.substring(1) + " stored in them:");
+            for (Map.Entry<SubmarketAPI, PriceData> entry : foundFree.entrySet())
+            {
+                SubmarketAPI submarket = entry.getKey();
+                PriceData data = entry.getValue();
+                Console.showMessage(" - " + data.getAvailable() + " available at "
+                        + submarket.getMarket().getName() + "'s "
+                        + submarket.getNameOneLine() + " submarket ("
+                        + submarket.getFaction().getDisplayName() + ", "
+                        + submarket.getMarket().getPrimaryEntity()
+                        .getContainingLocation().getName() + ")");
+            }
+        }
+
         return CommandResult.SUCCESS;
     }
 

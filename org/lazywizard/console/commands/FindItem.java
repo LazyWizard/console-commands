@@ -58,7 +58,7 @@ public class FindItem implements BaseCommand
             stack = tmp.getStacksCopy().get(0);
         }
 
-        Map<SubmarketAPI, PriceData> found = new HashMap<>();
+        final Map<SubmarketAPI, PriceData> found = new HashMap<>(), foundFree = new HashMap<>();
         for (MarketAPI market : Global.getSector().getEconomy().getMarketsCopy())
         {
             for (SubmarketAPI submarket : market.getSubmarketsCopy())
@@ -68,12 +68,13 @@ public class FindItem implements BaseCommand
                 if (total > 0)
                 {
                     float price;
-                    boolean isIllegal;
+                    boolean isIllegal, isFree = false;
 
                     if (submarket.getPlugin().isFreeTransfer())
                     {
                         price = 0;
                         isIllegal = false;
+                        isFree = true;
                     }
                     else if (isWeapon)
                     {
@@ -90,33 +91,61 @@ public class FindItem implements BaseCommand
                                 id, SubmarketPlugin.TransferAction.PLAYER_BUY);
                     }
 
-                    found.put(submarket, new PriceData(price, total, isIllegal));
+                    if (isFree)
+                    {
+                        foundFree.put(submarket, new PriceData(price, total, isIllegal));
+                    }
+                    else
+                    {
+                        found.put(submarket, new PriceData(price, total, isIllegal));
+                    }
                 }
             }
         }
 
-        if (found.isEmpty())
+        if (found.isEmpty() && foundFree.isEmpty())
         {
             Console.showMessage("No " + (isWeapon ? "weapons" : "commodities")
                     + " with id '" + id + "' found!");
             return CommandResult.SUCCESS;
         }
 
-        Console.showMessage("Found " + found.size() + " markets with "
-                + (isWeapon ? "weapon '" : " commodity '") + id + "' for sale:");
-        for (Map.Entry<SubmarketAPI, PriceData> entry : found.entrySet())
+        if (!found.isEmpty())
         {
-            SubmarketAPI submarket = entry.getKey();
-            PriceData data = entry.getValue();
-            Console.showMessage(" - " + data.getAvailable() + " available for "
-                    + Math.round(data.getPrice()) + " credits at "
-                    + submarket.getMarket().getName() + "'s "
-                    + submarket.getNameOneLine() + " submarket ("
-                    + submarket.getFaction().getDisplayName() + ", "
-                    + submarket.getMarket().getPrimaryEntity()
-                    .getContainingLocation().getName()
-                    + (data.isIllegal() ? ", restricted)" : ")"));
+            Console.showMessage("Found " + found.size() + " markets with "
+                    + (isWeapon ? "weapon '" : " commodity '") + id + "' for sale:");
+            for (Map.Entry<SubmarketAPI, PriceData> entry : found.entrySet())
+            {
+                SubmarketAPI submarket = entry.getKey();
+                PriceData data = entry.getValue();
+                Console.showMessage(" - " + data.getAvailable() + " available for "
+                        + Math.round(data.getPrice()) + " credits at "
+                        + submarket.getMarket().getName() + "'s "
+                        + submarket.getNameOneLine() + " submarket ("
+                        + submarket.getFaction().getDisplayName() + ", "
+                        + submarket.getMarket().getPrimaryEntity()
+                        .getContainingLocation().getName()
+                        + (data.isIllegal() ? ", restricted)" : ")"));
+            }
         }
+
+        if (!foundFree.isEmpty())
+        {
+            Console.showMessage("Found " + foundFree.size() + " storage tabs with "
+                    + (isWeapon ? "weapon '" : " commodity '") + id + "' stored in them:");
+            for (Map.Entry<SubmarketAPI, PriceData> entry : foundFree.entrySet())
+            {
+                SubmarketAPI submarket = entry.getKey();
+                PriceData data = entry.getValue();
+                Console.showMessage(" - " + data.getAvailable() + " available at "
+                        + submarket.getMarket().getName() + "'s "
+                        + submarket.getNameOneLine() + " submarket ("
+                        + submarket.getFaction().getDisplayName() + ", "
+                        + submarket.getMarket().getPrimaryEntity()
+                        .getContainingLocation().getName() + ")");
+            }
+        }
+
         return CommandResult.SUCCESS;
     }
 
