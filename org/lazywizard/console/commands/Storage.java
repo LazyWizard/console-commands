@@ -3,6 +3,7 @@ package org.lazywizard.console.commands;
 import java.util.Map;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CargoAPI;
+import com.fs.starfarer.api.campaign.FleetDataAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.campaign.SubmarketPlugin.OnClickAction;
@@ -119,6 +120,20 @@ public class Storage implements BaseCommand
 
         // If abandoned station isn't found, return player fleet's cargo
         return Global.getSector().getPlayerFleet().getCargo();
+    }
+
+    public static FleetDataAPI retrieveStorageFleetData()
+    {
+        // Check for abandoned station
+        SectorEntityToken storage = getStorageStation();
+        if (storage != null)
+        {
+            return storage.getMarket().getSubmarket(Submarkets.SUBMARKET_STORAGE)
+                    .getCargo().getMothballedShips();
+        }
+
+        // If abandoned station isn't found, return player's fleet data
+        return Global.getSector().getPlayerFleet().getFleetData();
     }
 
     @Override

@@ -1,15 +1,17 @@
  2.7 (December XX, 2015)
 =========================
-Updated the custom command tutorial in the base folder
-Newlines (\n) in a command's 'help' column are parsed correctly
+Newlines (\n) in a command's 'help' column are displayed correctly
 Exception stack traces are no longer shown by default
-Added "showExceptionDetails" to console.settings.json
+Added "showExceptionDetails" to console_settings.json
+Updated the custom command tutorial in the base folder
 Changes to existing commands:
  - AddCrew without a quantity will add all needed skeleton crew to your fleet
  - AddFuel without a quantity will top off your fleet's fuel tanks
  - AddShip: fixed regression that allowed you to spawn single fighters again
  - AddSupplies without a quantity will fill half the player cargo with supplies
    (won't go over cargo capacity, won't go over 50% total cargo as supplies)
+ - AllHulls and AllWings won't cause an error if used in a total conversion
+   that lacks an unlocked storage
  - ForceMarketUpdate actually forces a market refresh each time you use it
    (previously only refreshed stock if the market would have done so on a visit)
  - InfiniteAmmo also applies to ship systems that have limited uses
