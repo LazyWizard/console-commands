@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.ModSpecAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.LocationAPI;
@@ -14,6 +16,7 @@ import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import org.lazywizard.console.BaseCommand;
+import org.lazywizard.console.CommandStore;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
@@ -35,6 +38,53 @@ public class List_ implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
+        // Only used to update OP of forum thread, not shown in help or syntax
+        if (args.equalsIgnoreCase("consolecommands"))
+        {
+            final List<String> universal = new ArrayList<>(),
+                    combat = new ArrayList<>(), campaign = new ArrayList<>();
+            for (String command : CommandStore.getLoadedCommands())
+            {
+                final List<String> tags = CommandStore.retrieveCommand(command).getTags();
+                if (!tags.contains("core"))
+                {
+                    continue;
+                }
+
+                if (tags.contains("console"))
+                {
+                    universal.add(command);
+                }
+                else
+                {
+                    if (tags.contains("campaign"))
+                    {
+                        campaign.add(command);
+                    }
+
+                    if (tags.contains("combat"))
+                    {
+                        combat.add(command);
+                    }
+                }
+            }
+
+            Collections.sort(universal);
+            Collections.sort(campaign);
+            Collections.sort(combat);
+
+            final StringBuilder sb = new StringBuilder(1024);
+            sb.append("Universal commands (").append(universal.size()).append("):\n");
+            sb.append(CollectionUtils.implode(universal));
+            sb.append("\n\nCampaign commands (").append(campaign.size()).append("):\n");
+            sb.append(CollectionUtils.implode(campaign));
+            sb.append("\n\nCombat commands (").append(combat.size()).append("):\n");
+            sb.append(CollectionUtils.implode(combat));
+
+            Console.showMessage(sb.toString());
+            return CommandResult.SUCCESS;
+        }
+
         // Get all valid IDs for the specified type
         args = args.toLowerCase();
         String[] tmp = args.split(" ");
@@ -46,6 +96,26 @@ public class List_ implements BaseCommand
         List<String> ids;
         switch (param)
         {
+            case "aliases":
+                newLinePerItem = true;
+                ids = new ArrayList<>();
+                for (Map.Entry<String, String> alias : CommandStore.getAliases().entrySet())
+                {
+                    ids.add(alias.getKey() + " -> " + alias.getValue());
+                }
+                break;
+            case "commands":
+                ids = new ArrayList<>(CommandStore.getLoadedCommands());
+                break;
+            case "mods":
+                newLinePerItem = true;
+                param = "enabled mods";
+                ids = new ArrayList<>();
+                for (ModSpecAPI mod : Global.getSettings().getModManager().getEnabledModsCopy())
+                {
+                    ids.add(mod.getName() + " (version " + mod.getVersion() + " by " + mod.getAuthor() + ")");
+                }
+                break;
             case "ships":
             case "hulls":
                 ids = new ArrayList<>();
