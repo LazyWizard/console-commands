@@ -140,6 +140,7 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
 
             final int width = Display.getWidth();
             dialog.setTextWidth(width * .9f);
+            dialog.setTextHeight(Display.getHeight() * .8f);
             dialog.setXOffset(width * .45f);
             dialog.getVisualPanel().showCustomPanel(0f, 0f, keyListener);
             dialog.getTextPanel().addParagraph(CommonStrings.INPUT_QUERY);
