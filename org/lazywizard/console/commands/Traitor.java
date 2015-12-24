@@ -37,7 +37,7 @@ public class Traitor implements BaseCommand
     {
         // Switch squadmates if this is a fighter wing
         final int newOwner = (ship.getOwner() == 0 ? 1 : 0);
-        if (ship.isFighter())
+        if (ship.isFighter() && !ship.isDrone())
         {
             for (ShipAPI member : ship.getWing().getWingMembers())
             {
