@@ -6,12 +6,15 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Submarkets;
 import com.fs.starfarer.api.impl.campaign.submarkets.BaseSubmarketPlugin;
+import org.apache.log4j.Logger;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
 public class ForceMarketUpdate implements BaseCommand
 {
+    private static final Logger Log = Logger.getLogger(ForceMarketUpdate.class);
+
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
@@ -37,7 +40,7 @@ public class ForceMarketUpdate implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        int totalMarkets = 0, totalSubmarkets = 0;
+        int totalMarkets = 0, totalSubmarkets = 0, failedSubmarkets = 0;
         for (MarketAPI market : Global.getSector().getEconomy().getMarketsCopy())
         {
             totalMarkets++;
@@ -52,16 +55,17 @@ public class ForceMarketUpdate implements BaseCommand
                 if (submarket.getPlugin() instanceof BaseSubmarketPlugin)
                 {
                     final BaseSubmarketPlugin plugin = (BaseSubmarketPlugin) submarket.getPlugin();
-                    totalSubmarkets++;
 
                     try
                     {
                         sinceLastCargoUpdate.setFloat(plugin,
                                 minCargoUpdateInterval.getFloat(plugin) + 1);
+                        totalSubmarkets++;
                     }
                     catch (Exception ex)
                     {
-                        totalSubmarkets--;
+                        failedSubmarkets++;
+                        Log.error("Failed to update BaseSubmarketPlugin!", ex);
                         continue;
                     }
 
@@ -71,7 +75,9 @@ public class ForceMarketUpdate implements BaseCommand
         }
 
         Console.showMessage("Updated inventory for " + totalSubmarkets
-                + " submarkets in " + totalMarkets + " markets.");
+                + " submarkets in " + totalMarkets + " markets"
+                + ((failedSubmarkets > 0) ? "(" + failedSubmarkets
+                        + " failed, see starsector.log for details)." : "."));
         return CommandResult.SUCCESS;
     }
 }
