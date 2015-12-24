@@ -96,6 +96,9 @@ public class List_ implements BaseCommand
         List<String> ids;
         switch (param)
         {
+            case "commands":
+                ids = new ArrayList<>(CommandStore.getLoadedCommands());
+                break;
             case "aliases":
                 newLinePerItem = true;
                 ids = new ArrayList<>();
@@ -104,8 +107,22 @@ public class List_ implements BaseCommand
                     ids.add(alias.getKey() + " -> " + alias.getValue());
                 }
                 break;
-            case "commands":
-                ids = new ArrayList<>(CommandStore.getLoadedCommands());
+            case "tags":
+                newLinePerItem = true;
+                ids = new ArrayList<>();
+                final List<String> tags = CommandStore.getKnownTags();
+                Collections.sort(tags);
+                for (String tag : tags)
+                {
+                    final List<String> commandsWithTag = CommandStore.getCommandsWithTag(tag);
+                    Collections.sort(commandsWithTag);
+
+                    ids.add(tag + " (" + commandsWithTag.size() + "):\n"
+                            + StringUtils.indent(StringUtils.wrapString(
+                                    CollectionUtils.implode(commandsWithTag),
+                                    Console.getSettings().getMaxOutputLineLength()
+                                    - 6), "   "));
+                }
                 break;
             case "mods":
                 newLinePerItem = true;
@@ -113,7 +130,10 @@ public class List_ implements BaseCommand
                 ids = new ArrayList<>();
                 for (ModSpecAPI mod : Global.getSettings().getModManager().getEnabledModsCopy())
                 {
-                    ids.add(mod.getName() + " (version " + mod.getVersion() + " by " + mod.getAuthor() + ")");
+                    ids.add(mod.getId() + " (" + mod.getName() + " by " + mod.getAuthor()
+                            + ", version " + mod.getVersion()
+                            + (mod.isTotalConversion() ? ", total conversion" : "")
+                            + (mod.isUtility() ? ", utility" : "") + ")");
                 }
                 break;
             case "ships":

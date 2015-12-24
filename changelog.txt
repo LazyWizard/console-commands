@@ -1,3 +1,16 @@
+ 2.x (December XX, 2015)
+=========================
+Added isInCampaignMode() to CommandContext:
+ - Returns true if the player is on the campaign map, in a campaign battle,
+   or fighting a refit simulation battle in the campaign
+ - Used to check if you have access to campaign-only methods (SectorAPI, etc)
+Changes to existing commands:
+ - List accepts several new arguments:
+   - "commands", lists all loaded commands (use "status detailed" for more info)
+   - "alias", shows all aliases added through aliases.csv
+   - "tags", shows all tags and their associated commands
+   - "mods", shows details for all currently enabled mods
+
  2.7 (December 16, 2015)
 =========================
 Newlines (\n) in a command's 'help' column are displayed correctly

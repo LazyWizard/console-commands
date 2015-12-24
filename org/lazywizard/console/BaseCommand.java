@@ -1,5 +1,8 @@
 package org.lazywizard.console;
 
+import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.combat.CombatEngineAPI;
+
 /**
  * The basic interface all console commands must implement.
  * <p>
@@ -100,6 +103,27 @@ public interface BaseCommand
         public boolean isInCampaign()
         {
             return (this == CAMPAIGN_MAP);
+        }
+
+        /**
+         * Returns whether the player is in campaign mode, including in campaign
+         * battles (even refit simulation battles).
+         * <p>
+         * @return {@code true} if the player is on the campaign map, in a
+         *         campaign battle, or running a simulation in a campaign refit
+         *         screen.
+         * <p>
+         * @since 2.8
+         */
+        public boolean isInCampaignMode()
+        {
+            if (isInCampaign())
+            {
+                return true;
+            }
+
+            final CombatEngineAPI engine = Global.getCombatEngine();
+            return engine != null && (engine.isInCampaign() || engine.isInCampaignSim());
         }
     }
 
