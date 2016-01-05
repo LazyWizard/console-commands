@@ -78,7 +78,7 @@ public class Kill implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        killShip(target, false);
+        killShip(target, true);
         Console.showMessage("Destroyed " + target.getVariant().getFullDesignationWithHullName() + ".");
         return CommandResult.SUCCESS;
     }
