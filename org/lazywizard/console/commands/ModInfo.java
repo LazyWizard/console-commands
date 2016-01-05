@@ -35,7 +35,7 @@ public class ModInfo implements BaseCommand
         catch (Exception ex)
         {
             // Not actually an error, just means that mod doesn't override the core CSV
-            Log.error("Failed to open " + csvPath + " from mod " + mod.getId(), ex);
+            Log.error("Failed to open " + csvPath, ex);
             return Collections.<String>emptyList();
         }
 
@@ -46,14 +46,6 @@ public class ModInfo implements BaseCommand
             {
                 final JSONObject row = csv.getJSONObject(i);
 
-                // Skip rows not from that mod
-                final String source = row.getString("fs_rowSource");
-                if (source == null || !source.endsWith(modDir))
-                {
-                    System.out.println(modDir + " vs " + source);
-                    continue;
-                }
-
                 // Skip empty rows
                 final String id = row.getString(column);
                 if (id.isEmpty())
@@ -61,16 +53,27 @@ public class ModInfo implements BaseCommand
                     continue;
                 }
 
+                // Skip rows not from that mod
+                final String source = row.getString("fs_rowSource");
+                System.out.print(id + ": " + modDir + " vs " + source+", ");
+                if (source == null || !source.endsWith(modDir))
+                {
+                    System.out.println("MISMATCH");
+                    continue;
+                }
+
+                System.out.println("MATCH");
                 added.add(id);
             }
         }
         catch (Exception ex)
         {
             // Okay, this one's actually an error
-            Log.error("Failed to parse " + csvPath + " from mod " + mod.getId(), ex);
+            Log.error("Failed to parse " + csvPath, ex);
             return Collections.<String>emptyList();
         }
 
+        Collections.sort(added);
         return added;
     }
 

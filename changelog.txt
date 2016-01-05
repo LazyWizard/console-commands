@@ -9,10 +9,11 @@ New commands:
  - ModInfo, shows detailed info about a mod, including what ships, fighter
    wings, weapons and commodities it adds to the game
 Changes to existing commands:
+ - Kill and Nuke both credit all kills to the player flagship
  - List accepts several new arguments:
    - "mods", shows details for all currently enabled mods
    - "commands", lists all loaded commands (use "status detailed" for more info)
-   - "alias", shows all aliases added through aliases.csv
+   - "aliases", shows all aliases added through aliases.csv
    - "tags", shows all tags and their associated commands
  - Fixed Traitor failing when used directly on a drone
 

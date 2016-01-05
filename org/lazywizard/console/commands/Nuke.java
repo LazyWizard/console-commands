@@ -31,7 +31,7 @@ public class Nuke implements BaseCommand
 
             if (ship.getOwner() == FleetSide.ENEMY.ordinal())
             {
-                Kill.killShip(ship, false);
+                Kill.killShip(ship, true);
             }
         }
 
