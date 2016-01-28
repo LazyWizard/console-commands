@@ -124,7 +124,7 @@ public class SpawnFleet implements BaseCommand
         try
         {
             // Create fleet
-            // TODO: Rip this out and replace entirey with FleetFactoryV2
+            // TODO: Rip this out and replace entirely with FleetFactoryV2
             final CampaignFleetAPI toSpawn
                     = FleetFactory.createGenericFleet(faction.getId(), name, quality, totalFP);
             totalOfficers = Math.min(15, Math.max(2, (int) (toSpawn.getFleetData()
