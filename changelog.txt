@@ -1,4 +1,4 @@
- 2.x (December XX, 2015)
+ 2.8 (December XX, 2015)
 =========================
 Campaign pop-up uses full vertical height of your display
 Added isInCampaignMode() to CommandContext:
