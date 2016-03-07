@@ -19,6 +19,7 @@ AllCommodities,org.lazywizard.console.commands.AllCommodities,"core,campaign",al
 AllHulls,org.lazywizard.console.commands.AllHulls,"core,campaign",allhulls [optionalStation]|player,"Places one hull of every pilotable ship in the specified station, or in storage if no argument is entered."
 AllWeapons,org.lazywizard.console.commands.AllWeapons,"core,campaign",allweapons [optionalStation]|player,"Places ten of every weapon in the specified station, or in storage if no argument is entered."
 AllWings,org.lazywizard.console.commands.AllWings,"core,campaign",allwings [optionalStation]|player,"Places one of every fighter wing in the specified station, or in storage if no argument is entered."
+BlockRetreat,org.lazywizard.console.commands.BlockRetreat,"core,combat",blockretreat (no arguments),"Toggles whether the enemy can order a full retreat. Individual ships may still be able to flee."
 Clear,org.lazywizard.console.commands.Clear,"core,console,campaign",clear (no arguments),"Clears the text from the campaign pop-up."
 DevMode,org.lazywizard.console.commands.DevMode,"core,console",devmode [optionalOnOrOff],"Enables or disables dev mode. If no argument is given, acts as a toggle."
 EndCombat,org.lazywizard.console.commands.EndCombat,"core,combat",endcombat [optionalWinningSide],"Ends combat with the entered side as the winner (player or enemy). No ships are damaged by this command. If no side is entered, defaults to a player victory."
