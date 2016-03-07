@@ -6,6 +6,7 @@ Added isInCampaignMode() to CommandContext:
    or fighting a refit simulation battle in the campaign
  - Used to check if you have access to campaign-only methods (SectorAPI, etc)
 New commands:
+ - BlockRetreat, prevents a full retreat from being ordered by the enemy
  - ModInfo, shows detailed info about a mod, including what ships, fighter
    wings, weapons and commodities it adds to the game
 Changes to existing commands:
