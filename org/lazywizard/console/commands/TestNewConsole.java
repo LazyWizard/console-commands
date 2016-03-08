@@ -9,7 +9,6 @@ import org.lazywizard.console.util.FontException;
 import org.lazywizard.console.util.LazyFont;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import static org.lwjgl.opengl.GL11.*;
@@ -111,7 +110,7 @@ public class TestNewConsole implements BaseCommand
 
             //font.draw(CommonStrings.INPUT_QUERY, Mouse.getX(), Mouse.getY() + 50f, Color.WHITE);
             //font.draw("Test1\nTest2\nTest3", Mouse.getX(), Mouse.getY() - 50f, Color.WHITE);
-            font.draw(testString, Mouse.getX(), height, Color.WHITE);
+            font.draw(testString, 0f, height, 25f, Color.WHITE);
 
             // Clear OpenGL flags
             glPopMatrix();

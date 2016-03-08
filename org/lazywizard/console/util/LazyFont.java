@@ -182,7 +182,7 @@ public class LazyFont
         //System.out.println(metadata.length + ": " + CollectionUtils.implode(Arrays.asList(metadata)));
     }
 
-    public void draw(String text, float x, float y, Color color)
+    public void draw(String text, float x, float y, float size, Color color)
     {
         if (text == null || text.isEmpty())
         {
@@ -196,32 +196,33 @@ public class LazyFont
         glBegin(GL_QUADS);
 
         LazyChar lastChar = null;
-        float offset = 0f;
+        float xOffset = 0f;
+        final float scaleFactor = (size / (float) lineHeight);
         for (char tmp : text.toCharArray())
         {
             if (tmp == '\n')
             {
-                y -= lineHeight;
-                offset = 0f;
+                y -= lineHeight * scaleFactor;
+                xOffset = 0f;
                 continue;
             }
 
             final LazyChar ch = chars.get((int) tmp);
             final int kerning = ch.getKerning(lastChar);
-            final float localX = x + offset + kerning + ch.xOffset,
-                    localY = y + ch.yOffset;
+            final float localX = x + xOffset + ((ch.xOffset + kerning) * scaleFactor),
+                    localY = y - (ch.yOffset * scaleFactor);
 
             glTexCoord2f(ch.tx1, ch.ty1);
             glVertex2f(localX, localY);
             glTexCoord2f(ch.tx1, ch.ty2);
-            glVertex2f(localX, localY - ch.height);
+            glVertex2f(localX, localY - (ch.height * scaleFactor));
             glTexCoord2f(ch.tx2, ch.ty2);
-            glVertex2f(localX + ch.width, localY - ch.height);
+            glVertex2f(localX + (ch.width * scaleFactor), localY - (ch.height * scaleFactor));
             glTexCoord2f(ch.tx2, ch.ty1);
-            glVertex2f(localX + ch.width, localY);
+            glVertex2f(localX + (ch.width * scaleFactor), localY);
 
             //ch.draw(x + offset + kerning, y);
-            offset += kerning + ch.advance;
+            xOffset += (kerning + ch.advance) * scaleFactor;
             lastChar = ch;
         }
 
@@ -233,7 +234,9 @@ public class LazyFont
     @Override
     public String toString()
     {
-        return "LazyFont{" + "texture=" + textureId + ", chars=" + chars + '}';
+        return "LazyFont{" + "chars=" + chars + ", textureId=" + textureId
+                + ", lineHeight=" + lineHeight + ", textureWidth=" + textureWidth
+                + ", textureHeight=" + textureHeight + '}';
     }
 
     private class LazyChar
@@ -249,7 +252,7 @@ public class LazyFont
             this.width = width;
             this.height = height;
             this.xOffset = xOffset;
-            this.yOffset = -yOffset;
+            this.yOffset = yOffset;
             this.advance = advance;
             //this.page = page;
             //this.channel = channel;
@@ -283,14 +286,15 @@ public class LazyFont
             return kerning;
         }
 
-        /*@Override
+        @Override
         public String toString()
         {
-            return "LazyChar{" + "id=" + id + ", x=" + tx + ", y=" + ty
-                    + ", width=" + width + ", height=" + height
+            return "LazyChar{" + "id=" + id + ", width=" + width + ", height=" + height
                     + ", xOffset=" + xOffset + ", yOffset=" + yOffset
-                    + ", advance=" + advance + ", kernings=" + kernings + '}';
-        }*/
+                    + ", advance=" + advance + ", tx1=" + tx1 + ", ty1=" + ty1
+                    + ", tx2=" + tx2 + ", ty2=" + ty2 + ", kernings=" + kernings + '}';
+        }
+
     }
 
     public class DrawableString
