@@ -192,6 +192,8 @@ public class LazyFont
         glColor(color);
         glBindTexture(GL_TEXTURE_2D, textureId);
         glEnable(GL_TEXTURE_2D);
+        glPushMatrix();
+        glBegin(GL_QUADS);
 
         LazyChar lastChar = null;
         float offset = 0f;
@@ -206,11 +208,25 @@ public class LazyFont
 
             final LazyChar ch = chars.get((int) tmp);
             final int kerning = ch.getKerning(lastChar);
-            ch.draw(x + offset + kerning, y);
+            final float localX = x + offset + kerning + ch.xOffset,
+                    localY = y + ch.yOffset;
+
+            glTexCoord2f(ch.tx1, ch.ty1);
+            glVertex2f(localX, localY);
+            glTexCoord2f(ch.tx1, ch.ty2);
+            glVertex2f(localX, localY - ch.height);
+            glTexCoord2f(ch.tx2, ch.ty2);
+            glVertex2f(localX + ch.width, localY - ch.height);
+            glTexCoord2f(ch.tx2, ch.ty1);
+            glVertex2f(localX + ch.width, localY);
+
+            //ch.draw(x + offset + kerning, y);
             offset += kerning + ch.advance;
             lastChar = ch;
         }
 
+        glEnd();
+        glPopMatrix();
         glDisable(GL_TEXTURE_2D);
     }
 
@@ -243,23 +259,6 @@ public class LazyFont
             ty1 = (textureHeight - ty) / textureHeight;
             tx2 = tx1 + (width / textureWidth);
             ty2 = ty1 - (height / textureHeight);
-        }
-
-        private void draw(float x, float y)
-        {
-            glPushMatrix();
-            glTranslatef(xOffset, yOffset, 0f);
-            glBegin(GL_QUADS);
-            glTexCoord2f(tx1, ty1);
-            glVertex2f(x, y);
-            glTexCoord2f(tx1, ty2);
-            glVertex2f(x, y - height);
-            glTexCoord2f(tx2, ty2);
-            glVertex2f(x + width, y - height);
-            glTexCoord2f(tx2, ty1);
-            glVertex2f(x + width, y);
-            glEnd();
-            glPopMatrix();
         }
 
         private void addKerning(int otherChar, int kerning)
