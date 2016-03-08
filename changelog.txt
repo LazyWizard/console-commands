@@ -1,7 +1,9 @@
- 2.8 (December XX, 2015)
-=========================
-Campaign pop-up uses full vertical height of your display
-Added isInCampaignMode() to CommandContext:
+ 3.0 (March XX, 2016)
+======================
+Completely rewrote input system
+ - Uses custom font rendering (please don't use these classes yourself, wait for
+   their eventual inclusion in LazyLib once the code is stable and bug-free)
+Added isCampaignAccessible() to CommandContext:
  - Returns true if the player is on the campaign map, in a campaign battle,
    or fighting a refit simulation battle in the campaign
  - Used to check if you have access to campaign-only methods (SectorAPI, etc)

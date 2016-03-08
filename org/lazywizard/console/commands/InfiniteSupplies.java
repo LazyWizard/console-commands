@@ -13,7 +13,7 @@ import org.lazywizard.console.Console;
 
 public class InfiniteSupplies implements BaseCommand
 {
-    private static WeakReference<SectorAPI> lastSector = new WeakReference(null);
+    private static WeakReference<SectorAPI> lastSector = new WeakReference<>(null);
 
     @Override
     public CommandResult runCommand(String args, CommandContext context)

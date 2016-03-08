@@ -30,7 +30,7 @@ public class SetFaction implements BaseCommand
         final FactionAPI towardsFaction = CommandUtils.findBestFactionMatch(args);
         if (towardsFaction == null)
         {
-            final List ids = new ArrayList<>();
+            final List<String> ids = new ArrayList<>();
             for (FactionAPI faction : Global.getSector().getAllFactions())
             {
                 ids.add(faction.getId());
