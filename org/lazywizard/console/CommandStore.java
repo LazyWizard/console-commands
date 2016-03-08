@@ -26,7 +26,7 @@ public class CommandStore
 {
     private static final Logger Log = Global.getLogger(CommandStore.class);
     private static final Map<String, StoredCommand> storedCommands = new HashMap<>();
-    private static final Map<String, String> aliases = new HashMap();
+    private static final Map<String, String> aliases = new HashMap<>();
     private static final Set<String> tags = new HashSet<>();
 
     /**
@@ -75,8 +75,7 @@ public class CommandStore
                 if (!BaseCommand.class.isAssignableFrom(commandClass))
                 {
                     throw new Exception(commandClass.getCanonicalName()
-                            + " does not extend "
-                            + BaseCommand.class.getCanonicalName());
+                            + " does not extend " + BaseCommand.class.getCanonicalName());
                 }
 
                 // Class is valid, start building command info

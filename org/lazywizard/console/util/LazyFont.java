@@ -14,6 +14,7 @@ import static org.lazywizard.lazylib.opengl.ColorUtils.glColor;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
+ * Contains methods to load and draw bitmap fonts.
  *
  * @author LazyWizard
  * @since 3.0
@@ -37,8 +38,11 @@ public class LazyFont
      *                 and the directories leading up to it.
      *
      * @return A representation of the font ready for rendering.
+     *
+     * @throws FontException if something goes wrong while loading or parsing
+     *                       the font file.
      */
-    public static LazyFont getFont(String fontName)
+    public static LazyFont getFont(String fontName) throws FontException
     {
         // Only load a font once, then cache it for subsequent queries
         if (!fonts.containsKey(fontName))
@@ -52,7 +56,7 @@ public class LazyFont
     }
 
     // File format documentation: http://www.angelcode.com/products/bmfont/doc/file_format.html
-    private LazyFont(String fontName)
+    private LazyFont(String fontName) throws FontException
     {
         // Load the font file contents for later parsing
         final String header;
@@ -101,7 +105,8 @@ public class LazyFont
         // Finally parse the file data we retrieved at the beginning of the constructor
         try
         {
-            // TODO: Parse font metadata
+            // TODO: Parse and store ALL font metadata
+            // FIXME: Split on key="" correctly
             final String[] metadata = header.split(SPLIT_REGEX);
             if (metadata.length != 51)
             {
@@ -152,15 +157,15 @@ public class LazyFont
                     throw new FontException("Kerning data length mismatch");
                 }
 
-                final int id = Integer.parseInt(kernData[2]),
-                        otherId = Integer.parseInt(kernData[4]),
+                final int id = Integer.parseInt(kernData[4]),
+                        otherId = Integer.parseInt(kernData[2]),
                         kernAmount = Integer.parseInt(kernData[6]);
                 chars.get(id).addKerning(otherId, kernAmount);
             }
         }
-        catch (NumberFormatException | FontException ex)
+        catch (NumberFormatException ex)
         {
-            throw new RuntimeException("Failed to parse font '" + fontName + "'", ex);
+            throw new FontException("Failed to parse font '" + fontName + "'", ex);
         }
     }
 
@@ -179,9 +184,15 @@ public class LazyFont
 
     public void draw(String text, float x, float y, Color color)
     {
+        if (text == null || text.isEmpty())
+        {
+            return;
+        }
+
         glColor(color);
         glBindTexture(GL_TEXTURE_2D, textureId);
         glEnable(GL_TEXTURE_2D);
+
         LazyChar lastChar = null;
         float offset = 0f;
         for (char tmp : text.toCharArray())
@@ -199,6 +210,7 @@ public class LazyFont
             offset += kerning + ch.advance;
             lastChar = ch;
         }
+
         glDisable(GL_TEXTURE_2D);
     }
 
@@ -210,43 +222,41 @@ public class LazyFont
 
     private class LazyChar
     {
-        private final int id, tx, ty, width, height, xOffset, yOffset, advance; //page, channel;
+        private final int id, width, height, xOffset, yOffset, advance; //page, channel;
+        private final float tx1, ty1, tx2, ty2;
         private final Map<Integer, Integer> kernings = new HashMap<>();
 
         private LazyChar(int id, int tx, int ty, int width, int height,
                 int xOffset, int yOffset, int advance) //int page, int channel)
         {
             this.id = id;
-            this.tx = tx;
-            this.ty = ty;
             this.width = width;
             this.height = height;
             this.xOffset = xOffset;
             this.yOffset = -yOffset;
             this.advance = advance;
-            //page = Integer.parseInt(data[18]);
-            //channel = Integer.parseInt(data[20]);
+            //this.page = page;
+            //this.channel = channel;
+
+            // Calculate internal texture coordinates
+            tx1 = tx / textureWidth;
+            ty1 = (textureHeight - ty) / textureHeight;
+            tx2 = tx1 + (width / textureWidth);
+            ty2 = ty1 - (height / textureHeight);
         }
 
         private void draw(float x, float y)
         {
-            final float iX = tx / textureWidth,
-                    iY = (textureHeight - ty) / textureHeight,
-                    iW = (width / textureWidth),
-                    iH = (height / textureHeight);
-
             glPushMatrix();
             glTranslatef(xOffset, yOffset, 0f);
-            glEnable(GL_TEXTURE_2D);
             glBegin(GL_QUADS);
-            glColor4f(0f, 1f, 1f, 1f);
-            glTexCoord2f(iX, iY);
+            glTexCoord2f(tx1, ty1);
             glVertex2f(x, y);
-            glTexCoord2f(iX, iY - iH);
+            glTexCoord2f(tx1, ty2);
             glVertex2f(x, y - height);
-            glTexCoord2f(iX + iW, iY - iH);
+            glTexCoord2f(tx2, ty2);
             glVertex2f(x + width, y - height);
-            glTexCoord2f(iX + iW, iY);
+            glTexCoord2f(tx2, ty1);
             glVertex2f(x + width, y);
             glEnd();
             glPopMatrix();
@@ -284,11 +294,27 @@ public class LazyFont
         }*/
     }
 
-    private static class FontException extends Exception
+    public class DrawableString
     {
-        private FontException(String message)
+        private boolean disposed = false;
+
+        public DrawableString(String text, LazyFont font)
         {
-            super(message);
+        }
+
+        public void dispose()
+        {
+            // TODO: call glDeleteBuffers()
+            disposed = true;
+        }
+
+        @Override
+        protected void finalize()
+        {
+            if (!disposed)
+            {
+                dispose();
+            }
         }
     }
 }

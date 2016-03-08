@@ -113,9 +113,9 @@ public interface BaseCommand
          *         campaign battle, or running a simulation in a campaign refit
          *         screen.
          * <p>
-         * @since 2.8
+         * @since 3.0
          */
-        public boolean isInCampaignMode()
+        public boolean isCampaignAccessible()
         {
             if (isInCampaign())
             {
