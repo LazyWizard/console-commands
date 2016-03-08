@@ -58,7 +58,7 @@ public class TestNewConsole implements BaseCommand
             'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
             '-', '=', '_', '+', '[', ']', '{', '}', '`', ',', '.', '/', '\\'
         };
-        final StringBuilder sb = new StringBuilder(dimX * dimY);
+        final StringBuilder sb = new StringBuilder((dimX + 1) * dimY);
         for (int i = 0; i < dimY; i++)
         {
             for (int j = 0; j < dimX; j++)
@@ -120,7 +120,8 @@ public class TestNewConsole implements BaseCommand
             glPopAttrib();
 
             Display.update();
-            // DEBUG: Disabled for FPS benchmarking
+            // DEBUG: FPS benchmarking, swap commented lines to disable
+            Display.setVSyncEnabled(false);
             //Display.sync(60);
         }
 
