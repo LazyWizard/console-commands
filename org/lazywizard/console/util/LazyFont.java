@@ -211,13 +211,13 @@ public class LazyFont
         //System.out.println(metadata.length + ": " + CollectionUtils.implode(Arrays.asList(metadata)));
     }
 
-    // TODO: Javadoc
-    // TODO: Rewrite to return dimensions of drawn text
-    public void drawText(String text, float x, float y, float size, Color color)
+    // Returns dimensions of drawn text
+    private Vector2f drawText(String text, float x, float y, float size,
+            float maxWidth, float maxHeight, Color color)
     {
         if (text == null || text.isEmpty())
         {
-            return;
+            return new Vector2f(0f, 0f);
         }
 
         glColor(color);
@@ -228,22 +228,45 @@ public class LazyFont
         glBegin(GL_QUADS);
 
         LazyChar lastChar = null;
-        float xOffset = 0f, yOffset = 0f;
         final float scaleFactor = (size / (float) lineHeight);
+        float xOffset = 0f, yOffset = 0f, sizeX = 0f, sizeY = lineHeight * scaleFactor;
 
         // TODO: Rewrite to reuse same buffer
         for (final char tmp : text.toCharArray())
         {
             if (tmp == '\n')
             {
+                if (-yOffset + (lineHeight * scaleFactor) > maxHeight)
+                {
+                    return new Vector2f(sizeX, sizeY);
+                }
+
                 yOffset -= lineHeight * scaleFactor;
+                sizeY += lineHeight * scaleFactor;
+                sizeX = Math.max(sizeX, xOffset);
                 xOffset = 0f;
+                lastChar = null;
                 continue;
             }
 
             final LazyChar ch = chars.get((int) tmp);
-
             final int kerning = ch.getKerning(lastChar);
+            final float advance = (ch.advance + kerning) * scaleFactor;
+
+            if (xOffset + advance > maxWidth)
+            {
+                if (-yOffset + (lineHeight * scaleFactor) > maxHeight)
+                {
+                    return new Vector2f(sizeX, sizeY);
+                }
+
+                yOffset -= lineHeight * scaleFactor;
+                sizeY += lineHeight * scaleFactor;
+                sizeX = Math.max(sizeX, xOffset);
+                xOffset = -kerning;
+                lastChar = null;
+            }
+
             final float localX = xOffset + ((ch.xOffset + kerning) * scaleFactor),
                     localY = yOffset - (ch.yOffset * scaleFactor);
 
@@ -256,18 +279,32 @@ public class LazyFont
             glTexCoord2f(ch.tx2, ch.ty1);
             glVertex2f(localX + (ch.width * scaleFactor), localY);
 
-            xOffset += (kerning + ch.advance) * scaleFactor;
+            xOffset += advance;
             lastChar = ch;
         }
 
         glEnd();
         glPopMatrix();
         glDisable(GL_TEXTURE_2D);
+
+        sizeX = Math.max(sizeX, xOffset);
+        return new Vector2f(sizeX, sizeY);
+    }
+
+    public DrawableString createText(String text, float size,
+            float maxWidth, float maxHeight, Color color)
+    {
+        return new DrawableString(text, size, maxWidth, maxHeight, color);
+    }
+
+    public DrawableString createText(String text, float size, float maxWidth, Color color)
+    {
+        return createText(text, size, maxWidth, Float.MAX_VALUE, color);
     }
 
     public DrawableString createText(String text, float size, Color color)
     {
-        return new DrawableString(text, size, color);
+        return createText(text, size, Float.MAX_VALUE, Float.MAX_VALUE, color);
     }
 
     @Override
@@ -339,14 +376,19 @@ public class LazyFont
     public class DrawableString
     {
         private final int displayListId;
-        private boolean initiated = false, disposed = false;
+        private final float width, height;
+        private boolean disposed = false;
 
-        private DrawableString(String text, float size, Color color)
+        private DrawableString(String text, float size, float maxWidth,
+                float maxHeight, Color color)
         {
             displayListId = glGenLists(1);
             glNewList(displayListId, GL_COMPILE);
-            drawText(text, 0.01f, 0.01f, size, color);
+            final Vector2f tmp = drawText(text, 0.01f, 0.01f, size, maxWidth, maxHeight, color);
             glEndList();
+
+            width = tmp.x;
+            height = tmp.y;
         }
 
         public void draw(float x, float y)
@@ -374,6 +416,16 @@ public class LazyFont
                 glDeleteLists(displayListId, 1);
                 disposed = true;
             }
+        }
+
+        public float getStringWidth()
+        {
+            return width;
+        }
+
+        public float getStringHeight()
+        {
+            return height;
         }
 
         public boolean isDisposed()
