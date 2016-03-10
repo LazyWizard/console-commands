@@ -13,6 +13,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.util.vector.Vector2f;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.GL_TEXTURE_BASE_LEVEL;
 import static org.lwjgl.opengl.GL12.GL_TEXTURE_MAX_LEVEL;
@@ -26,6 +27,72 @@ import static org.lwjgl.opengl.GL13.glActiveTexture;
 public class TestNewConsole implements BaseCommand
 {
     private static final Logger Log = Logger.getLogger(TestNewConsole.class);
+
+    private static void render(int textureId, int width, int height,
+            DrawableString testString, DrawableString testString2)
+    {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(0f, 0f, 0f, 1f);
+
+        // Set up OpenGL flags
+        glPushAttrib(GL_ALL_ATTRIB_BITS);
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadIdentity();
+        glViewport(0, 0, width, height);
+        glOrtho(0, width, 0, height, -1, 1);
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadIdentity();
+        glTranslatef(0.01f, 0.01f, 0);
+
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textureId);
+        glPushMatrix();
+        glBegin(GL_QUADS);
+        glColor4f(0.3f, 0.3f, 0.3f, 1f);
+        glTexCoord2f(0f, 0f);
+        glVertex2f(0f, 0f);
+        glTexCoord2f(1f, 0f);
+        glVertex2f(width, 0f);
+        glTexCoord2f(1f, 1f);
+        glVertex2f(width, height);
+        glTexCoord2f(0f, 1f);
+        glVertex2f(0f, height);
+        glEnd();
+        glPopMatrix();
+
+        //font.draw(CommonStrings.INPUT_QUERY, Mouse.getX(), Mouse.getY() + 50f, Color.WHITE);
+        final Vector2f mousePos = new Vector2f(Mouse.getX(), Mouse.getY() - 50f);
+        //font.drawText(testString, 0f, height, 25f, new Color(1f,1f,1f,.1f));
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        testString.draw(0f, height);
+        testString2.draw(mousePos);
+        glDisable(GL_TEXTURE_2D);
+        glLineWidth(1f);
+        glColor4f(0f, 1f, 1f, 1f);
+        glBegin(GL_LINE_LOOP);
+        glVertex2f(mousePos.x - 1f, mousePos.y + 1f);
+        glVertex2f(mousePos.x - 1f, mousePos.y - 1f - testString2.getStringHeight());
+        glVertex2f(mousePos.x + 1f + testString2.getStringWidth(), mousePos.y - 1f - testString2.getStringHeight());
+        glVertex2f(mousePos.x + 1f + testString2.getStringWidth(), mousePos.y + 1f);
+        glEnd();
+
+        // Clear OpenGL flags
+        glPopMatrix();
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
+        glPopAttrib();
+    }
+
+    private static void checkInput()
+    {
+
+    }
 
     static void testConsole(LazyFont font, CommandContext context)
     {
@@ -66,67 +133,21 @@ public class TestNewConsole implements BaseCommand
                 sb.append(supportedChars[(int) (supportedChars.length * Math.random())]);
             }
 
-            sb.append('\n');
+            //sb.append('\n');
         }
         final DrawableString testString = font.createText(
-                sb.toString(), 5f, new Color(1f, 1f, 1f, .3f));
+                sb.toString(), 5f, width, height, new Color(1f, 1f, 1f, .3f));
         final DrawableString testString2 = font.createText(
-                "Test1\nTest2\nTest3", 15f, Color.WHITE);
+                "This text should have a box draw around\n"
+                + "it showing its dimensions.\nTest1\nTest2\nTest3",
+                15f, width, height, Color.WHITE);
 
         // Poll for input until escape is pressed
         while (!Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)
                 && !Keyboard.isKeyDown(Keyboard.KEY_SPACE))
         {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glClearColor(0f, 0f, 0f, 1f);
-
-            // Set up OpenGL flags
-            glPushAttrib(GL_ALL_ATTRIB_BITS);
-            glMatrixMode(GL_PROJECTION);
-            glPushMatrix();
-            glLoadIdentity();
-            glViewport(0, 0, width, height);
-            glOrtho(0, width, 0, height, -1, 1);
-            glMatrixMode(GL_MODELVIEW);
-            glPushMatrix();
-            glLoadIdentity();
-            glTranslatef(0.01f, 0.01f, 0);
-
-            glEnable(GL_TEXTURE_2D);
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, textureId);
-            glPushMatrix();
-            glBegin(GL_QUADS);
-            glColor4f(0.3f, 0.3f, 0.3f, 1f);
-            glTexCoord2f(0f, 0f);
-            glVertex2f(0f, 0f);
-            glTexCoord2f(1f, 0f);
-            glVertex2f(width, 0f);
-            glTexCoord2f(1f, 1f);
-            glVertex2f(width, height);
-            glTexCoord2f(0f, 1f);
-            glVertex2f(0f, height);
-            glEnd();
-            glPopMatrix();
-
-            //font.draw(CommonStrings.INPUT_QUERY, Mouse.getX(), Mouse.getY() + 50f, Color.WHITE);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glEnableClientState(GL_VERTEX_ARRAY);
-            glEnableClientState(GL_COLOR_ARRAY);
-            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-            //font.drawText(testString, 0f, height, 25f, new Color(1f,1f,1f,.1f));
-            testString.draw(0f, height);
-            testString2.draw(Mouse.getX(), Mouse.getY() - 50f);
-
-            // Clear OpenGL flags
-            glPopMatrix();
-            glMatrixMode(GL_PROJECTION);
-            glPopMatrix();
-            glPopAttrib();
+            checkInput();
+            render(textureId, width, height, testString, testString2);
 
             Display.update();
             // DEBUG: FPS benchmarking, swap commented lines to disable
