@@ -7,8 +7,10 @@ import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.Console;
 import org.lazywizard.console.util.FontException;
 import org.lazywizard.console.util.LazyFont;
+import org.lazywizard.console.util.LazyFont.DrawableString;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import static org.lwjgl.opengl.GL11.*;
@@ -33,22 +35,21 @@ public class TestNewConsole implements BaseCommand
         final ByteBuffer buffer = BufferUtils.createByteBuffer(
                 width * height * displayMode.getBitsPerPixel());
 
-        // Save current screen image to buffer
-        glReadBuffer(GL_BACK);
+        // Save current screen image to texture
         glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-
-        // Bind buffer to (deliberately low-quality) texture
         final int textureId = glGenTextures();
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureId);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA2, width, height, 0,
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0,
                 GL_RGBA, GL_UNSIGNED_BYTE, buffer);
         buffer.clear();
 
         // DEBUG: Random test string using various supported characters
-        final int dimX = 200, dimY = 100;
+        final int dimX = 700, dimY = 200;
         final char[] supportedChars = new char[]
         {
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
@@ -67,7 +68,10 @@ public class TestNewConsole implements BaseCommand
 
             sb.append('\n');
         }
-        final String testString = sb.toString();
+        final DrawableString testString = font.createText(
+                sb.toString(), 5f, new Color(1f, 1f, 1f, .3f));
+        final DrawableString testString2 = font.createText(
+                "Test1\nTest2\nTest3", 15f, Color.WHITE);
 
         // Poll for input until escape is pressed
         while (!Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)
@@ -90,7 +94,7 @@ public class TestNewConsole implements BaseCommand
 
             glEnable(GL_TEXTURE_2D);
             glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, textureId);
@@ -109,8 +113,14 @@ public class TestNewConsole implements BaseCommand
             glPopMatrix();
 
             //font.draw(CommonStrings.INPUT_QUERY, Mouse.getX(), Mouse.getY() + 50f, Color.WHITE);
-            //font.draw("Test1\nTest2\nTest3", Mouse.getX(), Mouse.getY() - 50f, Color.WHITE);
-            font.draw(testString, 0f, height, 25f, Color.WHITE);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glEnableClientState(GL_VERTEX_ARRAY);
+            glEnableClientState(GL_COLOR_ARRAY);
+            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+            //font.drawText(testString, 0f, height, 25f, new Color(1f,1f,1f,.1f));
+            testString.draw(0f, height);
+            testString2.draw(Mouse.getX(), Mouse.getY() - 50f);
 
             // Clear OpenGL flags
             glPopMatrix();
@@ -126,6 +136,8 @@ public class TestNewConsole implements BaseCommand
 
         // Release native resources
         glDeleteTextures(textureId);
+        testString.dispose();
+        testString2.dispose();
     }
 
     @Override
