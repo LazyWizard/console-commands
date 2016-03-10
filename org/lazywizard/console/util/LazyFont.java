@@ -10,22 +10,23 @@ import java.util.Scanner;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.graphics.SpriteAPI;
 import org.apache.log4j.Logger;
+import org.lwjgl.util.vector.Vector2f;
 import static org.lazywizard.lazylib.opengl.ColorUtils.glColor;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
- * Contains methods to load and draw bitmap fonts.
+ * Contains methods to load and draw bitmap fonts. Not thread safe.
  *
  * @author LazyWizard
  * @since 3.0
  */
-// TODO: Rewrite to use buffers, have draw() return a redrawable font string
 public class LazyFont
 {
     private static final Logger Log = Logger.getLogger(LazyFont.class);
     private static final String FONT_PATH_PREFIX = "graphics/fonts/";
     private static final String SPLIT_REGEX = "\\s+|=";
     private static final Map<String, LazyFont> fonts = new HashMap<>();
+    private final String id, name;
     private final Map<Integer, LazyChar> chars;
     private final int textureId, lineHeight;
     private final float textureWidth, textureHeight;
@@ -35,13 +36,16 @@ public class LazyFont
      * been requested before.
      *
      * @param fontName The font's name, same as the filename minus the extension
-     *                 and the directories leading up to it.
+     *                 and the directories leading up to it. Remember that filenames are
+     *                 case-sensitive on non-Windows systems.
      *
      * @return A representation of the font ready for rendering.
      *
      * @throws FontException if something goes wrong while loading or parsing
      *                       the font file.
+     * @since 3.0
      */
+    // TODO: Add consistent way of retrieving the same font (not using filename!)
     public static LazyFont getFont(String fontName) throws FontException
     {
         // Only load a font once, then cache it for subsequent queries
@@ -55,9 +59,19 @@ public class LazyFont
         return fonts.get(fontName);
     }
 
+    // TODO
+    public static void discardFont(LazyFont font)
+    {
+        fonts.remove(font.name);
+        font.chars.clear();
+        glDeleteTextures(font.textureId);
+    }
+
     // File format documentation: http://www.angelcode.com/products/bmfont/doc/file_format.html
     private LazyFont(String fontName) throws FontException
     {
+        id = fontName;
+
         // Load the font file contents for later parsing
         final String header;
         final List<String> charLines = new ArrayList<>(), kernLines = new ArrayList<>();
@@ -88,6 +102,7 @@ public class LazyFont
 
         // Load the font image into a texture
         // TODO: The filename should be taken from the font's metadata
+        // TODO: Add support for multiple image files; 'pages' in the font file
         final String imgFile = fontName + "_0.png";
         try
         {
@@ -106,7 +121,7 @@ public class LazyFont
         try
         {
             // TODO: Parse and store ALL font metadata
-            // FIXME: Split on key="" correctly
+            // FIXME: Write _proper_ line parser that can handle key="word1 word2" correctly
             final String[] metadata = header.split(SPLIT_REGEX);
             if (metadata.length != 51)
             {
@@ -116,6 +131,7 @@ public class LazyFont
                 throw new FontException("Metadata length mismatch");
             }
 
+            name = metadata[2]; // TODO
             lineHeight = Integer.parseInt(metadata[27]);
 
             // Parse character data into a map of LazyChars
@@ -169,6 +185,19 @@ public class LazyFont
         }
     }
 
+    /**
+     * Returns the base height of characters in this font. Characters will look
+     * best when drawn at a size evenly divisible by this number.
+     *
+     * @return The base height of characters in this font, in pixels.
+     *
+     * @since 3.0
+     */
+    public float getBaseHeight()
+    {
+        return lineHeight;
+    }
+
     public static void main(String[] args)
     {
         final String header = "info face=\"InsigniaLT\" size=15 bold=0 italic=0 charset=\"\" unicode=1 stretchH=100 smooth=1 aa=4 padding=0,0,0,0 spacing=1,1 outline=0\n"
@@ -182,7 +211,9 @@ public class LazyFont
         //System.out.println(metadata.length + ": " + CollectionUtils.implode(Arrays.asList(metadata)));
     }
 
-    public void draw(String text, float x, float y, float size, Color color)
+    // TODO: Javadoc
+    // TODO: Rewrite to return dimensions of drawn text
+    public void drawText(String text, float x, float y, float size, Color color)
     {
         if (text == null || text.isEmpty())
         {
@@ -193,24 +224,28 @@ public class LazyFont
         glBindTexture(GL_TEXTURE_2D, textureId);
         glEnable(GL_TEXTURE_2D);
         glPushMatrix();
+        glTranslatef(x, y, 0f);
         glBegin(GL_QUADS);
 
         LazyChar lastChar = null;
-        float xOffset = 0f;
+        float xOffset = 0f, yOffset = 0f;
         final float scaleFactor = (size / (float) lineHeight);
-        for (char tmp : text.toCharArray())
+
+        // TODO: Rewrite to reuse same buffer
+        for (final char tmp : text.toCharArray())
         {
             if (tmp == '\n')
             {
-                y -= lineHeight * scaleFactor;
+                yOffset -= lineHeight * scaleFactor;
                 xOffset = 0f;
                 continue;
             }
 
             final LazyChar ch = chars.get((int) tmp);
+
             final int kerning = ch.getKerning(lastChar);
-            final float localX = x + xOffset + ((ch.xOffset + kerning) * scaleFactor),
-                    localY = y - (ch.yOffset * scaleFactor);
+            final float localX = xOffset + ((ch.xOffset + kerning) * scaleFactor),
+                    localY = yOffset - (ch.yOffset * scaleFactor);
 
             glTexCoord2f(ch.tx1, ch.ty1);
             glVertex2f(localX, localY);
@@ -221,7 +256,6 @@ public class LazyFont
             glTexCoord2f(ch.tx2, ch.ty1);
             glVertex2f(localX + (ch.width * scaleFactor), localY);
 
-            //ch.draw(x + offset + kerning, y);
             xOffset += (kerning + ch.advance) * scaleFactor;
             lastChar = ch;
         }
@@ -229,6 +263,11 @@ public class LazyFont
         glEnd();
         glPopMatrix();
         glDisable(GL_TEXTURE_2D);
+    }
+
+    public DrawableString createText(String text, float size, Color color)
+    {
+        return new DrawableString(text, size, color);
     }
 
     @Override
@@ -299,16 +338,47 @@ public class LazyFont
 
     public class DrawableString
     {
-        private boolean disposed = false;
+        private final int displayListId;
+        private boolean initiated = false, disposed = false;
 
-        public DrawableString(String text, LazyFont font)
+        private DrawableString(String text, float size, Color color)
         {
+            displayListId = glGenLists(1);
+            glNewList(displayListId, GL_COMPILE);
+            drawText(text, 0.01f, 0.01f, size, color);
+            glEndList();
+        }
+
+        public void draw(float x, float y)
+        {
+            if (disposed)
+            {
+                throw new RuntimeException("Tried to draw using disposed DrawableString!");
+            }
+
+            glPushMatrix();
+            glTranslatef(x, y, 0f);
+            glCallList(displayListId);
+            glPopMatrix();
+        }
+
+        public void draw(Vector2f location)
+        {
+            draw(location.x, location.y);
         }
 
         public void dispose()
         {
-            // TODO: call glDeleteBuffers()
-            disposed = true;
+            if (!disposed)
+            {
+                glDeleteLists(displayListId, 1);
+                disposed = true;
+            }
+        }
+
+        public boolean isDisposed()
+        {
+            return disposed;
         }
 
         @Override
@@ -316,6 +386,7 @@ public class LazyFont
         {
             if (!disposed)
             {
+                Log.warn("DrawableString was not disposed of properly!");
                 dispose();
             }
         }
