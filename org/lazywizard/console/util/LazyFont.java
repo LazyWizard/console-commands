@@ -238,7 +238,7 @@ public class LazyFont
             {
                 if (-yOffset + (lineHeight * scaleFactor) > maxHeight)
                 {
-                    return new Vector2f(sizeX, sizeY);
+                    break;
                 }
 
                 yOffset -= lineHeight * scaleFactor;
@@ -263,7 +263,7 @@ public class LazyFont
                 yOffset -= lineHeight * scaleFactor;
                 sizeY += lineHeight * scaleFactor;
                 sizeX = Math.max(sizeX, xOffset);
-                xOffset = -kerning;
+                xOffset = -kerning * scaleFactor;
                 lastChar = null;
             }
 
