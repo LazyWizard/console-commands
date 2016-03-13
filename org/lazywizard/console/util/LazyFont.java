@@ -20,16 +20,20 @@ import static org.lwjgl.opengl.GL11.*;
  * @author LazyWizard
  * @since 3.0
  */
+// Current limitations:
+// - Doesn't support multiple font pages
+// - Doesn't use most font metadata (not needed for default SS font)
+// - Doesn't have multichannel support (not needed for bundled SS fonts)
 public class LazyFont
 {
     private static final Logger Log = Logger.getLogger(LazyFont.class);
     private static final String FONT_PATH_PREFIX = "graphics/fonts/";
-    private static final String SPLIT_REGEX = "\\s+|=";
+    private static final String SPLIT_REGEX = "=|\\s+(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)";
     private static final Map<String, LazyFont> fonts = new HashMap<>();
     private final String id, name;
     private final Map<Integer, LazyChar> chars;
-    private final int textureId, lineHeight;
-    private final float textureWidth, textureHeight;
+    private final int textureId;
+    private final float lineHeight, textureWidth, textureHeight;
 
     /**
      * Retrieves a font from the font cache, or loads and caches it if it hasn't
@@ -100,28 +104,10 @@ public class LazyFont
             throw new RuntimeException("Failed to load font '" + fontName + "'", ex);
         }
 
-        // Load the font image into a texture
-        // TODO: The filename should be taken from the font's metadata
-        // TODO: Add support for multiple image files; 'pages' in the font file
-        final String imgFile = fontName + "_0.png";
-        try
-        {
-            Global.getSettings().loadTexture(FONT_PATH_PREFIX + imgFile);
-            final SpriteAPI texture = Global.getSettings().getSprite(FONT_PATH_PREFIX + imgFile);
-            textureId = texture.getTextureId();
-            textureWidth = texture.getWidth();
-            textureHeight = texture.getHeight();
-        }
-        catch (IOException ex)
-        {
-            throw new RuntimeException("Failed to load texture atlas '" + imgFile + "'", ex);
-        }
-
         // Finally parse the file data we retrieved at the beginning of the constructor
         try
         {
             // TODO: Parse and store ALL font metadata
-            // FIXME: Write _proper_ line parser that can handle key="word1 word2" correctly
             final String[] metadata = header.split(SPLIT_REGEX);
             if (metadata.length != 51)
             {
@@ -131,8 +117,24 @@ public class LazyFont
                 throw new FontException("Metadata length mismatch");
             }
 
-            name = metadata[2]; // TODO
-            lineHeight = Integer.parseInt(metadata[27]);
+            name = metadata[2].replace("\"", "");
+            lineHeight = Float.parseFloat(metadata[27]);
+            final String imgFile = metadata[50].replace("\"", "");
+
+            // Load the font image into a texture
+            // TODO: Add support for multiple image files; 'pages' in the font file
+            try
+            {
+                Global.getSettings().loadTexture(FONT_PATH_PREFIX + imgFile);
+                final SpriteAPI texture = Global.getSettings().getSprite(FONT_PATH_PREFIX + imgFile);
+                textureId = texture.getTextureId();
+                textureWidth = texture.getWidth();
+                textureHeight = texture.getHeight();
+            }
+            catch (IOException ex)
+            {
+                throw new RuntimeException("Failed to load texture atlas '" + imgFile + "'", ex);
+            }
 
             // Parse character data into a map of LazyChars
             chars = new HashMap<>();
@@ -198,17 +200,23 @@ public class LazyFont
         return lineHeight;
     }
 
+    // TODO: Javadoc this
+    public String getFontName()
+    {
+        return name;
+    }
+
     public static void main(String[] args)
     {
-        final String header = "info face=\"InsigniaLT\" size=15 bold=0 italic=0 charset=\"\" unicode=1 stretchH=100 smooth=1 aa=4 padding=0,0,0,0 spacing=1,1 outline=0\n"
+        final String header = "info face=\"Insignia LT\" size=15 bold=0 italic=0 charset=\"\" unicode=1 stretchH=100 smooth=1 aa=4 padding=0,0,0,0 spacing=1,1 outline=0\n"
                 + " common lineHeight=15 base=12 scaleW=256 scaleH=256 pages=1 packed=0 alphaChnl=1 redChnl=0 greenChnl=0 blueChnl=0\n"
                 + " page id=0 file=\"insignia15LTaa_0.png\"";
         final String[] metadata = header.split(SPLIT_REGEX);
+        System.out.println("Metadata length: " + metadata.length);
         for (int i = 0; i < metadata.length; i++)
         {
             System.out.println(i + ": " + metadata[i]);
         }
-        //System.out.println(metadata.length + ": " + CollectionUtils.implode(Arrays.asList(metadata)));
     }
 
     // Returns dimensions of drawn text
@@ -228,21 +236,21 @@ public class LazyFont
         glBegin(GL_QUADS);
 
         LazyChar lastChar = null;
-        final float scaleFactor = (size / (float) lineHeight);
-        float xOffset = 0f, yOffset = 0f, sizeX = 0f, sizeY = lineHeight * scaleFactor;
+        final float scaleFactor = size / lineHeight;
+        float xOffset = 0f, yOffset = 0f, sizeX = 0f, sizeY = size;
 
-        // TODO: Rewrite to reuse same buffer
+        // TODO: Colored substring support
         for (final char tmp : text.toCharArray())
         {
             if (tmp == '\n')
             {
-                if (-yOffset + (lineHeight * scaleFactor) > maxHeight)
+                if (-yOffset + size > maxHeight)
                 {
                     break;
                 }
 
-                yOffset -= lineHeight * scaleFactor;
-                sizeY += lineHeight * scaleFactor;
+                yOffset -= size;
+                sizeY += size;
                 sizeX = Math.max(sizeX, xOffset);
                 xOffset = 0f;
                 lastChar = null;
@@ -250,34 +258,36 @@ public class LazyFont
             }
 
             final LazyChar ch = chars.get((int) tmp);
-            final int kerning = ch.getKerning(lastChar);
-            final float advance = (ch.advance + kerning) * scaleFactor;
+            final float kerning = ch.getKerning(lastChar) * scaleFactor,
+                    advance = kerning + (ch.advance * scaleFactor),
+                    chWidth = ch.width * scaleFactor,
+                    chHeight = ch.height * scaleFactor;
 
             if (xOffset + advance > maxWidth)
             {
-                if (-yOffset + (lineHeight * scaleFactor) > maxHeight)
+                if (-yOffset + size > maxHeight)
                 {
                     return new Vector2f(sizeX, sizeY);
                 }
 
-                yOffset -= lineHeight * scaleFactor;
-                sizeY += lineHeight * scaleFactor;
+                yOffset -= size;
+                sizeY += size;
                 sizeX = Math.max(sizeX, xOffset);
-                xOffset = -kerning * scaleFactor;
+                xOffset = -kerning;
                 lastChar = null;
             }
 
-            final float localX = xOffset + ((ch.xOffset + kerning) * scaleFactor),
+            final float localX = xOffset + kerning + (ch.xOffset * scaleFactor),
                     localY = yOffset - (ch.yOffset * scaleFactor);
 
             glTexCoord2f(ch.tx1, ch.ty1);
             glVertex2f(localX, localY);
             glTexCoord2f(ch.tx1, ch.ty2);
-            glVertex2f(localX, localY - (ch.height * scaleFactor));
+            glVertex2f(localX, localY - chHeight);
             glTexCoord2f(ch.tx2, ch.ty2);
-            glVertex2f(localX + (ch.width * scaleFactor), localY - (ch.height * scaleFactor));
+            glVertex2f(localX + chWidth, localY - chHeight);
             glTexCoord2f(ch.tx2, ch.ty1);
-            glVertex2f(localX + (ch.width * scaleFactor), localY);
+            glVertex2f(localX + chWidth, localY);
 
             xOffset += advance;
             lastChar = ch;
@@ -377,7 +387,7 @@ public class LazyFont
     {
         private final int displayListId;
         private final float width, height;
-        private boolean disposed = false;
+        private boolean disposed;
 
         private DrawableString(String text, float size, float maxWidth,
                 float maxHeight, Color color)
@@ -389,6 +399,7 @@ public class LazyFont
 
             width = tmp.x;
             height = tmp.y;
+            disposed = false;
         }
 
         public void draw(float x, float y)
