@@ -125,6 +125,7 @@ public class LazyFont
             // TODO: Add support for multiple image files; 'pages' in the font file
             try
             {
+                // TODO: See if we need to write our own loader to handle texture parameters
                 Global.getSettings().loadTexture(FONT_PATH_PREFIX + imgFile);
                 final SpriteAPI texture = Global.getSettings().getSprite(FONT_PATH_PREFIX + imgFile);
                 textureId = texture.getTextureId();
@@ -383,23 +384,99 @@ public class LazyFont
 
     }
 
+    // TODO: Rewrite to be editable, recreate list when drawn after updating
     public class DrawableString
     {
+        private final StringBuilder sb;
         private final int displayListId;
-        private final float width, height;
-        private boolean disposed;
+        private float size, width, maxWidth, height, maxHeight;
+        private Color color;
+        private boolean needsRebuild, disposed;
 
         private DrawableString(String text, float size, float maxWidth,
                 float maxHeight, Color color)
         {
+            this();
+
+            this.size = size;
+            this.maxWidth = maxWidth;
+            this.maxHeight = maxHeight;
+            this.color = color;
+
+            sb.append(text);
+        }
+
+        private DrawableString()
+        {
+            sb = new StringBuilder();
             displayListId = glGenLists(1);
+            needsRebuild = true;
+            disposed = false;
+        }
+
+        public void appendText(String text)
+        {
+            sb.append(text);
+            needsRebuild = true;
+        }
+
+        public void setText(String text)
+        {
+            sb.setLength(0);
+            sb.append(text);
+            needsRebuild = true;
+        }
+
+        public String getText()
+        {
+            return sb.toString();
+        }
+
+        public void setFontSize(float size)
+        {
+            if (size != this.size)
+            {
+                this.size = size;
+                needsRebuild = true;
+            }
+        }
+
+        public float getFontSize()
+        {
+            return size;
+        }
+
+        public void setMaxWidth(float maxWidth)
+        {
+            this.maxWidth = maxWidth;
+            needsRebuild = true;
+        }
+
+        public void setMaxHeight(float maxHeight)
+        {
+            this.maxHeight = maxHeight;
+            needsRebuild = true;
+        }
+
+        public void setColor(Color color)
+        {
+            needsRebuild = true;
+        }
+
+        public Color getColor()
+        {
+            return color;
+        }
+
+        private void buildString()
+        {
             glNewList(displayListId, GL_COMPILE);
-            final Vector2f tmp = drawText(text, 0.01f, 0.01f, size, maxWidth, maxHeight, color);
+            final Vector2f tmp = drawText(sb.toString(), 0.01f, 0.01f, size, maxWidth, maxHeight, color);
             glEndList();
 
             width = tmp.x;
             height = tmp.y;
-            disposed = false;
+            needsRebuild = false;
         }
 
         public void draw(float x, float y)
@@ -407,6 +484,11 @@ public class LazyFont
             if (disposed)
             {
                 throw new RuntimeException("Tried to draw using disposed DrawableString!");
+            }
+
+            if (needsRebuild)
+            {
+                buildString();
             }
 
             glPushMatrix();
@@ -420,12 +502,17 @@ public class LazyFont
             draw(location.x, location.y);
         }
 
+        private void releaseResources()
+        {
+            glDeleteLists(displayListId, 1);
+        }
+
         public void dispose()
         {
             if (!disposed)
             {
-                glDeleteLists(displayListId, 1);
-                disposed = true;
+                releaseResources();
+                FinalizeHelper.suppressFinalize(this);
             }
         }
 
@@ -450,7 +537,7 @@ public class LazyFont
             if (!disposed)
             {
                 Log.warn("DrawableString was not disposed of properly!");
-                dispose();
+                releaseResources();
             }
         }
     }
