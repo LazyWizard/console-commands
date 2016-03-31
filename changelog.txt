@@ -3,18 +3,20 @@
 Completely rewrote input system
  - Uses custom font rendering (please don't use these classes yourself, wait for
    their eventual inclusion in LazyLib once the code is stable and bug-free)
+Added "consoleFont" to console_settings.json, defaults to TODO
+If exception stack traces are enabled, show source jars in exception details
 Added isCampaignAccessible() to CommandContext:
  - Returns true if the player is on the campaign map, in a campaign battle,
    or fighting a refit simulation battle in the campaign
- - Used to check if you have access to campaign-only methods (SectorAPI, etc)
+ - Used to check if you have access to campaign-only methods (in SectorAPI, etc)
 New commands:
  - BlockRetreat, prevents a full retreat from being ordered by the enemy
  - ModInfo, shows detailed info about a mod, including what ships, fighter
    wings, weapons and commodities it adds to the game
 Changes to existing commands:
- - Kill and Nuke both credit all kills to the player flagship
+ - Kill and Nuke credit kills to the player flagship
  - List accepts several new arguments:
-   - "mods", shows details for all currently enabled mods
+   - "mods", shows all currently enabled mods
    - "commands", lists all loaded commands (use "status detailed" for more info)
    - "aliases", shows all aliases added through aliases.csv
    - "tags", shows all tags and their associated commands

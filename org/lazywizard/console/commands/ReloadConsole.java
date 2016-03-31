@@ -5,13 +5,16 @@ import org.json.JSONException;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommandStore;
 import org.lazywizard.console.Console;
+import org.lazywizard.console.ConsoleOverlay;
+import org.lazywizard.console.util.FontException;
 
 public class ReloadConsole implements BaseCommand
 {
-    public static void reloadConsole() throws JSONException, IOException
+    public static void reloadConsole() throws JSONException, IOException, FontException
     {
         Console.reloadSettings();
         CommandStore.reloadCommands();
+        ConsoleOverlay.reloadFont();
         RunCode.reloadImports();
         RunCode.reloadMacros();
     }
@@ -23,7 +26,7 @@ public class ReloadConsole implements BaseCommand
         {
             reloadConsole();
         }
-        catch (IOException | JSONException ex)
+        catch (IOException | JSONException | FontException ex)
         {
             Console.showException("Failed to reload console!", ex);
             return CommandResult.ERROR;

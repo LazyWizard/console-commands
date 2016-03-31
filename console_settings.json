@@ -7,6 +7,9 @@
     "requireControl":true,            # Default: true
     "requireAlt":false,               # Default: false
 
+    # The font used by the overlay, must match a .fnt file in graphics/fonts/
+    "consoleFont":"NCS-Console", #"insignia15LTaa",   # Default: TODO
+
     # Whether combat toggle commands should stay on in subsequent battles
     "persistentCombatCommands":false, # Unimplemented
 
@@ -21,7 +24,7 @@
 
     # Whether errors that report an exception should show the full stack trace
     # If set to false, only shows the exception name and message (see starsector.log for trace)
-    "showExceptionDetails":false,     # Default: false
+    "showExceptionDetails":true,     # Default: false
 
     # How close an argument has to be to a valid ID before the mod assumes
     # it's a typo and uses that ID instead. Set to 1.0 to disable

@@ -15,6 +15,7 @@ public class ConsoleSettings
 {
     // The key stroke that summons the console pop-up
     private final KeyStroke CONSOLE_SUMMON_KEY;
+    private final String CONSOLE_FONT;
     // The String (usually a single character) that separates multiple commands
     private final String COMMAND_SEPARATOR;
     // The sound ID to be played when a certain CommandResult is returned
@@ -35,7 +36,8 @@ public class ConsoleSettings
     ConsoleSettings(int consoleSummonKey, boolean requireShift, boolean requireControl,
             boolean requireAlt, String commandSeparator, boolean showEnteredCommands,
             boolean showCursorIndex, boolean showStackTrace, double typoCorrectionThreshold,
-            Color outputColor, int outputMaxLineLength, Map<CommandResult, String> resultSounds)
+            Color outputColor, int outputMaxLineLength, String consoleFont,
+            Map<CommandResult, String> resultSounds)
     {
         CONSOLE_SUMMON_KEY = new KeyStroke(consoleSummonKey, requireShift,
                 requireControl, requireAlt);
@@ -46,7 +48,20 @@ public class ConsoleSettings
         TYPO_CORRECTION_THRESHOLD = typoCorrectionThreshold;
         OUTPUT_COLOR = outputColor;
         OUTPUT_MAX_LINE_LENGTH = outputMaxLineLength;
+        CONSOLE_FONT = consoleFont;
         RESULT_SOUNDS = resultSounds;
+    }
+
+    /**
+     * Returns the name of the font used by the console overlay.
+     *
+     * @return The name of the font used by the console.
+     *
+     * @since 3.0
+     */
+    public String getFont()
+    {
+        return CONSOLE_FONT;
     }
 
     /**

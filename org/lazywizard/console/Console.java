@@ -2,6 +2,7 @@ package org.lazywizard.console;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.security.CodeSource;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -82,6 +83,7 @@ public class Console
                 settingsFile.getDouble("typoCorrectionThreshold"),
                 JSONUtils.toColor(settingsFile.getJSONArray("outputColor")),
                 settingsFile.getInt("maxOutputLineLength"),
+                settingsFile.getString("consoleFont"),
                 parseSoundOptions(settingsFile));
 
         // Set command persistence between battles
@@ -175,7 +177,7 @@ public class Console
      */
     public static void showException(String message, Throwable ex)
     {
-        StringBuilder stackTrace = new StringBuilder(256);
+        final StringBuilder stackTrace = new StringBuilder(256);
 
         // Add message if one was entered
         if (message != null)
@@ -187,13 +189,39 @@ public class Console
             }
         }
 
-        // Add stack trace of Throwable
+        // Add stack trace of Throwable, with a few extra details
         stackTrace.append(ex.toString()).append("\n");
         if (settings.getShouldShowExceptionStackTraces())
         {
+            final ClassLoader cl = Global.getSettings().getScriptClassLoader();
             for (StackTraceElement ste : ex.getStackTrace())
             {
-                stackTrace.append("   at ").append(ste.toString()).append("\n");
+                String classSource;
+                try
+                {
+                    final Class srcClass = Class.forName(ste.getClassName(), false, cl);
+                    final CodeSource cs = srcClass.getProtectionDomain().getCodeSource();
+                    if (cs == null || cs.getLocation() == null)
+                    {
+                        // TODO: Determine whether class is core or Janino-compiled
+                        classSource = "core java class or loose script";
+                    }
+                    else
+                    {
+                        classSource = cs.getLocation().getFile().replace("\\","/");
+                        if (classSource.endsWith(".jar"))
+                        {
+                            classSource = classSource.substring(classSource.lastIndexOf("/")+1);
+                        }
+                    }
+                }
+                catch (ClassNotFoundException ex1)
+                {
+                    classSource = "unknown class";
+                }
+
+                stackTrace.append("   at ").append(ste.toString())
+                        .append("\n      [").append(classSource).append("]\n");
             }
         }
         else
