@@ -2,8 +2,10 @@ package org.lazywizard.console;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import com.fs.starfarer.api.Global;
@@ -14,6 +16,7 @@ import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI;
+import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Submarkets;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
@@ -22,6 +25,7 @@ import com.fs.starfarer.api.impl.campaign.ids.Tags;
 public class CommandUtils
 {
     private static final boolean ENABLE_TYPO_CORRECTION = true;
+    private static final String COMBAT_PDATA_ID = "lw_console_plugins";
 
     /**
      * Returns normalized score, with 0.0 meaning no similarity at all,
@@ -404,6 +408,40 @@ public class CommandUtils
 
         // Fallback, won't work in some cases
         return token.getCargo();
+    }
+
+    private static Map<String, EveryFrameCombatPlugin> getPluginData()
+    {
+        final Map<String, Object> data = Global.getCombatEngine().getCustomData();
+        Map<String, EveryFrameCombatPlugin> pluginData
+                = (Map<String, EveryFrameCombatPlugin>) data.get(COMBAT_PDATA_ID);
+        if (pluginData == null)
+        {
+            pluginData = new HashMap<>();
+            data.put(COMBAT_PDATA_ID, pluginData);
+        }
+
+        return pluginData;
+    }
+
+    public static void registerCombatPlugin(String id, EveryFrameCombatPlugin plugin)
+    {
+        getPluginData().put(id, plugin);
+    }
+
+    public static void deregisterCombatPlugin(String id)
+    {
+        getPluginData().remove(id);
+    }
+
+    public static boolean isCombatPluginRegistered(String id)
+    {
+        return getPluginData().containsKey(id);
+    }
+
+    public static EveryFrameCombatPlugin getRegisteredCombatPlugin(String id)
+    {
+        return getPluginData().get(id);
     }
 
     private CommandUtils()
