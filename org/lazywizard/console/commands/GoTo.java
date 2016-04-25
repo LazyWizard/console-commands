@@ -32,17 +32,18 @@ public class GoTo implements BaseCommand
             return (new Home().runCommand("", context));
         }
 
-        StarSystemAPI system = CommandUtils.findBestSystemMatch(args);
-        if (system != null || "hyperspace".equalsIgnoreCase(args))
-        {
-            return (new Jump().runCommand(args, context));
-        }
-
         SectorEntityToken token = CommandUtils.findTokenInLocation(args,
                 Global.getSector().getCurrentLocation());
 
         if (token == null)
         {
+            // Check if the player used this command instead of Jump by mistake
+            StarSystemAPI system = CommandUtils.findBestSystemMatch(args);
+            if (system != null || "hyperspace".equalsIgnoreCase(args))
+            {
+                return (new Jump().runCommand(args, context));
+            }
+
             Console.showMessage("Couldn't find a token by the name '" + args + "'!");
             return CommandResult.ERROR;
         }
