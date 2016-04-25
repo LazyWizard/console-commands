@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.campaign.StarSystemAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
@@ -29,6 +30,12 @@ public class GoTo implements BaseCommand
         if ("home".equalsIgnoreCase(args))
         {
             return (new Home().runCommand("", context));
+        }
+
+        StarSystemAPI system = CommandUtils.findBestSystemMatch(args);
+        if (system != null || "hyperspace".equalsIgnoreCase(args))
+        {
+            return (new Jump().runCommand(args, context));
         }
 
         SectorEntityToken token = CommandUtils.findTokenInLocation(args,
