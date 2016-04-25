@@ -1,5 +1,5 @@
- 3.0 (March XX, 2016)
-======================
+ 3.0 (XX XX, 2016)
+===================
 Completely rewrote input system
  - Uses custom font rendering (please don't use these classes yourself, wait for
    their eventual inclusion in LazyLib once the code is stable and bug-free)
@@ -14,6 +14,7 @@ New commands:
  - ModInfo, shows detailed info about a mod, including what ships, fighter
    wings, weapons and commodities it adds to the game
 Changes to existing commands:
+ - GoTo will redirect to the Jump command if a star system's name is entered
  - Kill and Nuke credit kills to the player flagship
  - List accepts several new arguments:
    - "mods", shows all currently enabled mods
