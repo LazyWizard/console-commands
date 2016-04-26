@@ -30,8 +30,9 @@ public class LazyFont
     private static final String FONT_PATH_PREFIX = "graphics/fonts/";
     private static final String SPLIT_REGEX = "=|\\s+(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)";
     private static final Map<String, LazyFont> fonts = new HashMap<>();
-    private final String id, name;
-    private final Map<Integer, LazyChar> chars;
+    private final String name;
+    private final LazyChar[] lookupTable;
+    private final Map<Character, LazyChar> extendedChars;
     private final int textureId;
     private final float lineHeight, textureWidth, textureHeight;
 
@@ -67,15 +68,12 @@ public class LazyFont
     public static void discardFont(LazyFont font)
     {
         fonts.remove(font.name);
-        font.chars.clear();
         glDeleteTextures(font.textureId);
     }
 
     // File format documentation: http://www.angelcode.com/products/bmfont/doc/file_format.html
     private LazyFont(String fontName) throws FontException
     {
-        id = fontName;
-
         // Load the font file contents for later parsing
         final String header;
         final List<String> charLines = new ArrayList<>(), kernLines = new ArrayList<>();
@@ -137,8 +135,9 @@ public class LazyFont
                 throw new RuntimeException("Failed to load texture atlas '" + imgFile + "'", ex);
             }
 
-            // Parse character data into a map of LazyChars
-            chars = new HashMap<>();
+            // Parse character data and place into a quick lookup table or extended character map
+            lookupTable = new LazyChar[224];
+            extendedChars = new HashMap<>();
             for (String charLine : charLines)
             {
                 final String[] charData = charLine.split(SPLIT_REGEX);
@@ -161,7 +160,16 @@ public class LazyFont
                         Integer.parseInt(charData[16])); // advance
                 //Ingeger.parseInt(data[18]), // page
                 // Integer.parseInt(data[20])); // channel
-                chars.put(tmp.id, tmp);
+
+                // Put in the lookup table, or in a map if it's not within standard ASCII range
+                if (tmp.id >= 32 && tmp.id <= 255)
+                {
+                    lookupTable[tmp.id - 32] = tmp;
+                }
+                else
+                {
+                    extendedChars.put((char) tmp.id, tmp);
+                }
             }
 
             // Parse and add kerning data
@@ -179,7 +187,7 @@ public class LazyFont
                 final int id = Integer.parseInt(kernData[4]),
                         otherId = Integer.parseInt(kernData[2]),
                         kernAmount = Integer.parseInt(kernData[6]);
-                chars.get(id).addKerning(otherId, kernAmount);
+                getChar((char) id).addKerning(otherId, kernAmount);
             }
         }
         catch (NumberFormatException ex)
@@ -220,6 +228,22 @@ public class LazyFont
         }
     }
 
+    private LazyChar getChar(char character)
+    {
+        if (character >= 32 && character <= 255)
+        {
+            return lookupTable[character - 32];
+        }
+
+        final LazyChar ch = extendedChars.get(character);
+        if (ch == null)
+        {
+            return getChar('?');
+        }
+
+        return ch;
+    }
+
     // Returns dimensions of drawn text
     private Vector2f drawText(String text, float x, float y, float size,
             float maxWidth, float maxHeight, Color color)
@@ -258,7 +282,7 @@ public class LazyFont
                 continue;
             }
 
-            final LazyChar ch = chars.get((int) tmp);
+            final LazyChar ch = getChar(tmp);
             final float kerning = ch.getKerning(lastChar) * scaleFactor,
                     advance = kerning + (ch.advance * scaleFactor),
                     chWidth = ch.width * scaleFactor,
@@ -321,7 +345,8 @@ public class LazyFont
     @Override
     public String toString()
     {
-        return "LazyFont{" + "chars=" + chars + ", textureId=" + textureId
+        return "LazyFont{" + "lookupTable=" + lookupTable
+                + ", extendedChars=" + extendedChars + ", textureId=" + textureId
                 + ", lineHeight=" + lineHeight + ", textureWidth=" + textureWidth
                 + ", textureHeight=" + textureHeight + '}';
     }
