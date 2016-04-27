@@ -215,33 +215,20 @@ public class LazyFont
         return name;
     }
 
-    public static void main(String[] args)
-    {
-        final String header = "info face=\"Insignia LT\" size=15 bold=0 italic=0 charset=\"\" unicode=1 stretchH=100 smooth=1 aa=4 padding=0,0,0,0 spacing=1,1 outline=0\n"
-                + " common lineHeight=15 base=12 scaleW=256 scaleH=256 pages=1 packed=0 alphaChnl=1 redChnl=0 greenChnl=0 blueChnl=0\n"
-                + " page id=0 file=\"insignia15LTaa_0.png\"";
-        final String[] metadata = header.split(SPLIT_REGEX);
-        System.out.println("Metadata length: " + metadata.length);
-        for (int i = 0; i < metadata.length; i++)
-        {
-            System.out.println(i + ": " + metadata[i]);
-        }
-    }
-
     private LazyChar getChar(char character)
     {
+        final LazyChar ch;
         if (character >= 32 && character <= 255)
         {
-            return lookupTable[character - 32];
+            ch = lookupTable[character - 32];
         }
-
-        final LazyChar ch = extendedChars.get(character);
-        if (ch == null)
+        else
         {
-            return getChar('?');
+            ch = extendedChars.get(character);
         }
 
-        return ch;
+        // Let's just hope nobody ever tries a font without question mark support...
+        return ((ch == null) ? getChar('?') : ch);
     }
 
     // Returns dimensions of drawn text

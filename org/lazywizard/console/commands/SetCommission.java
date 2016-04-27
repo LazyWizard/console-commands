@@ -18,6 +18,10 @@ public class SetCommission implements BaseCommand
 {
     private static final Logger Log = Logger.getLogger(SetCommission.class);
 
+    /**
+     * @return The faction the player used to work with, or {@code null} if
+     *         they didn't have a commission.
+     */
     public static FactionAPI endCurrentCommission()
     {
         final FactionAPI curFaction = Misc.getCommissionFaction();
@@ -56,7 +60,8 @@ public class SetCommission implements BaseCommand
             final FactionAPI curFaction = endCurrentCommission();
             if (curFaction != null)
             {
-                Console.showMessage("Ended existing commission with " + curFaction.getDisplayName());
+                Console.showMessage("Ended existing commission with "
+                        + curFaction.getDisplayNameWithArticle());
                 return CommandResult.SUCCESS;
             }
             else if (curFaction == null)
@@ -80,7 +85,7 @@ public class SetCommission implements BaseCommand
         }
         else if (!newFaction.getCustomBoolean(Factions.CUSTOM_OFFERS_COMMISSIONS))
         {
-            Console.showMessage("This faction doesn't offer commissions!");
+            Console.showMessage("That faction doesn't offer commissions!");
             return CommandResult.ERROR;
         }
         else if (newFaction == Misc.getCommissionFaction())
@@ -92,14 +97,13 @@ public class SetCommission implements BaseCommand
         final FactionAPI oldFaction = endCurrentCommission();
         if (oldFaction != null)
         {
-            Console.showMessage("Ended existing commission with " + oldFaction.getDisplayName());
+            Console.showMessage("Ended existing commission with "
+                    + oldFaction.getDisplayNameWithArticle());
         }
 
-        final FactionCommissionMission mission = new FactionCommissionMission(newFaction.getId());
-        final FactionCommissionMissionEvent newEvent = (FactionCommissionMissionEvent) mission.getPrimedEvent();
-        Global.getSector().getEventManager().startEvent(newEvent);
-
-        Console.showMessage("Began commission with " + newFaction.getDisplayName() + ".");
+        new FactionCommissionMission(newFaction.getId()).playerAccept(null);
+        Console.showMessage("Began commission with "
+                + newFaction.getDisplayNameWithArticle() + ".");
         return CommandResult.SUCCESS;
     }
 }

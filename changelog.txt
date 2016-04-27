@@ -1,9 +1,10 @@
  3.0 (XX XX, 2016)
 ===================
 Completely rewrote input system
- - Uses custom font rendering (please don't use these classes yourself, wait for
+ - Same system used for both campaign and combat, no more popups or dialogs
+ - Uses custom font renderer (please don't use these classes yourself, wait for
    their eventual inclusion in LazyLib once the code is stable and bug-free)
-Added "consoleFont" to console_settings.json, defaults to TODO
+Added "consoleFont" to console_settings.json, defaults to TODO: find decent font
 If exception stack traces are enabled, show source jars in exception details
 Added isCampaignAccessible() to CommandContext:
  - Returns true if the player is on the campaign map, in a campaign battle,
@@ -11,6 +12,7 @@ Added isCampaignAccessible() to CommandContext:
  - Used to check if you have access to campaign-only methods (in SectorAPI, etc)
 New commands:
  - BlockRetreat, prevents a full retreat from being ordered by the enemy
+ - ForceDeployAll, forces your opponent to deploy every ship in their fleet
  - ModInfo, shows detailed info about a mod, including what ships, fighter
    wings, weapons and commodities it adds to the game
  - SetCommission, sets the faction the player is commissioned to work for, or
