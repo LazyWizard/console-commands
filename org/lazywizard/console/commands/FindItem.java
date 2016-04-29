@@ -9,6 +9,7 @@ import com.fs.starfarer.api.campaign.CargoStackAPI;
 import com.fs.starfarer.api.campaign.SubmarketPlugin;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI;
+import com.fs.starfarer.api.impl.campaign.submarkets.BaseSubmarketPlugin;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
@@ -63,6 +64,12 @@ public class FindItem implements BaseCommand
         {
             for (SubmarketAPI submarket : market.getSubmarketsCopy())
             {
+                if (submarket.getPlugin() instanceof BaseSubmarketPlugin)
+                {
+                    final BaseSubmarketPlugin plugin = (BaseSubmarketPlugin) submarket.getPlugin();
+                    plugin.updateCargoPrePlayerInteraction();
+                }
+
                 int total = (int) submarket.getCargo().getQuantity(
                         (isWeapon ? CargoItemType.WEAPONS : CargoItemType.RESOURCES), id);
                 if (total > 0)
