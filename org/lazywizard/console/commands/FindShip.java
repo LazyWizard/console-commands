@@ -7,6 +7,7 @@ import com.fs.starfarer.api.campaign.SubmarketPlugin.TransferAction;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
+import com.fs.starfarer.api.impl.campaign.submarkets.BaseSubmarketPlugin;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
@@ -43,6 +44,12 @@ public class FindShip implements BaseCommand
         {
             for (SubmarketAPI submarket : market.getSubmarketsCopy())
             {
+                if (submarket.getPlugin() instanceof BaseSubmarketPlugin)
+                {
+                    final BaseSubmarketPlugin plugin = (BaseSubmarketPlugin) submarket.getPlugin();
+                    plugin.updateCargoPrePlayerInteraction();
+                }
+
                 int total = 0;
                 boolean isFirstFound = true;
                 float price = 0f;

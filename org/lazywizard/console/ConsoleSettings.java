@@ -13,8 +13,9 @@ import org.lwjgl.input.Keyboard;
  */
 public class ConsoleSettings
 {
-    // The key stroke that summons the console pop-up
+    // The key stroke that summons the console overlay
     private final KeyStroke CONSOLE_SUMMON_KEY;
+    // The BMFont used by the console's overlay
     private final String CONSOLE_FONT;
     // The String (usually a single character) that separates multiple commands
     private final String COMMAND_SEPARATOR;
@@ -22,7 +23,7 @@ public class ConsoleSettings
     private final Map<CommandResult, String> RESULT_SOUNDS;
     // Whether each command should be displayed to the player before executing
     private final boolean SHOW_ENTERED_COMMANDS;
-    // Whether the current cursor index is displayed in the campaign pop-up
+    // Whether the current cursor index is displayed in the overlay
     private final boolean SHOW_CURSOR_INDEX;
     // Whether to show full exception stack traces or just the class/message
     private final boolean SHOW_EXCEPTION_TRACE;
@@ -106,10 +107,10 @@ public class ConsoleSettings
     }
 
     /**
-     * Returns whether the campaign pop-up shows the current index (for input
+     * Returns whether the console overlay shows the current index (for input
      * debugging purposes).
      * <p>
-     * @return {@code true} if the campaign popup shows the cursor index,
+     * @return {@code true} if the console overlay shows the cursor index,
      *         {@code false} otherwise.
      * <p>
      * @since 2.3
