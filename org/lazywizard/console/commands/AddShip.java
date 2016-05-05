@@ -38,6 +38,12 @@ public class AddShip implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
+        // Redirect fighter wings to AddWing
+        if (tmp[0].endsWith("_wing"))
+        {
+            return new AddWing().runCommand(args, context);
+        }
+
         int amt;
 
         try
@@ -117,11 +123,12 @@ public class AddShip implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        // TODO: Redirect wings to AddWing instead of snarking at the user
+        // Redirect fighter wings to AddWing
         if (ship.isFighterWing() || ship.getHullSpec().getHullSize() == HullSize.FIGHTER)
         {
-            Console.showMessage("Use AddWing for fighters!");
-            return CommandResult.ERROR;
+            return new AddWing().runCommand(args, context);
+            //Console.showMessage("Use AddWing for fighters!");
+            //return CommandResult.ERROR;
         }
 
         final FleetDataAPI fleet = Global.getSector().getPlayerFleet().getFleetData();

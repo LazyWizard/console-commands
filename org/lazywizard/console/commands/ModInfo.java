@@ -55,7 +55,7 @@ public class ModInfo implements BaseCommand
 
                 // Skip rows not from that mod
                 final String source = row.getString("fs_rowSource");
-                System.out.print(id + ": " + modDir + " vs " + source+", ");
+                System.out.print(id + ": " + modDir + " vs " + source + ", ");
                 if (source == null || !source.endsWith(modDir))
                 {
                     System.out.println("MISMATCH");
@@ -97,7 +97,7 @@ public class ModInfo implements BaseCommand
         return getRowsAddedByMod("data/campaign/commodities.csv", "id", mod);
     }
 
-    private static String getPadding(int length, char padWith)
+    private static String pad(int length, char padWith)
     {
         return new String(new char[length]).replace('\0', padWith);
     }
@@ -125,7 +125,7 @@ public class ModInfo implements BaseCommand
         // Just pretend you didn't see this abomination, okay?
         return " (" + toImplode.size() + "):\n"
                 + StringUtils.indent(StringUtils.wrapString(CollectionUtils.implode(toImplode),
-                        Console.getSettings().getMaxOutputLineLength() - indent), getPadding(indent, ' '));
+                        Console.getSettings().getMaxOutputLineLength() - indent), pad(indent, ' '));
     }
 
     public static String getInfo(ModSpecAPI mod)
@@ -135,7 +135,7 @@ public class ModInfo implements BaseCommand
 
         final StringBuilder sb = new StringBuilder(2048);
         sb.append(" Report for mod ").append(modId).append(":\n")
-                .append(getPadding(sb.length(), '-'))
+                .append(pad(sb.length(), '-'))
                 .append("\n - Display name: ").append(mod.getName())
                 .append("\n - Author: ").append(mod.getAuthor())
                 .append("\n - Description:\n")
@@ -191,16 +191,14 @@ public class ModInfo implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        for (ModSpecAPI mod : mods)
+        final ModSpecAPI mod = Global.getSettings().getModManager().getModSpec(match);
+        if (mod == null)
         {
-            if (match.equals(mod.getId()))
-            {
-                Console.showMessage(getInfo(mod));
-                return CommandResult.SUCCESS;
-            }
+            Console.showMessage("Something went wrong!");
+            return CommandResult.ERROR;
         }
 
-        Console.showMessage("Something went wrong!");
-        return CommandResult.ERROR;
+        Console.showMessage(getInfo(mod));
+        return CommandResult.SUCCESS;
     }
 }
