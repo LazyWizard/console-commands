@@ -425,7 +425,8 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                             event.consume();
                         }
                         // Paste handling
-                        else if (keyPressed == Keyboard.KEY_V && event.isCtrlDown())
+                        else if (keyPressed == Keyboard.KEY_V && event.isCtrlDown()
+                                && Sys.getClipboard() != null)
                         {
                             currentInput.insert(currentIndex,
                                     Sys.getClipboard().replace('\n', ' '));
