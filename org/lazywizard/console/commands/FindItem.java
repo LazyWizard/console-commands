@@ -1,5 +1,6 @@
 package org.lazywizard.console.commands;
 
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
 import com.fs.starfarer.api.Global;
@@ -126,7 +127,7 @@ public class FindItem implements BaseCommand
                 SubmarketAPI submarket = entry.getKey();
                 PriceData data = entry.getValue();
                 Console.showMessage(" - " + data.getAvailable() + " available for "
-                        + Math.round(data.getPrice()) + " credits at "
+                        + data.getFormattedPrice() + " credits at "
                         + submarket.getMarket().getName() + "'s "
                         + submarket.getNameOneLine() + " submarket ("
                         + submarket.getFaction().getDisplayName() + ", "
@@ -172,6 +173,11 @@ public class FindItem implements BaseCommand
         private float getPrice()
         {
             return pricePer;
+        }
+
+        private String getFormattedPrice()
+        {
+            return NumberFormat.getIntegerInstance().format(Math.round(pricePer));
         }
 
         private int getAvailable()
