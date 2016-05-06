@@ -384,17 +384,17 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                         if (keyPressed == Keyboard.KEY_BACK && currentIndex > 0)
                         {
                             // Control+backspace, delete last word
-                            // TODO: Add positional editing support
                             if (event.isCtrlDown())
                             {
-                                int lastSpace = currentInput.lastIndexOf(" ");
+                                // Ppositional editing support
+                                final int lastSpace = currentInput.substring(0, currentIndex).lastIndexOf(" ");
                                 if (lastSpace == -1)
                                 {
-                                    currentInput.setLength(0);
+                                    currentInput.delete(0, currentIndex);
                                 }
                                 else
                                 {
-                                    currentInput.delete(lastSpace, currentInput.length());
+                                    currentInput.delete(lastSpace, currentIndex);
                                 }
                             }
                             // Regular backspace, delete last character
