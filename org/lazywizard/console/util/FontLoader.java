@@ -18,8 +18,10 @@ import org.apache.log4j.Logger;
 public class FontLoader
 {
     private static final Logger Log = Logger.getLogger(FontLoader.class);
-    private static final String FONT_PATH_PREFIX = "graphics/fonts/";
     private static final String SPLIT_REGEX = "=|\\s+(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)";
+    private static final int METADATA_LENGTH = 51;
+    private static final int CHARDATA_LENGTH = 21;
+    private static final int KERNDATA_LENGTH = 7;
 
     // File format documentation: http://www.angelcode.com/products/bmfont/doc/file_format.html
     // TODO: Rewrite parsing code to be more robust and presentable
@@ -29,7 +31,6 @@ public class FontLoader
         final String header;
         final List<String> charLines = new ArrayList<>(), kernLines = new ArrayList<>();
         try (final Scanner reader = new Scanner(Global.getSettings().openStream(fontPath)))
-        //FONT_PATH_PREFIX + fontName + ".fnt")))
         {
             // Store header with font metadata
             header = reader.nextLine() + " " + reader.nextLine() + " " + reader.nextLine();
@@ -58,17 +59,21 @@ public class FontLoader
         {
             // TODO: Parse and store ALL font metadata
             final String[] metadata = header.split(SPLIT_REGEX);
-            if (metadata.length != 51)
+            if (metadata.length != METADATA_LENGTH)
             {
                 Log.error("Metadata length mismatch: " + metadata.length
-                        + " vs expected length of 51.");
+                        + " vs expected length of " + METADATA_LENGTH + ".");
                 Log.error("Input string: " + header);
                 throw new FontException("Metadata length mismatch");
             }
 
             final String fontName = metadata[2].replace("\"", "");
             final float baseHeight = Float.parseFloat(metadata[27]);
-            final String imgFile = metadata[50].replace("\"", "");
+
+            // Get image file path from metadata
+            final int dirIndex = fontPath.lastIndexOf("/");
+            final String imgFile = (dirIndex == -1 ? fontPath
+                    : fontPath.substring(0, dirIndex + 1)) + metadata[50].replace("\"", "");
 
             // Load the font image into a texture
             // TODO: Add support for multiple image files; 'pages' in the font file
@@ -77,8 +82,8 @@ public class FontLoader
             try
             {
                 // TODO: See if we need to write our own loader to handle texture parameters
-                Global.getSettings().loadTexture(FONT_PATH_PREFIX + imgFile);
-                final SpriteAPI texture = Global.getSettings().getSprite(FONT_PATH_PREFIX + imgFile);
+                Global.getSettings().loadTexture(imgFile);
+                final SpriteAPI texture = Global.getSettings().getSprite(imgFile);
                 textureId = texture.getTextureId();
                 textureWidth = texture.getWidth();
                 textureHeight = texture.getHeight();
@@ -95,10 +100,11 @@ public class FontLoader
             for (String charLine : charLines)
             {
                 final String[] charData = charLine.split(SPLIT_REGEX);
-                if (charData.length != 21)
+                if (charData.length != CHARDATA_LENGTH)
                 {
                     Log.error("Character data length mismatch: "
-                            + charData.length + " vs expected length of 21.");
+                            + charData.length + " vs expected length of "
+                            + CHARDATA_LENGTH + ".");
                     Log.error("Input string: " + charLine);
                     throw new FontException("Character data length mismatch");
                 }
@@ -119,10 +125,11 @@ public class FontLoader
             for (String kernLine : kernLines)
             {
                 final String[] kernData = kernLine.split(SPLIT_REGEX);
-                if (kernData.length != 7)
+                if (kernData.length != KERNDATA_LENGTH)
                 {
                     Log.error("Kerning data length mismatch: "
-                            + kernData.length + " vs expected length of 7.");
+                            + kernData.length + " vs expected length of "
+                            + KERNDATA_LENGTH + ".");
                     Log.error("Input string: " + kernLine);
                     throw new FontException("Kerning data length mismatch");
                 }
@@ -146,7 +153,7 @@ public class FontLoader
     }
 
     /**
-     * Thrown when something has gone wrong while retrieving or loading a font.
+     * Thrown when something has gone wrong while loading or parsing a font.
      *
      * @author LazyWizard
      * @since 3.0
