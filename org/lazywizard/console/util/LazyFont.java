@@ -1,14 +1,8 @@
 package org.lazywizard.console.util;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
-import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.graphics.SpriteAPI;
 import org.apache.log4j.Logger;
 import org.lwjgl.util.vector.Vector2f;
 import static org.lazywizard.lazylib.opengl.ColorUtils.glColor;
@@ -27,172 +21,46 @@ import static org.lwjgl.opengl.GL11.*;
 public class LazyFont
 {
     private static final Logger Log = Logger.getLogger(LazyFont.class);
-    private static final String FONT_PATH_PREFIX = "graphics/fonts/";
-    private static final String SPLIT_REGEX = "=|\\s+(?=([^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)";
-    private static final Map<String, LazyFont> fonts = new HashMap<>();
-    private final String name;
+    private final String fontName;
     private final LazyChar[] lookupTable;
     private final Map<Character, LazyChar> extendedChars;
     private final int textureId;
-    private final float lineHeight, textureWidth, textureHeight;
-
-    /**
-     * Retrieves a font from the font cache, or loads and caches it if it hasn't
-     * been requested before.
-     *
-     * @param fontName The font's name, same as the filename minus the extension
-     *                 and the directories leading up to it. Remember that filenames are
-     *                 case-sensitive on non-Windows systems.
-     *
-     * @return A representation of the font ready for rendering.
-     *
-     * @throws FontException if something goes wrong while loading or parsing
-     *                       the font file.
-     * @since 3.0
-     */
-    // TODO: Add consistent way of retrieving the same font (not using filename!)
-    public static LazyFont getFont(String fontName) throws FontException
-    {
-        // Only load a font once, then cache it for subsequent queries
-        if (!fonts.containsKey(fontName))
-        {
-            LazyFont font = new LazyFont(fontName);
-            fonts.put(fontName, font);
-            return font;
-        }
-
-        return fonts.get(fontName);
-    }
+    private final float baseHeight, textureWidth, textureHeight;
 
     // TODO
-    public static void discardFont(LazyFont font)
+    public void discard()
     {
-        fonts.remove(font.name);
-        glDeleteTextures(font.textureId);
+        glDeleteTextures(textureId);
     }
 
-    // File format documentation: http://www.angelcode.com/products/bmfont/doc/file_format.html
-    private LazyFont(String fontName) throws FontException
+    // TODO: Extract font parsing to own class
+    LazyFont(String fontName, float baseHeight, int textureId,
+            float textureWidth, float textureHeight)
     {
-        // Load the font file contents for later parsing
-        final String header;
-        final List<String> charLines = new ArrayList<>(), kernLines = new ArrayList<>();
-        try (final Scanner reader = new Scanner(Global.getSettings().openStream(
-                FONT_PATH_PREFIX + fontName + ".fnt")))
+        this.fontName = fontName;
+        this.baseHeight = baseHeight;
+        this.textureId = textureId;
+        this.textureWidth = textureWidth;
+        this.textureHeight = textureHeight;
+
+        lookupTable = new LazyChar[224];
+        extendedChars = new HashMap<>();
+    }
+
+    void addChar(int id, int tx, int ty, int width, int height,
+            int xOffset, int yOffset, int advance) //int page, int channel)
+    {
+        final LazyChar tmp = new LazyChar(id, tx, ty, width, height,
+                xOffset, yOffset, advance);
+
+        // Put in the lookup table, or in a map if it's not within standard ASCII range
+        if (tmp.id >= 32 && tmp.id <= 255)
         {
-            // Store header with font metadata
-            header = reader.nextLine() + " " + reader.nextLine() + " " + reader.nextLine();
-            while (reader.hasNextLine())
-            {
-                final String line = reader.nextLine();
-                // Character data
-                if (line.startsWith("char "))
-                {
-                    charLines.add(line);
-                }
-                // Kerning data
-                else if (line.startsWith("kerning "))
-                {
-                    kernLines.add(line);
-                }
-            }
+            lookupTable[tmp.id - 32] = tmp;
         }
-        catch (IOException ex)
+        else
         {
-            throw new RuntimeException("Failed to load font '" + fontName + "'", ex);
-        }
-
-        // Finally parse the file data we retrieved at the beginning of the constructor
-        try
-        {
-            // TODO: Parse and store ALL font metadata
-            final String[] metadata = header.split(SPLIT_REGEX);
-            if (metadata.length != 51)
-            {
-                Log.error("Metadata length mismatch: " + metadata.length
-                        + " vs expected length of 51.");
-                Log.error("Input string: " + header);
-                throw new FontException("Metadata length mismatch");
-            }
-
-            name = metadata[2].replace("\"", "");
-            lineHeight = Float.parseFloat(metadata[27]);
-            final String imgFile = metadata[50].replace("\"", "");
-
-            // Load the font image into a texture
-            // TODO: Add support for multiple image files; 'pages' in the font file
-            try
-            {
-                // TODO: See if we need to write our own loader to handle texture parameters
-                Global.getSettings().loadTexture(FONT_PATH_PREFIX + imgFile);
-                final SpriteAPI texture = Global.getSettings().getSprite(FONT_PATH_PREFIX + imgFile);
-                textureId = texture.getTextureId();
-                textureWidth = texture.getWidth();
-                textureHeight = texture.getHeight();
-            }
-            catch (IOException ex)
-            {
-                throw new RuntimeException("Failed to load texture atlas '" + imgFile + "'", ex);
-            }
-
-            // Parse character data and place into a quick lookup table or extended character map
-            lookupTable = new LazyChar[224];
-            extendedChars = new HashMap<>();
-            for (String charLine : charLines)
-            {
-                final String[] charData = charLine.split(SPLIT_REGEX);
-                if (charData.length != 21)
-                {
-                    Log.error("Character data length mismatch: "
-                            + charData.length + " vs expected length of 21.");
-                    Log.error("Input string: " + charLine);
-                    throw new FontException("Character data length mismatch");
-                }
-
-                final LazyChar tmp = new LazyChar(
-                        Integer.parseInt(charData[2]), // id
-                        Integer.parseInt(charData[4]), // tx
-                        Integer.parseInt(charData[6]), // ty
-                        Integer.parseInt(charData[8]), // width
-                        Integer.parseInt(charData[10]), // height
-                        Integer.parseInt(charData[12]), // xOffset
-                        Integer.parseInt(charData[14]), // yOffset
-                        Integer.parseInt(charData[16])); // advance
-                //Ingeger.parseInt(data[18]), // page
-                // Integer.parseInt(data[20])); // channel
-
-                // Put in the lookup table, or in a map if it's not within standard ASCII range
-                if (tmp.id >= 32 && tmp.id <= 255)
-                {
-                    lookupTable[tmp.id - 32] = tmp;
-                }
-                else
-                {
-                    extendedChars.put((char) tmp.id, tmp);
-                }
-            }
-
-            // Parse and add kerning data
-            for (String kernLine : kernLines)
-            {
-                final String[] kernData = kernLine.split(SPLIT_REGEX);
-                if (kernData.length != 7)
-                {
-                    Log.error("Kerning data length mismatch: "
-                            + kernData.length + " vs expected length of 7.");
-                    Log.error("Input string: " + kernLine);
-                    throw new FontException("Kerning data length mismatch");
-                }
-
-                final int id = Integer.parseInt(kernData[4]),
-                        otherId = Integer.parseInt(kernData[2]),
-                        kernAmount = Integer.parseInt(kernData[6]);
-                getChar((char) id).addKerning(otherId, kernAmount);
-            }
-        }
-        catch (NumberFormatException ex)
-        {
-            throw new FontException("Failed to parse font '" + fontName + "'", ex);
+            extendedChars.put((char) tmp.id, tmp);
         }
     }
 
@@ -206,16 +74,16 @@ public class LazyFont
      */
     public float getBaseHeight()
     {
-        return lineHeight;
+        return baseHeight;
     }
 
     // TODO: Javadoc this
     public String getFontName()
     {
-        return name;
+        return fontName;
     }
 
-    private LazyChar getChar(char character)
+    public LazyChar getChar(char character)
     {
         final LazyChar ch;
         if (character >= 32 && character <= 255)
@@ -248,7 +116,7 @@ public class LazyFont
         glBegin(GL_QUADS);
 
         LazyChar lastChar = null;
-        final float scaleFactor = size / lineHeight;
+        final float scaleFactor = size / baseHeight;
         float xOffset = 0f, yOffset = 0f, sizeX = 0f, sizeY = size;
 
         // TODO: Colored substring support
@@ -334,11 +202,11 @@ public class LazyFont
     {
         return "LazyFont{" + "lookupTable=" + lookupTable
                 + ", extendedChars=" + extendedChars + ", textureId=" + textureId
-                + ", lineHeight=" + lineHeight + ", textureWidth=" + textureWidth
+                + ", lineHeight=" + baseHeight + ", textureWidth=" + textureWidth
                 + ", textureHeight=" + textureHeight + '}';
     }
 
-    private class LazyChar
+    public class LazyChar
     {
         private final int id, width, height, xOffset, yOffset, advance; //page, channel;
         private final float tx1, ty1, tx2, ty2;
@@ -363,12 +231,12 @@ public class LazyFont
             ty2 = ty1 - (height / textureHeight);
         }
 
-        private void addKerning(int otherChar, int kerning)
+        void addKerning(int otherChar, int kerning)
         {
             kernings.put(otherChar, kerning);
         }
 
-        private int getKerning(LazyChar otherChar)
+        public int getKerning(LazyChar otherChar)
         {
             if (otherChar == null)
             {

@@ -95,6 +95,7 @@ public class Console
         Global.getLogger(CommandStore.class).setLevel(logLevel);
 
         // Console combat pop-up appearance settings (temporary)
+        // TODO: Remove these settings once universal overlay is implemented
         Color color = JSONUtils.toColor(settingsFile.getJSONArray("backgroundColor"));
         UIManager.put("Panel.background", color);
         UIManager.put("OptionPane.background", color);
