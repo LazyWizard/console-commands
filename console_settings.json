@@ -8,7 +8,7 @@
     "requireAlt":false,               # Default: false
 
     # The path to the bitmap font used by the overlay
-    "consoleFont":"graphics/fonts/NCS-Console.fnt", #"insignia15LTaa", # Default: TODO
+    "consoleFont":"graphics/fonts/insignia15LTaa.fnt", #"NCS-Console.fnt" # Default: TODO
 
     # Whether combat toggle commands should stay on in subsequent battles
     "persistentCombatCommands":false, # Unimplemented

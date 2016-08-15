@@ -10,6 +10,7 @@ import com.fs.starfarer.api.campaign.econ.SubmarketAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.submarkets.BaseSubmarketPlugin;
 import org.lazywizard.console.BaseCommand;
+import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
@@ -38,8 +39,26 @@ public class FindShip implements BaseCommand
             args = args.substring(0, args.lastIndexOf("_wing"));
         }
 
-        float shipPriceMod = Global.getSettings().getFloat("shipBuyPriceMult");
+        boolean isWing = true;
+        String id = CommandUtils.findBestStringMatch(args + "_wing",
+                Global.getSector().getAllFighterWingIds());
+        if (id == null)
+        {
+            isWing = false;
+            id = CommandUtils.findBestStringMatch(args + "Hull", Global.getSector().getAllEmptyVariantIds());
+            if (id == null)
+            {
+                Console.showMessage("No hull or wing found with id '" + args
+                        + "'!\nUse \"list hulls\" or \"list wings\" to show all valid options.");
+                return CommandResult.ERROR;
+            }
 
+            id = id.substring(0, id.lastIndexOf("_Hull"));
+        }
+
+        System.out.println(id);
+
+        //float shipPriceMod = Global.getSettings().getFloat("shipBuyPriceMult");
         final Map<SubmarketAPI, PriceData> found = new HashMap<>(), foundFree = new HashMap<>();
         for (MarketAPI market : Global.getSector().getEconomy().getMarketsCopy())
         {
@@ -57,7 +76,8 @@ public class FindShip implements BaseCommand
                 boolean isIllegal = false, isFree = false;
                 for (FleetMemberAPI member : submarket.getCargo().getMothballedShips().getMembersListCopy())
                 {
-                    if (member.getHullId().equalsIgnoreCase(args))
+                    if ((isWing && member.getSpecId().equalsIgnoreCase(id))
+                            || (!isWing && member.getHullId().equalsIgnoreCase(id)))
                     {
                         total++;
 
@@ -70,7 +90,6 @@ public class FindShip implements BaseCommand
                                 price = 0;
                                 isIllegal = false;
                                 isFree = true;
-                                System.out.println("Found free in " + submarket.getName());
                             }
                             else
                             {
@@ -99,14 +118,15 @@ public class FindShip implements BaseCommand
 
         if (found.isEmpty() && foundFree.isEmpty())
         {
-            Console.showMessage("No ships with id '" + args + "' found!");
+            Console.showMessage("No " + (isWing ? "wings" : "hulls")
+                    + " with id '" + id + "' found!");
             return CommandResult.SUCCESS;
         }
 
         if (!found.isEmpty())
         {
-            Console.showMessage("Found " + found.size() + " markets with an "
-                    + Character.toUpperCase(args.charAt(0)) + args.substring(1) + " for sale:");
+            Console.showMessage("Found " + found.size() + " markets with "
+                    + (isWing ? "wing '" : "hull '") + id + "' for sale:");
             for (Map.Entry<SubmarketAPI, PriceData> entry : found.entrySet())
             {
                 SubmarketAPI submarket = entry.getKey();
@@ -124,8 +144,8 @@ public class FindShip implements BaseCommand
 
         if (!foundFree.isEmpty())
         {
-            Console.showMessage("Found " + foundFree.size() + " storage tabs with an "
-                    + Character.toUpperCase(args.charAt(0)) + args.substring(1) + " stored in them:");
+            Console.showMessage("Found " + foundFree.size() + " storage tabs with "
+                    + (isWing ? "wing '" : "hull '") + id + "' stored in them:");
             for (Map.Entry<SubmarketAPI, PriceData> entry : foundFree.entrySet())
             {
                 SubmarketAPI submarket = entry.getKey();
