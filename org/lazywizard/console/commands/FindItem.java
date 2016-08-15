@@ -45,7 +45,8 @@ public class FindItem implements BaseCommand
             if (id == null)
             {
                 Console.showMessage("No weapons or commodities found with id '"
-                        + args + "'.");
+                        + args + "'.\nUse \"list commodities\" or \"list weapons\""
+                        + " to show all valid options.");
                 return CommandResult.ERROR;
             }
         }
@@ -121,7 +122,7 @@ public class FindItem implements BaseCommand
         if (!found.isEmpty())
         {
             Console.showMessage("Found " + found.size() + " markets with "
-                    + (isWeapon ? "weapon '" : " commodity '") + id + "' for sale:");
+                    + (isWeapon ? "weapon '" : "commodity '") + id + "' for sale:");
             for (Map.Entry<SubmarketAPI, PriceData> entry : found.entrySet())
             {
                 SubmarketAPI submarket = entry.getKey();
