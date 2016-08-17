@@ -1,12 +1,15 @@
 package org.lazywizard.console.commands;
 
 import java.text.NumberFormat;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.TreeMap;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.CargoAPI.CargoItemType;
 import com.fs.starfarer.api.campaign.CargoStackAPI;
+import com.fs.starfarer.api.campaign.LocationAPI;
+import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.SubmarketPlugin;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI;
@@ -17,8 +20,8 @@ import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import org.lazywizard.lazylib.MathUtils;
 
-// TODO: Needs some cleanup, a lot of weapon/item code can be merged
 public class FindItem implements BaseCommand
 {
     @Override
@@ -61,7 +64,10 @@ public class FindItem implements BaseCommand
             stack = tmp.getStacksCopy().get(0);
         }
 
-        final Map<SubmarketAPI, PriceData> found = new HashMap<>(), foundFree = new HashMap<>();
+        final Comparator<SubmarketAPI> comparator = new SortMarketsByDistance(
+                Global.getSector().getPlayerFleet());
+        final Map<SubmarketAPI, PriceData> found = new TreeMap<>(comparator),
+                foundFree = new TreeMap<>(comparator);
         for (MarketAPI market : Global.getSector().getEconomy().getMarketsCopy())
         {
             for (SubmarketAPI submarket : market.getSubmarketsCopy())
@@ -72,7 +78,7 @@ public class FindItem implements BaseCommand
                     plugin.updateCargoPrePlayerInteraction();
                 }
 
-                int total = (int) submarket.getCargo().getQuantity(
+                final int total = (int) submarket.getCargo().getQuantity(
                         (isWeapon ? CargoItemType.WEAPONS : CargoItemType.RESOURCES), id);
                 if (total > 0)
                 {
@@ -115,7 +121,7 @@ public class FindItem implements BaseCommand
         if (found.isEmpty() && foundFree.isEmpty())
         {
             Console.showMessage("No " + (isWeapon ? "weapons" : "commodities")
-                    + " with id '" + id + "' found!");
+                    + " with id '" + id + "' are available! Try using \"ForceMarketUpdate\".");
             return CommandResult.SUCCESS;
         }
 
@@ -158,37 +164,98 @@ public class FindItem implements BaseCommand
         return CommandResult.SUCCESS;
     }
 
-    private class PriceData
+    public static class PriceData
     {
         private final float pricePer;
         private final int totalAvailable;
         private final boolean isIllegal;
 
-        private PriceData(float pricePer, int totalAvailable, boolean isIllegal)
+        public PriceData(float pricePer, int totalAvailable, boolean isIllegal)
         {
             this.pricePer = pricePer;
             this.totalAvailable = totalAvailable;
             this.isIllegal = isIllegal;
         }
 
-        private float getPrice()
+        public float getPrice()
         {
             return pricePer;
         }
 
-        private String getFormattedPrice()
+        public String getFormattedPrice()
         {
             return NumberFormat.getIntegerInstance().format(Math.round(pricePer));
         }
 
-        private int getAvailable()
+        public int getAvailable()
         {
             return totalAvailable;
         }
 
-        private boolean isIllegal()
+        public boolean isIllegal()
         {
             return isIllegal;
+        }
+    }
+
+    public static class SortMarketsByDistance implements Comparator<SubmarketAPI>
+    {
+        private final SectorEntityToken token;
+        private final LocationAPI location;
+
+        public SortMarketsByDistance(SectorEntityToken token)
+        {
+            this.token = token;
+            location = token.getContainingLocation();
+        }
+
+        @Override
+        public int compare(SubmarketAPI o1, SubmarketAPI o2)
+        {
+            // Ensure there's an entity associated with this market
+            final SectorEntityToken t1 = o1.getMarket().getPrimaryEntity(),
+                    t2 = o2.getMarket().getPrimaryEntity();
+            if (t1 == null)
+            {
+                //System.out.println(o1.getMarket().getName() + "'s primary entity was null!");
+                return 1;
+            }
+            if (t2 == null)
+            {
+                //System.out.println(o2.getMarket().getName() + "'s primary entity was null!");
+                return -1;
+            }
+
+            // If both markets are in another system, sort by hyperspace distance
+            final LocationAPI l1 = t1.getContainingLocation(),
+                    l2 = t2.getContainingLocation();
+            if (l1 != location && l2 != location)
+            {
+                //System.out.println(t1.getFullName() + " and " + t2.getFullName()
+                //        + " are in another system.");
+                return Float.compare(MathUtils.getDistanceSquared(
+                        token.getLocationInHyperspace(), t1.getLocationInHyperspace()),
+                        MathUtils.getDistanceSquared(token.getLocationInHyperspace(),
+                                t2.getLocationInHyperspace()));
+            }
+
+            // If only one market is in the same system as the sort token, things are simple
+            if (l1 == location && l2 != location)
+            {
+                //System.out.println(t1.getFullName() + " is in the same system.");
+                return -1;
+            }
+            if (l2 == location && l1 != location)
+            {
+                //System.out.println(t2.getFullName() + " is in the same system.");
+                return 1;
+            }
+
+            // If both locations are in the same system as sort token, sort by local distance
+            //System.out.println(t1.getFullName() + " and " + t2.getFullName()
+            //        + " are in the same system.");
+            return Float.compare(MathUtils.getDistanceSquared(token, t1),
+                    MathUtils.getDistanceSquared(token, t2));
         }
     }
 }
