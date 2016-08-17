@@ -1,8 +1,8 @@
 package org.lazywizard.console.commands;
 
-import java.text.NumberFormat;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.TreeMap;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.SubmarketPlugin.TransferAction;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
@@ -13,6 +13,8 @@ import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import org.lazywizard.console.commands.FindItem.PriceData;
+import org.lazywizard.console.commands.FindItem.SortMarketsByDistance;
 
 public class FindShip implements BaseCommand
 {
@@ -45,10 +47,10 @@ public class FindShip implements BaseCommand
         if (id == null)
         {
             isWing = false;
-            id = CommandUtils.findBestStringMatch(args + "Hull", Global.getSector().getAllEmptyVariantIds());
+            id = CommandUtils.findBestStringMatch(args + "_Hull", Global.getSector().getAllEmptyVariantIds());
             if (id == null)
             {
-                Console.showMessage("No hull or wing found with id '" + args
+                Console.showMessage("No hull or wing found with base id '" + args
                         + "'!\nUse \"list hulls\" or \"list wings\" to show all valid options.");
                 return CommandResult.ERROR;
             }
@@ -56,10 +58,13 @@ public class FindShip implements BaseCommand
             id = id.substring(0, id.lastIndexOf("_Hull"));
         }
 
-        System.out.println(id);
+        //System.out.println(id);
 
-        //float shipPriceMod = Global.getSettings().getFloat("shipBuyPriceMult");
-        final Map<SubmarketAPI, PriceData> found = new HashMap<>(), foundFree = new HashMap<>();
+        //final float shipPriceMod = Global.getSettings().getFloat("shipBuyPriceMult");
+        final Comparator<SubmarketAPI> comparator = new SortMarketsByDistance(
+                Global.getSector().getPlayerFleet());
+        final Map<SubmarketAPI, PriceData> found = new TreeMap<>(comparator),
+                foundFree = new TreeMap<>(comparator);
         for (MarketAPI market : Global.getSector().getEconomy().getMarketsCopy())
         {
             for (SubmarketAPI submarket : market.getSubmarketsCopy())
@@ -119,7 +124,7 @@ public class FindShip implements BaseCommand
         if (found.isEmpty() && foundFree.isEmpty())
         {
             Console.showMessage("No " + (isWing ? "wings" : "hulls")
-                    + " with id '" + id + "' found!");
+                    + " with id '" + id + "' are available! Try using \"ForceMarketUpdate\".");
             return CommandResult.SUCCESS;
         }
 
@@ -160,39 +165,5 @@ public class FindShip implements BaseCommand
         }
 
         return CommandResult.SUCCESS;
-    }
-
-    private class PriceData
-    {
-        private final float pricePer;
-        private final int totalAvailable;
-        private final boolean isIllegal;
-
-        private PriceData(float pricePer, int totalAvailable, boolean isIllegal)
-        {
-            this.pricePer = pricePer;
-            this.totalAvailable = totalAvailable;
-            this.isIllegal = isIllegal;
-        }
-
-        private float getPrice()
-        {
-            return pricePer;
-        }
-
-        private String getFormattedPrice()
-        {
-            return NumberFormat.getIntegerInstance().format(Math.round(pricePer));
-        }
-
-        private int getAvailable()
-        {
-            return totalAvailable;
-        }
-
-        private boolean isIllegal()
-        {
-            return isIllegal;
-        }
     }
 }
