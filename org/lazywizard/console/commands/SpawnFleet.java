@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
-import com.fs.starfarer.api.campaign.CargoAPI.CrewXPLevel;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.fleet.RepairTrackerAPI;
@@ -20,6 +19,7 @@ import org.lazywizard.lazylib.CollectionUtils;
 import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
 
+// TODO: Broken; rewrite and re-enable at some point (low priority)
 public class SpawnFleet implements BaseCommand
 {
     private static final String DEFAULT_QUALITY = " 0.6";
@@ -87,7 +87,7 @@ public class SpawnFleet implements BaseCommand
         }
 
         List<String> subNames = new ArrayList<>(tmp.length - 3);
-        CrewXPLevel crewLevel = CrewXPLevel.REGULAR;
+        /*CrewXPLevel crewLevel = CrewXPLevel.REGULAR;
         for (int x = 3; x < tmp.length; x++)
         {
             // Support for crew XP level argument
@@ -117,7 +117,7 @@ public class SpawnFleet implements BaseCommand
             {
                 subNames.add(tmp[x]);
             }
-        }
+        }*/
 
         final String name = (subNames.isEmpty() ? "Fleet" : CollectionUtils.implode(subNames, " "));
         int totalOfficers = 0;
@@ -147,11 +147,6 @@ public class SpawnFleet implements BaseCommand
                     qualityBonus,
                     qualityOverride))
             );*/
-            // Set crew XP level
-            for (FleetMemberAPI member : toSpawn.getFleetData().getMembersListCopy())
-            {
-                member.setCrewXPLevel(crewLevel);
-            }
 
             // Spawn fleet around player
             final Vector2f offset = MathUtils.getRandomPointOnCircumference(null,
@@ -177,8 +172,7 @@ public class SpawnFleet implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        Console.showMessage("Spawned a " + totalFP + "FP "
-                + crewLevel.getPrefix().toLowerCase() + " fleet with "
+        Console.showMessage("Spawned a " + totalFP + "FP  fleet with "
                 + totalOfficers + " officers, aligned with faction " + faction.getId() + ".");
         return CommandResult.SUCCESS;
     }

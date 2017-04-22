@@ -32,7 +32,7 @@ public class AddSkillPoints implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
-        Global.getSector().getPlayerFleet().getCommanderStats().addSkillPoints(amount);
+        Global.getSector().getPlayerFleet().getCommanderStats().addPoints(amount);
         Console.showMessage("Added " + amount + " skill points to your character.");
         return CommandResult.SUCCESS;
     }

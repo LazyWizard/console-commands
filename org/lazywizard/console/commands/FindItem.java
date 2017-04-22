@@ -139,7 +139,7 @@ public class FindItem implements BaseCommand
                         + submarket.getNameOneLine() + " submarket ("
                         + submarket.getFaction().getDisplayName() + ", "
                         + submarket.getMarket().getPrimaryEntity()
-                        .getContainingLocation().getName()
+                                .getContainingLocation().getName()
                         + (data.isIllegal() ? ", restricted)" : ")"));
             }
         }
@@ -157,7 +157,7 @@ public class FindItem implements BaseCommand
                         + submarket.getNameOneLine() + " submarket ("
                         + submarket.getFaction().getDisplayName() + ", "
                         + submarket.getMarket().getPrimaryEntity()
-                        .getContainingLocation().getName() + ")");
+                                .getContainingLocation().getName() + ")");
             }
         }
 

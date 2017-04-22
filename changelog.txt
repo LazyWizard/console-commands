@@ -1,16 +1,19 @@
- 3.0 (XX XX, 2016)
+ 3.0 (XX XX, 2017)
 ===================
+Updated to be compatible with Starsector 0.8a
 Completely rewrote input system
  - Same system used for both campaign and combat, no more popups or dialogs
  - Uses custom font renderer (please don't use these classes yourself, wait for
    their eventual inclusion in LazyLib once the code is stable and bug-free)
+Control+backspace now deletes the current word instead of last word in input
 Added "consoleFont" to console_settings.json, defaults to TODO: find decent font
 If exception stack traces are enabled, show source jars in exception details
 Added isCampaignAccessible() to CommandContext:
  - Returns true if the player is on the campaign map, in a campaign battle,
    or fighting a refit simulation battle in the campaign
  - Used to check if you have access to campaign-only methods (in SectorAPI, etc)
-Fixed control+backspace, now deletes current word instead of last word in input
+Removed AddAptitudePoints command (use AddSkillPoints instead)
+Removed SpawnFleet command (will rewrite at some point in the future)
 New commands:
  - BlockRetreat, prevents a full retreat from being ordered by the enemy
  - ForceDeployAll, forces your opponent to deploy every ship in their fleet
@@ -19,7 +22,9 @@ New commands:
  - SetCommission, sets the faction the player is commissioned to work for, or
    ends the current commission if "none" is entered as an argument
 Changes to existing commands:
+ - AddCrew no longer accepts a crew XP level argument
  - AddShip will redirect to AddWing if a wing ID is entered
+ - AddSkillPoints now adds character points, used for both skills and aptitudes
  - FindItem/FindShip:
    - Both commands will simulate a visit from the player to each searched
      submarket; this ensures the searched stockpiles are always up to date, at
@@ -36,6 +41,10 @@ Changes to existing commands:
    - "aliases", shows all aliases added through aliases.csv
    - "tags", shows all tags and their associated commands
  - Fixed Traitor failing when used directly on a drone
+
+ 2.7b (March 16, 2017)
+=======================
+Switched version file hosting to Bitbucket
 
  2.7 (December 16, 2015)
 =========================
