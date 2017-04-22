@@ -60,7 +60,7 @@ public class FindShip implements BaseCommand
 
         //System.out.println(id);
 
-        //final float shipPriceMod = Global.getSettings().getFloat("shipBuyPriceMult");
+        //final float shipPriceMod = Global.getSettings().getFloat("shipBuyPriceMult"); // Unused?
         final Comparator<SubmarketAPI> comparator = new SortMarketsByDistance(
                 Global.getSector().getPlayerFleet());
         final Map<SubmarketAPI, PriceData> found = new TreeMap<>(comparator),

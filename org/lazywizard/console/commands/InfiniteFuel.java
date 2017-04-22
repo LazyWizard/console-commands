@@ -9,6 +9,7 @@ import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
+// TODO: This (and all campaign toggle commands) is broken in .7a+
 public class InfiniteFuel implements BaseCommand
 {
     private static WeakReference<SectorAPI> lastSector = new WeakReference<>(null);

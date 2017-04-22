@@ -30,7 +30,7 @@ public class Respec implements BaseCommand
             {
                 Console.showMessage(" - removed " + total + " points from aptitude " + aptitude);
                 player.setAptitudeLevel(aptitude, 0f);
-                player.addAptitudePoints(total);
+                player.addPoints(total);
                 aptRefunded += total;
             }
         }
@@ -50,7 +50,7 @@ public class Respec implements BaseCommand
             {
                 Console.showMessage(" - removed " + total + " points from skill " + skill);
                 player.setSkillLevel(skill, 0f);
-                player.addSkillPoints(total);
+                player.addPoints(total);
                 skillRefunded += total;
             }
         }

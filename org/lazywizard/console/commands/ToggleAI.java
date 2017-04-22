@@ -104,5 +104,10 @@ public class ToggleAI implements BaseCommand
         {
             return flags;
         }
+
+        @Override
+        public void cancelCurrentManeuver()
+        {
+        }
     }
 }
