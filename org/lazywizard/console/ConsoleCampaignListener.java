@@ -387,7 +387,7 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
                             if (event.isCtrlDown())
                             {
                                 // Ppositional editing support
-                                final int lastSpace = currentInput.substring(0, currentIndex).lastIndexOf(" ");
+                                final int lastSpace = currentInput.substring(0, currentIndex).lastIndexOf(' ');
                                 if (lastSpace == -1)
                                 {
                                     currentInput.delete(0, currentIndex);

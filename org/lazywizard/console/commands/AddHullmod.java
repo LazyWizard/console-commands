@@ -1,7 +1,6 @@
 package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
-import org.apache.log4j.Logger;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
@@ -9,8 +8,6 @@ import org.lazywizard.console.Console;
 
 public class AddHullmod implements BaseCommand
 {
-    private static final Logger Log = Logger.getLogger(AddHullmod.class);
-
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {

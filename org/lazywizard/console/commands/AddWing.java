@@ -79,7 +79,7 @@ public class AddWing implements BaseCommand
 
         final CargoAPI fleet = Global.getSector().getPlayerFleet().getCargo();
         fleet.addFighters(variant, amt);
-        Console.showMessage("Added " + amt + " of wing " + variant
+        Console.showMessage("Added " + amt + " of wing LPC " + variant
                 + " to player fleet.");
         return CommandResult.SUCCESS;
     }

@@ -1,20 +1,16 @@
 package org.lazywizard.console.commands;
 
-import java.lang.reflect.Field;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Submarkets;
 import com.fs.starfarer.api.impl.campaign.submarkets.BaseSubmarketPlugin;
-import org.apache.log4j.Logger;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
 public class ForceMarketUpdate implements BaseCommand
 {
-    private static final Logger Log = Logger.getLogger(ForceMarketUpdate.class);
-
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
@@ -24,23 +20,7 @@ public class ForceMarketUpdate implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        final Field sinceLastCargoUpdate, minCargoUpdateInterval;
-        try
-        {
-            sinceLastCargoUpdate = BaseSubmarketPlugin.class.getDeclaredField(
-                    "sinceLastCargoUpdate");
-            sinceLastCargoUpdate.setAccessible(true);
-            minCargoUpdateInterval = BaseSubmarketPlugin.class.getDeclaredField(
-                    "minCargoUpdateInterval");
-            minCargoUpdateInterval.setAccessible(true);
-        }
-        catch (Exception ex)
-        {
-            Console.showException("Failed to access required fields! Has BaseSubmarketPlugin been modified?", ex);
-            return CommandResult.ERROR;
-        }
-
-        int totalMarkets = 0, totalSubmarkets = 0, failedSubmarkets = 0;
+        int totalMarkets = 0, totalSubmarkets = 0;
         for (MarketAPI market : Global.getSector().getEconomy().getMarketsCopy())
         {
             totalMarkets++;
@@ -52,32 +32,19 @@ public class ForceMarketUpdate implements BaseCommand
                     continue;
                 }
 
+                // Only update submarkets that implement BaseSubmarketPlugin (guaranteed to have the proper fields)
                 if (submarket.getPlugin() instanceof BaseSubmarketPlugin)
                 {
                     final BaseSubmarketPlugin plugin = (BaseSubmarketPlugin) submarket.getPlugin();
-
-                    try
-                    {
-                        sinceLastCargoUpdate.setFloat(plugin,
-                                minCargoUpdateInterval.getFloat(plugin) + 1);
-                        totalSubmarkets++;
-                    }
-                    catch (Exception ex)
-                    {
-                        failedSubmarkets++;
-                        Log.error("Failed to update BaseSubmarketPlugin!", ex);
-                        continue;
-                    }
-
+                    plugin.setSinceLastCargoUpdate(plugin.getMinCargoUpdateInterval() + 1);
+                    totalSubmarkets++;
                     plugin.updateCargoPrePlayerInteraction();
                 }
             }
         }
 
         Console.showMessage("Updated inventory for " + totalSubmarkets
-                + " submarkets in " + totalMarkets + " markets"
-                + ((failedSubmarkets > 0) ? "(" + failedSubmarkets
-                        + " failed, see starsector.log for details)." : "."));
+                + " submarkets in " + totalMarkets + " markets.");
         return CommandResult.SUCCESS;
     }
 }
