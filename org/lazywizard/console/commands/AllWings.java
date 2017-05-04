@@ -4,10 +4,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CargoAPI;
-import com.fs.starfarer.api.campaign.FleetDataAPI;
+import com.fs.starfarer.api.campaign.CargoStackAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
-import com.fs.starfarer.api.fleet.FleetMemberAPI;
-import com.fs.starfarer.api.fleet.FleetMemberType;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
@@ -26,18 +24,18 @@ public class AllWings implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        FleetDataAPI target;
+        final CargoAPI target;
         String targetName;
         int total = 0;
 
         if (args == null || args.isEmpty())
         {
-            target = Storage.retrieveStorageFleetData();
+            target = Storage.retrieveStorage();
             targetName = "storage (use 'storage' to retrieve)";
         }
         else if ("player".equalsIgnoreCase(args))
         {
-            target = Global.getSector().getPlayerFleet().getFleetData();
+            target = Global.getSector().getPlayerFleet().getCargo();
             targetName = "player fleet";
         }
         else
@@ -51,43 +49,26 @@ public class AllWings implements BaseCommand
                 return CommandResult.ERROR;
             }
 
-            if (token instanceof FleetMemberAPI)
-            {
-                target = ((FleetMemberAPI) token).getFleetData();
-            }
-            else
-            {
-                CargoAPI cargo = CommandUtils.getUsableCargo(token);
-                if (cargo.getMothballedShips() == null)
-                {
-                    cargo.initMothballedShips(token.getFaction().getId());
-                }
-
-                target = cargo.getMothballedShips();
-            }
-
+            target = CommandUtils.getUsableCargo(token);
             targetName = token.getFullName();
         }
 
         final Set<String> ids = new LinkedHashSet<>(Global.getSector().getAllFighterWingIds());
-        for (FleetMemberAPI tmp : target.getMembersListCopy())
+        for (CargoStackAPI tmp : target.getStacksCopy())
         {
-            if (tmp.isFighterWing())
+            if (!tmp.isNull() && tmp.isFighterWingStack())
             {
-                ids.remove(tmp.getSpecId());
+                ids.remove(tmp.getFighterWingSpecIfWing().getId());
             }
         }
 
         for (String id : ids)
         {
-            FleetMemberAPI tmp = Global.getFactory().createFleetMember(
-                    FleetMemberType.FIGHTER_WING, id);
-            tmp.getRepairTracker().setMothballed(true);
-            target.addFleetMember(tmp);
+            target.addFighters(id, 1);
             total++;
         }
 
-        Console.showMessage("Added " + total + " ships to " + targetName + ".");
+        Console.showMessage("Added " + total + " wing LPCs to " + targetName + ".");
         return CommandResult.SUCCESS;
     }
 }

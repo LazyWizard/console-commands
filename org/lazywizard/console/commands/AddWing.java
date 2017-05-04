@@ -1,10 +1,9 @@
 package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.FleetDataAPI;
-import com.fs.starfarer.api.fleet.FleetMemberAPI;
-import com.fs.starfarer.api.fleet.FleetMemberType;
+import com.fs.starfarer.api.campaign.CargoAPI;
 import org.lazywizard.console.BaseCommand;
+import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
@@ -65,55 +64,22 @@ public class AddWing implements BaseCommand
             return CommandResult.SUCCESS;
         }
 
-        FleetDataAPI fleet = Global.getSector().getPlayerFleet().getFleetData();
-        FleetMemberAPI ship;
-        String variant = tmp[0];
-
-        // Fix for improper capitalization
-        for (String id : Global.getSector().getAllFighterWingIds())
+        if (!tmp[0].endsWith("_wing"))
         {
-            if (variant.equalsIgnoreCase(id))
-            {
-                variant = id;
-                break;
-            }
+            tmp[0] += "_wing";
         }
 
-        // Add _wing if the command fails
-        try
+        final String variant = CommandUtils.findBestStringMatch(tmp[0],
+                Global.getSector().getAllFighterWingIds());
+        if (variant == null)
         {
-            ship = Global.getFactory().createFleetMember(
-                    FleetMemberType.FIGHTER_WING, variant);
-        }
-        catch (Exception ex)
-        {
-            variant += "_wing";
-            try
-            {
-                ship = Global.getFactory().createFleetMember(
-                        FleetMemberType.FIGHTER_WING, variant);
-            }
-            catch (Exception ex2)
-            {
-                Console.showMessage("No ship found with id '" + tmp[0] + "'!");
-                return CommandResult.ERROR;
-            }
+            Console.showMessage("No ship found with id '" + tmp[0] + "'!");
+            return CommandResult.ERROR;
         }
 
-        fleet.addFleetMember(ship);
-
-        // More than one ship was requested
-        if (amt > 1)
-        {
-            for (int x = 1; x < amt; x++)
-            {
-                ship = Global.getFactory().createFleetMember(
-                        FleetMemberType.FIGHTER_WING, variant);
-                fleet.addFleetMember(ship);
-            }
-        }
-
-        Console.showMessage("Added " + amt + " of wing " + ship.getSpecId()
+        final CargoAPI fleet = Global.getSector().getPlayerFleet().getCargo();
+        fleet.addFighters(variant, amt);
+        Console.showMessage("Added " + amt + " of wing " + variant
                 + " to player fleet.");
         return CommandResult.SUCCESS;
     }
