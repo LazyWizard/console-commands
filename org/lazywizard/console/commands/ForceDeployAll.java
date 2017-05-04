@@ -6,6 +6,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.CombatFleetManagerAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
+import com.fs.starfarer.api.combat.ShipCommand;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.mission.FleetSide;
 import org.apache.log4j.Logger;
@@ -72,6 +73,17 @@ public class ForceDeployAll implements BaseCommand
         }
 
         moveToSpawnLocations(deployed);
+
+        // Not sure this actually lasts long enough to matter, but worth a shot...
+        for (ShipAPI ship : Global.getCombatEngine().getShips())
+        {
+            if (ship.isAlive() && ship.hasLaunchBays() && ship.getOwner() == 1
+                    && ship.isPullBackFighters())
+            {
+                ship.giveCommand(ShipCommand.PULL_BACK_FIGHTERS, null, 0);
+            }
+        }
+
         Console.showMessage("Forced enemy to deploy " + deployed.size() + " ships.");
         return CommandResult.SUCCESS;
     }
