@@ -209,10 +209,10 @@ public class Console
                     }
                     else
                     {
-                        classSource = cs.getLocation().getFile().replace("\\","/");
+                        classSource = cs.getLocation().getFile().replace("\\", "/");
                         if (classSource.endsWith(".jar"))
                         {
-                            classSource = classSource.substring(classSource.lastIndexOf("/")+1);
+                            classSource = classSource.substring(classSource.lastIndexOf('/') + 1);
                         }
                     }
                 }

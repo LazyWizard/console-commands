@@ -11,3 +11,7 @@ setrelationship,setrelation
 adjustrelationship,adjustrelation
 sr,setrelation
 ar,adjustrelation
+addmod,addhullmod
+addmodspec,addhullmod
+allmods,allhullmods
+allmodspecs,allhullmods

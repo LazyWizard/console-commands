@@ -39,6 +39,7 @@ Changes to existing commands:
  - GoTo will redirect to the Jump command if a star system's name is entered
  - Kill and Nuke credit kills to the player flagship
  - List accepts several new arguments:
+   - "hullmods", shows all hullmods that can be unlocked with a modspec item
    - "mods", shows all currently enabled mods
    - "commands", lists all loaded commands (use "status detailed" for more info)
    - "aliases", shows all aliases added through aliases.csv

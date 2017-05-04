@@ -155,6 +155,10 @@ public class List_ implements BaseCommand
             case "weapons":
                 ids = new ArrayList<>(sector.getAllWeaponIds());
                 break;
+            case "hullmods":
+            case "modspecs":
+                ids = new ArrayList<>(sector.getCampaignUI().getAvailableHullModIds());
+                break;
             case "commodities":
             case "items":
                 ids = new ArrayList<>(sector.getEconomy().getAllCommodityIds());
