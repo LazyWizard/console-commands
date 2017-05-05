@@ -1,5 +1,5 @@
 # Console Commands #
-This is an unofficial developer's console for Fractal Softworks' indie space combat game Starfarer. You can find the official forum thread for this mod here: http://fractalsoftworks.com/forum/index.php?topic=4106.0
+This is an unofficial developer's console for Fractal Softworks' indie space combat game Starsector. You can find the official forum thread for this mod here: http://fractalsoftworks.com/forum/index.php?topic=4106.0
 
 ### Instructions ###
 This is installed just like any regular mod. Put it in the mods folder and make sure it's tagged in Starsector's launcher. Once in the game, you can summon the console with **control+backspace** and enter your commands. While the commands themselves aren't case sensitive, arguments are. For a full list of supported commands enter 'help' in the console. For more information on a specific command use 'help <command>'.
