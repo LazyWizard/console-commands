@@ -3,6 +3,7 @@ package org.lazywizard.console.commands;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,11 @@ public class RunCode implements BaseCommand
 {
     private static Map<String, String> macros;
     private static ScriptEvaluator eval;
+
+    public static Map<String, String> getMacros()
+    {
+        return Collections.<String, String>unmodifiableMap(macros);
+    }
 
     public static void reloadImports()
     {
