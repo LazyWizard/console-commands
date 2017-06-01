@@ -64,11 +64,11 @@ public class AllWings implements BaseCommand
 
         for (String id : ids)
         {
-            target.addFighters(id, 1);
+            target.addFighters(id, 10);
             total++;
         }
 
-        Console.showMessage("Added " + total + " wing LPCs to " + targetName + ".");
+        Console.showMessage("Added " + total + " stacks of wing LPCs to " + targetName + ".");
         return CommandResult.SUCCESS;
     }
 }
