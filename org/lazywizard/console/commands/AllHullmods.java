@@ -1,21 +1,21 @@
 package org.lazywizard.console.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.CargoAPI;
-import com.fs.starfarer.api.campaign.SectorEntityToken;
-import org.apache.log4j.Logger;
+import com.fs.starfarer.api.campaign.CharacterDataAPI;
+import com.fs.starfarer.api.loading.HullModSpecAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
-import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import org.lazywizard.lazylib.CollectionUtils;
 
 public class AllHullmods implements BaseCommand
 {
-    private static final Logger Log = Logger.getLogger(AllHullmods.class);
-
-@Override
+    @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
         if (!context.isInCampaign())
@@ -24,43 +24,27 @@ public class AllHullmods implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        CargoAPI target;
-        String targetName;
-        int total = 0;
-
-        if (args == null || args.isEmpty())
+        final List<String> unlocked = new ArrayList<>();
+        final CharacterDataAPI player = Global.getSector().getCharacterData();
+        for (HullModSpecAPI spec : Global.getSettings().getAllHullModSpecs())
         {
-            target = Storage.retrieveStorage();
-            targetName = "storage (use 'storage' to retrieve)";
-        }
-        else if ("player".equalsIgnoreCase(args))
-        {
-            target = Global.getSector().getPlayerFleet().getCargo();
-            targetName = "player fleet";
-        }
-        else
-        {
-            SectorEntityToken tmp = CommandUtils.findTokenInLocation(args,
-                    Global.getSector().getCurrentLocation());
-
-            if (tmp == null)
+            if (!spec.isHidden() && !spec.isAlwaysUnlocked()
+                    && !player.knowsHullMod(spec.getId()))
             {
-                Console.showMessage(args + " not found!");
-                return CommandResult.ERROR;
+                player.addHullMod(spec.getId());
+                unlocked.add(spec.getDisplayName());
             }
-
-            target = CommandUtils.getUsableCargo(tmp);
-            targetName = tmp.getFullName();
         }
 
-        // TODO: Check with Alex that this is the correct method (campaign UI? WTF)
-        for (String id : Global.getSector().getCampaignUI().getAvailableHullModIds())
+        if (unlocked.isEmpty())
         {
-            target.addHullmods(id, 1);
-            total++;
+            Console.showMessage("You already know all unlockable hullmods!");
+            return CommandResult.SUCCESS;
         }
 
-        Console.showMessage("Added " + total + " hullmods to " + targetName + ".");
+        Collections.sort(unlocked);
+        Console.showMessage("Unlocked " + unlocked.size() + " hullmods: "
+                + CollectionUtils.implode(unlocked) + ".");
         return CommandResult.SUCCESS;
     }
 }
