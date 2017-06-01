@@ -14,6 +14,7 @@ import com.fs.starfarer.api.campaign.CampaignUIAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogPlugin;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
@@ -96,6 +97,24 @@ public class Console
 
         // Console combat pop-up appearance settings (temporary)
         // TODO: Remove these settings once universal overlay is implemented
+        try
+        {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        }
+        catch (ClassNotFoundException | IllegalAccessException
+                | InstantiationException | UnsupportedLookAndFeelException ex)
+        {
+            try
+            {
+                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+            }
+            catch (ClassNotFoundException | IllegalAccessException
+                    | InstantiationException | UnsupportedLookAndFeelException ex2)
+            {
+                throw new RuntimeException("Failed to set console look and feel!");
+            }
+        }
+
         Color color = JSONUtils.toColor(settingsFile.getJSONArray("backgroundColor"));
         UIManager.put("Panel.background", color);
         UIManager.put("OptionPane.background", color);
@@ -115,6 +134,8 @@ public class Console
         color = JSONUtils.toColor(settingsFile.getJSONArray("buttonColor"));
         UIManager.put("Button.foreground", color);
         UIManager.put("SplitPane.foreground", color);
+
+        // TODO: Force AWT init
     }
 
     public static ConsoleSettings getSettings()
