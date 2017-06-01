@@ -3,9 +3,9 @@ package org.lazywizard.console.commands;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CargoAPI;
 import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import static org.lazywizard.console.CommandUtils.*;
 
 public class AddWing implements BaseCommand
 {
@@ -35,31 +35,24 @@ public class AddWing implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
-        /*if (!tmp[0].endsWith("_wing"))
-         {
-         tmp[0] = tmp[0] + "_wing";
-         }*/
-        int amt;
-
-        try
-        {
-            amt = Integer.parseInt(tmp[1]);
-        }
-        catch (NumberFormatException ex)
+        final int amount;
+        if (!isInteger(tmp[1]))
         {
             // Support for reversed arguments
-            try
-            {
-                amt = Integer.parseInt(tmp[0]);
-                tmp[0] = tmp[1];
-            }
-            catch (NumberFormatException ex2)
+            if (!isInteger(tmp[0]))
             {
                 return CommandResult.BAD_SYNTAX;
             }
+
+            amount = Integer.parseInt(tmp[0]);
+            tmp[0] = tmp[1];
+        }
+        else
+        {
+            amount = Integer.parseInt(tmp[1]);
         }
 
-        if (amt <= 0)
+        if (amount <= 0)
         {
             return CommandResult.SUCCESS;
         }
@@ -69,18 +62,18 @@ public class AddWing implements BaseCommand
             tmp[0] += "_wing";
         }
 
-        final String variant = CommandUtils.findBestStringMatch(tmp[0],
-                Global.getSector().getAllFighterWingIds());
+        final String variant = findBestStringMatch(tmp[0], Global.getSector().getAllFighterWingIds());
         if (variant == null)
         {
-            Console.showMessage("No ship found with id '" + tmp[0] + "'!");
+            Console.showMessage("No LPC found with id '" + tmp[0]
+                    + "'! Use 'list wings' for a complete list of valid ids.");
             return CommandResult.ERROR;
         }
 
         final CargoAPI fleet = Global.getSector().getPlayerFleet().getCargo();
-        fleet.addFighters(variant, amt);
-        Console.showMessage("Added " + amt + " of wing LPC " + variant
-                + " to player fleet.");
+        fleet.addFighters(variant, amount);
+        Console.showMessage("Added " + format(amount) + " of LPC "
+                + variant + " to player fleet.");
         return CommandResult.SUCCESS;
     }
 }

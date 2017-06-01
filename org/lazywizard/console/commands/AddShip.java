@@ -9,6 +9,7 @@ import org.apache.log4j.Level;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import static org.lazywizard.console.CommandUtils.*;
 
 public class AddShip implements BaseCommand
 {
@@ -39,32 +40,29 @@ public class AddShip implements BaseCommand
         }
 
         // Redirect fighter wings to AddWing
-        if (tmp[0].endsWith("_wing"))
+        if (tmp[0].endsWith("_wing") || tmp[1].endsWith("_wing"))
         {
             return new AddWing().runCommand(args, context);
         }
 
-        int amt;
-
-        try
+        // Support for reversed arguments
+        int amount;
+        if (isInteger(tmp[1]))
         {
-            amt = Integer.parseInt(tmp[1]);
+            amount = Integer.parseInt(tmp[1]);
         }
-        catch (NumberFormatException ex)
+        else
         {
-            // Support for reversed arguments
-            try
-            {
-                amt = Integer.parseInt(tmp[0]);
-                tmp[0] = tmp[1];
-            }
-            catch (NumberFormatException ex2)
+            if (!isInteger(tmp[0]))
             {
                 return CommandResult.BAD_SYNTAX;
             }
+
+            amount = Integer.parseInt(tmp[0]);
+            tmp[0] = tmp[1];
         }
 
-        if (amt <= 0)
+        if (amount <= 0)
         {
             return CommandResult.SUCCESS;
         }
@@ -106,7 +104,8 @@ public class AddShip implements BaseCommand
             }
             catch (Exception ex)
             {
-                Console.showMessage("No ship found with id '" + tmp[0] + "'!");
+                Console.showMessage("No ship found with id '" + tmp[0]
+                        + "'! Use 'list ships' for a complete list of valid ids.");
                 return CommandResult.ERROR;
             }
         }
@@ -127,25 +126,23 @@ public class AddShip implements BaseCommand
         if (ship.isFighterWing() || ship.getHullSpec().getHullSize() == HullSize.FIGHTER)
         {
             return new AddWing().runCommand(args, context);
-            //Console.showMessage("Use AddWing for fighters!");
-            //return CommandResult.ERROR;
         }
 
         final FleetDataAPI fleet = Global.getSector().getPlayerFleet().getFleetData();
         fleet.addFleetMember(ship);
 
         // More than one ship was requested
-        if (amt > 1)
+        if (amount > 1)
         {
-            for (int x = 1; x < amt; x++)
+            for (int x = 1; x < amount; x++)
             {
                 ship = Global.getFactory().createFleetMember(FleetMemberType.SHIP, variant);
                 fleet.addFleetMember(ship);
             }
         }
 
-        Console.showMessage("Added " + amt + " of ship " + ship.getSpecId()
-                + " to player fleet.");
+        Console.showMessage("Added " + format(amount) + " of ship "
+                + ship.getSpecId() + " to player fleet.");
         return CommandResult.SUCCESS;
     }
 }

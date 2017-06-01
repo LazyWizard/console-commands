@@ -12,34 +12,22 @@ import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import static org.lazywizard.console.CommandUtils.*;
 
 public class AddCrew implements BaseCommand
 {
-    public static int addNeededCrew(CampaignFleetAPI fleet)
+    public static int getNeededCrew(CampaignFleetAPI fleet)
     {
-        final CargoAPI cargo = fleet.getCargo();
-        final Map<FleetMemberAPI, Float> crMap = new HashMap<>();
         int total = 0;
         for (FleetMemberAPI member : fleet.getFleetData().getMembersListCopy())
         {
-            if (!member.isMothballed() && member.getNeededCrew() > 0)
+            if (!member.isMothballed())
             {
-                crMap.put(member, member.getRepairTracker().getMaxCR());
-                total += member.getNeededCrew();
+                total += member.getMaxCrew();
             }
         }
 
-        cargo.addCrew(total);
-
-        // Restore only as much CR as the crew adds
-        for (Map.Entry<FleetMemberAPI, Float> entry : crMap.entrySet())
-        {
-            final RepairTrackerAPI tracker = entry.getKey().getRepairTracker();
-            tracker.setCR(tracker.getCR() + (tracker.getMaxCR() - entry.getValue()));
-        }
-
-        fleet.forceSync();
-        return total;
+        return total - fleet.getCargo().getCrew();
     }
 
     @Override
@@ -53,33 +41,49 @@ public class AddCrew implements BaseCommand
 
         if (args.isEmpty())
         {
-            int amt = addNeededCrew(Global.getSector().getPlayerFleet());
-            Console.showMessage("Added " + (amt <= 0 ? "no additional"
-                    : amt) + " crew to player fleet.");
-            return CommandResult.SUCCESS;
+            return runCommand("" + getNeededCrew(
+                    Global.getSector().getPlayerFleet()), context);
         }
 
-        int amt;
-        try
-        {
-            amt = Integer.parseInt(args);
-        }
-        catch (NumberFormatException ex)
+        if (!isInteger(args))
         {
             return CommandResult.BAD_SYNTAX;
         }
 
-        if (amt >= 0)
+        final int amount = Integer.parseInt(args);
+        final CampaignFleetAPI player = Global.getSector().getPlayerFleet();
+        final CargoAPI cargo = player.getCargo();
+
+        final Map<FleetMemberAPI, Float> crMap = new HashMap<>();
+        for (FleetMemberAPI member : player.getFleetData().getMembersListCopy())
         {
-            Global.getSector().getPlayerFleet().getCargo().addCrew(amt);
-            Console.showMessage("Added " + amt + " crew to player fleet.");
+            if (!member.isMothballed())
+            {
+                crMap.put(member, member.getRepairTracker().getMaxCR());
+            }
+        }
+
+        if (amount >= 0)
+        {
+            cargo.addCrew(amount);
+            Console.showMessage("Added " + format(amount) + " crew to player fleet.");
         }
         else
         {
-            Global.getSector().getPlayerFleet().getCargo().removeCrew(-amt);
-            Console.showMessage("Removed " + -amt + " crew from player fleet.");
+            final int removed = Math.min(-amount, cargo.getCrew());
+            cargo.removeCrew(removed);
+            Console.showMessage("Removed " + format(removed) + " crew from player fleet.");
         }
 
+        // Restore only as much CR as the crew adds
+        for (Map.Entry<FleetMemberAPI, Float> entry : crMap.entrySet())
+        {
+            final RepairTrackerAPI tracker = entry.getKey().getRepairTracker();
+            tracker.setCR(Math.max(tracker.getCR(),
+                    tracker.getCR() + (tracker.getMaxCR() - entry.getValue())));
+        }
+
+        player.forceSync();
         return CommandResult.SUCCESS;
     }
 }

@@ -1,5 +1,6 @@
 package org.lazywizard.console;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.FactionAPI;
@@ -150,7 +150,6 @@ public class CommandUtils
         return bestMatch;
     }
 
-    // Taken from StackOverflow answer https://stackoverflow.com/a/5439547
     public static boolean isInteger(String arg)
     {
         if (arg.isEmpty())
@@ -158,38 +157,79 @@ public class CommandUtils
             return false;
         }
 
-        for (int i = 0; i < arg.length(); i++)
+        try
         {
-            if ((i == 0) && (arg.charAt(i) == '-'))
-            {
-                if (arg.length() == 1)
-                {
-                    return false;
-                }
-                else
-                {
-                    continue;
-                }
-            }
-
-            if (Character.digit(arg.charAt(i), 10) < 0)
-            {
-                return false;
-            }
+            Integer.parseInt(arg);
+            return true;
         }
-        return true;
+        catch (NumberFormatException ex)
+        {
+            return false;
+        }
     }
 
-    // Taken directly from the Java documentation, don't blame me for this monstrosity!
-    private static final Pattern DOUBLE_REGEX = Pattern.compile(
-            "[\\x00-\\x20]*[+-]?(NaN|Infinity|((((\\p{Digit}+)(\\.)?((\\p{Digit}+)?)"
-            + "([eE][+-]?(\\p{Digit}+))?)|(\\.((\\p{Digit}+))([eE][+-]?(\\p{Digit}+))?)|"
-            + "(((0[xX](\\p{XDigit}+)(\\.)?)|(0[xX](\\p{XDigit}+)?(\\.)(\\p{XDigit}+)))"
-            + "[pP][+-]?(\\p{Digit}+)))[fFdD]?))[\\x00-\\x20]*");
-
-    public static boolean isDecimal(String arg)
+    public static boolean isLong(String arg)
     {
-        return DOUBLE_REGEX.matcher(arg).matches();
+        if (arg.isEmpty())
+        {
+            return false;
+        }
+
+        try
+        {
+            Long.parseLong(arg);
+            return true;
+        }
+        catch (NumberFormatException ex)
+        {
+            return false;
+        }
+    }
+
+    public static boolean isFloat(String arg)
+    {
+        if (arg.isEmpty())
+        {
+            return false;
+        }
+
+        try
+        {
+            Float.parseFloat(arg);
+            return true;
+        }
+        catch (NumberFormatException ex)
+        {
+            return false;
+        }
+    }
+
+    public static boolean isDouble(String arg)
+    {
+        if (arg.isEmpty())
+        {
+            return false;
+        }
+
+        try
+        {
+            Double.parseDouble(arg);
+            return true;
+        }
+        catch (NumberFormatException ex)
+        {
+            return false;
+        }
+    }
+
+    public static String format(int toFormat)
+    {
+        return NumberFormat.getNumberInstance().format(toFormat);
+    }
+
+    public static String format(float toFormat)
+    {
+        return NumberFormat.getNumberInstance().format(toFormat);
     }
 
     public static FactionAPI findBestFactionMatch(String name)
@@ -349,6 +389,7 @@ public class CommandUtils
                 Tags.JUMP_POINT, Tags.PLANET, Tags.STAR, Tags.STATION);
     }
 
+    @SuppressWarnings("deprecation")
     private static SectorEntityToken findTokenInLocation(String toFind,
             LocationAPI location, String... validTags)
     {
@@ -410,6 +451,7 @@ public class CommandUtils
         return token.getCargo();
     }
 
+    @SuppressWarnings("unchecked")
     private static Map<String, EveryFrameCombatPlugin> getPluginData()
     {
         final Map<String, Object> data = Global.getCombatEngine().getCustomData();

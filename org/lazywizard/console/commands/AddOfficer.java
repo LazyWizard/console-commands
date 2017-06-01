@@ -1,16 +1,21 @@
 package org.lazywizard.console.commands;
 
+import java.util.Arrays;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.FleetDataAPI;
+import com.fs.starfarer.api.characters.FullName;
+import com.fs.starfarer.api.characters.FullName.Gender;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent;
+import com.fs.starfarer.api.impl.campaign.ids.Factions;
 import com.fs.starfarer.api.plugins.OfficerLevelupPlugin;
 import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import org.lazywizard.lazylib.CollectionUtils;
 import static com.fs.starfarer.api.impl.campaign.ids.Personalities.*;
+import static org.lazywizard.console.CommandUtils.*;
 
 public class AddOfficer implements BaseCommand
 {
@@ -25,24 +30,26 @@ public class AddOfficer implements BaseCommand
 
         if (args.isEmpty())
         {
-            return runCommand("steady 1 player", context);
+            return runCommand(STEADY + " 1 " + Factions.PLAYER, context);
         }
 
         final String[] tmp = args.split(" ");
-        // TODO: Add support for custom officer name/gender
-        if (tmp.length > 3)
+        FullName name = null;
+        switch (tmp.length)
         {
-            return CommandResult.BAD_SYNTAX;
-        }
-
-        if (tmp.length == 1)
-        {
-            return runCommand(args + " 1 player", context);
-        }
-
-        if (tmp.length == 2)
-        {
-            return runCommand(args + " player", context);
+            case 1:
+                return runCommand(args + " 1 " + Factions.PLAYER, context);
+            case 2:
+                return runCommand(args + " " + Factions.PLAYER, context);
+            case 3:
+                break;
+            // Custom name support
+            case 4:
+                name = new FullName(tmp[3], "", Gender.MALE);
+                break;
+            default:
+                name = new FullName(tmp[3], CollectionUtils.implode(Arrays.asList(
+                        Arrays.copyOfRange(tmp, 4, tmp.length)), " "), Gender.MALE);
         }
 
         // Verify personality
@@ -61,23 +68,22 @@ public class AddOfficer implements BaseCommand
             case AGGRESSIVE:
                 personality = AGGRESSIVE;
                 break;
+            case RECKLESS:
+                personality = RECKLESS;
+                break;
             default:
                 Console.showMessage("Unsupported personality: '" + tmp[0] + "'.");
                 return CommandResult.ERROR;
         }
 
-        final int level;
-        try
-        {
-            level = Integer.parseInt(tmp[1]);
-        }
-        catch (NumberFormatException ex)
+        if (!isInteger(tmp[1]))
         {
             Console.showMessage("Error: starting level must be a whole number!");
             return CommandResult.BAD_SYNTAX;
         }
 
-        final FactionAPI faction = CommandUtils.findBestFactionMatch(tmp[2]);
+        final int level = Integer.parseInt(tmp[1]);
+        final FactionAPI faction = findBestFactionMatch(tmp[2]);
         if (faction == null)
         {
             Console.showMessage("No faction found with id '" + tmp[2] + "'!");
@@ -89,6 +95,10 @@ public class AddOfficer implements BaseCommand
         final OfficerLevelupPlugin plugin
                 = (OfficerLevelupPlugin) Global.getSettings().getPlugin("officerLevelUp");
         person.setPersonality(personality);
+        if (name != null)
+        {
+            person.setName(name);
+        }
         fleetData.addOfficer(person);
         fleetData.getOfficerData(person).addXP(plugin.getXPForLevel(level));
 

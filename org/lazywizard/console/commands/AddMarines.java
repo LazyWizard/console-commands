@@ -1,11 +1,13 @@
 package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.CargoAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import static org.lazywizard.console.CommandUtils.*;
 
 public class AddMarines implements BaseCommand
 {
@@ -18,24 +20,25 @@ public class AddMarines implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        if (args.isEmpty())
+        if (args.isEmpty() || !isInteger(args))
         {
             return CommandResult.BAD_SYNTAX;
         }
 
-        int amt;
-        try
+        final int amount = Integer.parseInt(args);
+        final CargoAPI cargo = Global.getSector().getPlayerFleet().getCargo();
+        if (amount >= 0)
         {
-            amt = Integer.parseInt(args);
+            Console.showMessage("Added " + format(amount) + " marines to player fleet.");
+            cargo.addMarines(amount);
         }
-        catch (NumberFormatException ex)
+        else
         {
-            return CommandResult.BAD_SYNTAX;
+            final int removed = Math.min(-amount, cargo.getMarines());
+            cargo.removeMarines(removed);
+            Console.showMessage("Removed " + format(removed) + " marines from player fleet.");
         }
 
-        Global.getSector().getPlayerFleet().getCargo().addMarines(amt);
-
-        Console.showMessage("Added " + amt + " marines to player fleet.");
         return CommandResult.SUCCESS;
     }
 }

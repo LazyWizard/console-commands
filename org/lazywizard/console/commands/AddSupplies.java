@@ -8,6 +8,7 @@ import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import static org.lazywizard.console.CommandUtils.*;
 
 public class AddSupplies implements BaseCommand
 {
@@ -52,19 +53,28 @@ public class AddSupplies implements BaseCommand
             return CommandResult.SUCCESS;
         }
 
-        int amount;
-        try
-        {
-            amount = Integer.parseInt(args);
-        }
-        catch (NumberFormatException ex)
+        if (!isInteger(args))
         {
             Console.showMessage("Error: supply amount must be a whole number!");
             return CommandResult.BAD_SYNTAX;
         }
 
-        Global.getSector().getPlayerFleet().getCargo().addSupplies(amount);
-        Console.showMessage("Added " + amount + " supplies to player inventory.");
+        final int amount = Integer.parseInt(args);
+        final CargoAPI cargo = Global.getSector().getPlayerFleet().getCargo();
+        if (amount >= 0)
+        {
+            cargo.addSupplies(amount);
+            Console.showMessage("Added " + format(amount)
+                    + " supplies to player inventory.");
+        }
+        else
+        {
+            final int removed = Math.min(-amount, (int) cargo.getSupplies());
+            cargo.removeSupplies(removed);
+            Console.showMessage("Removed " + format(removed)
+                    + " supplies from player inventory.");
+        }
+
         return CommandResult.SUCCESS;
     }
 }
