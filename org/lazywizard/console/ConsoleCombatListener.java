@@ -20,7 +20,6 @@ import org.lazywizard.console.ConsoleSettings.KeyStroke;
 
 public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleListener
 {
-    private static final float MESSAGE_SIZE = 25f;
     // Controls spawning and assigning threads for the input popup
     // Multi-threading allows the popup to be on top of the game window
     private final Executor exe = Executors.newSingleThreadExecutor();

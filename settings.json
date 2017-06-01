@@ -1,5 +1,5 @@
 {
-	"plugins":{
-		"ConsoleCombatListener":"org.lazywizard.console.ConsoleCombatListener",
-	},
+    "plugins":{
+        "ConsoleCombatListener":"org.lazywizard.console.ConsoleCombatListener"
+    }
 }

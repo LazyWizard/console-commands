@@ -1,11 +1,11 @@
 package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.CargoAPI.CargoItemType;
+import com.fs.starfarer.api.campaign.CargoAPI;
 import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import static org.lazywizard.console.CommandUtils.*;
 
 public class AddWeapon implements BaseCommand
 {
@@ -35,48 +35,46 @@ public class AddWeapon implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
-        int amt;
-
-        try
-        {
-            amt = Integer.parseInt(tmp[1]);
-        }
-        catch (NumberFormatException ex)
+        final int amount;
+        if (!isInteger(tmp[1]))
         {
             // Support for reversed arguments
-            try
-            {
-                amt = Integer.parseInt(tmp[0]);
-                tmp[0] = tmp[1];
-            }
-            catch (NumberFormatException ex2)
+            if (!isInteger(tmp[0]))
             {
                 return CommandResult.BAD_SYNTAX;
             }
+
+            amount = Integer.parseInt(tmp[0]);
+            tmp[0] = tmp[1];
+        }
+        else
+        {
+            amount = Integer.parseInt(tmp[1]);
         }
 
-        try
+        final String wepId = findBestStringMatch(tmp[0], Global.getSector().getAllWeaponIds());
+        if (wepId == null)
         {
-            Global.getSector().getPlayerFleet().getCargo().addItems(
-                    CargoItemType.WEAPONS, tmp[0], amt);
-        }
-        catch (Exception ex)
-        {
-            try
-            {
-                tmp[0] = CommandUtils.findBestStringMatch(tmp[0],
-                        Global.getSector().getAllWeaponIds());
-                Global.getSector().getPlayerFleet().getCargo().addItems(
-                        CargoItemType.WEAPONS, tmp[0], amt);
-            }
-            catch (Exception ex2)
-            {
-                Console.showMessage("No weapon found with id '" + tmp[0] + "'!");
-                return CommandResult.ERROR;
-            }
+            Console.showMessage("No weapon found with id '" + tmp[0]
+                    + "'! Use 'list weapons' for a complete list of valid ids.");
+            return CommandResult.ERROR;
         }
 
-        Console.showMessage("Added " + amt + " of weapon " + tmp[0] + " to player inventory.");
+        final CargoAPI cargo = Global.getSector().getPlayerFleet().getCargo();
+        if (amount >= 0)
+        {
+            cargo.addWeapons(wepId, amount);
+            Console.showMessage("Added " + format(amount) + " of weapon "
+                    + wepId + " to player inventory.");
+        }
+        else
+        {
+            final int removed = Math.min(-amount, cargo.getNumWeapons(wepId));
+            cargo.removeWeapons(wepId, removed);
+            Console.showMessage("Removed " + format(removed) + " of weapon "
+                    + wepId + " from player inventory.");
+        }
+
         return CommandResult.SUCCESS;
     }
 }

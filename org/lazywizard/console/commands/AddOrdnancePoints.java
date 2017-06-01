@@ -6,6 +6,7 @@ import com.fs.starfarer.api.combat.StatBonus;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import static org.lazywizard.console.CommandUtils.*;
 
 public class AddOrdnancePoints implements BaseCommand
 {
@@ -28,17 +29,13 @@ public class AddOrdnancePoints implements BaseCommand
             return CommandResult.SUCCESS;
         }
 
-        int amount;
-        try
-        {
-            amount = Integer.parseInt(args);
-        }
-        catch (NumberFormatException ex)
+        if (!isInteger(args))
         {
             Console.showMessage("Error: OP bonus must be a whole number!");
             return CommandResult.BAD_SYNTAX;
         }
 
+        int amount = Integer.parseInt(args);
         final StatBonus ordnance = Global.getSector().getPlayerPerson().getStats().getShipOrdnancePointBonus();
         final MutableStat.StatMod bonus = ordnance.getFlatBonus(BONUS_ID);
         if (bonus != null)
@@ -47,7 +44,8 @@ public class AddOrdnancePoints implements BaseCommand
         }
 
         ordnance.modifyFlat(BONUS_ID, amount, "Console");
-        Console.showMessage("All ships in player fleet now have " + amount + " extra ordnance points.");
+        Console.showMessage("All ships in your fleet now have " + format(amount)
+                + " extra ordnance points.\nUse 'addordnancepoints clear' to remove.");
         return CommandResult.SUCCESS;
     }
 }
