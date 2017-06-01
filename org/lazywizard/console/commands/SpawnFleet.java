@@ -7,8 +7,10 @@ import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.fleet.RepairTrackerAPI;
-import com.fs.starfarer.api.impl.campaign.fleets.FleetFactory;
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV2;
+import com.fs.starfarer.api.impl.campaign.fleets.FleetParams;
+import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
+import com.fs.starfarer.api.loading.FleetCompositionDoctrineAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
@@ -19,10 +21,8 @@ import org.lazywizard.lazylib.CollectionUtils;
 import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
 
-// TODO: Broken; rewrite and re-enable at some point (low priority)
 public class SpawnFleet implements BaseCommand
 {
-    private static final String DEFAULT_QUALITY = " 0.6";
     private static final String DEFAULT_NAME = " Fleet";
 
     @Override
@@ -48,105 +48,56 @@ public class SpawnFleet implements BaseCommand
 
         if (tmp.length == 2)
         {
-            return runCommand(args + DEFAULT_QUALITY + DEFAULT_NAME, context);
-        }
-
-        if (tmp.length == 3)
-        {
             return runCommand(args + DEFAULT_NAME, context);
         }
 
-        FactionAPI faction = CommandUtils.findBestFactionMatch(tmp[0]);
+        final FactionAPI faction = CommandUtils.findBestFactionMatch(tmp[0]);
         if (faction == null)
         {
             Console.showMessage("No such faction '" + tmp[0] + "'!");
             return CommandResult.ERROR;
         }
 
-        int totalFP;
-        try
-        {
-            totalFP = Integer.parseInt(tmp[1]);
-        }
-        catch (NumberFormatException ex)
+        if (!CommandUtils.isInteger(tmp[1]))
         {
             Console.showMessage("Fleet points must be a whole number!");
-            return CommandResult.BAD_SYNTAX;
+            return CommandResult.ERROR;
         }
 
-        float quality;
-        try
+        List<String> subNames = new ArrayList<>(tmp.length - 2);
+        for (int x = 2; x < tmp.length; x++)
         {
-            quality = Float.parseFloat(tmp[2]);
+            subNames.add(tmp[x]);
         }
-        // TODO: If not a number, use default quality and assume tmp[2] is part of name/crew level
-        catch (NumberFormatException ex)
-        {
-            Console.showMessage("Quality must be a decimal, preferably between 0 and 1.");
-            return CommandResult.BAD_SYNTAX;
-        }
-
-        List<String> subNames = new ArrayList<>(tmp.length - 3);
-        /*CrewXPLevel crewLevel = CrewXPLevel.REGULAR;
-        for (int x = 3; x < tmp.length; x++)
-        {
-            // Support for crew XP level argument
-            // If it's not a valid XP level, assume it's part of the name
-            if (x == 3)
-            {
-                switch (tmp[x].toLowerCase())
-                {
-                    case "green":
-                        crewLevel = CrewXPLevel.GREEN;
-                        break;
-                    case "regular":
-                        crewLevel = CrewXPLevel.REGULAR;
-                        break;
-                    case "veteran":
-                        crewLevel = CrewXPLevel.VETERAN;
-                        break;
-                    case "elite":
-                        crewLevel = CrewXPLevel.ELITE;
-                        break;
-                    default:
-                        subNames.add(tmp[x]);
-                        break;
-                }
-            }
-            else
-            {
-                subNames.add(tmp[x]);
-            }
-        }*/
 
         final String name = (subNames.isEmpty() ? "Fleet" : CollectionUtils.implode(subNames, " "));
-        int totalOfficers = 0;
         try
         {
             // Create fleet
-            // TODO: Rip this out and replace entirely with FleetFactoryV2
-            final CampaignFleetAPI toSpawn
-                    = FleetFactory.createGenericFleet(faction.getId(), name, quality, totalFP);
-            totalOfficers = Math.min(15, Math.max(2, (int) (toSpawn.getFleetData()
+            final FleetCompositionDoctrineAPI doctrine = faction.getCompositionDoctrine();
+            final int totalFP = Integer.parseInt(tmp[1]);
+            final float freighterFP = totalFP * doctrine.getCombatFreighterProbability(); // TEMP
+            final CampaignFleetAPI toSpawn = FleetFactoryV2.createFleet(new FleetParams(
+                    null, // Hyperspace location
+                    null, // Market
+                    faction.getId(), // Faction ID
+                    FleetTypes.PATROL_LARGE, // Fleet type
+                    totalFP, // Combat FP
+                    freighterFP * .3f, // Freighter FP
+                    freighterFP * .3f, // Tanker FP
+                    freighterFP * .1f, // Transport FP
+                    freighterFP * .1f, // Liner FP
+                    freighterFP * .1f, // Civilian FP
+                    freighterFP * .1f, // Utility FP
+                    0f, // Quality bonus
+                    -1f) // Quality override (negative disables)
+            );
+            // TODO: Properly determine number and level of officers using doctrine
+            final int totalOfficers = Math.min(15, Math.max(2, (int) (toSpawn.getFleetData()
                     .getCombatReadyMembersListCopy().size() / 8f)));
             FleetFactoryV2.addCommanderAndOfficers(totalOfficers, 1f,
-                    Math.min(20f, 15f * quality), toSpawn, null, MathUtils.getRandom());
-
-            /*FleetFactoryV2.createFleet(new FleetParams(
-                    hyperspaceLocation,
-                    market,
-                    faction.getId(),
-                    fleetType,
-                    combatFP,
-                    freighterPts,
-                    tankerPts,
-                    transportPts,
-                    linerPts,
-                    civilianPts,
-                    utilityPts,
-                    qualityBonus,
-                    qualityOverride))
-            );*/
+                    15f, toSpawn, null, MathUtils.getRandom());
+            toSpawn.setName(name);
 
             // Spawn fleet around player
             final Vector2f offset = MathUtils.getRandomPointOnCircumference(null,
@@ -164,6 +115,10 @@ public class SpawnFleet implements BaseCommand
                 final RepairTrackerAPI repairs = member.getRepairTracker();
                 repairs.setCR(repairs.getMaxCR());
             }
+
+            Console.showMessage("Spawned a " + totalFP + "FP  fleet with "
+                    + totalOfficers + " officers, aligned with faction " + faction.getId() + ".");
+            return CommandResult.SUCCESS;
         }
         catch (Exception ex)
         {
@@ -171,9 +126,5 @@ public class SpawnFleet implements BaseCommand
                     + faction.getId() + "'!");
             return CommandResult.ERROR;
         }
-
-        Console.showMessage("Spawned a " + totalFP + "FP  fleet with "
-                + totalOfficers + " officers, aligned with faction " + faction.getId() + ".");
-        return CommandResult.SUCCESS;
     }
 }
