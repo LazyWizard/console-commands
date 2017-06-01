@@ -107,6 +107,14 @@ public class List_ implements BaseCommand
                     ids.add(alias.getKey() + " -> " + alias.getValue());
                 }
                 break;
+            case "macros":
+                newLinePerItem = true;
+                ids = new ArrayList<>();
+                for (Map.Entry<String, String> macro : RunCode.getMacros().entrySet())
+                {
+                    ids.add(macro.getKey() + " -> " + macro.getValue());
+                }
+                break;
             case "tags":
                 newLinePerItem = true;
                 ids = new ArrayList<>();
@@ -157,7 +165,7 @@ public class List_ implements BaseCommand
                 break;
             case "hullmods":
             case "modspecs":
-                ids = new ArrayList<>(sector.getCampaignUI().getAvailableHullModIds());
+                ids = new ArrayList<>(AddHullmod.getHullMods());
                 break;
             case "commodities":
             case "items":

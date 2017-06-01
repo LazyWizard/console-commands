@@ -41,6 +41,7 @@ public class CommandStore
      * @since 2.0
      */
     // Will only throw these exceptions if there is an error loading the CSV
+    @SuppressWarnings("unchecked")
     public static void reloadCommands() throws IOException, JSONException
     {
         storedCommands.clear();
