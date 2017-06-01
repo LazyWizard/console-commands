@@ -55,6 +55,7 @@ public class Respec implements BaseCommand
             }
         }
 
+        player.refreshCharacterStatsEffects();
         Console.showMessage("Respec complete, refunded " + aptRefunded
                 + " aptitude and " + skillRefunded + " skill points.");
         return CommandResult.SUCCESS;
