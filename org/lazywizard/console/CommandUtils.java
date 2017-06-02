@@ -31,7 +31,7 @@ public class CommandUtils
      * Returns normalized score, with 0.0 meaning no similarity at all,
      * and 1.0 meaning full equality.
      */
-    // Taken from: https://code.google.com/p/duke/source/browse/src/main/java/no/priv/garshol/duke/comparators/JaroWinkler.java
+    // Taken from: https://github.com/larsga/Duke/blob/master/duke-core/src/main/java/no/priv/garshol/duke/comparators/JaroWinkler.java
     private static double calcSimilarity(String s1, String s2)
     {
         if (s1.equals(s2))
@@ -107,14 +107,15 @@ public class CommandUtils
         // it, and Yancey's 2005 paper describes it. However, Winkler's list of
         // test cases in his 2006 paper does not include this modification. So
         // is this part of Jaro-Winkler, or is it not? Hard to say.
-        /*if (s1.length() >= 5 && // both strings at least 5 characters long
-         c - p >= 2 && // at least two common characters besides prefix
-         c - p >= ((s1.length() - p) / 2)) // fairly rich in common chars
-         {
-         score = score + ((1 - score) * ((c - (p + 1))
-         / ((double) ((s1.length() + s2.length())
-         - (2 * (p - 1))))));
-         }*/
+        if (s1.length() >= 5 // both strings at least 5 characters long
+                && c - p >= 2// at least two common characters besides prefix
+                && c - p >= ((s1.length() - p) / 2)) // fairly rich in common chars
+        {
+            score = score + ((1 - score) * ((c - (p + 1))
+                    / ((double) ((s1.length() + s2.length())
+                    - (2 * (p - 1))))));
+        }
+
         // (4) similar characters adjustment
         // the same holds for this as for (3) above.
         return score;
