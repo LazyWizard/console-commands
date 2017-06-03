@@ -63,7 +63,7 @@ public class ToggleAI implements BaseCommand
         return CommandResult.SUCCESS;
     }
 
-    private class NullAI implements ShipAIPlugin
+    private static class NullAI implements ShipAIPlugin
     {
         private final ShipAPI ship;
         private final ShipwideAIFlags flags;

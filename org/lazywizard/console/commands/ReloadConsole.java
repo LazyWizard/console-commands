@@ -5,8 +5,8 @@ import org.json.JSONException;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommandStore;
 import org.lazywizard.console.Console;
-import org.lazywizard.console.ConsoleOverlay;
-import org.lazywizard.console.util.FontLoader.FontException;
+import org.lazywizard.console.overlay.ConsoleOverlay;
+import org.lazywizard.console.overlay.FontLoader.FontException;
 
 public class ReloadConsole implements BaseCommand
 {

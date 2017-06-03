@@ -276,7 +276,7 @@ public class Console
         // Alias with arguments support
         if (CommandStore.getAliases().containsKey(com))
         {
-            String rawAlias = CommandStore.getAliases().get(com);
+            final String rawAlias = CommandStore.getAliases().get(com);
             tmp = rawAlias.split(" ", 2);
             com = tmp[0];
             if (tmp.length > 1)
@@ -290,7 +290,7 @@ public class Console
             StoredCommand stored = CommandStore.retrieveCommand(com);
             if (stored == null)
             {
-                String bestMatch = CommandUtils.findBestStringMatch(com,
+                final String bestMatch = CommandUtils.findBestStringMatch(com,
                         CommandStore.getLoadedCommands());
                 if (bestMatch != null)
                 {
@@ -334,8 +334,6 @@ public class Console
         {
             return;
         }
-
-        lastCommand = rawInput;
 
         // Runcode ignores separators
         // Hopefully the ONLY hardcoded command support I'll add to this mod...
@@ -393,6 +391,8 @@ public class Console
         {
             Global.getSoundPlayer().playUISound(sound, 1f, 1f);
         }
+
+        lastCommand = rawInput;
     }
 
     private static void showOutput(ConsoleListener listener)

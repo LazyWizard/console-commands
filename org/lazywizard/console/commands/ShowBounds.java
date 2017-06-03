@@ -22,7 +22,7 @@ import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.FastTrig;
 import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
-import static org.lazywizard.lazylib.opengl.ColorUtils.glColor;
+import static org.lazywizard.lazylib.opengl.ColorUtils.*;
 import static org.lwjgl.opengl.GL11.*;
 
 public class ShowBounds implements BaseCommand
