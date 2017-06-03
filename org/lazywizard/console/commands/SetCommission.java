@@ -58,17 +58,15 @@ public class SetCommission implements BaseCommand
         if (args.equalsIgnoreCase("none"))
         {
             final FactionAPI curFaction = endCurrentCommission();
-            if (curFaction != null)
-            {
-                Console.showMessage("Ended existing commission with "
-                        + curFaction.getDisplayNameWithArticle());
-                return CommandResult.SUCCESS;
-            }
-            else if (curFaction == null)
+            if (curFaction == null)
             {
                 Console.showMessage("You aren't under a commission!");
                 return CommandResult.ERROR;
             }
+
+            Console.showMessage("Ended existing commission with "
+                    + curFaction.getDisplayNameWithArticle());
+            return CommandResult.SUCCESS;
         }
 
         FactionAPI newFaction = CommandUtils.findBestFactionMatch(args);

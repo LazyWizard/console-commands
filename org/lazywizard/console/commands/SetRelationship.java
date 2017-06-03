@@ -27,6 +27,7 @@ public class SetRelationship implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
+        // Done through the fleet to support mods that allow the player to join a faction
         final String playerFaction = Global.getSector().getPlayerFleet().getFaction().getId();
         String[] tmp = args.split(" ");
 

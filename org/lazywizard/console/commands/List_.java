@@ -73,7 +73,7 @@ public class List_ implements BaseCommand
             Collections.sort(campaign);
             Collections.sort(combat);
 
-            final StringBuilder sb = new StringBuilder(1024);
+            final StringBuilder sb = new StringBuilder(1_024);
             sb.append("Universal commands (").append(universal.size()).append("):\n");
             sb.append(CollectionUtils.implode(universal));
             sb.append("\n\nCampaign commands (").append(campaign.size()).append("):\n");
