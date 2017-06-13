@@ -1,0 +1,4 @@
+Console - system-level commands that can run anywhere: reloading the console, viewing help files, etc
+Core - for commands that are bundled with Console Commands; please don't use this tag in your mods
+Campaign - command works on the campaign map
+Combat - command works on the combat map
