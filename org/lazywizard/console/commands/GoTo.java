@@ -24,7 +24,18 @@ public class GoTo implements BaseCommand
 
         if (args.isEmpty())
         {
-            return CommandResult.BAD_SYNTAX;
+            final CampaignFleetAPI playerFleet = Global.getSector().getPlayerFleet();
+            final Vector2f moveLoc = playerFleet.getMoveDestination();
+            if (moveLoc != null)
+            {
+                playerFleet.setLocation(moveLoc.x, moveLoc.y);
+                playerFleet.clearAssignments();
+                Console.showMessage("Teleported to move destination.");
+                return CommandResult.SUCCESS;
+            }
+
+            Console.showMessage("You successfully traveled nowhere.");
+            return CommandResult.SUCCESS;
         }
 
         if ("home".equalsIgnoreCase(args))
@@ -32,13 +43,13 @@ public class GoTo implements BaseCommand
             return (new Home().runCommand("", context));
         }
 
-        SectorEntityToken token = CommandUtils.findTokenInLocation(args,
+        final SectorEntityToken token = CommandUtils.findTokenInLocation(args,
                 Global.getSector().getCurrentLocation());
 
         if (token == null)
         {
             // Check if the player used this command instead of Jump by mistake
-            StarSystemAPI system = CommandUtils.findBestSystemMatch(args);
+            final StarSystemAPI system = CommandUtils.findBestSystemMatch(args);
             if (system != null || "hyperspace".equalsIgnoreCase(args))
             {
                 return (new Jump().runCommand(args, context));
@@ -48,14 +59,14 @@ public class GoTo implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        CampaignFleetAPI playerFleet = Global.getSector().getPlayerFleet();
+        final CampaignFleetAPI playerFleet = Global.getSector().getPlayerFleet();
         if (token.equals(playerFleet))
         {
             Console.showMessage("You successfully traveled nowhere.");
             return CommandResult.SUCCESS;
         }
 
-        Vector2f loc = token.getLocation();
+        final Vector2f loc = token.getLocation();
         playerFleet.setLocation(loc.x, loc.y);
         playerFleet.clearAssignments();
         playerFleet.addAssignment(FleetAssignment.GO_TO_LOCATION, token, 1f);
