@@ -7,13 +7,13 @@ import org.apache.log4j.Logger
 import java.io.IOException
 import java.util.*
 
-const val METADATA_LENGTH = 51
-const val CHARDATA_LENGTH = 21
-const val KERNDATA_LENGTH = 7
+private const val METADATA_LENGTH = 51
+private const val CHARDATA_LENGTH = 21
+private const val KERNDATA_LENGTH = 7
 
 // TODO: Write a proper file parser (though this works fine for now)
-val SPLIT_REGEX = """=|\s+(?=([^"]*"[^"]*")*[^"]*$)""".toRegex()
-val Log: Logger = Logger.getLogger(LazyFont::class.java)
+private val SPLIT_REGEX = """=|\s+(?=([^"]*"[^"]*")*[^"]*$)""".toRegex()
+private val Log: Logger = Logger.getLogger(LazyFont::class.java)
 
 // File format documentation: http://www.angelcode.com/products/bmfont/doc/file_format.html
 // TODO: Rewrite parsing code to be more robust and presentable
@@ -116,7 +116,7 @@ fun loadFont(fontPath: String): LazyFont {
             val id = Integer.parseInt(kernData[4])
             val otherId = Integer.parseInt(kernData[2])
             val kernAmount = Integer.parseInt(kernData[6])
-            font.getChar(id.toChar()).addKerning(otherId, kernAmount)
+            font.getChar(id.toChar()).setKerning(otherId, kernAmount)
         }
 
         return font
