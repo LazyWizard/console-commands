@@ -3,9 +3,9 @@
   "name":"Console Commands",
   "author":"LazyWizard",
   "utility":"true",
-  "version":"3.0 WIP 2",
+  "version":"3.0 WIP 3",
   "description":"An in-game developer's console, activated with control+backspace (this can be changed in data/console/console_settings.json). For a complete list of commands enter 'help'. For more information on a specific command enter 'help <command>'.\n\nThis should be compatible with all mods and doesn't require a new game.",
-  "gameVersion":"0.8a",
+  "gameVersion":"0.8.1a",
   "jars":["jars/lw_Console.jar"],
   "modPlugin":"org.lazywizard.console.ConsoleModPlugin"
 }
