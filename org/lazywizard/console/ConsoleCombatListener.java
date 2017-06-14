@@ -82,7 +82,8 @@ public class ConsoleCombatListener implements EveryFrameCombatPlugin, ConsoleLis
             {
                 // Combat, summon regular Java input dialog for now
                 // TODO: write an overlay if text rendering is ever added to API
-                exe.execute(new ShowInputPopup());
+                //exe.execute(new ShowInputPopup());
+                ConsoleOverlay.show(context);
             }
 
             // Advance the console and all combat commands

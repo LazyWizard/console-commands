@@ -74,9 +74,10 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
 
         if (checkInput())
         {
-            isDialogOpen = true;
-            Global.getSector().getCampaignUI().showInteractionDialog(
-                    new CampaignPopup(), Global.getSector().getPlayerFleet());
+            ConsoleOverlay.show(CommandContext.CAMPAIGN_MAP);
+            //isDialogOpen = true;
+            // Global.getSector().getCampaignUI().showInteractionDialog(
+            //        new CampaignPopup(), Global.getSector().getPlayerFleet());
         }
 
         if (!isDialogOpen && popup != null)

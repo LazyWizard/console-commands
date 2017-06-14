@@ -1,7 +1,8 @@
 package org.lazywizard.console.commands;
 
 import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.overlay.ConsoleOverlay;
+import org.lazywizard.console.ConsoleOverlay;
+import org.lazywizard.console.overlay.ConsoleOverlayOld;
 
 /**
  *

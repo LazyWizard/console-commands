@@ -17,6 +17,7 @@ private val Log: Logger = Logger.getLogger(LazyFont::class.java)
 
 // File format documentation: http://www.angelcode.com/products/bmfont/doc/file_format.html
 // TODO: Rewrite parsing code to be more robust and presentable
+@Throws(FontException::class)
 fun loadFont(fontPath: String): LazyFont {
     // Load the font file contents for later parsing
     var header: String = ""
@@ -50,7 +51,7 @@ fun loadFont(fontPath: String): LazyFont {
             throw FontException("Metadata length mismatch")
         }
 
-        val fontName = metadata[2].replace("\"", "")
+        //val fontName = metadata[2].replace("\"", "")
         val baseHeight = java.lang.Float.parseFloat(metadata[27])
 
         // Get image file path from metadata
@@ -76,8 +77,7 @@ fun loadFont(fontPath: String): LazyFont {
             throw RuntimeException("Failed to load texture atlas '$imgFile'", ex)
         }
 
-        val font = LazyFont(fontName, baseHeight,
-                textureId, textureWidth, textureHeight)
+        val font = LazyFont(textureId, baseHeight, textureWidth, textureHeight)
 
         // Parse character data and place into a quick lookup table or extended character map
         for (charLine in charLines) {

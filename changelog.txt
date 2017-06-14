@@ -40,7 +40,9 @@ Changes to existing commands:
    - Added proper formatting to prices
    - Made it more clear when you enter an invalid ID versus when no goods are
      available in any market
- - GoTo will redirect to the Jump command if a star system's name is entered
+ - GoTo:
+   - Will redirect to the Jump command if a star system's name is entered
+   - Teleports you to your move destination if no argument is entered
  - Kill and Nuke credit kills to the player flagship
  - List accepts several new arguments:
    - "hullmods", shows all hullmods that can be unlocked with a modspec item
