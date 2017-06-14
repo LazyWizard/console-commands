@@ -6,18 +6,15 @@ import org.lwjgl.opengl.GL11.*
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
 
-class LazyFont(val fontName: String, val baseHeight: Float, val textureId: Int,
-               val textureWidth: Float, val textureHeight: Float) {
+class LazyFont(val textureId: Int, val baseHeight: Float, val textureWidth: Float, val textureHeight: Float) {
     private val Log: Logger = Logger.getLogger(LazyFont::class.java)
     private val lookupTable: Array<LazyChar?> = arrayOfNulls(224)
     private val extendedChars = HashMap<Char, LazyChar>()
 
     fun addChar(id: Int, tx: Int, ty: Int, width: Int, height: Int, xOffset: Int, yOffset: Int, advance: Int) {
         val tmp = LazyChar(id, tx, ty, width, height, xOffset, yOffset, advance)
-        if (tmp.id in 32..255)
-            lookupTable[tmp.id - 32] = tmp
-        else
-            extendedChars[tmp.id.toChar()] = tmp
+        if (tmp.id in 32..255) lookupTable[tmp.id - 32] = tmp
+        else extendedChars[tmp.id.toChar()] = tmp
     }
 
 
@@ -117,7 +114,7 @@ class LazyFont(val fontName: String, val baseHeight: Float, val textureId: Int,
         val ty1: Float = (textureHeight - ty) / textureHeight
         val ty2: Float = ty1 - (height / textureHeight)
 
-        fun setKerning(otherChar: Int, kerning: Int) = {
+        fun setKerning(otherChar: Int, kerning: Int) {
             kernings[otherChar] = kerning
         }
 
@@ -129,7 +126,7 @@ class LazyFont(val fontName: String, val baseHeight: Float, val textureId: Int,
         }
     }
 
-    inner class DrawableString(text: String, size: Float, maxWidth: Float, maxHeight: Float, color: Color) {
+    inner class DrawableString(text: String, fontSize: Float, maxWidth: Float, maxHeight: Float, color: Color) {
         private val sb: StringBuilder = StringBuilder(text)
         private val displayListId: Int = glGenLists(1)
         private var needsRebuild = true
@@ -139,7 +136,7 @@ class LazyFont(val fontName: String, val baseHeight: Float, val textureId: Int,
             private set
         var height: Float = 0f
             private set
-        var fontSize: Float = size
+        var fontSize: Float = fontSize
             set(value) {
                 if (value != field) {
                     field = value
@@ -165,7 +162,7 @@ class LazyFont(val fontName: String, val baseHeight: Float, val textureId: Int,
             get() = sb.toString()
             set(value) {
                 sb.setLength(0)
-                appendText(text)
+                appendText(value)
             }
 
         fun appendText(text: String) {
