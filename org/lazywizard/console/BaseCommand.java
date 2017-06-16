@@ -17,7 +17,7 @@ public interface BaseCommand
      * <p>
      * @since 2.0
      */
-    public static enum CommandResult
+    enum CommandResult
     {
         /**
          * Command ran successfully.
@@ -51,7 +51,7 @@ public interface BaseCommand
      * <p>
      * @since 2.0
      */
-    public static enum CommandContext
+    enum CommandContext
     {
         /**
          * Command was entered on the campaign map.
@@ -139,5 +139,5 @@ public interface BaseCommand
      * <p>
      * @since 2.0
      */
-    public CommandResult runCommand(String args, CommandContext context);
+    CommandResult runCommand(String args, CommandContext context);
 }

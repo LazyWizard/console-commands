@@ -1,9 +1,12 @@
+@file:JvmName("ConsoleOverlay")
+
 package org.lazywizard.console
 
 import org.apache.log4j.Logger
 import org.lazywizard.console.BaseCommand.CommandContext
-import org.lazywizard.console.font.LazyFont
+import org.lazywizard.console.font.FontException
 import org.lazywizard.console.font.loadFont
+import org.lazywizard.lazylib.StringUtils
 import org.lwjgl.BufferUtils
 import org.lwjgl.Sys
 import org.lwjgl.input.Keyboard
@@ -16,22 +19,37 @@ import org.lwjgl.opengl.GL13.GL_TEXTURE0
 import org.lwjgl.opengl.GL13.glActiveTexture
 import java.util.*
 
-private val Log: Logger = Logger.getLogger(LazyFont::class.java)
-private val font = loadFont(Console.getSettings().font)
+private val Log: Logger = Logger.getLogger(Console::class.java)
+private var font = loadFont(Console.getSettings().font)
 private val width = Display.getDisplayMode().width.toFloat()
 private val height = Display.getDisplayMode().height.toFloat()
 
-private class ConsoleOverlay(private val context: CommandContext) : ConsoleListener {
+@Throws(FontException::class)
+fun reloadFont() {
+    font = loadFont(Console.getSettings().font)
+}
+
+fun show(context: CommandContext) {
+    val overlay = ConsoleOverlayInternal(context)
+    overlay.show()
+    overlay.dispose()
+}
+
+private const val CURSOR_BLINK_SPEED = 1f
+
+private class ConsoleOverlayInternal(private val context: CommandContext) : ConsoleListener {
     private val bgTextureId = glGenTextures()
-    private val history = font.createText("", font.baseHeight, width - 60f, height - 60f, Console.getSettings().outputColor)
-    private val query = font.createText(CommonStrings.INPUT_QUERY, font.baseHeight, width, 30f, Console.getSettings().outputColor.darker())
-    private val prompt = font.createText("Input: ", font.baseHeight, width, 30f, Console.getSettings().outputColor.darker())
-    private val input = font.createText("", font.baseHeight, width - prompt.width, 45f, Console.getSettings().outputColor)
+    private val history = font.createText(text = "", color = Console.getSettings().outputColor, maxWidth = width - 60f)
+    private val query = font.createText(text = CommonStrings.INPUT_QUERY, color = Console.getSettings().outputColor.darker(), maxWidth = width, maxHeight = 30f)
+    private val prompt = font.createText(text = "Input: ", color = Console.getSettings().outputColor.darker(), maxWidth = width, maxHeight = 30f)
+    private val input = font.createText(text = "", color = Console.getSettings().outputColor, maxWidth = width - prompt.width, maxHeight = 45f)
     private val currentInput: StringBuilder = StringBuilder()
     private var lastInput: String? = null
     private var currentIndex = 0
     private var lastIndex = 0
-    private var timeOpen = 0f
+    private var nextBlink = CURSOR_BLINK_SPEED
+    private var showCursor = true
+    private var needsTextUpdate = true
     private var shouldShow = true
 
     fun show() {
@@ -44,8 +62,7 @@ private class ConsoleOverlay(private val context: CommandContext) : ConsoleListe
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width.toInt(), height.toInt(), 0,
-                GL_RGBA, GL_UNSIGNED_BYTE, buffer)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width.toInt(), height.toInt(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer)
         buffer.clear()
 
         shouldShow = true
@@ -63,9 +80,13 @@ private class ConsoleOverlay(private val context: CommandContext) : ConsoleListe
         Keyboard.create()
     }
 
+    fun dispose() {
+        history.dispose(); query.dispose(); prompt.dispose(); input.dispose()
+    }
+
     override fun showOutput(output: String): Boolean {
         if (!shouldShow) return false
-        history.appendText(output)
+        history.appendText(StringUtils.wrapString(output, (width / font.baseHeight * 1.8f).toInt()))
         return true
     }
 
@@ -87,7 +108,9 @@ private class ConsoleOverlay(private val context: CommandContext) : ConsoleListe
                 if (!Keyboard.getEventKeyState()) continue
 
                 val keyPressed = Keyboard.getEventKey()
-                timeOpen = 0f
+                showCursor = true
+                needsTextUpdate = true
+                nextBlink = CURSOR_BLINK_SPEED
 
                 // Load last command when user presses up on keyboard
                 if (keyPressed == KEY_UP && Console.getLastCommand() != null) {
@@ -218,14 +241,22 @@ private class ConsoleOverlay(private val context: CommandContext) : ConsoleListe
     }
 
     private fun advance(amount: Float) {
-        timeOpen += amount
-        val cursor = if (timeOpen.toInt() and 1 == 0) "|" else " "
-        val showIndex = Console.getSettings().shouldShowCursorIndex
+        nextBlink -= amount
+        if (nextBlink <= 0f) {
+            showCursor = !showCursor
+            nextBlink = CURSOR_BLINK_SPEED
+            needsTextUpdate = true
+        }
 
-        if (currentIndex == currentInput.length) input.text = "$currentInput$cursor"
-        else input.text = "${currentInput.substring(0, currentIndex)}$cursor${currentInput.substring(currentIndex)}"
+        if (needsTextUpdate) {
+            val cursor = if (showCursor) "|" else " "
+            val showIndex = Console.getSettings().shouldShowCursorIndex
 
-        if (showIndex) input.appendText(" | Index: $currentIndex/${currentInput.length}")
+            if (currentIndex == currentInput.length) input.text = "$currentInput$cursor"
+            else input.text = "${currentInput.substring(0, currentIndex)}$cursor${currentInput.substring(currentIndex)}"
+
+            if (showIndex) input.appendText(" | Index: $currentIndex/${currentInput.length}")
+        }
 
         Console.advance(amount, this)
     }
@@ -250,6 +281,7 @@ private class ConsoleOverlay(private val context: CommandContext) : ConsoleListe
         glEnable(GL_BLEND)
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
 
+        // Draw background
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, bgTextureId)
         glPushMatrix()
@@ -266,6 +298,7 @@ private class ConsoleOverlay(private val context: CommandContext) : ConsoleListe
         glEnd()
         glPopMatrix()
 
+        // Draw console overlay
         history.draw(30f, 50f + font.baseHeight + history.height)
         query.draw(30f, 50f)
         prompt.draw(30f, 30f)

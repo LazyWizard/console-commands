@@ -1,20 +1,10 @@
 package org.lazywizard.console;
 
-import java.awt.Color;
-import java.io.IOException;
-import java.security.CodeSource;
-import java.util.EnumMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
 import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignUIAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogPlugin;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
@@ -23,7 +13,14 @@ import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommandStore.StoredCommand;
 import org.lazywizard.lazylib.JSONUtils;
-import org.lazywizard.lazylib.StringUtils;
+
+import java.io.IOException;
+import java.security.CodeSource;
+import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * The main class of the console mod. Most of its methods aren't publicly
@@ -36,7 +33,6 @@ public class Console
 {
     private static final Logger Log = Global.getLogger(Console.class);
     private static ConsoleSettings settings;
-    private static ConsoleOverlay overlay = null;
     // Stores the output of the console until it can be displayed
     private static StringBuilder output = new StringBuilder();
     private static String lastCommand;
@@ -121,16 +117,15 @@ public class Console
      */
     public static void showMessage(String message, Level logLevel)
     {
-        // Also add to Starsector's log
-        Log.log(logLevel, message);
-
-        // Word-wrap message and add it to the output queue
-        message = StringUtils.wrapString(message, settings.getMaxOutputLineLength());
+        // Add message to the output queue
         output.append(message);
         if (!message.endsWith("\n"))
         {
             output.append('\n');
         }
+
+        // Also add to Starsector's log
+        Log.log(logLevel, message);
     }
 
     /**
@@ -224,13 +219,6 @@ public class Console
         Global.getSector().addTransientScript(new ShowDialogOnCloseScript(null, token));
     }
     //</editor-fold>
-
-    static void show(CommandContext context)
-    {
-        overlay = new ConsoleOverlay(context);
-        overlay.show();
-        overlay = null;
-    }
 
     private static CommandResult runCommand(String input, CommandContext context)
     {
@@ -424,8 +412,12 @@ public class Console
                 // The game is screwed at this point, honestly
                 catch (Exception ex)
                 {
-                    Console.showException("Failed to open dialog "
-                            + dialog.getClass().getCanonicalName(), ex);
+                    if (dialog != null)
+                    {
+                        Console.showException("Failed to open dialog "
+                                + dialog.getClass().getCanonicalName(), ex);
+                    }
+
                     Global.getSector().getCampaignUI().getCurrentInteractionDialog().dismiss();
                 }
             }

@@ -222,8 +222,8 @@ class LazyFont(val textureId: Int, val baseHeight: Float, val textureWidth: Floa
         return Vector2f(sizeX, sizeY)
     }
 
-    fun createText(text: String, size: Float, maxWidth: Float = Float.MAX_VALUE, maxHeight: Float = Float.MAX_VALUE,
-                   color: Color): DrawableString = DrawableString(text, size, maxWidth, maxHeight, color)
+    fun createText(text: String, color: Color, size: Float = baseHeight, maxWidth: Float = Float.MAX_VALUE,
+                   maxHeight: Float = Float.MAX_VALUE): DrawableString = DrawableString(text, size, maxWidth, maxHeight, color)
 
     inner class LazyChar(val id: Int, tx: Int, ty: Int, val width: Int, val height: Int,
                          val xOffset: Int, val yOffset: Int, val advance: Int) {

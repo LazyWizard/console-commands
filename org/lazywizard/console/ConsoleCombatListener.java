@@ -8,6 +8,7 @@ import com.fs.starfarer.api.combat.*;
 import com.fs.starfarer.api.input.InputEventAPI;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.ConsoleSettings.KeyStroke;
+import org.lazywizard.lazylib.StringUtils;
 
 public class ConsoleCombatListener extends BaseEveryFrameCombatPlugin implements ConsoleListener
 {
@@ -57,7 +58,7 @@ public class ConsoleCombatListener extends BaseEveryFrameCombatPlugin implements
         {
             if (checkInput(events))
             {
-                Console.show(context);
+                ConsoleOverlay.show(context);
             }
 
             // Advance the console and all combat commands
@@ -101,6 +102,7 @@ public class ConsoleCombatListener extends BaseEveryFrameCombatPlugin implements
         final String[] messages = output.split("\n");
         Collections.reverse(Arrays.asList(messages));
         for (String message : messages) {
+            message = StringUtils.wrapString(message, Console.getSettings().getMaxOutputLineLength());
             ui.addMessage(0, Console.getSettings().getOutputColor(), message);
         }
 
