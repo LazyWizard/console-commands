@@ -1,45 +1,32 @@
-@file:JvmName("ConsoleOverlay")
-
 package org.lazywizard.console
 
 import org.apache.log4j.Logger
 import org.lazywizard.console.BaseCommand.CommandContext
-import org.lazywizard.console.overlay.FontException
-import org.lazywizard.console.overlay.LazyFont
-import org.lazywizard.console.overlay.loadFont
+import org.lazywizard.console.font.LazyFont
+import org.lazywizard.console.font.loadFont
 import org.lwjgl.BufferUtils
 import org.lwjgl.Sys
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Keyboard.*
-import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.GL_TEXTURE_BASE_LEVEL
 import org.lwjgl.opengl.GL12.GL_TEXTURE_MAX_LEVEL
 import org.lwjgl.opengl.GL13.GL_TEXTURE0
 import org.lwjgl.opengl.GL13.glActiveTexture
+import java.util.*
 
 private val Log: Logger = Logger.getLogger(LazyFont::class.java)
-private var font = loadFont(Console.getSettings().font)
+private val font = loadFont(Console.getSettings().font)
 private val width = Display.getDisplayMode().width.toFloat()
 private val height = Display.getDisplayMode().height.toFloat()
 
-@Throws(FontException::class)
-fun reloadFont() {
-    // FIXME: This breaks Starsector when enabled
-    //font.discard()
-    //font = loadFont(Console.getSettings().font)
-}
-
-fun show(context: CommandContext) {
-    ConsoleOverlayInternal(context).show()
-}
-
-private class ConsoleOverlayInternal(val context: CommandContext) {
+private class ConsoleOverlay(private val context: CommandContext) : ConsoleListener {
     private val bgTextureId = glGenTextures()
     private val history = font.createText("", font.baseHeight, width - 60f, height - 60f, Console.getSettings().outputColor)
     private val query = font.createText(CommonStrings.INPUT_QUERY, font.baseHeight, width, 30f, Console.getSettings().outputColor.darker())
-    private val input = font.createText("", font.baseHeight, width, 45f, Console.getSettings().outputColor)
+    private val prompt = font.createText("Input: ", font.baseHeight, width, 30f, Console.getSettings().outputColor.darker())
+    private val input = font.createText("", font.baseHeight, width - prompt.width, 45f, Console.getSettings().outputColor)
     private val currentInput: StringBuilder = StringBuilder()
     private var lastInput: String? = null
     private var currentIndex = 0
@@ -65,15 +52,24 @@ private class ConsoleOverlayInternal(val context: CommandContext) {
         while (shouldShow) {
             Display.update()
             checkInput()
+            advance(0.025f)
             render()
-            Display.sync(60)
+            Display.sync(40)
         }
 
+        // Clean up texture and clear any remaining input events
         glDeleteTextures(bgTextureId)
-        Keyboard.poll() // Clear any remaining input events
         Keyboard.destroy()
         Keyboard.create()
     }
+
+    override fun showOutput(output: String): Boolean {
+        if (!shouldShow) return false
+        history.appendText(output)
+        return true
+    }
+
+    override fun getContext() = context
 
     private fun checkInput() {
         if (Keyboard.isKeyDown(KEY_ESCAPE)) {
@@ -83,7 +79,7 @@ private class ConsoleOverlayInternal(val context: CommandContext) {
 
         val ctrlDown = Keyboard.isKeyDown(KEY_LCONTROL) || Keyboard.isKeyDown(KEY_RCONTROL)
         val shiftDown = Keyboard.isKeyDown(KEY_LSHIFT) || Keyboard.isKeyDown(KEY_RSHIFT)
-        val altDown = Keyboard.isKeyDown(KEY_LMETA) || Keyboard.isKeyDown(KEY_RMETA)
+        //val altDown = Keyboard.isKeyDown(KEY_LMETA) || Keyboard.isKeyDown(KEY_RMETA)
         val previousLength = currentInput.length
         while (Keyboard.next()) {
             try {
@@ -111,7 +107,48 @@ private class ConsoleOverlayInternal(val context: CommandContext) {
                     continue
                 }
 
-                // TODO: Copy TAB support (skipping cause lazy)
+                // Tab auto-completes the command
+                if (keyPressed == KEY_TAB) {
+                    // Only auto-complete if arguments haven't been entered
+                    if (' ' in currentInput) {
+                        continue
+                    }
+
+                    // Used for comparisons
+                    val toIndex = currentInput.substring(0, currentIndex)
+                    val fullCommand = currentInput.toString()
+
+                    // Cycle through matching commands from current index forward
+                    // If no further matches are found, start again from beginning
+                    var firstMatch: String? = null
+                    var nextMatch: String? = null
+                    val commands = CommandStore.getLoadedCommands()
+                    Collections.sort(commands)
+
+                    // Reverse order when shift is held down
+                    if (shiftDown) Collections.reverse(commands)
+
+                    for (command in commands) {
+                        if (command.regionMatches(0, toIndex, 0, toIndex.length)) {
+                            // Used to cycle back to the beginning when no more matches are found
+                            if (firstMatch == null) firstMatch = command
+
+                            // Found next matching command
+                            if ((shiftDown && command.compareTo(fullCommand, true) < 0)
+                                    || (!shiftDown && command.compareTo(fullCommand, true) > 0)) {
+                                nextMatch = command
+                                break
+                            }
+                        }
+                    }
+
+                    if (nextMatch != null)
+                        currentInput.replace(0, currentInput.length, nextMatch)
+                    else if (firstMatch != null)
+                        currentInput.replace(0, currentInput.length, firstMatch)
+
+                    continue
+                }
 
                 // Left or right move the editing cursor; home and end move to start/end respectively
                 if (keyPressed == KEY_LEFT) {
@@ -180,6 +217,19 @@ private class ConsoleOverlayInternal(val context: CommandContext) {
         }
     }
 
+    private fun advance(amount: Float) {
+        timeOpen += amount
+        val cursor = if (timeOpen.toInt() and 1 == 0) "|" else " "
+        val showIndex = Console.getSettings().shouldShowCursorIndex
+
+        if (currentIndex == currentInput.length) input.text = "$currentInput$cursor"
+        else input.text = "${currentInput.substring(0, currentIndex)}$cursor${currentInput.substring(currentIndex)}"
+
+        if (showIndex) input.appendText(" | Index: $currentIndex/${currentInput.length}")
+
+        Console.advance(amount, this)
+    }
+
     private fun render() {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
         glClearColor(0f, 0f, 0f, 1f)
@@ -216,9 +266,10 @@ private class ConsoleOverlayInternal(val context: CommandContext) {
         glEnd()
         glPopMatrix()
 
-        query.draw(Mouse.getX().toFloat(), Mouse.getY() + 50f)
-        input.text = currentInput.toString()
-        input.draw(Mouse.getX().toFloat(), Mouse.getY() - 50f)
+        history.draw(30f, 50f + font.baseHeight + history.height)
+        query.draw(30f, 50f)
+        prompt.draw(30f, 30f)
+        input.draw(30f + prompt.width, 30f)
 
         // Clear OpenGL flags
         glPopMatrix()

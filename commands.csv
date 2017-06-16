@@ -68,4 +68,3 @@ Storage,org.lazywizard.console.commands.Storage,"core,campaign",storage (no argu
 Suicide,org.lazywizard.console.commands.Suicide,"core,campaign,combat",suicide (no arguments),"Kills the currently piloted ship, or the entire player fleet if used on the campaign map."
 ToggleAI,org.lazywizard.console.commands.ToggleAI,"core,combat",toggleai (no arguments),"Toggles the AI of the selected ship."
 Traitor,org.lazywizard.console.commands.Traitor,"core,combat",traitor (no arguments),"Toggles the side the selected ship will fight for."
-TNC,org.lazywizard.console.commands.TestNewConsole,"core,campaign,combat",tnc (no arguments),"Tests the new console implementation."

@@ -36,6 +36,7 @@ public class Console
 {
     private static final Logger Log = Global.getLogger(Console.class);
     private static ConsoleSettings settings;
+    private static ConsoleOverlay overlay = null;
     // Stores the output of the console until it can be displayed
     private static StringBuilder output = new StringBuilder();
     private static String lastCommand;
@@ -94,48 +95,6 @@ public class Console
         final Level logLevel = Level.toLevel(settingsFile.getString("consoleLogLevel"), Level.WARN);
         Global.getLogger(Console.class).setLevel(logLevel);
         Global.getLogger(CommandStore.class).setLevel(logLevel);
-
-        // Console combat pop-up appearance settings (temporary)
-        // TODO: Remove these settings once universal overlay is implemented
-        try
-        {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        }
-        catch (ClassNotFoundException | IllegalAccessException
-                | InstantiationException | UnsupportedLookAndFeelException ex)
-        {
-            try
-            {
-                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-            }
-            catch (ClassNotFoundException | IllegalAccessException
-                    | InstantiationException | UnsupportedLookAndFeelException ex2)
-            {
-                throw new RuntimeException("Failed to set console look and feel!");
-            }
-        }
-
-        Color color = JSONUtils.toColor(settingsFile.getJSONArray("backgroundColor"));
-        UIManager.put("Panel.background", color);
-        UIManager.put("OptionPane.background", color);
-        UIManager.put("TextArea.background", color);
-        UIManager.put("TextField.background", color);
-        UIManager.put("Button.background", color);
-        UIManager.put("SplitPane.background", color);
-
-        color = JSONUtils.toColor(settingsFile.getJSONArray("foregroundColor"));
-        UIManager.put("OptionPane.messageForeground", color);
-
-        color = JSONUtils.toColor(settingsFile.getJSONArray("textColor"));
-        UIManager.put("TextArea.foreground", color);
-        UIManager.put("TextField.foreground", color);
-        UIManager.put("TextField.caretForeground", color);
-
-        color = JSONUtils.toColor(settingsFile.getJSONArray("buttonColor"));
-        UIManager.put("Button.foreground", color);
-        UIManager.put("SplitPane.foreground", color);
-
-        // TODO: Force AWT init
     }
 
     public static ConsoleSettings getSettings()
@@ -265,6 +224,13 @@ public class Console
         Global.getSector().addTransientScript(new ShowDialogOnCloseScript(null, token));
     }
     //</editor-fold>
+
+    static void show(CommandContext context)
+    {
+        overlay = new ConsoleOverlay(context);
+        overlay.show();
+        overlay = null;
+    }
 
     private static CommandResult runCommand(String input, CommandContext context)
     {

@@ -16,7 +16,6 @@ import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
 import org.lazywizard.lazylib.StringUtils;
 
-// TODO: Add to changelog
 // TODO: A lot of these static methods should be moved to LazyLib's ModUtils
 public class ModInfo implements BaseCommand
 {
