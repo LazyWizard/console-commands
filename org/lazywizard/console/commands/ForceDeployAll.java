@@ -16,12 +16,12 @@ import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
 
-// TODO: Stop spawning if there is no safe space left (very unlikely without cheats)
 public class ForceDeployAll implements BaseCommand
 {
     private static final Logger Log = Logger.getLogger(ForceDeployAll.class);
     private static final float MIN_OFFSET = 300f;
 
+    // FIXME: Second line never forms
     private static void moveToSpawnLocations(List<ShipAPI> toMove)
     {
         final CombatEngineAPI engine = Global.getCombatEngine();
