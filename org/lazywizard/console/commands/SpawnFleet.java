@@ -1,6 +1,7 @@
 package org.lazywizard.console.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
@@ -65,10 +66,7 @@ public class SpawnFleet implements BaseCommand
         }
 
         List<String> subNames = new ArrayList<>(tmp.length - 2);
-        for (int x = 2; x < tmp.length; x++)
-        {
-            subNames.add(tmp[x]);
-        }
+        subNames.addAll(Arrays.asList(tmp).subList(2, tmp.length));
 
         final String name = (subNames.isEmpty() ? "Fleet" : CollectionUtils.implode(subNames, " "));
         try

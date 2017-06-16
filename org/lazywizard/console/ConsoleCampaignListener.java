@@ -4,12 +4,12 @@ import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.ConsoleSettings.KeyStroke;
+import org.lazywizard.lazylib.StringUtils;
 import org.lwjgl.input.Keyboard;
 
 public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListener
 {
     private transient float timeUntilNotify = 0.5f;
-    private transient ConsoleListener overlay = null;
 
     @Override
     public boolean isDone()
@@ -59,7 +59,7 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
 
         if (checkInput())
         {
-            Console.show(getContext());
+            ConsoleOverlay.show(getContext());
         }
 
         Console.advance(amount, this);
@@ -75,6 +75,7 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
 
         for (String message : output.split("\n"))
         {
+            message = StringUtils.wrapString(message, Console.getSettings().getMaxOutputLineLength());
             Global.getSector().getCampaignUI().addMessage(message,
                     Console.getSettings().getOutputColor());
         }

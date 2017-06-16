@@ -73,15 +73,14 @@ public class List_ implements BaseCommand
             Collections.sort(campaign);
             Collections.sort(combat);
 
-            final StringBuilder sb = new StringBuilder(1_024);
-            sb.append("Universal commands (").append(universal.size()).append("):\n");
-            sb.append(CollectionUtils.implode(universal));
-            sb.append("\n\nCampaign commands (").append(campaign.size()).append("):\n");
-            sb.append(CollectionUtils.implode(campaign));
-            sb.append("\n\nCombat commands (").append(combat.size()).append("):\n");
-            sb.append(CollectionUtils.implode(combat));
+            final String output = "Universal commands (" + universal.size() + "):\n" +
+                    CollectionUtils.implode(universal) +
+                    "\n\nCampaign commands (" + campaign.size() + "):\n" +
+                    CollectionUtils.implode(campaign) +
+                    "\n\nCombat commands (" + combat.size() + "):\n" +
+                    CollectionUtils.implode(combat);
 
-            Console.showMessage(sb.toString());
+            Console.showMessage(output);
             return CommandResult.SUCCESS;
         }
 

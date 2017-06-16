@@ -35,7 +35,7 @@ public class ModInfo implements BaseCommand
         {
             // Not actually an error, just means that mod doesn't override the core CSV
             Log.error("Failed to open " + csvPath, ex);
-            return Collections.<String>emptyList();
+            return Collections.emptyList();
         }
 
         final List<String> added = new ArrayList<>(csv.length());
@@ -69,7 +69,7 @@ public class ModInfo implements BaseCommand
         {
             // Okay, this one's actually an error
             Log.error("Failed to parse " + csvPath, ex);
-            return Collections.<String>emptyList();
+            return Collections.emptyList();
         }
 
         Collections.sort(added);

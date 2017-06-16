@@ -26,7 +26,7 @@ public class RunCode implements BaseCommand
 
     public static Map<String, String> getMacros()
     {
-        return Collections.<String, String>unmodifiableMap(macros);
+        return Collections.unmodifiableMap(macros);
     }
 
     public static void reloadImports()
