@@ -124,7 +124,7 @@ public class ModInfo implements BaseCommand
         // Just pretend you didn't see this abomination, okay?
         return " (" + toImplode.size() + "):\n"
                 + StringUtils.indent(StringUtils.wrapString(CollectionUtils.implode(toImplode),
-                        Console.getSettings().getMaxOutputLineLength() - indent), pad(indent, ' '));
+                        80 - indent), pad(indent, ' '));
     }
 
     public static String getInfo(ModSpecAPI mod)
@@ -138,8 +138,7 @@ public class ModInfo implements BaseCommand
                 .append("\n - Display name: ").append(mod.getName())
                 .append("\n - Author: ").append(mod.getAuthor())
                 .append("\n - Description:\n")
-                .append(StringUtils.indent(StringUtils.wrapString(mod.getDesc(),
-                        Console.getSettings().getMaxOutputLineLength() - 5), "     "))
+                .append(StringUtils.indent(StringUtils.wrapString(mod.getDesc(),75), "     "))
                 .append("\n - Version: ").append(mod.getVersion())
                 .append("\n - Total conversion: ").append(mod.isTotalConversion())
                 .append("\n - Utility: ").append(mod.isUtility())

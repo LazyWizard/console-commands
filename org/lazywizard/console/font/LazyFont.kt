@@ -20,7 +20,6 @@ private val SPLIT_REGEX = """=|\s+(?=([^"]*"[^"]*")*[^"]*$)""".toRegex()
 private val Log: Logger = Logger.getLogger(LazyFont::class.java)
 
 // File format documentation: http://www.angelcode.com/products/bmfont/doc/file_format.html
-// FIXME: Slight kerning issues (add a single pixel?)
 @Throws(FontException::class)
 fun loadFont(fontPath: String): LazyFont {
     // Load the font file contents for later parsing
@@ -100,7 +99,7 @@ fun loadFont(fontPath: String): LazyFont {
                     height = Integer.parseInt(charData[10]),
                     xOffset = Integer.parseInt(charData[12]),
                     yOffset = Integer.parseInt(charData[14]),
-                    advance = Integer.parseInt(charData[16]))
+                    advance = Integer.parseInt(charData[16]) + 1)
             //Integer.parseInt(data[18]), // page
             // Integer.parseInt(data[20])); // channel
         }

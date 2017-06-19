@@ -126,9 +126,7 @@ public class List_ implements BaseCommand
 
                     ids.add(tag + " (" + commandsWithTag.size() + "):\n"
                             + StringUtils.indent(StringUtils.wrapString(
-                                    CollectionUtils.implode(commandsWithTag),
-                                    Console.getSettings().getMaxOutputLineLength()
-                                    - 6), "   "));
+                                    CollectionUtils.implode(commandsWithTag),74), "   "));
                 }
                 break;
             case "mods":
@@ -239,8 +237,7 @@ public class List_ implements BaseCommand
         Collections.sort(ids);
         final String results = CollectionUtils.implode(ids, (newLinePerItem ? "\n" : ", "));
         Console.showMessage("Known " + param + " (" + ids.size() + "):\n"
-                + StringUtils.indent(StringUtils.wrapString(results,
-                        Console.getSettings().getMaxOutputLineLength() - 3), "   "));
+                + StringUtils.indent(StringUtils.wrapString(results,77), "   "));
         return CommandResult.SUCCESS;
     }
 }

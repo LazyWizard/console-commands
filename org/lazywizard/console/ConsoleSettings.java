@@ -11,6 +11,7 @@ import org.lwjgl.input.Keyboard;
  * @author LazyWizard
  * @since 2.0
  */
+// TODO: Implement persistent settings between updates
 public class ConsoleSettings
 {
     // The key stroke that summons the console overlay
@@ -31,14 +32,11 @@ public class ConsoleSettings
     private final double TYPO_CORRECTION_THRESHOLD;
     // The color of the console's output text
     private final Color OUTPUT_COLOR;
-    // How many characters before the output is line-wrapped
-    private final int OUTPUT_MAX_LINE_LENGTH;
 
     ConsoleSettings(int consoleSummonKey, boolean requireShift, boolean requireControl,
             boolean requireAlt, String commandSeparator, boolean showEnteredCommands,
             boolean showCursorIndex, boolean showStackTrace, double typoCorrectionThreshold,
-            Color outputColor, int outputMaxLineLength, String consoleFont,
-            Map<CommandResult, String> resultSounds)
+            Color outputColor, String consoleFont, Map<CommandResult, String> resultSounds)
     {
         CONSOLE_SUMMON_KEY = new KeyStroke(consoleSummonKey, requireShift,
                 requireControl, requireAlt);
@@ -48,7 +46,6 @@ public class ConsoleSettings
         SHOW_EXCEPTION_TRACE = showStackTrace;
         TYPO_CORRECTION_THRESHOLD = typoCorrectionThreshold;
         OUTPUT_COLOR = outputColor;
-        OUTPUT_MAX_LINE_LENGTH = outputMaxLineLength;
         CONSOLE_FONT = consoleFont;
         RESULT_SOUNDS = resultSounds;
     }
@@ -160,19 +157,6 @@ public class ConsoleSettings
     public Color getOutputColor()
     {
         return OUTPUT_COLOR;
-    }
-
-    /**
-     * Returns how many characters a line of output can reach before it is
-     * wrapped.
-     * <p>
-     * @return How many characters before the output is line-wrapped
-     * <p>
-     * @since 2.0
-     */
-    public int getMaxOutputLineLength()
-    {
-        return OUTPUT_MAX_LINE_LENGTH;
     }
 
     /**
@@ -301,7 +285,6 @@ public class ConsoleSettings
                 + ", SHOW_ENTERED_COMMANDS=" + SHOW_ENTERED_COMMANDS
                 + ", SHOW_CURSOR_INDEX=" + SHOW_CURSOR_INDEX
                 + ", TYPO_CORRECTION_THRESHOLD=" + TYPO_CORRECTION_THRESHOLD
-                + ", OUTPUT_COLOR=" + OUTPUT_COLOR
-                + ", OUTPUT_MAX_LINE_LENGTH=" + OUTPUT_MAX_LINE_LENGTH + '}';
+                + ", OUTPUT_COLOR=" + OUTPUT_COLOR + '}';
     }
 }
