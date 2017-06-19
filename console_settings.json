@@ -8,7 +8,7 @@
     "requireAlt":false,               # Default: false
 
     # The path to the bitmap font used by the overlay
-    "consoleFont":"graphics/fonts/insignia15LTaa.fnt", #"NCS-Console.fnt" # Default: TODO
+    "consoleFont":"graphics/fonts/insignia15LTaa.fnt",
 
     # Whether combat toggle commands should stay on in subsequent battles
     "persistentCombatCommands":false, # Unimplemented
@@ -32,7 +32,6 @@
 
     # The color of the console output text
     "outputColor":[0,255,255],        # Default: cyan    (0,255,255)
-    "maxOutputLineLength":80,         # Default: 80
 
     # Valid levels: OFF, FATAL, ERROR, WARN, INFO, DEBUG, ALL
     # INFO and above will save all console output to Starsector.log!
@@ -47,11 +46,5 @@
         "BAD_SYNTAX":"cr_allied_malfunction",
         "WRONG_CONTEXT":"cr_allied_warning",
         "ERROR":"cr_allied_malfunction"
-    },
-
-    # Color settings for the combat pop-up (temporary, not retrievable in-game)
-    "backgroundColor":[0,0,0],        # Default: black   (0,0,0)
-    "foregroundColor":[0,255,255],    # Default: cyan    (0,255,255)
-    "textColor":[255,255,0],          # Default: yellow  (255,255,0)
-    "buttonColor":[192,192,192],      # Default: gray    (192,192,192)
+    }
 }

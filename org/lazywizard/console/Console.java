@@ -80,7 +80,6 @@ public class Console
                 settingsFile.getBoolean("showExceptionDetails"),
                 settingsFile.getDouble("typoCorrectionThreshold"),
                 JSONUtils.toColor(settingsFile.getJSONArray("outputColor")),
-                settingsFile.getInt("maxOutputLineLength"),
                 settingsFile.getString("consoleFont"),
                 parseSoundOptions(settingsFile));
 

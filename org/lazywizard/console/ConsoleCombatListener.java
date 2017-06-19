@@ -102,7 +102,7 @@ public class ConsoleCombatListener extends BaseEveryFrameCombatPlugin implements
         final String[] messages = output.split("\n");
         Collections.reverse(Arrays.asList(messages));
         for (String message : messages) {
-            message = StringUtils.wrapString(message, Console.getSettings().getMaxOutputLineLength());
+            message = StringUtils.wrapString(message, 80);
             ui.addMessage(0, Console.getSettings().getOutputColor(), message);
         }
 

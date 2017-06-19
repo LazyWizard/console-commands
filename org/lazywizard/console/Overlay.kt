@@ -30,9 +30,10 @@ fun reloadFont() {
 }
 
 fun show(context: CommandContext) {
-    val overlay = ConsoleOverlayInternal(context)
-    overlay.show()
-    overlay.dispose()
+    with(ConsoleOverlayInternal(context)) {
+        show()
+        dispose()
+    }
 }
 
 private const val CURSOR_BLINK_SPEED = 1f
@@ -65,6 +66,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width.toInt(), height.toInt(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer)
         buffer.clear()
 
+        // Show overlay
         shouldShow = true
         while (shouldShow) {
             Display.update()
@@ -98,6 +100,8 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
             return
         }
 
+        // TODO: Implement scrollback handling using mousewheel, page up/down
+
         val ctrlDown = Keyboard.isKeyDown(KEY_LCONTROL) || Keyboard.isKeyDown(KEY_RCONTROL)
         val shiftDown = Keyboard.isKeyDown(KEY_LSHIFT) || Keyboard.isKeyDown(KEY_RSHIFT)
         //val altDown = Keyboard.isKeyDown(KEY_LMETA) || Keyboard.isKeyDown(KEY_RMETA)
@@ -107,12 +111,13 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
                 // Only pay attention to key down events
                 if (!Keyboard.getEventKeyState()) continue
 
-                val keyPressed = Keyboard.getEventKey()
+                // Always show the current cursor position after any keypress
                 showCursor = true
                 needsTextUpdate = true
                 nextBlink = CURSOR_BLINK_SPEED
 
                 // Load last command when user presses up on keyboard
+                val keyPressed = Keyboard.getEventKey()
                 if (keyPressed == KEY_UP && Console.getLastCommand() != null) {
                     lastInput = currentInput.toString()
                     lastIndex = currentIndex
@@ -131,6 +136,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
                 }
 
                 // Tab auto-completes the command
+                // FIXME: Tab completion doesn't appear to be working
                 if (keyPressed == KEY_TAB) {
                     // Only auto-complete if arguments haven't been entered
                     if (' ' in currentInput) {
@@ -262,7 +268,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
     }
 
     private fun render() {
-        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT)
         glClearColor(0f, 0f, 0f, 1f)
 
         // Set up OpenGL flags
@@ -298,8 +304,25 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
         glEnd()
         glPopMatrix()
 
-        // Draw console overlay
+        // Draw history
+        // TODO: Add scrollbar, scrolling
+        glEnable(GL_STENCIL_TEST)
+        glColorMask(false, false, false, false)
+        glStencilFunc(GL_ALWAYS, 1, 1)
+        glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE)
+        glBegin(GL_QUADS)
+        glVertex2f(30f, 50f + font.baseHeight)          // LL
+        glVertex2f(30f, height - 30f)                   // UL
+        glVertex2f(width - 30f, height - 30f)           // UR
+        glVertex2f(width - 30f, 50f + font.baseHeight)  // LR
+        glEnd()
+        glColorMask(true, true, true, true)
+        glStencilFunc(GL_EQUAL, 1, 1)
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)
         history.draw(30f, 50f + font.baseHeight + history.height)
+        glDisable(GL_STENCIL_TEST)
+
+        // Draw input prompt
         query.draw(30f, 50f)
         prompt.draw(30f, 30f)
         input.draw(30f + prompt.width, 30f)

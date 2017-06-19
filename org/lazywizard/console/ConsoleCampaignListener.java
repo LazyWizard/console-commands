@@ -75,7 +75,7 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
 
         for (String message : output.split("\n"))
         {
-            message = StringUtils.wrapString(message, Console.getSettings().getMaxOutputLineLength());
+            message = StringUtils.wrapString(message, 80);
             Global.getSector().getCampaignUI().addMessage(message,
                     Console.getSettings().getOutputColor());
         }
