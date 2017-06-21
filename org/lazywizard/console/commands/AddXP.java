@@ -2,9 +2,11 @@ package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
+import com.fs.starfarer.api.plugins.LevelupPlugin;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+
 import static org.lazywizard.console.CommandUtils.*;
 
 public class AddXP implements BaseCommand
@@ -34,8 +36,10 @@ public class AddXP implements BaseCommand
 
         if (amount >= 0)
         {
-            Console.showMessage("Added " + format(amount) + " experience points to player.");
-            player.addXP(amount);
+            final LevelupPlugin plugin = Global.getSettings().getLevelupPlugin();
+            final long added = Math.min(amount, plugin.getXPForLevel(plugin.getMaxLevel()) - player.getXP());
+            Console.showMessage("Added " + format(added) + " experience points to player.");
+            player.addXP(added);
         }
         else
         {
