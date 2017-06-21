@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
  * The main class of the console mod. Most of its methods aren't publicly
  * accessible, so this is mainly used to display messages to the player.
  * <p>
+ *
  * @author LazyWizard
  * @since 2.0
  */
@@ -74,7 +75,7 @@ public class Console
                 settingsFile.getBoolean("requireShift"),
                 settingsFile.getBoolean("requireControl"),
                 settingsFile.getBoolean("requireAlt"),
-                Pattern.quote(settingsFile.getString("commandSeparator")),
+                settingsFile.getString("commandSeparator"),
                 settingsFile.getBoolean("showEnteredCommands"),
                 settingsFile.getBoolean("showCursorIndex"),
                 settingsFile.getBoolean("showExceptionDetails"),
@@ -103,15 +104,17 @@ public class Console
     }
 
     //<editor-fold defaultstate="collapsed" desc="showMessage variants">
+
     /**
      * Displays a message to the user. The message will be formatted and shown
      * to the player when they reach a section of the game where it can be
      * displayed properly (combat/campaign map).
      * <p>
+     *
      * @param message  The message to show.
      * @param logLevel If this is equal to/higher than the "consoleLogLevel"
      *                 setting, this message will be logged in Starsector.log.
-     * <p>
+     *                 <p>
      * @since 2.0
      */
     public static void showMessage(String message, Level logLevel)
@@ -132,8 +135,9 @@ public class Console
      * to the player when they reach a section of the game where it can be
      * displayed properly (combat/campaign map).
      * <p>
+     *
      * @param message The message to show.
-     * <p>
+     *                <p>
      * @since 2.0
      */
     public static void showMessage(String message)
@@ -144,10 +148,11 @@ public class Console
     /**
      * Displays the stack trace of a {@link Throwable}.
      * <p>
+     *
      * @param message An optional message to show before the stack trace. Can be
      *                {@code null}.
      * @param ex      The {@link Throwable} whose stack trace will be shown.
-     * <p>
+     *                <p>
      * @since 2.0
      */
     public static void showException(String message, Throwable ex)
@@ -208,7 +213,7 @@ public class Console
     }
 
     public static void showDialogOnClose(InteractionDialogPlugin dialog,
-            SectorEntityToken token)
+                                         SectorEntityToken token)
     {
         Global.getSector().addTransientScript(new ShowDialogOnCloseScript(dialog, token));
     }
@@ -258,7 +263,7 @@ public class Console
 
             if (settings.getShouldShowEnteredCommands())
             {
-                showMessage("Running command \"" + input + "\"");
+                showMessage("> " + input);
             }
 
             BaseCommand command = stored.getCommandClass().newInstance();
@@ -299,10 +304,11 @@ public class Console
         {
             // Split the raw input up into the individual commands
             // The command separator is used to separate multiple commands
-            Set<CommandResult> results = new HashSet<>();
+            final String separator = Pattern.quote(settings.getCommandSeparator());
+            final Set<CommandResult> results = new HashSet<>();
+            final Map<String, String> aliases = CommandStore.getAliases();
             worstResult = CommandResult.SUCCESS;
-            Map<String, String> aliases = CommandStore.getAliases();
-            for (String input : rawInput.split(settings.getCommandSeparator()))
+            for (String input : rawInput.split(separator))
             {
                 input = input.trim();
                 if (!input.isEmpty())
@@ -310,8 +316,7 @@ public class Console
                     // Whole-line alias support
                     if (aliases.containsKey(input.toLowerCase()))
                     {
-                        for (String input2 : aliases.get(input.toLowerCase())
-                                .split(settings.getCommandSeparator()))
+                        for (String input2 : aliases.get(input.toLowerCase()).split(separator))
                         {
                             input2 = input2.trim();
                             if (!input2.isEmpty())
@@ -339,7 +344,8 @@ public class Console
         }
 
         // Play a sound based on worst error type
-        String sound = settings.getSoundForResult(worstResult);
+        // FIXME: Sounds don't work with new overlay
+        final String sound = settings.getSoundForResult(worstResult);
         if (sound != null)
         {
             Global.getSoundPlayer().playUISound(sound, 1f, 1f);
@@ -370,7 +376,7 @@ public class Console
         private boolean isDone = false;
 
         private ShowDialogOnCloseScript(InteractionDialogPlugin dialog,
-                SectorEntityToken token)
+                                        SectorEntityToken token)
         {
             this.dialog = dialog;
             this.token = token;

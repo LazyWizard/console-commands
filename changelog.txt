@@ -1,7 +1,12 @@
- 3.0 WIP 3 (XX XX, 2017)
+ 3.0 WIP 4 (XX XX, 2017)
 =========================
 Updated to be compatible with Starsector 0.8a
-Control+backspace now deletes the current word instead of last word in input
+Completely rewrote the input system and added a custom console overlay:
+ - Same system used for both campaign and combat (no more popups or dialogs)
+ - Uses custom font renderer (please don't use these classes yourself, wait for
+   their eventual inclusion in LazyLib once the code is stable and bug-free)
+Most console settings are now chosen in-game, persistent between updates
+Fixed control+backspace to delete the current word instead of last word in input
 Minor update to typo correction, please let me know if it's more/less accurate
 If exception stack traces are enabled, show source jars in exception details
 Added isCampaignAccessible() to CommandContext:
@@ -44,6 +49,7 @@ Changes to existing commands:
  - GoTo:
    - Will redirect to the Jump command if a star system's name is entered
    - Teleports you to your move destination if no argument is entered
+ - Help gives some additional information on advanced console features such as tab completion and command chaining
  - Kill and Nuke credit kills to the player flagship
  - List accepts several new arguments:
    - "hullmods", shows all hullmods that can be unlocked with a modspec item
