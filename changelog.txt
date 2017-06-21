@@ -32,6 +32,7 @@ Changes to existing commands:
  - AddShip will redirect to AddWing if a wing ID is entered
  - AddSkillPoints now adds character points, used for both skills and aptitudes
  - AddWing and AllWings properly add LPCs instead of fleet members
+ - AddXP will cap XP at what's needed for the maximum character level
  - FindItem/FindShip:
    - Both commands will simulate a visit from the player to each searched
      submarket; this ensures the searched stockpiles are always up to date, at
