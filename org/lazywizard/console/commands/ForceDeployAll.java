@@ -38,7 +38,7 @@ public class ForceDeployAll implements BaseCommand
                 if (MathUtils.isWithinRange(other, spawnLoc, radius))
                 {
                     spawnLoc.x += radius;
-                    if (spawnLoc.x > engine.getMapWidth() / 2f)
+                    if (spawnLoc.x >= engine.getMapWidth() / 2f)
                     {
                         spawnLoc.x = -engine.getMapWidth();
                         spawnLoc.y -= radius;

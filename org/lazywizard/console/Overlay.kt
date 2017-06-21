@@ -19,39 +19,35 @@ import org.lwjgl.opengl.GL13.GL_TEXTURE0
 import org.lwjgl.opengl.GL13.glActiveTexture
 import java.util.*
 
-private val Log: Logger = Logger.getLogger(Console::class.java)
+private val Log = Logger.getLogger(Console::class.java)
 private var font = loadFont(Console.getSettings().font)
-private val width = Display.getDisplayMode().width.toFloat()
-private val height = Display.getDisplayMode().height.toFloat()
+private val width = Display.getDisplayMode().width * Display.getPixelScaleFactor()
+private val height = Display.getDisplayMode().height * Display.getPixelScaleFactor()
+private var history = ""
 
 @Throws(FontException::class)
 fun reloadFont() {
     font = loadFont(Console.getSettings().font)
 }
 
-fun show(context: CommandContext) {
-    with(ConsoleOverlayInternal(context)) {
-        show()
-        dispose()
-    }
-}
+fun show(context: CommandContext) = with(ConsoleOverlayInternal(context)) { show(); dispose() }
 
-private const val CURSOR_BLINK_SPEED = 1f
+private const val CURSOR_BLINK_SPEED = 0.8f
 
 private class ConsoleOverlayInternal(private val context: CommandContext) : ConsoleListener {
     private val bgTextureId = glGenTextures()
-    private val history = font.createText(text = "", color = Console.getSettings().outputColor, maxWidth = width - 60f)
+    private val scrollback = font.createText(text = history, color = Console.getSettings().outputColor, maxWidth = width - 60f)
     private val query = font.createText(text = CommonStrings.INPUT_QUERY, color = Console.getSettings().outputColor.darker(), maxWidth = width, maxHeight = 30f)
-    private val prompt = font.createText(text = "Input: ", color = Console.getSettings().outputColor.darker(), maxWidth = width, maxHeight = 30f)
+    private val prompt = font.createText(text = "> ", color = Console.getSettings().outputColor.darker(), maxWidth = width, maxHeight = 30f)
     private val input = font.createText(text = "", color = Console.getSettings().outputColor, maxWidth = width - prompt.width, maxHeight = 45f)
-    private val currentInput: StringBuilder = StringBuilder()
+    private val currentInput = StringBuilder()
     private var lastInput: String? = null
     private var currentIndex = 0
     private var lastIndex = 0
     private var nextBlink = CURSOR_BLINK_SPEED
     private var showCursor = true
     private var needsTextUpdate = true
-    private var shouldShow = true
+    private var isOpen = false
 
     fun show() {
         // Save current screen image to texture
@@ -67,8 +63,8 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
         buffer.clear()
 
         // Show overlay
-        shouldShow = true
-        while (shouldShow) {
+        isOpen = true
+        while (isOpen) {
             Display.update()
             checkInput()
             advance(0.025f)
@@ -83,12 +79,12 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
     }
 
     fun dispose() {
-        history.dispose(); query.dispose(); prompt.dispose(); input.dispose()
+        history = scrollback.text.takeLast(9999); scrollback.dispose(); query.dispose(); prompt.dispose(); input.dispose()
     }
 
     override fun showOutput(output: String): Boolean {
-        if (!shouldShow) return false
-        history.appendText(StringUtils.wrapString(output, (width / font.baseHeight * 1.8f).toInt()))
+        if (!isOpen) return false
+        scrollback.appendText(StringUtils.wrapString(output, (width / font.baseHeight * 1.8f).toInt()))
         return true
     }
 
@@ -96,7 +92,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
 
     private fun checkInput() {
         if (Keyboard.isKeyDown(KEY_ESCAPE)) {
-            shouldShow = false
+            isOpen = false
             return
         }
 
@@ -136,7 +132,6 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
                 }
 
                 // Tab auto-completes the command
-                // FIXME: Tab completion doesn't appear to be working
                 if (keyPressed == KEY_TAB) {
                     // Only auto-complete if arguments haven't been entered
                     if (' ' in currentInput) {
@@ -158,7 +153,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
                     if (shiftDown) Collections.reverse(commands)
 
                     for (command in commands) {
-                        if (command.regionMatches(0, toIndex, 0, toIndex.length)) {
+                        if (command.regionMatches(0, toIndex, 0, toIndex.length, true)) {
                             // Used to cycle back to the beginning when no more matches are found
                             if (firstMatch == null) firstMatch = command
 
@@ -213,7 +208,8 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
                 // Return key handling
                 else if (keyPressed == KEY_RETURN) {
                     val command = currentInput.toString()
-                    Console.parseInput(command, context)
+                    if (command.toLowerCase() == "clear") scrollback.text = ""
+                    else Console.parseInput(command, context)
                     currentInput.setLength(0)
                     currentIndex = 0
                     lastInput = null
@@ -304,7 +300,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
         glEnd()
         glPopMatrix()
 
-        // Draw history
+        // Draw scrollback
         // TODO: Add scrollbar, scrolling
         glEnable(GL_STENCIL_TEST)
         glColorMask(false, false, false, false)
@@ -319,7 +315,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
         glColorMask(true, true, true, true)
         glStencilFunc(GL_EQUAL, 1, 1)
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)
-        history.draw(30f, 50f + font.baseHeight + history.height)
+        scrollback.draw(30f, 50f + font.baseHeight + scrollback.height)
         glDisable(GL_STENCIL_TEST)
 
         // Draw input prompt

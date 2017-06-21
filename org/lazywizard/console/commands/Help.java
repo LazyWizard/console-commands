@@ -19,6 +19,9 @@ public class Help implements BaseCommand
             Collections.sort(commands);
             Console.showMessage("Loaded commands:\n"
                     + CollectionUtils.implode(commands));
+            Console.showMessage("\nYou can chain multiple commands together with '" + Console.getSettings().getCommandSeparator()
+                    +"'. Use the 'List' command to obtain the various IDs used by commands. The console also" +
+                    " supports tab completion. Console settings can be changed with the 'ShowSettings' command.");
             Console.showMessage("\nYou can use 'help <command>' for more information"
                     + " on a specific command or 'help <tag>' to only list"
                     + " commands that have that tag.");
