@@ -232,7 +232,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
                 currentIndex = Math.min(Math.max(0, currentIndex), currentInput.length)
             } catch (ex: ArrayIndexOutOfBoundsException) {
                 Console.showMessage("Something went wrong with the input parser!"
-                        + "Please send a copy of starsector.log to LazyWizard.")
+                        + "\nPlease send a copy of starsector.log to LazyWizard.")
                 Log.error("Input dump:\n - Current input: $currentInput | Index:" +
                         " $currentIndex/${currentInput.length}\n - Last input: ${lastInput ?: "null"}" +
                         " | Index: $lastIndex/${lastInput?.length}", ex)
