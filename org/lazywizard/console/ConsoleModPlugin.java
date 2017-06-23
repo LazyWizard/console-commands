@@ -12,17 +12,10 @@ public class ConsoleModPlugin extends BaseModPlugin
     public void onApplicationLoad() throws Exception
     {
         // Console settings
-        ReloadConsole.reloadConsole();
+        ReloadConsole.reloadConsole(true);
 
         Console.showMessage("Console loaded, summon with "
                 + Console.getSettings().getConsoleSummonKey(), Level.DEBUG);
-
-        if (Display.isFullscreen())
-        {
-            Console.showMessage("It is highly recommended that you play"
-                    + " Starsector in borderless windowed mode when using"
-                    + " the console.", Level.WARN);
-        }
     }
 
     @Override

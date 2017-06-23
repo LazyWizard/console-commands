@@ -11,13 +11,15 @@ import java.io.IOException;
 
 public class ReloadConsole implements BaseCommand
 {
-    public static void reloadConsole() throws JSONException, IOException, FontException
+    public static void reloadConsole(boolean onApplicationLoad) throws JSONException, IOException, FontException
     {
         Console.reloadSettings();
         CommandStore.reloadCommands();
-        ConsoleOverlay.reloadFont();
         RunCode.reloadImports();
         RunCode.reloadMacros();
+
+        // The overlay will load the font itself at startup, no need to do so twice
+        if (!onApplicationLoad) ConsoleOverlay.reloadFont();
     }
 
     @Override
@@ -25,7 +27,7 @@ public class ReloadConsole implements BaseCommand
     {
         try
         {
-            reloadConsole();
+            reloadConsole(false);
         }
         catch (IOException | JSONException | FontException ex)
         {
