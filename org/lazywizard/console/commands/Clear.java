@@ -19,8 +19,7 @@ public class Clear implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        InteractionDialogAPI dialog = Global.getSector().getCampaignUI()
-                .getCurrentInteractionDialog();
+        final InteractionDialogAPI dialog = Global.getSector().getCampaignUI().getCurrentInteractionDialog();
         if (dialog == null)
         {
             Console.showMessage("No dialog found!");

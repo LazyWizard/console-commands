@@ -31,7 +31,7 @@
     "typoCorrectionThreshold":0.9,    # Default: 0.9
 
     # The color of the console output text
-    "outputColor":[0,255,255],        # Default: cyan    (0,255,255)
+    "outputColor":[255,255,0],        # Default: yellow (255,255,0)
 
     # Valid levels: OFF, FATAL, ERROR, WARN, INFO, DEBUG, ALL
     # INFO and above will save all console output to Starsector.log!

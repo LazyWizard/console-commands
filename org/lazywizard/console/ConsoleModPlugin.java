@@ -12,7 +12,7 @@ public class ConsoleModPlugin extends BaseModPlugin
     public void onApplicationLoad() throws Exception
     {
         // Console settings
-        ReloadConsole.reloadConsole(true);
+        ReloadConsole.reloadConsole(false);
 
         Console.showMessage("Console loaded, summon with "
                 + Console.getSettings().getConsoleSummonKey(), Level.DEBUG);

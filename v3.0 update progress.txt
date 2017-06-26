@@ -1,0 +1,87 @@
+/===========================\
+| Main Tasks for v3.0 final |
+\===========================/
+TODO:
+ - Release new LazyLib version w/ Kotlin dependencies
+ - Add scrollback support to new overlay
+ - Make settings persistent between updates, set in-game
+ - Finish testing and polish pass on ALL existing commands
+ - Various minor todo items scattered through the code
+
+
+/==============================\
+| Command Polish Pass Progress |
+\==============================/
+
+Verified working properly in 0.8a+:
+AddCommandPoints.java
+AddCredits.java
+AddCrew.java
+AddFuel.java
+AddHullmod.java
+AddItem.java
+AddMarines.java
+AddOfficer.java
+AddOrdnancePoints.java
+AddShip.java
+AddSkillPoints.java
+AddSupplies.java
+AddWeapon.java
+AddWing.java
+AddXP.java
+
+
+Not thoroughly tested yet:
+AdjustRelationship.java
+AllCommodities.java
+AllHullmods.java
+AllHulls.java
+AllWeapons.java
+AllWings.java
+BlockRetreat.java
+Clear.java
+DevMode.java
+EndCombat.java
+FindItem.java
+FindShip.java
+Flameout.java
+ForceDeployAll.java
+ForceMarketUpdate.java
+God.java
+GoTo.java
+Help.java
+Hide.java
+Home.java
+InfiniteAmmo.java
+InfiniteCR.java
+InfiniteFlux.java
+InfiniteFuel.java
+InfiniteSupplies.java
+Jump.java
+Kill.java
+ListStorage.java
+List_.java
+ModInfo.java
+NoCooldown.java
+Nuke.java
+OpenMarket.java
+ReloadConsole.java
+RemoveHulks.java
+Repair.java
+Respec.java
+Reveal.java
+Rout.java
+RunCode.java
+SetCommission.java
+SetFaction.java
+SetHome.java
+SetRelationship.java
+ShowBounds.java
+ShowLoc.java
+SourceOf.java
+SpawnFleet.java
+Status.java
+Storage.java
+Suicide.java
+ToggleAI.java
+Traitor.java
