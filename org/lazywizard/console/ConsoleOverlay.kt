@@ -62,12 +62,13 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width.toInt(), height.toInt(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer)
         buffer.clear()
 
-        // Show overlay
+        // Show overlay until closed by player
+        // FIXME: Alt+F4 support is wonky
         isOpen = true
-        while (isOpen) {
+        while (isOpen && !Display.isCloseRequested()) {
             Display.update()
             checkInput()
-            advance(0.025f)
+            advance(0.025f) // HIGHLY unlikely we won't hit the 40 FPS target
             render()
             Display.sync(40)
         }
@@ -84,6 +85,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
 
     override fun showOutput(output: String): Boolean {
         if (!isOpen) return false
+
         scrollback.appendText(StringUtils.wrapString(output, (width / font.baseHeight * 1.8f).toInt()))
         return true
     }
