@@ -38,27 +38,6 @@ public class Console
     private static StringBuilder output = new StringBuilder();
     private static String lastCommand;
 
-    private static Map<CommandResult, String> parseSoundOptions(JSONObject settings) throws JSONException
-    {
-        Map<CommandResult, String> sounds = new EnumMap<>(CommandResult.class);
-        JSONObject json = settings.getJSONObject("playSoundOnResult");
-
-        for (CommandResult result : CommandResult.values())
-        {
-            String resultId = result.name();
-            if (json.has(resultId))
-            {
-                String soundId = json.getString(resultId);
-                if (soundId != null && !soundId.isEmpty())
-                {
-                    sounds.put(result, soundId);
-                }
-            }
-        }
-
-        return sounds;
-    }
-
     /**
      * Forces the console to reload its settings from the settings file.
      *
@@ -81,8 +60,7 @@ public class Console
                 settingsFile.getBoolean("showExceptionDetails"),
                 settingsFile.getDouble("typoCorrectionThreshold"),
                 JSONUtils.toColor(settingsFile.getJSONArray("outputColor")),
-                settingsFile.getString("consoleFont"),
-                parseSoundOptions(settingsFile));
+                settingsFile.getString("consoleFont"));
 
         // Set command persistence between battles
         //PersistentCommandManager.setCommandPersistence(
@@ -345,7 +323,7 @@ public class Console
 
         // Play a sound based on worst error type
         // FIXME: Sounds don't work with new overlay
-        final String sound = settings.getSoundForResult(worstResult);
+        final String sound = null; //settings.getSoundForResult(worstResult);
         if (sound != null)
         {
             Global.getSoundPlayer().playUISound(sound, 1f, 1f);

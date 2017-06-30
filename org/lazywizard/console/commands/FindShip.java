@@ -16,6 +16,7 @@ import org.lazywizard.console.Console;
 import org.lazywizard.console.commands.FindItem.PriceData;
 import org.lazywizard.console.commands.FindItem.SortMarketsByDistance;
 
+// FIXME: Update fighter wings to check LPCs
 public class FindShip implements BaseCommand
 {
     @Override

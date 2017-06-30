@@ -6,6 +6,7 @@ Completely rewrote the input system and added a custom console overlay:
  - Uses custom font renderer (please don't use these classes yourself, wait for
    their eventual inclusion in LazyLib once the code is stable and bug-free)
 Most console settings are now chosen in-game, persistent between updates
+Sounds are no longer played when a command encounters an error
 Fixed control+backspace to delete the current word instead of last word in input
 Minor update to typo correction, please let me know if it's more/less accurate
 If exception stack traces are enabled, show source jars in exception details
@@ -69,6 +70,10 @@ Changes to existing commands:
    - Still needs some tweaking for officer numbers and levels
  - Traitor now works properly when used on drones
 ... plus a ridiculous amount of polish on nearly everything
+
+
+--------------------------------------------------------------------------------
+
 
  2.7b (March 16, 2017)
 =======================
