@@ -15,8 +15,7 @@ import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.GL_TEXTURE_BASE_LEVEL
 import org.lwjgl.opengl.GL12.GL_TEXTURE_MAX_LEVEL
-import org.lwjgl.opengl.GL13.GL_TEXTURE0
-import org.lwjgl.opengl.GL13.glActiveTexture
+import org.lwjgl.opengl.GL13.*
 import java.util.*
 
 private val Log = Logger.getLogger(Console::class.java)
@@ -51,15 +50,15 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
 
     fun show() {
         // Save current screen image to texture
-        val buffer = BufferUtils.createByteBuffer(width.toInt() * height.toInt() * 4)
-        glReadPixels(0, 0, width.toInt(), height.toInt(), GL_RGBA, GL_UNSIGNED_BYTE, buffer)
+        val buffer = BufferUtils.createByteBuffer(width.toInt() * height.toInt() * 3)
+        glReadPixels(0, 0, width.toInt(), height.toInt(), GL_RGB, GL_UNSIGNED_BYTE, buffer)
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, bgTextureId)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width.toInt(), height.toInt(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB, width.toInt(), height.toInt(), 0, GL_RGB, GL_UNSIGNED_BYTE, buffer)
         buffer.clear()
 
         // Show overlay until closed by player
