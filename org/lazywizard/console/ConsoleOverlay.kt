@@ -21,8 +21,8 @@ import java.util.*
 
 private val Log = Logger.getLogger(Console::class.java)
 private var font = loadFont(Console.getSettings().font)
-private val width = Display.getDisplayMode().width * Display.getPixelScaleFactor()
-private val height = Display.getDisplayMode().height * Display.getPixelScaleFactor()
+private val width = Display.getWidth() * Display.getPixelScaleFactor()
+private val height = Display.getHeight() * Display.getPixelScaleFactor()
 private var history = ""
 
 @Throws(FontException::class)
@@ -51,7 +51,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
 
     fun show() {
         // Save current screen image to texture
-        val buffer = BufferUtils.createByteBuffer(width.toInt() * height.toInt() * Display.getDisplayMode().bitsPerPixel / 8)
+        val buffer = BufferUtils.createByteBuffer(width.toInt() * height.toInt() * 4)
         glReadPixels(0, 0, width.toInt(), height.toInt(), GL_RGBA, GL_UNSIGNED_BYTE, buffer)
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, bgTextureId)
