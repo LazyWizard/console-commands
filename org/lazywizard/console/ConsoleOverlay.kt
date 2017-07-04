@@ -15,7 +15,8 @@ import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.GL_TEXTURE_BASE_LEVEL
 import org.lwjgl.opengl.GL12.GL_TEXTURE_MAX_LEVEL
-import org.lwjgl.opengl.GL13.*
+import org.lwjgl.opengl.GL13.GL_TEXTURE0
+import org.lwjgl.opengl.GL13.glActiveTexture
 import java.util.*
 
 private val Log = Logger.getLogger(Console::class.java)
@@ -67,7 +68,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
         while (isOpen && !Display.isCloseRequested()) {
             Display.update()
             checkInput()
-            advance(0.025f) // HIGHLY unlikely we won't hit the 40 FPS target
+            advance(0.025f) // It's HIGHLY unlikely that we won't hit the 40 FPS target
             render()
             Display.sync(40)
         }
