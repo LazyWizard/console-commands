@@ -23,10 +23,18 @@ public class AddOrdnancePoints implements BaseCommand
 
         if ("clear".equalsIgnoreCase(args))
         {
-            Global.getSector().getPlayerPerson().getStats().getShipOrdnancePointBonus()
-                    .unmodifyFlat(BONUS_ID);
+            final StatBonus ordnance = Global.getSector().getPlayerPerson().getStats().getShipOrdnancePointBonus();
+            ordnance.unmodifyFlat(BONUS_ID);
+            ordnance.unmodifyPercent(BONUS_ID);
             Console.showMessage("Ordnance point bonus removed.");
             return CommandResult.SUCCESS;
+        }
+
+        boolean percentageBonus = false;
+        if (args.endsWith("%"))
+        {
+            percentageBonus = true;
+            args = args.substring(0, args.length() - 1);
         }
 
         if (!isInteger(args))
@@ -37,15 +45,16 @@ public class AddOrdnancePoints implements BaseCommand
 
         int amount = Integer.parseInt(args);
         final StatBonus ordnance = Global.getSector().getPlayerPerson().getStats().getShipOrdnancePointBonus();
-        final MutableStat.StatMod bonus = ordnance.getFlatBonus(BONUS_ID);
+        final MutableStat.StatMod bonus = (percentageBonus ? ordnance.getPercentBonus(BONUS_ID) : ordnance.getFlatBonus(BONUS_ID));
         if (bonus != null)
         {
             amount += bonus.value;
         }
 
-        ordnance.modifyFlat(BONUS_ID, amount, "Console");
-        Console.showMessage("All ships in your fleet now have " + format(amount)
-                + " extra ordnance points.\nUse 'addordnancepoints clear' to remove.");
+        if (percentageBonus) ordnance.modifyPercent(BONUS_ID, amount, "Console");
+        else ordnance.modifyFlat(BONUS_ID, amount, "Console");
+        Console.showMessage("All ships in your fleet now have " + format(amount) + (percentageBonus ? "%" : "")
+                + " extra ordnance points.\nUse 'addordnancepoints clear' to remove this bonus.");
         return CommandResult.SUCCESS;
     }
 }
