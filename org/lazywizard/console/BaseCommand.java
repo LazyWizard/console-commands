@@ -8,7 +8,9 @@ import com.fs.starfarer.api.combat.CombatEngineAPI;
  * <p>
  * @author LazyWizard
  * @since 2.0
+ * @deprecated Inherit {@link ConsoleCommand} instead.
  */
+@Deprecated
 public interface BaseCommand
 {
     /**
@@ -131,7 +133,8 @@ public interface BaseCommand
      * Called when the player enters your command.
      *
      * @param args    The arguments passed into this command. Will be an empty
-     *                string if no arguments were entered.
+     *                string if no arguments were entered. Trailing whitespace
+     *                is trimmed automatically.
      * @param context Where this command was called from (campaign, combat,
      *                mission, simulation, etc).
      * <p>
