@@ -23,9 +23,7 @@ public class AddOrdnancePoints implements BaseCommand
 
         if ("clear".equalsIgnoreCase(args))
         {
-            final StatBonus ordnance = Global.getSector().getPlayerPerson().getStats().getShipOrdnancePointBonus();
-            ordnance.unmodifyFlat(BONUS_ID);
-            ordnance.unmodifyPercent(BONUS_ID);
+            Global.getSector().getPlayerPerson().getStats().getShipOrdnancePointBonus().unmodify(BONUS_ID);
             Console.showMessage("Ordnance point bonus removed.");
             return CommandResult.SUCCESS;
         }

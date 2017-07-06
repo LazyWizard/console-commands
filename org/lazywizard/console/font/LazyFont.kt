@@ -315,6 +315,7 @@ class LazyFont(val textureId: Int, val baseHeight: Float, val textureWidth: Floa
 
         fun dispose() {
             if (!disposed) releaseResources()
+            disposed = true
         }
 
         fun finalize() {

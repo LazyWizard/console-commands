@@ -1,11 +1,15 @@
 /===========================\
 | Main Tasks for v3.0 final |
 \===========================/
-TODO:
  - Release new LazyLib version w/ Kotlin dependencies
  - Add scrollback support to new overlay
  - Make settings persistent between updates, set in-game
  - Finish testing and polish pass on all existing commands
+
+/===================================\
+| Low-Priority Tasks for v3.0 final |
+\===================================/
+ - Implement tab autocompletion for command arguments
  - Various minor todo items scattered through the code
 
 

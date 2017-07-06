@@ -61,6 +61,7 @@ SetHome,org.lazywizard.console.commands.SetHome,"core,campaign",sethome [optiona
 SetRelation,org.lazywizard.console.commands.SetRelationship,"core,campaign",setrelation all|<faction> [optionalTowardsFaction] <amount>,"Sets the relationship between two factions to the given number. If no second faction is entered, relationship with the player is affected. Arguments range from -100 to 100."
 ShowBounds,org.lazywizard.console.commands.ShowBounds,"core,combat",showbounds (no arguments),"Toggles rendering of collision bounds, collision radius, and shield radius (if applicable) for all ships on the battle map."
 ShowLoc,org.lazywizard.console.commands.ShowLoc,"core,campaign,combat",showloc (no arguments),"Shows the coordinates of your current location."
+ShowSettings,org.lazywizard.console.commands.ShowSettings,"core,console,campaign",showsettings (no arguments),"Reopens the initial console settings menu."
 SourceOf,org.lazywizard.console.commands.SourceOf,"core,console",sourceof <command>|all,"Shows what mod a specific command came from, or all commands' sources if all is entered."
 SpawnFleet,org.lazywizard.console.commands.SpawnFleet,"core,campaign",spawnfleet <faction> <totalFP> [optionalName],"Spawns a fleet of the given size and affiliated with the specified faction near the player character."
 Status,org.lazywizard.console.commands.Status,"core,console",status [detailed],"Shows some debug information about the currently loaded commands. Adding detailed as an argument will provide much more information."

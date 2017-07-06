@@ -20,14 +20,14 @@ import org.lwjgl.opengl.GL13.glActiveTexture
 import java.util.*
 
 private val Log = Logger.getLogger(Console::class.java)
-private var font = loadFont(Console.getSettings().font)
+private var font = loadFont(Console.getFont())
 private val width = Display.getWidth() * Display.getPixelScaleFactor()
 private val height = Display.getHeight() * Display.getPixelScaleFactor()
 private var history = ""
 
 @Throws(FontException::class)
 fun reloadFont() {
-    font = loadFont(Console.getSettings().font)
+    font = loadFont(Console.getFont())
 }
 
 fun show(context: CommandContext) = with(ConsoleOverlayInternal(context)) { show(); dispose() }
@@ -63,7 +63,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
         buffer.clear()
 
         // Show overlay until closed by player
-        // FIXME: Alt+F4 support is wonky
+        // FIXME: Alt+F4 only closes overlay, not game
         isOpen = true
         while (isOpen && !Display.isCloseRequested()) {
             Display.update()

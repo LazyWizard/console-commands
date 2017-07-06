@@ -12,11 +12,9 @@ import org.json.JSONObject;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommandStore.StoredCommand;
-import org.lazywizard.lazylib.JSONUtils;
 
 import java.io.IOException;
 import java.security.CodeSource;
-import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -33,10 +31,9 @@ import java.util.regex.Pattern;
 public class Console
 {
     private static final Logger Log = Global.getLogger(Console.class);
-    private static ConsoleSettings settings;
     // Stores the output of the console until it can be displayed
     private static StringBuilder output = new StringBuilder();
-    private static String lastCommand;
+    private static String lastCommand, font;
 
     /**
      * Forces the console to reload its settings from the settings file.
@@ -50,21 +47,10 @@ public class Console
     public static void reloadSettings() throws IOException, JSONException
     {
         final JSONObject settingsFile = Global.getSettings().loadJSON(CommonStrings.PATH_SETTINGS);
-        settings = new ConsoleSettings(settingsFile.getInt("consoleKey"),
-                settingsFile.getBoolean("requireShift"),
-                settingsFile.getBoolean("requireControl"),
-                settingsFile.getBoolean("requireAlt"),
-                settingsFile.getString("commandSeparator"),
-                settingsFile.getBoolean("showEnteredCommands"),
-                settingsFile.getBoolean("showCursorIndex"),
-                settingsFile.getBoolean("showExceptionDetails"),
-                settingsFile.getDouble("typoCorrectionThreshold"),
-                JSONUtils.toColor(settingsFile.getJSONArray("outputColor")),
-                settingsFile.getString("consoleFont"));
 
-        // Set command persistence between battles
-        //PersistentCommandManager.setCommandPersistence(
-        //        settingsFile.getBoolean("persistentCombatCommands"));
+        // Filepath of the font the console overlay uses
+        font = settingsFile.getString("consoleFont");
+
         // What level to log console output at
         final Level logLevel = Level.toLevel(settingsFile.getString("consoleLogLevel"), Level.WARN);
         Global.getLogger(Console.class).setLevel(logLevel);
@@ -73,7 +59,12 @@ public class Console
 
     public static ConsoleSettings getSettings()
     {
-        return settings;
+        return ConsoleSettings.INSTANCE;
+    }
+
+    static String getFont()
+    {
+        return font;
     }
 
     static String getLastCommand()
@@ -149,7 +140,7 @@ public class Console
 
         // Add stack trace of Throwable, with a few extra details
         stackTrace.append(ex.toString()).append("\n");
-        if (settings.getShouldShowExceptionStackTraces())
+        if (getSettings().getShouldShowExceptionDetails())
         {
             final ClassLoader cl = Global.getSettings().getScriptClassLoader();
             for (StackTraceElement ste : ex.getStackTrace())
@@ -239,7 +230,7 @@ public class Console
                 return CommandResult.ERROR;
             }
 
-            if (settings.getShouldShowEnteredCommands())
+            if (getSettings().getShouldShowEnteredCommands())
             {
                 showMessage("> " + input);
             }
@@ -282,7 +273,7 @@ public class Console
         {
             // Split the raw input up into the individual commands
             // The command separator is used to separate multiple commands
-            final String separator = Pattern.quote(settings.getCommandSeparator());
+            final String separator = Pattern.quote(getSettings().getCommandSeparator());
             final Set<CommandResult> results = new HashSet<>();
             final Map<String, String> aliases = CommandStore.getAliases();
             worstResult = CommandResult.SUCCESS;
