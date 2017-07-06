@@ -4,7 +4,6 @@ import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
 import org.apache.log4j.Level;
 import org.lazywizard.console.commands.ReloadConsole;
-import org.lwjgl.opengl.Display;
 
 public class ConsoleModPlugin extends BaseModPlugin
 {
