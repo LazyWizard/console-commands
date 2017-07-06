@@ -14,6 +14,7 @@ import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.console.ConsoleSettings;
+import org.lazywizard.console.ConsoleSettings.Keystroke;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
@@ -61,7 +62,9 @@ public class ShowSettings implements BaseCommand
             INPUT,
             COLOR,
             DISPLAY,
-            MISC
+            MISC,
+            LISTEN_KEYSTROKE,
+            LISTEN_SEPARATOR
         }
 
         private enum Option
@@ -86,8 +89,7 @@ public class ShowSettings implements BaseCommand
         {
             this.dialog = dialog;
             options = dialog.getOptionPanel();
-            dialog.setPromptText("");
-            dialog.hideTextPanel();
+            dialog.getTextPanel().addParagraph(""); // TODO: Provide instructions
 
             final Color outputColor = settings.getOutputColor();
             r = outputColor.getRed();
@@ -106,13 +108,14 @@ public class ShowSettings implements BaseCommand
         {
             options.clearOptions();
             dialog.getVisualPanel().fadeVisualOut();
+            dialog.setPromptText("");
             final float barWidth = 510f;
 
+            // TODO: Add tooltips where applicable
             switch (menu)
             {
                 case MAIN:
                     options.addOption("Input settings", Menu.INPUT);
-                    options.setEnabled(Menu.INPUT, false); // TODO
                     options.addOption("Color settings", Menu.COLOR);
                     options.addOption("Display settings", Menu.DISPLAY);
                     options.addOption("Misc settings", Menu.MISC);
@@ -120,7 +123,18 @@ public class ShowSettings implements BaseCommand
                     options.setShortcut(Option.EXIT, Keyboard.KEY_ESCAPE, false, false, false, true);
                     break;
                 case INPUT:
-                    // TODO
+                    options.addOption("Set console overlay key", Menu.LISTEN_KEYSTROKE, null);
+                    options.addOption("Set command separator", Menu.LISTEN_SEPARATOR, null);
+                    break;
+                case LISTEN_KEYSTROKE:
+                    dialog.getTextPanel().addParagraph("Press the key combination you would like to summon the console with." +
+                            " Currently the console is summoned with " + settings.getConsoleSummonKey() + ".");
+                    dialog.getVisualPanel().showCustomPanel(0f, 0f, new KeyListenerPlugin());
+                    break;
+                case LISTEN_SEPARATOR:
+                    dialog.getTextPanel().addParagraph("Enter the character you would like to separate multiple commands with." +
+                            " Currently multiple commands are separated with '" + settings.getCommandSeparator() + "'.");
+                    dialog.getVisualPanel().showCustomPanel(0f, 0f, new KeyListenerPlugin());
                     break;
                 case COLOR:
                     // Console overlay font color
@@ -195,9 +209,6 @@ public class ShowSettings implements BaseCommand
             settings.setShouldShowCursorIndex(showIndex);
             settings.setShouldShowEnteredCommands(showCommands);
             settings.setShouldShowExceptionDetails(showExceptions);
-
-            //settings.setCommandSeparator(); TODO
-            //settings.setConsoleSummonKey(); TODO
         }
 
         @Override
@@ -280,6 +291,69 @@ public class ShowSettings implements BaseCommand
             @Override
             public void processInput(List<InputEventAPI> events)
             {
+            }
+        }
+
+        private class KeyListenerPlugin implements CustomUIPanelPlugin
+        {
+            @Override
+            public void positionChanged(PositionAPI position)
+            {
+            }
+
+            @Override
+            public void render(float alphaMult)
+            {
+            }
+
+            @Override
+            public void advance(float amount)
+            {
+            }
+
+            @Override
+            public void processInput(List<InputEventAPI> events)
+            {
+                for (InputEventAPI event : events)
+                {
+                    if (event.isConsumed() || !event.isKeyDownEvent()) continue;
+
+                    final int keyCode = event.getEventValue();
+                    if (keyCode == Keyboard.KEY_ESCAPE)
+                    {
+                        goToMenu(Menu.INPUT);
+                        event.consume();
+                        return;
+                    }
+
+                    // Block certain keys from being used to summon the console
+                    if (keyCode == Keyboard.KEY_LSHIFT || keyCode == Keyboard.KEY_RSHIFT
+                            || keyCode == Keyboard.KEY_LMETA || keyCode == Keyboard.KEY_RMETA
+                            || keyCode == Keyboard.KEY_LMENU || keyCode == Keyboard.KEY_RMENU
+                            || keyCode == Keyboard.KEY_LCONTROL || keyCode == Keyboard.KEY_RCONTROL
+                            || keyCode == Keyboard.KEY_RETURN)
+                    {
+                        continue;
+                    }
+
+                    if (currentMenu == Menu.LISTEN_KEYSTROKE)
+                    {
+                        settings.setConsoleSummonKey(new Keystroke(keyCode, event.isShiftDown(), event.isCtrlDown(), event.isAltDown()));
+                        dialog.getTextPanel().addParagraph("Console summon key set to " + settings.getConsoleSummonKey());
+                    }
+                    else if (currentMenu == Menu.LISTEN_SEPARATOR)
+                    {
+                        final char keyChar = event.getEventChar();
+                        if (Character.isLetterOrDigit(keyChar)) continue;
+
+                        settings.setCommandSeparator(String.valueOf(keyChar));
+                        dialog.getTextPanel().addParagraph("Command separator set to " + settings.getCommandSeparator());
+                    }
+
+                    event.consume();
+                    goToMenu(Menu.INPUT);
+                    return;
+                }
             }
         }
     }
