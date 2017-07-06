@@ -8,7 +8,7 @@ import kotlin.reflect.KProperty
 object ConsoleSettings {
     private val prefs = Preferences.userNodeForPackage(Console::class.java)
     var commandSeparator by StringPref("commandSeparator", ";")
-    var maxScrollback by IntPref("maxScrollback", 9999)
+    var maxScrollback by IntPref("maxScrollback", 10_000)
     var typoCorrectionThreshold by FloatPref("typoCorrectionThreshold", 0.9f)
     var shouldShowEnteredCommands by BoolPref("showEnteredCommands", true)
     var shouldShowCursorIndex by BoolPref("showCursorIndex", false)
@@ -17,8 +17,7 @@ object ConsoleSettings {
     var consoleSummonKey by KeystrokePref("consoleKeystroke",
             Keystroke(Keyboard.getKeyIndex("BACK"), false, true, false))
 
-    fun resetToDefaults()
-    {
+    fun resetToDefaults() {
         prefs.clear()
     }
 
@@ -63,34 +62,38 @@ object ConsoleSettings {
     }
 
     private class ColorPref(val key: String, default: Color) {
-        private var field = Color(prefs.getInt("${key}R", default.red),
-                prefs.getInt("${key}G", default.green),
-                prefs.getInt("${key}B", default.blue),
-                prefs.getInt("${key}A", default.alpha))
+        private var field = parseColor(prefs.get(key, asString(default)))
+
+        private fun asString(color: Color): String = "${color.red}|${color.green}|${color.blue}"
+        private fun parseColor(color: String): Color {
+            val components = color.split('|').map { Integer.parseInt(it) }
+            return Color(components[0], components[1], components[2])
+        }
+
 
         operator fun getValue(consoleSettings: ConsoleSettings, property: KProperty<*>): Color = field
         operator fun setValue(consoleSettings: ConsoleSettings, property: KProperty<*>, value: Color) {
             field = value
-            prefs.putInt("${key}R", value.red)
-            prefs.putInt("${key}G", value.green)
-            prefs.putInt("${key}B", value.blue)
-            prefs.putInt("${key}A", value.alpha)
+            prefs.put(key, asString(value))
         }
     }
 
     private class KeystrokePref(val key: String, default: Keystroke) {
-        private var field = Keystroke(prefs.getInt("${key}Key", default.key),
-                prefs.getBoolean("${key}RequiresShift", default.requiresShift),
-                prefs.getBoolean("${key}RequiresControl", default.requiresControl),
-                prefs.getBoolean("${key}RequiresAlt", default.requiresAlt))
+        private var field = parseKeystroke(prefs.get(key, asString(default)))
+
+        private fun asString(keystroke: Keystroke) = "${keystroke.key}|${keystroke.requiresShift}|${keystroke.requiresControl}|${keystroke.requiresAlt}"
+        private fun parseKeystroke(keystroke: String): Keystroke {
+            val components = keystroke.split('|')
+            return Keystroke(Integer.parseInt(components[0]),
+                    java.lang.Boolean.parseBoolean(components[1]),
+                    java.lang.Boolean.parseBoolean(components[2]),
+                    java.lang.Boolean.parseBoolean(components[3]))
+        }
 
         operator fun getValue(consoleSettings: ConsoleSettings, property: KProperty<*>): Keystroke = field
         operator fun setValue(consoleSettings: ConsoleSettings, property: KProperty<*>, value: Keystroke) {
             field = value
-            prefs.putInt("${key}Key", value.key)
-            prefs.putBoolean("${key}RequiresShift", value.requiresShift)
-            prefs.putBoolean("${key}RequiresControl", value.requiresControl)
-            prefs.putBoolean("${key}RequiresAlt", value.requiresAlt)
+            prefs.put(key, asString(value))
         }
     }
 

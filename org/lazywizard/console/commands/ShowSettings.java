@@ -109,7 +109,7 @@ public class ShowSettings implements BaseCommand
             options.clearOptions();
             dialog.getVisualPanel().fadeVisualOut();
             dialog.setPromptText("");
-            final float barWidth = 510f;
+            final float barWidth = 800f;
 
             // TODO: Add tooltips where applicable
             switch (menu)
@@ -226,9 +226,10 @@ public class ShowSettings implements BaseCommand
             }
             else if (currentMenu == Menu.MISC)
             {
-                scrollback = ((int) (options.getSelectorValue(Selector.MAX_SCROLLBACK) / 100f)) * 100;
+                scrollback = Math.round(options.getSelectorValue(Selector.MAX_SCROLLBACK) / 100f) * 100;
                 options.setSelectorValue(Selector.MAX_SCROLLBACK, scrollback);
-                threshold = options.getSelectorValue(Selector.TYPO_THRESHOLD);
+                threshold = Math.round(options.getSelectorValue(Selector.TYPO_THRESHOLD) * 100f) / 100f;
+                options.setSelectorValue(Selector.TYPO_THRESHOLD, threshold);
             }
         }
 
