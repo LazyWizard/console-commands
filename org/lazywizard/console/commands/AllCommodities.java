@@ -55,7 +55,7 @@ public class AllCommodities implements BaseCommand
         for (String id : Global.getSector().getEconomy().getAllCommodityIds())
         {
             int amount = (int) (stackSize - target.getQuantity(CargoItemType.RESOURCES, id));
-            if (stackSize > 0)
+            if (amount > 0)
             {
                 target.addItems(CargoItemType.RESOURCES, id, amount);
                 total += amount;

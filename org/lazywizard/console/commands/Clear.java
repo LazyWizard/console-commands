@@ -5,7 +5,6 @@ import com.fs.starfarer.api.campaign.InteractionDialogAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
-import org.lazywizard.console.ConsoleOverlay;
 
 // TODO: Update for new overlay
 public class Clear implements BaseCommand

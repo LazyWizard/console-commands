@@ -17,9 +17,7 @@ object ConsoleSettings {
     var consoleSummonKey by KeystrokePref("consoleKeystroke",
             Keystroke(Keyboard.getKeyIndex("BACK"), false, true, false))
 
-    fun resetToDefaults() {
-        prefs.clear()
-    }
+    fun resetToDefaults() = prefs.clear()
 
     private class StringPref(val key: String, default: String) {
         private var field = prefs.get(key, default)
