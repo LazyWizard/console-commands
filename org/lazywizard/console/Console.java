@@ -285,7 +285,8 @@ public class Console
                     // Whole-line alias support
                     if (aliases.containsKey(input.toLowerCase()))
                     {
-                        for (String input2 : aliases.get(input.toLowerCase()).split(separator))
+                        for (String input2 : aliases.get(input.toLowerCase())
+                                .replace(";", getSettings().getCommandSeparator()).split(separator))
                         {
                             input2 = input2.trim();
                             if (!input2.isEmpty())

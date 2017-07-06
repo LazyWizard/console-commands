@@ -46,9 +46,9 @@ public class CommandStore
     {
         storedCommands.clear();
         tags.clear();
-        JSONArray commandData = Global.getSettings().getMergedSpreadsheetDataForMod(
+        final JSONArray commandData = Global.getSettings().getMergedSpreadsheetDataForMod(
                 "command", CommonStrings.PATH_CSV, CommonStrings.MOD_ID);
-        ClassLoader loader = Global.getSettings().getScriptClassLoader();
+        final ClassLoader loader = Global.getSettings().getScriptClassLoader();
         for (int x = 0; x < commandData.length(); x++)
         {
             // Defined here so we can use them in the catch block
@@ -58,7 +58,7 @@ public class CommandStore
 
             try
             {
-                JSONObject row = commandData.getJSONObject(x);
+                final JSONObject row = commandData.getJSONObject(x);
                 commandName = row.getString("command");
 
                 // Skip empty rows
@@ -72,7 +72,7 @@ public class CommandStore
                 commandSource = row.getString("fs_rowSource");
 
                 // Check if the class is valid
-                Class commandClass = loader.loadClass(commandPath);
+                final Class commandClass = loader.loadClass(commandPath);
                 if (!BaseCommand.class.isAssignableFrom(commandClass))
                 {
                     throw new Exception(commandClass.getCanonicalName()
@@ -80,13 +80,13 @@ public class CommandStore
                 }
 
                 // Class is valid, start building command info
-                String commandSyntax = row.optString("syntax", "");
-                String commandHelp = row.optString("help", "")
+                final String commandSyntax = row.optString("syntax", "");
+                final String commandHelp = row.optString("help", "")
                         .replace("\\n", "\n"); // Newline support
 
                 // Generate the tag list
-                String[] rawTags = row.optString("tags", "").split(",");
-                List<String> commandTags = new ArrayList<>();
+                final String[] rawTags = row.optString("tags", "").split(",");
+                final List<String> commandTags = new ArrayList<>();
                 for (String tag : rawTags)
                 {
                     tag = tag.toLowerCase().trim();
@@ -123,15 +123,15 @@ public class CommandStore
 
         // Populate alias mapping
         aliases.clear();
-        JSONArray aliasData = Global.getSettings().getMergedSpreadsheetDataForMod(
+        final JSONArray aliasData = Global.getSettings().getMergedSpreadsheetDataForMod(
                 "alias", CommonStrings.PATH_ALIAS, CommonStrings.MOD_ID);
         for (int x = 0; x < aliasData.length(); x++)
         {
             try
             {
-                JSONObject row = aliasData.getJSONObject(x);
-                String alias = row.getString("alias");
-                String command = row.getString("command");
+                final JSONObject row = aliasData.getJSONObject(x);
+                final String alias = row.getString("alias");
+                final String command = row.getString("command");
 
                 aliases.put(alias.toLowerCase(), command);
             }
@@ -153,7 +153,7 @@ public class CommandStore
      */
     public static List<String> getLoadedCommands()
     {
-        List<String> commands = new ArrayList<>(storedCommands.size());
+        final List<String> commands = new ArrayList<>(storedCommands.size());
         for (StoredCommand tmp : storedCommands.values())
         {
             commands.add(tmp.getName());
@@ -202,7 +202,7 @@ public class CommandStore
     {
         tag = tag.toLowerCase();
 
-        List<String> commands = new ArrayList<>();
+        final List<String> commands = new ArrayList<>();
         for (StoredCommand tmp : storedCommands.values())
         {
             if (tmp.getTags().contains(tag))
@@ -248,6 +248,7 @@ public class CommandStore
         private final String name, syntax, help, source;
         private final List<String> tags;
 
+        // TODO: This can be done through the API now
         private static String filterModPath(String fullPath)
         {
             try
