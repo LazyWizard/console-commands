@@ -8,55 +8,61 @@ import kotlin.reflect.KProperty
 object ConsoleSettings {
     private val prefs = Preferences.userNodeForPackage(Console::class.java)
     var commandSeparator by StringPref("commandSeparator", ";")
+    var maxScrollback by IntPref("maxScrollback", 9999)
     var typoCorrectionThreshold by FloatPref("typoCorrectionThreshold", 0.9f)
     var shouldShowEnteredCommands by BoolPref("showEnteredCommands", true)
     var shouldShowCursorIndex by BoolPref("showCursorIndex", false)
     var shouldShowExceptionDetails by BoolPref("showExceptionDetails", false)
     var outputColor by ColorPref("outputColor", Color(255, 255, 0))
-    val consoleSummonKey by KeyStrokePref("consoleKeyStroke",
-            KeyStroke(Keyboard.getKeyIndex("BACK"), false, true, false))
+    var consoleSummonKey by KeystrokePref("consoleKeystroke",
+            Keystroke(Keyboard.getKeyIndex("BACK"), false, true, false))
 
-    private class StringPref(val key: String, val default: String) {
+    fun resetToDefaults()
+    {
+        prefs.clear()
+    }
+
+    private class StringPref(val key: String, default: String) {
         private var field = prefs.get(key, default)
 
         operator fun getValue(consoleSettings: ConsoleSettings, property: KProperty<*>): String = field
         operator fun setValue(consoleSettings: ConsoleSettings, property: KProperty<*>, value: String) {
-            field = value;
+            field = value
             prefs.put(key, value)
         }
     }
 
-    private class BoolPref(val key: String, val default: Boolean) {
+    private class BoolPref(val key: String, default: Boolean) {
         private var field = prefs.getBoolean(key, default)
 
         operator fun getValue(consoleSettings: ConsoleSettings, property: KProperty<*>): Boolean = field
         operator fun setValue(consoleSettings: ConsoleSettings, property: KProperty<*>, value: Boolean) {
-            field = value;
+            field = value
             prefs.putBoolean(key, value)
         }
     }
 
-    private class IntPref(val key: String, val default: Int) {
+    private class IntPref(val key: String, default: Int) {
         private var field = prefs.getInt(key, default)
 
         operator fun getValue(consoleSettings: ConsoleSettings, property: KProperty<*>): Int = field
         operator fun setValue(consoleSettings: ConsoleSettings, property: KProperty<*>, value: Int) {
-            field = value;
+            field = value
             prefs.putInt(key, value)
         }
     }
 
-    private class FloatPref(val key: String, val default: Float) {
+    private class FloatPref(val key: String, default: Float) {
         private var field = prefs.getFloat(key, default)
 
         operator fun getValue(consoleSettings: ConsoleSettings, property: KProperty<*>): Float = field
         operator fun setValue(consoleSettings: ConsoleSettings, property: KProperty<*>, value: Float) {
-            field = value;
+            field = value
             prefs.putFloat(key, value)
         }
     }
 
-    private class ColorPref(val key: String, val default: Color) {
+    private class ColorPref(val key: String, default: Color) {
         private var field = Color(prefs.getInt("${key}R", default.red),
                 prefs.getInt("${key}G", default.green),
                 prefs.getInt("${key}B", default.blue),
@@ -72,14 +78,14 @@ object ConsoleSettings {
         }
     }
 
-    private class KeyStrokePref(val key: String, val default: KeyStroke) {
-        private var field = KeyStroke(prefs.getInt("${key}Key", default.key),
+    private class KeystrokePref(val key: String, default: Keystroke) {
+        private var field = Keystroke(prefs.getInt("${key}Key", default.key),
                 prefs.getBoolean("${key}RequiresShift", default.requiresShift),
                 prefs.getBoolean("${key}RequiresControl", default.requiresControl),
                 prefs.getBoolean("${key}RequiresAlt", default.requiresAlt))
 
-        operator fun getValue(consoleSettings: ConsoleSettings, property: KProperty<*>): KeyStroke = field
-        operator fun setValue(consoleSettings: ConsoleSettings, property: KProperty<*>, value: KeyStroke) {
+        operator fun getValue(consoleSettings: ConsoleSettings, property: KProperty<*>): Keystroke = field
+        operator fun setValue(consoleSettings: ConsoleSettings, property: KProperty<*>, value: Keystroke) {
             field = value
             prefs.putInt("${key}Key", value.key)
             prefs.putBoolean("${key}RequiresShift", value.requiresShift)
@@ -88,7 +94,7 @@ object ConsoleSettings {
         }
     }
 
-    class KeyStroke(val key: Int, val requiresShift: Boolean, val requiresControl: Boolean, val requiresAlt: Boolean) {
+    class Keystroke(val key: Int, val requiresShift: Boolean, val requiresControl: Boolean, val requiresAlt: Boolean) {
         fun isPressed(): Boolean {
             if (!Keyboard.isKeyDown(key)) return false
 

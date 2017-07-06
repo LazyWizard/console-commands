@@ -25,7 +25,10 @@ New commands:
    wings, weapons and commodities it adds to the game
  - SetCommission, sets the faction the player is commissioned to work for, or
    ends the current commission if "none" is entered as an argument
- - ShowSettings, reopens the initial console settings menu
+ - Settings:
+   - Allows you to change console settings in-game
+   - Entering "reset" as an argument resets console settings to their defaults
+     (only takes effect after closing and re-opening the game)
 Changes to existing commands:
  - All AddX commands will no longer allow you to drop into negative quantities
  - AddCrew:
