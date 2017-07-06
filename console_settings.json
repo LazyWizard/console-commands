@@ -1,37 +1,6 @@
 {
-    # What button to press to summon the console
-    # Key IDs are integers and can be found in the LWJGL documentation here:
-    # http://legacy.lwjgl.org/javadoc/constant-values.html#org.lwjgl.input.Keyboard.KEY_0
-    "consoleKey":14,                  # Default: Backspace (14), Tilde would be 41
-    "requireShift":false,             # Default: false
-    "requireControl":true,            # Default: true
-    "requireAlt":false,               # Default: false
-
     # The path to the bitmap font used by the overlay
     "consoleFont":"graphics/fonts/insignia15LTaa.fnt",
-
-    # Whether combat toggle commands should stay on in subsequent battles
-    "persistentCombatCommands":false, # Unimplemented
-
-    # Whether to display each command before it is executed
-    "showEnteredCommands":true,       # Default: true
-
-    # Whether to show the cursor position in the campaign editor (for debugging)
-    "showCursorIndex":false,          # Default: false
-
-    # If you want to enter multiple commands at once, separate them with the following
-    "commandSeparator":";",           # Default: ;
-
-    # Whether errors that report an exception should show the full stack trace
-    # If set to false, only shows the exception name and message (see starsector.log for trace)
-    "showExceptionDetails":true,     # Default: false
-
-    # How close an argument has to be to a valid ID before the mod assumes
-    # it's a typo and uses that ID instead. Set to 1.0 to disable
-    "typoCorrectionThreshold":0.9,    # Default: 0.9
-
-    # The color of the console output text
-    "outputColor":[255,255,0],        # Default: yellow (255,255,0)
 
     # Valid levels: OFF, FATAL, ERROR, WARN, INFO, DEBUG, ALL
     # INFO and above will save all console output to Starsector.log!

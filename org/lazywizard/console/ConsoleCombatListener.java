@@ -1,46 +1,21 @@
 package org.lazywizard.console;
 
+import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
+import com.fs.starfarer.api.combat.CombatEngineAPI;
+import com.fs.starfarer.api.combat.CombatUIAPI;
+import com.fs.starfarer.api.combat.ShipAPI;
+import com.fs.starfarer.api.input.InputEventAPI;
+import org.lazywizard.console.BaseCommand.CommandContext;
+import org.lazywizard.lazylib.StringUtils;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.combat.*;
-import com.fs.starfarer.api.input.InputEventAPI;
-import org.lazywizard.console.BaseCommand.CommandContext;
-import org.lazywizard.console.ConsoleSettings.KeyStroke;
-import org.lazywizard.lazylib.StringUtils;
 
 public class ConsoleCombatListener extends BaseEveryFrameCombatPlugin implements ConsoleListener
 {
     private CommandContext context;
-
-    //<editor-fold defaultstate="collapsed" desc="Input handling">
-    private static boolean checkInput(List<InputEventAPI> input)
-    {
-        KeyStroke key = Console.getSettings().getConsoleSummonKey();
-
-        for (InputEventAPI event : input)
-        {
-            if (event.isConsumed() || !event.isKeyDownEvent()
-                    || event.getEventValue() != key.getKey())
-            {
-                continue;
-            }
-
-            if ((key.requiresShift() && !event.isShiftDown())
-                    || (key.requiresControl() && !event.isCtrlDown())
-                    || (key.requiresAlt() && !event.isAltDown()))
-            {
-                return false;
-            }
-
-            event.consume();
-            return true;
-        }
-
-        return false;
-    }
-    //</editor-fold>
 
     @Override
     public void advance(float amount, List<InputEventAPI> events)
@@ -56,7 +31,7 @@ public class ConsoleCombatListener extends BaseEveryFrameCombatPlugin implements
         ShipAPI player = engine.getPlayerShip();
         if (player != null && engine.isEntityInPlay(player))
         {
-            if (checkInput(events))
+            if (Console.getSettings().getConsoleSummonKey().isPressed())
             {
                 ConsoleOverlay.show(context);
             }
@@ -101,7 +76,8 @@ public class ConsoleCombatListener extends BaseEveryFrameCombatPlugin implements
 
         final String[] messages = output.split("\n");
         Collections.reverse(Arrays.asList(messages));
-        for (String message : messages) {
+        for (String message : messages)
+        {
             message = StringUtils.wrapString(message, 80);
             ui.addMessage(0, Console.getSettings().getOutputColor(), message);
         }

@@ -36,6 +36,8 @@ Changes to existing commands:
    - Added support for Reckless officers
    - Now allows custom officer names. Updated syntax: AddOfficer
      [optionalPersonality] [optionalLevel] [optionalFaction] [optionalName]
+ - AddOrdnancePoints will grant a percentage bonus instead of flat if the
+   argument ends with %
  - AddShip will redirect to AddWing if a wing ID is entered
  - AddSkillPoints now adds character points, used for both skills and aptitudes
  - AddWing and AllWings properly add LPCs instead of fleet members

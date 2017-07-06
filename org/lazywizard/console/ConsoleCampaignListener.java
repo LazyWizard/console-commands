@@ -2,10 +2,9 @@ package org.lazywizard.console;
 
 import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.CampaignUIAPI;
 import org.lazywizard.console.BaseCommand.CommandContext;
-import org.lazywizard.console.ConsoleSettings.KeyStroke;
 import org.lazywizard.lazylib.StringUtils;
-import org.lwjgl.input.Keyboard;
 
 public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListener
 {
@@ -23,32 +22,6 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
         return true;
     }
 
-    private boolean checkInput()
-    {
-        KeyStroke key = Console.getSettings().getConsoleSummonKey();
-        boolean modPressed = true;
-
-        if (key.requiresShift() && !(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)
-                || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)))
-        {
-            modPressed = false;
-        }
-
-        if (key.requiresControl() && !(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)
-                || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)))
-        {
-            modPressed = false;
-        }
-
-        if (key.requiresAlt() && !(Keyboard.isKeyDown(Keyboard.KEY_LMENU)
-                || Keyboard.isKeyDown(Keyboard.KEY_RMENU)))
-        {
-            modPressed = false;
-        }
-
-        return (modPressed && Keyboard.isKeyDown(key.getKey()));
-    }
-
     @Override
     public void advance(float amount)
     {
@@ -57,7 +30,8 @@ public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListene
             timeUntilNotify -= amount;
         }
 
-        if (checkInput())
+        final CampaignUIAPI ui = Global.getSector().getCampaignUI();
+        if (!ui.isShowingDialog() && !ui.isShowingMenu() && Console.getSettings().getConsoleSummonKey().isPressed())
         {
             ConsoleOverlay.show(getContext());
         }
