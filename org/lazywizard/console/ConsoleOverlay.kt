@@ -80,7 +80,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
     }
 
     fun dispose() {
-        history = scrollback.text.takeLast(9999); scrollback.dispose(); query.dispose(); prompt.dispose(); input.dispose()
+        history = scrollback.text.takeLast(ConsoleSettings.maxScrollback); scrollback.dispose(); query.dispose(); prompt.dispose(); input.dispose()
     }
 
     override fun showOutput(output: String): Boolean {

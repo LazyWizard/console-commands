@@ -360,14 +360,14 @@ public class Console
         @Override
         public boolean runWhilePaused()
         {
-            return false;
+            return true;
         }
 
         @Override
         public void advance(float amount)
         {
             final CampaignUIAPI ui = Global.getSector().getCampaignUI();
-            if (!isDone && !ui.isShowingDialog())
+            if (!isDone && !ui.isShowingDialog() && !ui.isShowingMenu())
             {
                 isDone = true;
 

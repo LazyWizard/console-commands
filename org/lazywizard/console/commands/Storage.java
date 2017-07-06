@@ -16,6 +16,7 @@ import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.campaign.CargoUtils;
 
+// TODO: Automatically move storage to Home if it has an unlocked storage tab
 public class Storage implements BaseCommand
 {
     public static SectorEntityToken getStorageStation()
@@ -156,7 +157,7 @@ public class Storage implements BaseCommand
         }
 
         Console.showDialogOnClose(station);
-        Console.showMessage("Storage will be shown when you next unpause on the campaign map.");
+        Console.showMessage("Storage will be shown when you close the console overlay.");
         return CommandResult.SUCCESS;
     }
 }
