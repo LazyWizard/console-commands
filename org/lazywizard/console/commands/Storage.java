@@ -146,7 +146,9 @@ public class Storage implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        SectorEntityToken station = getStorageStation();
+        // TODO: Add argument support (clear, set?)
+
+        final SectorEntityToken station = getStorageStation();
         if (station == null)
         {
             Console.showMessage(

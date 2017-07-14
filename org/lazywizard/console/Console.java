@@ -152,8 +152,8 @@ public class Console
                     final CodeSource cs = srcClass.getProtectionDomain().getCodeSource();
                     if (cs == null || cs.getLocation() == null)
                     {
-                        // TODO: Determine whether class is core or Janino-compiled
-                        classSource = "core java class or loose script";
+                        // TODO: Determine whether class is core or Janino-compiled (may be impossible)
+                        classSource = "core Java or loose script";
                     }
                     else
                     {
@@ -169,8 +169,7 @@ public class Console
                     classSource = "unknown class";
                 }
 
-                stackTrace.append("   at ").append(ste.toString())
-                        .append("\n      [").append(classSource).append("]\n");
+                stackTrace.append("   [").append(classSource).append("]   at ").append(ste.toString()).append("\n");
             }
         }
         else
