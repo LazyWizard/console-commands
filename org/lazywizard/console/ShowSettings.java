@@ -1,4 +1,4 @@
-package org.lazywizard.console.commands;
+package org.lazywizard.console;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
@@ -7,19 +7,14 @@ import com.fs.starfarer.api.combat.EngagementResultAPI;
 import com.fs.starfarer.api.graphics.PositionAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.ui.ValueDisplayMode;
-import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.CommonStrings;
-import org.lazywizard.console.Console;
-import org.lazywizard.console.ConsoleSettings;
 import org.lazywizard.console.ConsoleSettings.Keystroke;
+import org.lazywizard.console.font.LazyFont.DrawableString;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
 import java.awt.*;
 import java.util.List;
 import java.util.Map;
-
-import static org.lwjgl.opengl.GL11.*;
 
 public class ShowSettings implements BaseCommand
 {
@@ -157,7 +152,7 @@ public class ShowSettings implements BaseCommand
                     options.addSelector("Output Color (blue)", Selector.COLOR_B, Color.BLUE, barWidth, 150f, 0f, 255f, ValueDisplayMode.X_OVER_Y_NO_SPACES,
                             "The green component of the overlay's text color.");
                     options.setSelectorValue(Selector.COLOR_B, blue);
-                    options.addOption("Test current color", Option.TEST_COLOR, "Prints an example of the current color.");
+                    options.addOption("Print current color", Option.TEST_COLOR, "Prints an example of the current color for easier comparisons.");
                     dialog.getVisualPanel().showCustomPanel(50f, 50f, new ColorDisplayPlugin());
                     break;
                 case DISPLAY:
@@ -303,6 +298,10 @@ public class ShowSettings implements BaseCommand
         private class ColorDisplayPlugin extends BaseUIPlugin
         {
             private PositionAPI pos;
+            private DrawableString testString = Console.getFont().createText(
+                    "This is what the console's text would\n" +
+                            "look like with the current settings.",
+                    Console.getSettings().getOutputColor(), Console.getFont().getBaseHeight(), Float.MAX_VALUE, Float.MAX_VALUE);
 
             @Override
             public void positionChanged(PositionAPI position)
@@ -315,16 +314,8 @@ public class ShowSettings implements BaseCommand
             {
                 if (pos == null) return;
 
-                // TODO: Replace with sprite text
-                glDisable(GL_TEXTURE_2D);
-                glEnable(GL_BLEND);
-                glColor3ub((byte) red, (byte) green, (byte) blue);
-                glBegin(GL_QUADS);
-                glVertex2f(pos.getX(), pos.getY());
-                glVertex2f(pos.getX() + pos.getWidth(), pos.getY());
-                glVertex2f(pos.getX() + pos.getWidth(), pos.getY() + pos.getHeight());
-                glVertex2f(pos.getX(), pos.getY() + pos.getHeight());
-                glEnd();
+                testString.setColor(new Color(red, green, blue));
+                testString.draw(pos.getX(), pos.getY());
             }
         }
 

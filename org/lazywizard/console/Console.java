@@ -12,6 +12,9 @@ import org.json.JSONObject;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommandStore.StoredCommand;
+import org.lazywizard.console.font.FontException;
+import org.lazywizard.console.font.FontLoader;
+import org.lazywizard.console.font.LazyFont;
 
 import java.io.IOException;
 import java.security.CodeSource;
@@ -31,9 +34,10 @@ import java.util.regex.Pattern;
 public class Console
 {
     private static final Logger Log = Global.getLogger(Console.class);
+    private static LazyFont font;
     // Stores the output of the console until it can be displayed
     private static StringBuilder output = new StringBuilder();
-    private static String lastCommand, font;
+    private static String lastCommand;
 
     /**
      * Forces the console to reload its settings from the settings file.
@@ -48,8 +52,15 @@ public class Console
     {
         final JSONObject settingsFile = Global.getSettings().loadJSON(CommonStrings.PATH_SETTINGS);
 
-        // Filepath of the font the console overlay uses
-        font = settingsFile.getString("consoleFont");
+        // The sprite font used by the console overlay
+        try
+        {
+            font = FontLoader.loadFont(settingsFile.getString("consoleFont"));
+        }
+        catch (FontException ex)
+        {
+            throw new RuntimeException("Failed to load sprite font!", ex);
+        }
 
         // What level to log console output at
         final Level logLevel = Level.toLevel(settingsFile.getString("consoleLogLevel"), Level.WARN);
@@ -62,7 +73,7 @@ public class Console
         return ConsoleSettings.INSTANCE;
     }
 
-    static String getFont()
+    static LazyFont getFont()
     {
         return font;
     }

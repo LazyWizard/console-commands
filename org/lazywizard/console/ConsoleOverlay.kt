@@ -5,8 +5,6 @@ package org.lazywizard.console
 import com.fs.starfarer.api.Global
 import org.apache.log4j.Logger
 import org.lazywizard.console.BaseCommand.CommandContext
-import org.lazywizard.console.font.FontException
-import org.lazywizard.console.font.loadFont
 import org.lazywizard.lazylib.StringUtils
 import org.lwjgl.BufferUtils
 import org.lwjgl.Sys
@@ -25,15 +23,9 @@ import java.util.*
 
 
 private val Log = Logger.getLogger(Console::class.java)
-private var font = loadFont(Console.getFont())
 private val width = Display.getWidth() * Display.getPixelScaleFactor()
 private val height = Display.getHeight() * Display.getPixelScaleFactor()
 private var history = ""
-
-@Throws(FontException::class)
-fun reloadFont() {
-    font = loadFont(Console.getFont())
-}
 
 fun show(context: CommandContext) = with(ConsoleOverlayInternal(context)) { show(); dispose() }
 
@@ -43,6 +35,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
     private val bgTextureId = glGenTextures()
     private val BYTE_FORMAT = DecimalFormat("#,##0.#")
     private val memory = ManagementFactory.getMemoryMXBean()
+    private val font = Console.getFont()
     private val scrollback = font.createText(text = history, color = Console.getSettings().outputColor, maxWidth = width - 60f)
     private val query = font.createText(text = CommonStrings.INPUT_QUERY, color = Console.getSettings().outputColor.darker(), maxWidth = width, maxHeight = 30f)
     private val prompt = font.createText(text = "> ", color = Console.getSettings().outputColor.darker(), maxWidth = width, maxHeight = 30f)
@@ -118,21 +111,21 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
 
     override fun getContext() = context
 
+    // Based on this StackOverflow answer: https://stackoverflow.com/a/5599842
+    private fun asString(size: Long): String {
+        if (size <= 0) return "0"
+        val units = arrayOf("B", "kB", "MB", "GB", "TB")
+        val digitGroups = (Math.log10(size.toDouble()) / Math.log10(1024.0)).toInt()
+        val digits = size / Math.pow(1024.0, digitGroups.toDouble())
+        return "${BYTE_FORMAT.format(digits)} ${units[digitGroups]}"
+    }
+
+    private fun asString(usage: MemoryUsage): String = with(usage) {
+        val percent = DecimalFormat.getPercentInstance().format(used / Math.max(max, committed).toDouble())
+        "$percent (${asString(used)}/${asString(Math.max(max, committed))})"
+    }
+
     private fun getMemText(): String {
-        // Based on this StackOverflow answer: https://stackoverflow.com/a/5599842
-        fun asString(size: Long): String {
-            if (size <= 0) return "0"
-            val units = arrayOf("B", "kB", "MB", "GB", "TB")
-            val digitGroups = (Math.log10(size.toDouble()) / Math.log10(1024.0)).toInt()
-            val digits = size / Math.pow(1024.0, digitGroups.toDouble())
-            return "${BYTE_FORMAT.format(digits)} ${units[digitGroups]}"
-        }
-
-        fun asString(usage: MemoryUsage): String = with(usage) {
-            val percent = DecimalFormat.getPercentInstance().format(used / Math.max(max, committed).toDouble())
-            "$percent (${asString(used)}/${asString(Math.max(max, committed))})"
-        }
-
         return "Memory used: ${asString(memory.heapMemoryUsage)}   |   Non-heap: ${asString(memory.nonHeapMemoryUsage)}"
     }
 
