@@ -2,6 +2,7 @@
 
 package org.lazywizard.console
 
+import com.fs.starfarer.api.Global
 import org.apache.log4j.Logger
 import org.lazywizard.console.BaseCommand.CommandContext
 import org.lazywizard.console.font.FontException
@@ -17,7 +18,11 @@ import org.lwjgl.opengl.GL12.GL_TEXTURE_BASE_LEVEL
 import org.lwjgl.opengl.GL12.GL_TEXTURE_MAX_LEVEL
 import org.lwjgl.opengl.GL13.GL_TEXTURE0
 import org.lwjgl.opengl.GL13.glActiveTexture
+import java.lang.management.ManagementFactory
+import java.lang.management.MemoryUsage
+import java.text.DecimalFormat
 import java.util.*
+
 
 private val Log = Logger.getLogger(Console::class.java)
 private var font = loadFont(Console.getFont())
@@ -36,10 +41,14 @@ private const val CURSOR_BLINK_SPEED = 0.8f
 
 private class ConsoleOverlayInternal(private val context: CommandContext) : ConsoleListener {
     private val bgTextureId = glGenTextures()
+    private val BYTE_FORMAT = DecimalFormat("#,##0.#")
+    private val memory = ManagementFactory.getMemoryMXBean()
     private val scrollback = font.createText(text = history, color = Console.getSettings().outputColor, maxWidth = width - 60f)
     private val query = font.createText(text = CommonStrings.INPUT_QUERY, color = Console.getSettings().outputColor.darker(), maxWidth = width, maxHeight = 30f)
     private val prompt = font.createText(text = "> ", color = Console.getSettings().outputColor.darker(), maxWidth = width, maxHeight = 30f)
     private val input = font.createText(text = "", color = Console.getSettings().outputColor, maxWidth = width - prompt.width, maxHeight = 45f)
+    private val mem = font.createText(text = getMemText(), color = Console.getSettings().outputColor.darker())
+    private val devMode = font.createText(text = "DEVMODE", color = Console.getSettings().outputColor.darker())
     private val currentInput = StringBuilder()
     private var lastInput: String? = null
     private var currentIndex = 0
@@ -47,9 +56,18 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
     private var nextBlink = CURSOR_BLINK_SPEED
     private var showCursor = true
     private var needsTextUpdate = true
+    private var lastUpdate = Sys.getTime()
     private var isOpen = false
 
     fun show() {
+        // Calculates time elapsed since last frame
+        fun calcDelta(): Float {
+            val curTime = Sys.getTime()
+            val delta = (curTime - lastUpdate).toFloat() / Sys.getTimerResolution()
+            lastUpdate = curTime
+            return delta
+        }
+
         // Save current screen image to texture
         val buffer = BufferUtils.createByteBuffer(width.toInt() * height.toInt() * 3)
         glReadPixels(0, 0, width.toInt(), height.toInt(), GL_RGB, GL_UNSIGNED_BYTE, buffer)
@@ -65,10 +83,11 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
         // Show overlay until closed by player
         // FIXME: Alt+F4 only closes overlay, not game
         isOpen = true
+        lastUpdate = Sys.getTime()
         while (isOpen && !Display.isCloseRequested()) {
             Display.update()
             checkInput()
-            advance(0.025f) // It's HIGHLY unlikely that we won't hit the 40 FPS target
+            advance(calcDelta())
             render()
             Display.sync(40)
         }
@@ -80,7 +99,14 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
     }
 
     fun dispose() {
-        history = scrollback.text.takeLast(ConsoleSettings.maxScrollback); scrollback.dispose(); query.dispose(); prompt.dispose(); input.dispose()
+        // Clean up native resources, limit memory used by console scrollback history
+        history = scrollback.text.takeLast(ConsoleSettings.maxScrollback)
+        scrollback.dispose()
+        query.dispose()
+        prompt.dispose()
+        input.dispose()
+        mem.dispose()
+        devMode.dispose()
     }
 
     override fun showOutput(output: String): Boolean {
@@ -91,6 +117,24 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
     }
 
     override fun getContext() = context
+
+    private fun getMemText(): String {
+        // Based on this StackOverflow answer: https://stackoverflow.com/a/5599842
+        fun asString(size: Long): String {
+            if (size <= 0) return "0"
+            val units = arrayOf("B", "kB", "MB", "GB", "TB")
+            val digitGroups = (Math.log10(size.toDouble()) / Math.log10(1024.0)).toInt()
+            val digits = size / Math.pow(1024.0, digitGroups.toDouble())
+            return "${BYTE_FORMAT.format(digits)} ${units[digitGroups]}"
+        }
+
+        fun asString(usage: MemoryUsage): String = with(usage) {
+            val percent = DecimalFormat.getPercentInstance().format(used / Math.max(max, committed).toDouble())
+            "$percent (${asString(used)}/${asString(Math.max(max, committed))})"
+        }
+
+        return "Memory used: ${asString(memory.heapMemoryUsage)}   |   Non-heap: ${asString(memory.nonHeapMemoryUsage)}"
+    }
 
     private fun checkInput() {
         if (Keyboard.isKeyDown(KEY_ESCAPE)) {
@@ -255,11 +299,13 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
         if (needsTextUpdate) {
             val cursor = if (showCursor) "|" else " "
             val showIndex = Console.getSettings().shouldShowCursorIndex
+            val showMemory = Console.getSettings().shouldShowMemoryUsage
 
             if (currentIndex == currentInput.length) input.text = "$currentInput$cursor"
             else input.text = "${currentInput.substring(0, currentIndex)}$cursor${currentInput.substring(currentIndex)}"
 
             if (showIndex) input.appendText(" | Index: $currentIndex/${currentInput.length}")
+            if (showMemory) mem.text = getMemText()
         }
 
         Console.advance(amount, this)
@@ -324,6 +370,10 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
         query.draw(30f, 50f)
         prompt.draw(30f, 30f)
         input.draw(30f + prompt.width, 30f)
+
+        // Draw misc stats
+        if (Console.getSettings().shouldShowMemoryUsage) mem.draw(30f, height - font.baseHeight)
+        if (Global.getSettings().isDevMode) devMode.draw(width - (30f + devMode.width), height - font.baseHeight)
 
         // Clear OpenGL flags
         glPopMatrix()

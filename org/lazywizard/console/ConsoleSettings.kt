@@ -5,20 +5,28 @@ import java.awt.Color
 import java.util.prefs.Preferences
 import kotlin.reflect.KProperty
 
+/*
+    To add a new setting:
+     - Add a var here, ensuring it uses one of the backing preference delegates
+     - Update the Settings command's pop-up dialog to support it
+ */
 object ConsoleSettings {
     private val prefs = Preferences.userNodeForPackage(Console::class.java)
-    var commandSeparator by StringPref("commandSeparator", ";")
-    var maxScrollback by IntPref("maxScrollback", 10_000)
-    var typoCorrectionThreshold by FloatPref("typoCorrectionThreshold", 0.9f)
-    var shouldShowEnteredCommands by BoolPref("showEnteredCommands", true)
-    var shouldShowCursorIndex by BoolPref("showCursorIndex", false)
-    var shouldShowExceptionDetails by BoolPref("showExceptionDetails", false)
-    var outputColor by ColorPref("outputColor", Color(255, 255, 0))
+    var commandSeparator by StringPref("commandSeparator", default = ";")
+    var maxScrollback by IntPref("maxScrollback", default = 10_000)
+    var typoCorrectionThreshold by FloatPref("typoCorrectionThreshold", default = 0.9f)
+    var shouldTransferStorageToHome by BoolPref("transferStorageToHome", default = false)
+    var shouldShowEnteredCommands by BoolPref("showEnteredCommands", default = true)
+    var shouldShowMemoryUsage by BoolPref("showMemoryUsage", default = true)
+    var shouldShowCursorIndex by BoolPref("showCursorIndex", default = false)
+    var shouldShowExceptionDetails by BoolPref("showExceptionDetails", default = false)
+    var outputColor by ColorPref("outputColor", default = Color(255, 255, 0))
     var consoleSummonKey by KeystrokePref("consoleKeystroke",
-            Keystroke(Keyboard.getKeyIndex("BACK"), false, true, false))
+            default = Keystroke(Keyboard.getKeyIndex("BACK"), false, true, false))
 
     fun resetToDefaults() = prefs.clear()
 
+    //<editor-fold defaultstate="collapsed" desc="Preference-backed delegates">
     private class StringPref(val key: String, default: String) {
         private var field = prefs.get(key, default)
 
@@ -65,7 +73,7 @@ object ConsoleSettings {
         private fun asString(color: Color): String = "${color.red}|${color.green}|${color.blue}"
         private fun parseColor(color: String): Color {
             val components = color.split('|').map { Integer.parseInt(it) }
-            return Color(components[0], components[1], components[2])
+            return Color(components[0].coerceIn(0, 255), components[1].coerceIn(0, 255), components[2].coerceIn(0, 255))
         }
 
 
@@ -79,7 +87,7 @@ object ConsoleSettings {
     private class KeystrokePref(val key: String, default: Keystroke) {
         private var field = parseKeystroke(prefs.get(key, asString(default)))
 
-        private fun asString(keystroke: Keystroke) = "${keystroke.key}|${keystroke.requiresShift}|${keystroke.requiresControl}|${keystroke.requiresAlt}"
+        private fun asString(keystroke: Keystroke) = "${keystroke.keyCode}|${keystroke.shift}|${keystroke.ctrl}|${keystroke.alt}"
         private fun parseKeystroke(keystroke: String): Keystroke {
             val components = keystroke.split('|')
             return Keystroke(Integer.parseInt(components[0]),
@@ -94,26 +102,27 @@ object ConsoleSettings {
             prefs.put(key, asString(value))
         }
     }
+    //</editor-fold>
 
-    class Keystroke(val key: Int, val requiresShift: Boolean, val requiresControl: Boolean, val requiresAlt: Boolean) {
+    class Keystroke(val keyCode: Int, val shift: Boolean, val ctrl: Boolean, val alt: Boolean) {
         fun isPressed(): Boolean {
-            if (!Keyboard.isKeyDown(key)) return false
+            if (!Keyboard.isKeyDown(keyCode)) return false
 
-            if (requiresShift && !(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)
+            if (shift && !(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)
                     || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))) return false
-            if (requiresControl && !(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)
+            if (ctrl && !(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)
                     || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))) return false
-            if (requiresAlt && !(Keyboard.isKeyDown(Keyboard.KEY_LMENU)
+            if (alt && !(Keyboard.isKeyDown(Keyboard.KEY_LMENU)
                     || Keyboard.isKeyDown(Keyboard.KEY_RMENU))) return false
 
             return true
         }
 
         override fun toString(): String {
-            var str = if (key == Keyboard.KEY_BACK) "BACKSPACE" else Keyboard.getKeyName(key).toUpperCase()
-            if (requiresShift) str = "SHIFT+" + str
-            if (requiresAlt) str = "ALT+" + str
-            if (requiresControl) str = "CONTROL+" + str
+            var str = if (keyCode == Keyboard.KEY_BACK) "BACKSPACE" else Keyboard.getKeyName(keyCode).toUpperCase()
+            if (shift) str = "SHIFT+" + str
+            if (alt) str = "ALT+" + str
+            if (ctrl) str = "CONTROL+" + str
             return str
         }
     }
