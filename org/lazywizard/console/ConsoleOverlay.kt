@@ -16,32 +16,32 @@ import org.lwjgl.opengl.GL12.GL_TEXTURE_BASE_LEVEL
 import org.lwjgl.opengl.GL12.GL_TEXTURE_MAX_LEVEL
 import org.lwjgl.opengl.GL13.GL_TEXTURE0
 import org.lwjgl.opengl.GL13.glActiveTexture
+import java.awt.Color
 import java.lang.management.ManagementFactory
 import java.lang.management.MemoryUsage
 import java.text.DecimalFormat
 import java.util.*
 
-
 private val Log = Logger.getLogger(Console::class.java)
-private val width = Display.getWidth() * Display.getPixelScaleFactor()
-private val height = Display.getHeight() * Display.getPixelScaleFactor()
 private var history = ""
-
-fun show(context: CommandContext) = with(ConsoleOverlayInternal(context)) { show(); dispose() }
-
 private const val CURSOR_BLINK_SPEED = 0.8f
 
-private class ConsoleOverlayInternal(private val context: CommandContext) : ConsoleListener {
+fun show(context: CommandContext) = with(ConsoleOverlayInternal(context,
+        Console.getSettings().outputColor, Console.getSettings().outputColor.darker())) { show(); dispose() }
+
+private class ConsoleOverlayInternal(private val context: CommandContext, mainColor: Color, secondaryColor: Color) : ConsoleListener {
     private val bgTextureId = glGenTextures()
     private val BYTE_FORMAT = DecimalFormat("#,##0.#")
     private val memory = ManagementFactory.getMemoryMXBean()
     private val font = Console.getFont()
-    private val scrollback = font.createText(text = history, color = Console.getSettings().outputColor, maxWidth = width - 60f)
-    private val query = font.createText(text = CommonStrings.INPUT_QUERY, color = Console.getSettings().outputColor.darker(), maxWidth = width, maxHeight = 30f)
-    private val prompt = font.createText(text = "> ", color = Console.getSettings().outputColor.darker(), maxWidth = width, maxHeight = 30f)
-    private val input = font.createText(text = "", color = Console.getSettings().outputColor, maxWidth = width - prompt.width, maxHeight = 45f)
-    private val mem = font.createText(text = getMemText(), color = Console.getSettings().outputColor.darker())
-    private val devMode = font.createText(text = "DEVMODE", color = Console.getSettings().outputColor.darker())
+    private val width = Display.getWidth() * Display.getPixelScaleFactor()
+    private val height = Display.getHeight() * Display.getPixelScaleFactor()
+    private val scrollback = font.createText(text = history, color = mainColor, maxWidth = width - 60f)
+    private val query = font.createText(text = CommonStrings.INPUT_QUERY, color = secondaryColor, maxWidth = width, maxHeight = 30f)
+    private val prompt = font.createText(text = "> ", color = secondaryColor, maxWidth = width, maxHeight = 30f)
+    private val input = font.createText(text = "", color = mainColor, maxWidth = width - prompt.width, maxHeight = 45f)
+    private val mem = font.createText(text = getMemText(), color = secondaryColor)
+    private val devMode = font.createText(text = "DEVMODE", color = secondaryColor)
     private val currentInput = StringBuilder()
     private var lastInput: String? = null
     private var currentIndex = 0
@@ -113,7 +113,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext) : Cons
 
     // Based on this StackOverflow answer: https://stackoverflow.com/a/5599842
     private fun asString(size: Long): String {
-        if (size <= 0) return "0"
+        if (size <= 0) return "0 B"
         val units = arrayOf("B", "kB", "MB", "GB", "TB")
         val digitGroups = (Math.log10(size.toDouble()) / Math.log10(1024.0)).toInt()
         val digits = size / Math.pow(1024.0, digitGroups.toDouble())
