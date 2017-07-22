@@ -1,6 +1,5 @@
 package org.lazywizard.console.commands;
 
-import java.util.Map;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.FleetDataAPI;
@@ -15,6 +14,8 @@ import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.campaign.CargoUtils;
+
+import java.util.Map;
 
 // TODO: Automatically move storage to Home if it has an unlocked storage tab
 public class Storage implements BaseCommand
@@ -146,16 +147,35 @@ public class Storage implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        // TODO: Add argument support (clear, set?)
-
         final SectorEntityToken station = getStorageStation();
         if (station == null)
         {
             Console.showMessage(
                     "A valid storage station was not found! Any commands that"
-                    + " normally place items in storage will instead"
-                    + " place them in the player's cargo.");
+                            + " normally place items in storage will instead"
+                            + " place them in the player's cargo.");
             return CommandResult.ERROR;
+        }
+
+        args = args.toLowerCase();
+        if (args.startsWith("clear"))
+        {
+            if ("clear ships".equals(args))
+            {
+                final FleetDataAPI storedShips = retrieveStorage().getMothballedShips();
+                final int size = storedShips.getNumMembers();
+                storedShips.clear();
+                Console.showMessage("Storage fleet cleared. " + size + " ships deleted.");
+                return CommandResult.SUCCESS;
+            }
+            else
+            {
+                final CargoAPI storage = retrieveStorage();
+                int numStacks = storage.getStacksCopy().size();
+                storage.clear();
+                Console.showMessage("Storage cargo cleared. " + numStacks + " item stacks deleted.");
+                return CommandResult.SUCCESS;
+            }
         }
 
         Console.showDialogOnClose(station);
