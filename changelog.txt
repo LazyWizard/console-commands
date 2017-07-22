@@ -6,11 +6,12 @@ Completely rewrote the input system and added a custom console overlay:
  - Uses custom font renderer (please don't use these classes yourself, wait for
    their eventual inclusion in LazyLib once the code is stable and bug-free)
 Most console settings are now chosen in-game, persistent between updates
+Memory usage is now shown in console overlay (disable using Settings command)
 Sounds are no longer played when a command encounters an error
 Fixed control+backspace to delete the current word instead of last word in input
 Minor update to typo correction, please let me know if it's more/less accurate
 If exception stack traces are enabled, show source jars in exception details
-Aliases that run multiple commands respect custom command separators:
+Aliases that execute multiple commands will respect custom command separators:
  - Always use ; to separate commands in aliases.csv; will be replaced at runtime
 Added isCampaignAccessible() to CommandContext:
  - Returns true if the player is on the campaign map, in a campaign battle,
@@ -48,6 +49,7 @@ Changes to existing commands:
  - AddWing and AllWings properly add LPCs instead of fleet members
  - AddXP will cap XP at what's needed for the maximum character level
  - FindItem/FindShip:
+   - Wings have been moved to FindItem (as they are now bought as LPCs)
    - Both commands will simulate a visit from the player to each searched
      submarket; this ensures the searched stockpiles are always up to date, at
      the expense of the command taking ~1 second to execute the first time
@@ -78,6 +80,8 @@ Changes to existing commands:
  - Storage:
    - Now opens immediately after closing the overlay rather than waiting for you
      to unpause the game
+   - Entering the argument "clear" will delete all items in storage, and "clear
+     ships" will delete all stored ships
  - Traitor works properly when used on drones
 ... plus a ridiculous amount of polish on nearly everything
 
