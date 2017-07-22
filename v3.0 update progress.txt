@@ -4,7 +4,9 @@
  - Release new LazyLib version w/ Kotlin dependencies
  - Add scrollback support to new overlay
  - Polish new in-game settings menu
+ - Fix campaign toggle commands (currently don't deactivate properly)
  - Finish testing and polish pass on all existing commands
+ - Polish pass on commands.csv
 
 /===================================\
 | Low-Priority Tasks for v3.0 final |

@@ -22,7 +22,7 @@ object ConsoleSettings {
     var shouldShowExceptionDetails by BoolPref("showExceptionDetails", default = false)
     var outputColor by ColorPref("outputColor", default = Color(255, 255, 0))
     var consoleSummonKey by KeystrokePref("consoleKeystroke",
-            default = Keystroke(Keyboard.getKeyIndex("BACK"), false, true, false))
+            default = Keystroke(Keyboard.getKeyIndex("BACK"), true, false, false))
 
     fun resetToDefaults() = prefs.clear()
 
@@ -87,7 +87,7 @@ object ConsoleSettings {
     private class KeystrokePref(val key: String, default: Keystroke) {
         private var field = parseKeystroke(prefs.get(key, asString(default)))
 
-        private fun asString(keystroke: Keystroke) = "${keystroke.keyCode}|${keystroke.shift}|${keystroke.ctrl}|${keystroke.alt}"
+        private fun asString(keystroke: Keystroke) = "${keystroke.keyCode}|${keystroke.ctrl}|${keystroke.alt}|${keystroke.shift}"
         private fun parseKeystroke(keystroke: String): Keystroke {
             val components = keystroke.split('|')
             return Keystroke(Integer.parseInt(components[0]),
@@ -104,16 +104,16 @@ object ConsoleSettings {
     }
     //</editor-fold>
 
-    class Keystroke(val keyCode: Int, val shift: Boolean, val ctrl: Boolean, val alt: Boolean) {
+    class Keystroke(val keyCode: Int, val ctrl: Boolean, val alt: Boolean, val shift: Boolean) {
         fun isPressed(): Boolean {
             if (!Keyboard.isKeyDown(keyCode)) return false
 
-            if (shift && !(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)
-                    || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))) return false
             if (ctrl && !(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)
                     || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))) return false
             if (alt && !(Keyboard.isKeyDown(Keyboard.KEY_LMENU)
                     || Keyboard.isKeyDown(Keyboard.KEY_RMENU))) return false
+            if (shift && !(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)
+                    || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))) return false
 
             return true
         }

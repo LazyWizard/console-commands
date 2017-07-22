@@ -39,6 +39,7 @@ public class ShowSettings implements BaseCommand
         return CommandResult.SUCCESS;
     }
 
+    // TODO: Make Color menu to a submenu of Display (if there's room)
     public static class SettingsDialog implements InteractionDialogPlugin
     {
         private final ConsoleSettings settings = Console.getSettings();
@@ -55,7 +56,7 @@ public class ShowSettings implements BaseCommand
             MAIN,
             INPUT,
             COLOR,
-            DISPLAY,
+            OVERLAY,
             MISC,
             LISTEN_KEYSTROKE,
             LISTEN_SEPARATOR
@@ -103,10 +104,16 @@ public class ShowSettings implements BaseCommand
             goToMenu(Menu.MAIN);
         }
 
+        private static Color getToggleOptionColor(boolean isEnabled)
+        {
+            return (isEnabled ? Color.GREEN : Color.ORANGE);
+        }
+
         private void goToMenu(Menu menu)
         {
             text.clear();
             options.clearOptions();
+            dialog.getVisualPanel().showCustomPanel(0f, 0f, new BaseUIPlugin()); // Needed due to vanilla bug
             dialog.hideVisualPanel();
             dialog.setPromptText("");
             final float barWidth = Math.min(Display.getWidth() * 0.7f, 800f);
@@ -115,19 +122,23 @@ public class ShowSettings implements BaseCommand
             {
                 case MAIN:
                     text.addParagraph(""); // TODO: Description
-                    options.addOption("Input settings", Menu.INPUT, ""); // TODO: Tooltip
-                    options.addOption("Color settings", Menu.COLOR, ""); // TODO: Tooltip
-                    options.addOption("Display settings", Menu.DISPLAY, ""); // TODO: Tooltip
-                    options.addOption("Misc settings", Menu.MISC, ""); // TODO: Tooltip
+                    options.addOption("Input settings", Menu.INPUT,
+                            "Customize how the console is summoned and how commands are entered.");
+                    options.addOption("Color settings", Menu.COLOR,
+                            "Customize the colors of the console overlay.");
+                    options.addOption("Misc overlay settings", Menu.OVERLAY,
+                            "Customize the overlay.");
+                    options.addOption("Misc console settings", Menu.MISC,
+                            "Customize the behavior of the console itself.");
                     options.addOption("Save and exit", Option.EXIT, ""); // TODO: Tooltip
                     options.setShortcut(Option.EXIT, Keyboard.KEY_ESCAPE, false, false, false, true);
                     break;
                 case INPUT:
                     text.addParagraph(""); // TODO: Description
-                    options.addOption("Set console overlay key", Menu.LISTEN_KEYSTROKE,
-                            "Sets the key combination used to open the console overlay.");
-                    options.addOption("Set command separator", Menu.LISTEN_SEPARATOR,
-                            "Sets the character used to separate multiple commands.");
+                    options.addOption("Set console overlay key (current: " + settings.getConsoleSummonKey() + ")",
+                            Menu.LISTEN_KEYSTROKE, "Sets the key combination used to open the console overlay.");
+                    options.addOption("Set command separator (current: " + settings.getCommandSeparator() + ")",
+                            Menu.LISTEN_SEPARATOR, "Sets the character used to separate multiple commands.");
                     break;
                 case LISTEN_KEYSTROKE:
                     text.addParagraph("Press the key combination you would like to summon the console with." +
@@ -140,7 +151,7 @@ public class ShowSettings implements BaseCommand
                     dialog.getVisualPanel().showCustomPanel(0f, 0f, new KeyListenerPlugin());
                     break;
                 case COLOR:
-                    text.addParagraph(""); // TODO: Description
+                    text.addParagraph("This menu allows you to customize the color of the console overlay.");
 
                     // Console overlay font color
                     options.addSelector("Output Color (red)", Selector.COLOR_R, Color.RED, barWidth, 150f, 0f, 255f, ValueDisplayMode.X_OVER_Y_NO_SPACES,
@@ -154,19 +165,24 @@ public class ShowSettings implements BaseCommand
                     options.setSelectorValue(Selector.COLOR_B, blue);
                     options.addOption("Print current color", Option.TEST_COLOR, "Prints an example of the current color for easier comparisons.");
                     dialog.getVisualPanel().showCustomPanel(50f, 50f, new ColorDisplayPlugin());
+                    optionSelected("Print current color", Option.TEST_COLOR); // Show the starting color
                     break;
-                case DISPLAY:
+                case OVERLAY:
                     text.addParagraph(""); // TODO: Description
 
-                    // Misc display options
-                    options.addOption("Show entered commands: " + (showCommands ? "true" : "false"), Option.SHOW_COMMANDS,
+                    // Misc overlay options
+                    options.addOption("Show entered commands: " + (showCommands ? "true" : "false"),
+                            Option.SHOW_COMMANDS, getToggleOptionColor(showCommands),
                             "Whether to show the commands you've entered in the overlay.");
-                    options.addOption("Show memory usage: " + (showMemory ? "true" : "false"), Option.SHOW_MEMORY,
+                    options.addOption("Show memory usage: " + (showMemory ? "true" : "false"),
+                            Option.SHOW_MEMORY, getToggleOptionColor(showMemory),
                             "Whether to show Starsector's current memory usage at the top of the console overlay.");
-                    options.addOption("Show error stack traces: " + (showExceptions ? "true" : "false"), Option.SHOW_EXCEPTIONS,
+                    options.addOption("Show error stack traces: " + (showExceptions ? "true" : "false"),
+                            Option.SHOW_EXCEPTIONS, getToggleOptionColor(showExceptions),
                             "Whether to show exception stack traces when something goes wrong. Very spammy!\n" +
                                     "Exceptions are always saved starsector.log, so this is only useful for developers.");
-                    options.addOption("Show cursor index (debug): " + (showIndex ? "true" : "false"), Option.SHOW_INDEX,
+                    options.addOption("Show cursor index (debug): " + (showIndex ? "true" : "false"),
+                            Option.SHOW_INDEX, getToggleOptionColor(showIndex),
                             "Whether to show debug information in the overlay's input text field.");
                     break;
                 case MISC:
@@ -183,7 +199,8 @@ public class ShowSettings implements BaseCommand
                     options.setSelectorValue(Selector.MAX_SCROLLBACK, scrollback);
 
                     // Use Home market as Storage
-                    options.addOption("Always use Home's market for Storage: " + (homeStorage ? "true" : "false"), Option.HOME_STORAGE,
+                    options.addOption("Always use Home's market for Storage: " + (homeStorage ? "true" : "false"),
+                            Option.HOME_STORAGE, getToggleOptionColor(homeStorage),
                             "When enabled, the contents of your Storage will automatically transfer to your Home's storage submarket if it has one.");
                     options.setEnabled(Option.HOME_STORAGE, false); // TODO
                     break;
@@ -211,19 +228,19 @@ public class ShowSettings implements BaseCommand
             {
                 case SHOW_COMMANDS:
                     showCommands = !showCommands;
-                    goToMenu(Menu.DISPLAY);
+                    goToMenu(Menu.OVERLAY);
                     break;
                 case SHOW_MEMORY:
                     showMemory = !showMemory;
-                    goToMenu(Menu.DISPLAY);
+                    goToMenu(Menu.OVERLAY);
                     break;
                 case SHOW_INDEX:
                     showIndex = !showIndex;
-                    goToMenu(Menu.DISPLAY);
+                    goToMenu(Menu.OVERLAY);
                     break;
                 case SHOW_EXCEPTIONS:
                     showExceptions = !showExceptions;
-                    goToMenu(Menu.DISPLAY);
+                    goToMenu(Menu.OVERLAY);
                     break;
                 case HOME_STORAGE:
                     homeStorage = !homeStorage;
@@ -299,9 +316,7 @@ public class ShowSettings implements BaseCommand
         {
             private PositionAPI pos;
             private DrawableString testString = Console.getFont().createText(
-                    "This is what the console's text would\n" +
-                            "look like with the current settings.",
-                    Console.getSettings().getOutputColor(), Console.getFont().getBaseHeight(), Float.MAX_VALUE, Float.MAX_VALUE);
+                    "This is what the console's text would\nlook like with the current settings.", Console.getSettings().getOutputColor());
 
             @Override
             public void positionChanged(PositionAPI position)
@@ -348,7 +363,7 @@ public class ShowSettings implements BaseCommand
 
                     if (currentMenu == Menu.LISTEN_KEYSTROKE)
                     {
-                        settings.setConsoleSummonKey(new Keystroke(keyCode, event.isShiftDown(), event.isCtrlDown(), event.isAltDown()));
+                        settings.setConsoleSummonKey(new Keystroke(keyCode, event.isCtrlDown(), event.isAltDown(), event.isShiftDown()));
                         goToMenu(Menu.INPUT);
                         text.addParagraph("Console summon key set to " + settings.getConsoleSummonKey());
                     }

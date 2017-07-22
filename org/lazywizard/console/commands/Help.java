@@ -2,6 +2,7 @@ package org.lazywizard.console.commands;
 
 import java.util.Collections;
 import java.util.List;
+
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommandStore;
 import org.lazywizard.console.CommandStore.StoredCommand;
@@ -19,12 +20,13 @@ public class Help implements BaseCommand
             Collections.sort(commands);
             Console.showMessage("Loaded commands:\n"
                     + CollectionUtils.implode(commands));
-            Console.showMessage("\nYou can chain multiple commands together with '" + Console.getSettings().getCommandSeparator()
-                    +"'. Use the 'List' command to obtain the various IDs used by commands. The console also" +
-                    " supports tab completion. Console settings can be changed with the 'Settings' command.");
+            Console.showMessage("\nYou can chain multiple commands together by separating them with '"
+                    + Console.getSettings().getCommandSeparator() + "'. Use the 'List' command to obtain the various" +
+                    " IDs needed for commands. The console also supports tab completion for commands (press tab and the" +
+                    " console will cycle through all commands starting with what you've already input).");
             Console.showMessage("\nYou can use 'help <command>' for more information"
                     + " on a specific command or 'help <tag>' to only list"
-                    + " commands that have that tag.");
+                    + " commands that have that tag. Console settings can be changed with the 'Settings' command.");
             List<String> tags = CommandStore.getKnownTags();
             Collections.sort(tags);
             Console.showMessage("\nValid tags: "
