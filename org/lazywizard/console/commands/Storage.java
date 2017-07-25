@@ -150,10 +150,9 @@ public class Storage implements BaseCommand
         final SectorEntityToken station = getStorageStation();
         if (station == null)
         {
-            Console.showMessage(
-                    "A valid storage station was not found! Any commands that"
-                            + " normally place items in storage will instead"
-                            + " place them in the player's cargo.");
+            Console.showMessage("A valid storage station was not found! Any commands that"
+                    + " normally place items in storage will instead"
+                    + " place them in the player's cargo.");
             return CommandResult.ERROR;
         }
 
@@ -163,15 +162,15 @@ public class Storage implements BaseCommand
             if ("clear ships".equals(args))
             {
                 final FleetDataAPI storedShips = retrieveStorage().getMothballedShips();
-                final int size = storedShips.getNumMembers();
+                final int numShips = storedShips.getNumMembers();
                 storedShips.clear();
-                Console.showMessage("Storage fleet cleared. " + size + " ships deleted.");
+                Console.showMessage("Storage fleet cleared. " + numShips + " ships deleted.");
                 return CommandResult.SUCCESS;
             }
             else
             {
                 final CargoAPI storage = retrieveStorage();
-                int numStacks = storage.getStacksCopy().size();
+                final int numStacks = storage.getStacksCopy().size();
                 storage.clear();
                 Console.showMessage("Storage cargo cleared. " + numStacks + " item stacks deleted.");
                 return CommandResult.SUCCESS;
