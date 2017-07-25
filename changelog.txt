@@ -9,6 +9,8 @@ Most console settings are now chosen in-game, persistent between updates
 Memory usage is now shown in console overlay (disable using Settings command)
 Sounds are no longer played when a command encounters an error
 Fixed control+backspace to delete the current word instead of last word in input
+Fixed control+backspace deleting multiple words when using the command separator
+Fixed tab completion when using the command separator
 Minor update to typo correction, please let me know if it's more/less accurate
 If exception stack traces are enabled, show source jars in exception details
 Aliases that execute multiple commands will respect custom command separators:

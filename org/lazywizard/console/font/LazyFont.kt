@@ -222,7 +222,7 @@ class LazyFont(val textureId: Int, val baseHeight: Float, val textureWidth: Floa
     }
 
     @JvmOverloads
-    fun createText(text: String, color: Color, size: Float = baseHeight, maxWidth: Float = Float.MAX_VALUE,
+    fun createText(text: String, color: Color = Color.WHITE, size: Float = baseHeight, maxWidth: Float = Float.MAX_VALUE,
                    maxHeight: Float = Float.MAX_VALUE): DrawableString = DrawableString(text, size, maxWidth, maxHeight, color)
 
     inner class LazyChar(val id: Int, tx: Int, ty: Int, val width: Int, val height: Int,

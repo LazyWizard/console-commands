@@ -30,6 +30,7 @@ fun show(context: CommandContext) = with(ConsoleOverlayInternal(context,
         Console.getSettings().outputColor, Console.getSettings().outputColor.darker())) { show(); dispose() }
 
 private class ConsoleOverlayInternal(private val context: CommandContext, mainColor: Color, secondaryColor: Color) : ConsoleListener {
+    private val settings = Console.getSettings()
     private val bgTextureId = glGenTextures()
     private val BYTE_FORMAT = DecimalFormat("#,##0.#")
     private val memory = ManagementFactory.getMemoryMXBean()
@@ -172,14 +173,17 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
 
                 // Tab auto-completes the command
                 if (keyPressed == KEY_TAB) {
+                    // Get just the current command (separator support complicates things)
+                    val startIndex = currentInput.lastIndexOf(settings.commandSeparator, currentIndex) + 1
+                    val tmp = currentInput.indexOf(settings.commandSeparator, startIndex)
+                    val endIndex = if (tmp < 0) currentInput.length else tmp
+                    val toIndex = currentInput.substring(startIndex, Math.max(startIndex, currentIndex))
+                    val fullCommand = currentInput.substring(startIndex, endIndex)
+
                     // Only auto-complete if arguments haven't been entered
-                    if (' ' in currentInput) {
+                    if (' ' in fullCommand) {
                         continue
                     }
-
-                    // Used for comparisons
-                    val toIndex = currentInput.substring(0, currentIndex)
-                    val fullCommand = currentInput.toString()
 
                     // Cycle through matching commands from current index forward
                     // If no further matches are found, start again from beginning
@@ -206,9 +210,9 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                     }
 
                     if (nextMatch != null)
-                        currentInput.replace(0, currentInput.length, nextMatch)
+                        currentInput.replace(startIndex, endIndex, nextMatch)
                     else if (firstMatch != null)
-                        currentInput.replace(0, currentInput.length, firstMatch)
+                        currentInput.replace(startIndex, endIndex, firstMatch)
 
                     continue
                 }
@@ -233,7 +237,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                     // Control+backspace, delete last word
                     if (ctrlDown) {
                         // Positional editing support
-                        val lastSpace = currentInput.substring(0, currentIndex).lastIndexOf(' ')
+                        val lastSpace = currentInput.substring(0, currentIndex).lastIndexOfAny(listOf(" ", settings.commandSeparator))
                         if (lastSpace == -1) currentInput.delete(0, currentIndex)
                         else currentInput.delete(lastSpace, currentIndex)
                     } else { // Regular backspace, delete last character
@@ -291,14 +295,12 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
 
         if (needsTextUpdate) {
             val cursor = if (showCursor) "|" else " "
-            val showIndex = Console.getSettings().shouldShowCursorIndex
-            val showMemory = Console.getSettings().shouldShowMemoryUsage
 
             if (currentIndex == currentInput.length) input.text = "$currentInput$cursor"
             else input.text = "${currentInput.substring(0, currentIndex)}$cursor${currentInput.substring(currentIndex)}"
 
-            if (showIndex) input.appendText(" | Index: $currentIndex/${currentInput.length}")
-            if (showMemory) mem.text = getMemText()
+            if (settings.shouldShowCursorIndex) input.appendText(" | Index: $currentIndex/${currentInput.length}")
+            if (settings.shouldShowMemoryUsage) mem.text = getMemText()
         }
 
         Console.advance(amount, this)
@@ -365,7 +367,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         input.draw(30f + prompt.width, 30f)
 
         // Draw misc stats
-        if (Console.getSettings().shouldShowMemoryUsage) mem.draw(30f, height - font.baseHeight)
+        if (settings.shouldShowMemoryUsage) mem.draw(30f, height - font.baseHeight)
         if (Global.getSettings().isDevMode) devMode.draw(width - (30f + devMode.width), height - font.baseHeight)
 
         // Clear OpenGL flags
