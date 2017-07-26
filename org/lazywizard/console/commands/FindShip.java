@@ -1,8 +1,5 @@
 package org.lazywizard.console.commands;
 
-import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.SubmarketPlugin.TransferAction;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
@@ -16,7 +13,11 @@ import org.lazywizard.console.Console;
 import org.lazywizard.console.commands.FindItem.PriceData;
 import org.lazywizard.console.commands.FindItem.SortMarketsByDistance;
 
-// FIXME: Update fighter wings to check LPCs
+import java.util.Comparator;
+import java.util.Map;
+import java.util.TreeMap;
+
+// FIXME: Prices are sometimes incorrect
 public class FindShip implements BaseCommand
 {
     @Override
@@ -33,31 +34,32 @@ public class FindShip implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
+        if (args.endsWith("_wing"))
+        {
+            return new FindItem().runCommand(args, context);
+        }
+
         if (args.endsWith("_Hull"))
         {
             args = args.substring(0, args.lastIndexOf("_Hull"));
         }
-        else if (args.endsWith("_wing"))
-        {
-            args = args.substring(0, args.lastIndexOf("_wing"));
-        }
 
-        boolean isWing = true;
-        String id = CommandUtils.findBestStringMatch(args + "_wing",
-                Global.getSector().getAllFighterWingIds());
+        String id = CommandUtils.findBestStringMatch(args + "_Hull", Global.getSector().getAllEmptyVariantIds());
         if (id == null)
         {
-            isWing = false;
-            id = CommandUtils.findBestStringMatch(args + "_Hull", Global.getSector().getAllEmptyVariantIds());
-            if (id == null)
+            id = CommandUtils.findBestStringMatch(args + "_wing",
+                    Global.getSector().getAllFighterWingIds());
+            if (id != null)
             {
-                Console.showMessage("No hull or wing found with base id '" + args
-                        + "'!\nUse \"list hulls\" or \"list wings\" to show all valid options.");
-                return CommandResult.ERROR;
+                return new FindItem().runCommand(args + "_wing", context);
             }
 
-            id = id.substring(0, id.lastIndexOf("_Hull"));
+            Console.showMessage("No hull found with base id '" + args
+                    + "'!\nUse \"list hulls\" to show all valid options.");
+            return CommandResult.ERROR;
         }
+
+        id = id.substring(0, id.lastIndexOf("_Hull"));
 
         //System.out.println(id);
 
@@ -82,8 +84,7 @@ public class FindShip implements BaseCommand
                 boolean isIllegal = false, isFree = false;
                 for (FleetMemberAPI member : submarket.getCargo().getMothballedShips().getMembersListCopy())
                 {
-                    if ((isWing && member.getSpecId().equalsIgnoreCase(id))
-                            || (!isWing && member.getHullId().equalsIgnoreCase(id)))
+                    if (member.getHullId().equalsIgnoreCase(id))
                     {
                         total++;
 
@@ -124,15 +125,13 @@ public class FindShip implements BaseCommand
 
         if (found.isEmpty() && foundFree.isEmpty())
         {
-            Console.showMessage("No " + (isWing ? "wings" : "hulls")
-                    + " with id '" + id + "' are available! Try using \"ForceMarketUpdate\".");
+            Console.showMessage("No hulls with id '" + id + "' are available! Try using \"ForceMarketUpdate\".");
             return CommandResult.SUCCESS;
         }
 
         if (!found.isEmpty())
         {
-            Console.showMessage("Found " + found.size() + " markets with "
-                    + (isWing ? "wing '" : "hull '") + id + "' for sale:");
+            Console.showMessage("Found " + found.size() + " markets with hull '" + id + "' for sale:");
             for (Map.Entry<SubmarketAPI, PriceData> entry : found.entrySet())
             {
                 SubmarketAPI submarket = entry.getKey();
@@ -150,8 +149,7 @@ public class FindShip implements BaseCommand
 
         if (!foundFree.isEmpty())
         {
-            Console.showMessage("Found " + foundFree.size() + " storage tabs with "
-                    + (isWing ? "wing '" : "hull '") + id + "' stored in them:");
+            Console.showMessage("Found " + foundFree.size() + " storage tabs with hull '" + id + "' stored in them:");
             for (Map.Entry<SubmarketAPI, PriceData> entry : foundFree.entrySet())
             {
                 SubmarketAPI submarket = entry.getKey();
