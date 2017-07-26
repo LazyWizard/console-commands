@@ -1,29 +1,35 @@
 package org.lazywizard.console.commands;
 
-import java.text.NumberFormat;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.CargoAPI.CargoItemType;
 import com.fs.starfarer.api.campaign.CargoStackAPI;
 import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
-import com.fs.starfarer.api.campaign.SubmarketPlugin;
+import com.fs.starfarer.api.campaign.SubmarketPlugin.TransferAction;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI;
 import com.fs.starfarer.api.impl.campaign.submarkets.BaseSubmarketPlugin;
 import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.BaseCommand.CommandContext;
-import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.MathUtils;
 
+import java.text.NumberFormat;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.TreeMap;
+
+// TODO: Potentially split into FindItem, FindWeapon, FindWing and FindHullmod?
+// FIXME: Prices are sometimes incorrect
 public class FindItem implements BaseCommand
 {
+    private static float getPrice()
+    {
+        return 0f; // TODO
+    }
+
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
@@ -38,29 +44,35 @@ public class FindItem implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
-        boolean isWeapon = true;
+        boolean isWeapon = true, isWing = false;
         String id = CommandUtils.findBestStringMatch(args, Global.getSector().getAllWeaponIds());
         if (id == null)
         {
             isWeapon = false;
-            id = CommandUtils.findBestStringMatch(args,
-                    Global.getSector().getEconomy().getAllCommodityIds());
+            isWing = true;
+            id = CommandUtils.findBestStringMatch(args, Global.getSector().getAllFighterWingIds());
             if (id == null)
             {
-                Console.showMessage("No weapons or commodities found with id '"
-                        + args + "'.\nUse \"list commodities\" or \"list weapons\""
-                        + " to show all valid options.");
-                return CommandResult.ERROR;
+                isWing = false;
+                id = CommandUtils.findBestStringMatch(args, Global.getSector().getEconomy().getAllCommodityIds());
+                if (id == null)
+                {
+                    Console.showMessage("No weapons, LPCs or commodities found with id '"
+                            + args + "'.\nUse \"list commodities\", \"list wings\" or \"list weapons\""
+                            + " to show all valid options.");
+                    return CommandResult.ERROR;
+                }
             }
         }
 
         // Weapon analysis has to be done through a cargo stack
         CargoStackAPI stack = null;
-        float weaponPriceMod = Global.getSettings().getFloat("nonEconItemBuyPriceMult");
-        if (isWeapon)
+        final float weaponPriceMod = Global.getSettings().getFloat("nonEconItemBuyPriceMult"),
+                wingPriceMod = Global.getSettings().getFloat("shipBuyPriceMult");
+        if (isWeapon || isWing)
         {
             CargoAPI tmp = Global.getFactory().createCargo(false);
-            tmp.addWeapons(id, 1);
+            tmp.addItems(isWeapon ? CargoItemType.WEAPONS : CargoItemType.FIGHTER_CHIP, id, 1);
             stack = tmp.getStacksCopy().get(0);
         }
 
@@ -79,7 +91,7 @@ public class FindItem implements BaseCommand
                 }
 
                 final int total = (int) submarket.getCargo().getQuantity(
-                        (isWeapon ? CargoItemType.WEAPONS : CargoItemType.RESOURCES), id);
+                        (isWeapon ? CargoItemType.WEAPONS : (isWing ? CargoItemType.FIGHTER_CHIP : CargoItemType.RESOURCES)), id);
                 if (total > 0)
                 {
                     float price;
@@ -91,19 +103,19 @@ public class FindItem implements BaseCommand
                         isIllegal = false;
                         isFree = true;
                     }
-                    else if (isWeapon)
+                    else if (isWeapon || isWing)
                     {
-                        price = stack.getBaseValuePerUnit() * weaponPriceMod;
+                        price = stack.getBaseValuePerUnit() * (isWeapon ? weaponPriceMod : wingPriceMod);
                         price += (price * submarket.getTariff());
                         isIllegal = submarket.getPlugin().isIllegalOnSubmarket(
-                                stack, SubmarketPlugin.TransferAction.PLAYER_BUY);
+                                stack, TransferAction.PLAYER_BUY);
                     }
                     else
                     {
                         price = market.getSupplyPrice(id, 1f, true);
                         price += (price * submarket.getTariff());
                         isIllegal = submarket.getPlugin().isIllegalOnSubmarket(
-                                id, SubmarketPlugin.TransferAction.PLAYER_BUY);
+                                id, TransferAction.PLAYER_BUY);
                     }
 
                     if (isFree)
@@ -120,7 +132,7 @@ public class FindItem implements BaseCommand
 
         if (found.isEmpty() && foundFree.isEmpty())
         {
-            Console.showMessage("No " + (isWeapon ? "weapons" : "commodities")
+            Console.showMessage("No " + (isWeapon ? "weapons" : (isWing ? "LPCs" : "commodities"))
                     + " with id '" + id + "' are available! Try using \"ForceMarketUpdate\".");
             return CommandResult.SUCCESS;
         }
@@ -128,7 +140,7 @@ public class FindItem implements BaseCommand
         if (!found.isEmpty())
         {
             Console.showMessage("Found " + found.size() + " markets with "
-                    + (isWeapon ? "weapon '" : "commodity '") + id + "' for sale:");
+                    + (isWeapon ? "weapon '" : (isWing ? "LPC '" : "commodity '")) + id + "' for sale:");
             for (Map.Entry<SubmarketAPI, PriceData> entry : found.entrySet())
             {
                 SubmarketAPI submarket = entry.getKey();
@@ -139,7 +151,7 @@ public class FindItem implements BaseCommand
                         + submarket.getNameOneLine() + " submarket ("
                         + submarket.getFaction().getDisplayName() + ", "
                         + submarket.getMarket().getPrimaryEntity()
-                                .getContainingLocation().getName()
+                        .getContainingLocation().getName()
                         + (data.isIllegal() ? ", restricted)" : ")"));
             }
         }
@@ -147,7 +159,7 @@ public class FindItem implements BaseCommand
         if (!foundFree.isEmpty())
         {
             Console.showMessage("Found " + foundFree.size() + " storage tabs with "
-                    + (isWeapon ? "weapon '" : " commodity '") + id + "' stored in them:");
+                    + (isWeapon ? "weapon '" : (isWing ? "LPC '" : "commodity '")) + id + "' stored in them:");
             for (Map.Entry<SubmarketAPI, PriceData> entry : foundFree.entrySet())
             {
                 SubmarketAPI submarket = entry.getKey();
@@ -157,7 +169,7 @@ public class FindItem implements BaseCommand
                         + submarket.getNameOneLine() + " submarket ("
                         + submarket.getFaction().getDisplayName() + ", "
                         + submarket.getMarket().getPrimaryEntity()
-                                .getContainingLocation().getName() + ")");
+                        .getContainingLocation().getName() + ")");
             }
         }
 
