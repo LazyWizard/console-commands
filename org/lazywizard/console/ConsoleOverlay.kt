@@ -27,7 +27,16 @@ private var history = ""
 private const val CURSOR_BLINK_SPEED = 0.8f
 
 fun show(context: CommandContext) = with(ConsoleOverlayInternal(context,
-        Console.getSettings().outputColor, Console.getSettings().outputColor.darker())) { show(); dispose() }
+        Console.getSettings().outputColor, Console.getSettings().outputColor.darker()))
+{
+    try {
+        show()
+    } catch (ex: Exception) {
+        Console.showException("The console overlay encountered an error and was destroyed: ", ex)
+    } finally {
+        dispose()
+    }
+}
 
 private class ConsoleOverlayInternal(private val context: CommandContext, mainColor: Color, secondaryColor: Color) : ConsoleListener {
     private val settings = Console.getSettings()
