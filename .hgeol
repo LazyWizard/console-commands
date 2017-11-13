@@ -7,3 +7,5 @@ native = CRLF
 **.kt = native
 **.png = BIN
 **.jar = BIN
+gradlew = LF
+gradlew.bat = CRLF
