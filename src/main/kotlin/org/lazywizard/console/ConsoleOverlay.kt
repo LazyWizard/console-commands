@@ -10,6 +10,7 @@ import org.lwjgl.BufferUtils
 import org.lwjgl.Sys
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Keyboard.*
+import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.GL_TEXTURE_BASE_LEVEL
@@ -54,6 +55,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     private val devMode = font.createText(text = "DEVMODE", color = secondaryColor)
     private val currentInput = StringBuilder()
     private var lastInput: String? = null
+    private var scrollOffset = 0f
     private var currentIndex = 0
     private var lastIndex = 0
     private var nextBlink = CURSOR_BLINK_SPEED
@@ -84,7 +86,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         buffer.clear()
 
         // Show overlay until closed by player
-        // FIXME: Alt+F4 only closes overlay, not game
+        // FIXME: Alt+F4 only closes overlay, not game (closeRequested is reset after query)
         isOpen = true
         lastUpdate = Sys.getTime()
         while (isOpen && !Display.isCloseRequested()) {
@@ -116,6 +118,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         if (!isOpen) return false
 
         scrollback.appendText(StringUtils.wrapString(output, (width / font.baseHeight * 1.8f).toInt()))
+        scrollOffset = 0f
         return true
     }
 
@@ -146,6 +149,8 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         }
 
         // TODO: Implement scrollback handling using mousewheel, page up/down
+        val scrollY = Mouse.getDY()
+        scrollOffset -= scrollY
 
         val ctrlDown = Keyboard.isKeyDown(KEY_LCONTROL) || Keyboard.isKeyDown(KEY_RCONTROL)
         val shiftDown = Keyboard.isKeyDown(KEY_LSHIFT) || Keyboard.isKeyDown(KEY_RSHIFT)
@@ -241,6 +246,13 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                     continue
                 }
 
+                // PageUp/Down; scroll an entire page at once
+                if (keyPressed == KEY_PRIOR) {
+                    scrollOffset -= height - (100 + font.baseHeight)
+                } else if (keyPressed == KEY_NEXT) {
+                    scrollOffset += height - (100 + font.baseHeight)
+                }
+
                 // Backspace handling; imitates vanilla text inputs
                 if (keyPressed == KEY_BACK && currentIndex > 0) {
                     // Control+backspace, delete last word
@@ -303,6 +315,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         }
 
         if (needsTextUpdate) {
+            needsTextUpdate = false
             val cursor = if (showCursor) "|" else " "
 
             if (currentIndex == currentInput.length) input.text = "$currentInput$cursor"
@@ -310,9 +323,11 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
 
             if (settings.shouldShowCursorIndex) input.appendText(" | Index: $currentIndex/${currentInput.length}")
             if (settings.shouldShowMemoryUsage) mem.text = getMemText()
-        }
 
-        Console.advance(amount, this)
+
+            scrollOffset.coerceIn(0f, scrollback.height)
+            Console.advance(amount, this)
+        }
     }
 
     private fun render() {
@@ -367,7 +382,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         glColorMask(true, true, true, true)
         glStencilFunc(GL_EQUAL, 1, 1)
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)
-        scrollback.draw(30f, 50f + font.baseHeight + scrollback.height)
+        scrollback.draw(30f, 50f + font.baseHeight + scrollback.height - scrollOffset)
         glDisable(GL_STENCIL_TEST)
 
         // Draw input prompt

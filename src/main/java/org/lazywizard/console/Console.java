@@ -83,6 +83,12 @@ public class Console
         return lastCommand;
     }
 
+    public static Object getCommandTarget(CommandContext context)
+    {
+        return (context.isInCombat() ? Global.getCombatEngine().getPlayerShip().getShipTarget()
+                : Global.getSector().getPlayerFleet().getInteractionTarget());
+    }
+
     //<editor-fold defaultstate="collapsed" desc="showMessage variants">
 
     /**
