@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'kotlin'
 
 buildscript {
-    ext.kotlin_version = '1.1.51'
+    ext.kotlin_version = '1.1.60'
 
     repositories {
         mavenCentral()
@@ -20,11 +20,11 @@ repositories {
 // TODO: Move Starsector and LazyLib dirs to a properties file
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib"
-    compile fileTree(dir: '../.libs/starsector', include: '*.jar')
-    compile files('../.libs/starsector/mods/LazyLib/jars/LazyLib.jar')
+    compile fileTree(dir: '../starsector', include: '*.jar')
+    compile files('../starsector/mods/LazyLib/jars/LazyLib.jar')
 }
 
-// Why copy? May need to filter these files later on, so best to set it up now
+// Why copy? May need to filter these files in the future, so best to set it up now
 task copyRes(type: Copy) {
     from 'src/main/res'
     into 'build/res'
@@ -36,7 +36,7 @@ task dist(dependsOn: [jar, copyRes]) {
     }
 }
 
-task zip(dependsOn: [dist]) {
+task zip(dependsOn: dist) {
     doLast {
         println 'Would zip mod folder now'
     }
