@@ -2,10 +2,10 @@
 native = CRLF
 
 [patterns]
-** = native
 **.java = native
 **.kt = native
 **.png = BIN
 **.jar = BIN
 gradlew = LF
 gradlew.bat = CRLF
+** = native
