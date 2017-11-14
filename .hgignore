@@ -1,9 +1,12 @@
 syntax: glob
+.DS_Store/
 .gradle/
 .settings/
 .vscode/
+.idea/
 bin/
 build/
+*.iml
 .classpath
 .project
 gradle.properties
