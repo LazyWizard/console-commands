@@ -1,3 +1,5 @@
+// TODO: Add Example Commands mod as a sub-project and include its zip in the buildMod task
+
 apply plugin: 'java'
 apply plugin: 'kotlin'
 
@@ -52,15 +54,15 @@ task copyRes(type: Copy) {
     into outputPath
 }
 
-task dist(dependsOn: [jar, copyRes]) {
+task buildMod(dependsOn: [jar, copyRes]) {
     doLast {
-        println 'Would build dist now'
+        println 'Mod folder created at \"' + outputPath + '\"'
     }
 }
 
-// TODO: Zip up dist results and include version number in filename
-task zip(dependsOn: dist/*, type: Zip*/) {
-    /*from 'build/mod'
+// TODO: Zip up buildMod results and include version number in filename
+task zip(dependsOn: buildMod/*, type: Zip*/) {
+    /*from outputPath
     archiveName = 'todo'
     destinationDir = 'build/zip'*/
     doLast {
@@ -73,7 +75,7 @@ copyRes {
     group = 'build'
 }
 
-dist {
+buildMod {
     description = 'Builds the jar and assembles the mod folder.'
     group = 'build'
 }
