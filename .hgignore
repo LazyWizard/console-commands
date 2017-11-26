@@ -10,4 +10,5 @@ build/
 .classpath
 .project
 gradle.properties
+local.properties
 src/main/res/Example Mod-Added Commands.zip
