@@ -17,17 +17,39 @@ repositories {
     mavenCentral()
 }
 
-// TODO: Move Starsector and LazyLib dirs to a properties file
-dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib"
-    compile fileTree(dir: '../starsector', include: '*.jar')
-    compile files('../starsector/mods/LazyLib/jars/LazyLib.jar')
+ext {
+    Properties localProps = new Properties()
+    localProps.load(new FileInputStream(file('local.properties')))
+    //props.each { prop -> project.ext.set(prop.key, prop.value) }
+    ext.gameDir = localProps['starsectorInstallDir']
+    ext.lazylib = localProps['lazylibJar']
+    ext.outputPath = localProps['outputPath']
 }
 
-// Why copy? May need to filter these files in the future, so best to set it up now
+dependencies {
+    compile 'org.jetbrains.kotlin:kotlin-stdlib-jre7'
+    compile fileTree(dir: gameDir, include: '*.jar', exclude: '*_obf.jar')
+    compile files(lazylib)
+}
+
+jar {
+    //from sourceSets.main.java
+    from sourceSets.main.kotlin
+    destinationDir file(outputPath + '/jar')
+    archiveName 'lw_Console.jar'
+}
+
+task printProps() {
+    doLast {
+        println 'Game directory: ' + gameDir
+        println 'LazyLib jar: ' + lazylib
+        println 'Output path: ' + outputPath
+    }
+}
+
 task copyRes(type: Copy) {
     from 'src/main/res'
-    into 'build/res'
+    into outputPath
 }
 
 task dist(dependsOn: [jar, copyRes]) {
@@ -36,10 +58,19 @@ task dist(dependsOn: [jar, copyRes]) {
     }
 }
 
-task zip(dependsOn: dist) {
+// TODO: Zip up dist results and include version number in filename
+task zip(dependsOn: dist/*, type: Zip*/) {
+    /*from 'build/mod'
+    archiveName = 'todo'
+    destinationDir = 'build/zip'*/
     doLast {
-        println 'Would zip mod folder now'
+        println 'Would zip mod now'
     }
+}
+
+copyRes {
+    description = 'Copies mod files to the output directory'
+    group = 'build'
 }
 
 dist {

@@ -1,0 +1,5 @@
+# Change these in your local copy to point at your installation!
+starsectorInstallDir=/home/user/games/starsector
+lazylibJar=/home/user/games/starsector/mods/LazyLib/jars/LazyLib.jar
+# Point outputPath at your Console mod folder for faster testing
+outputPath=build/mod
