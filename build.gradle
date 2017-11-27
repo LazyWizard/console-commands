@@ -1,10 +1,14 @@
+import java.nio.file.Paths
+
 // TODO: Add Example Commands mod as a sub-project and include its zip in the buildMod task
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
 
+sourceCompatibility = 1.7
+
 buildscript {
-    ext.kotlin_version = '1.1.60'
+    ext.kotlin_version = '1.1.61'
 
     repositories {
         mavenCentral()
@@ -22,24 +26,27 @@ repositories {
 ext {
     Properties localProps = new Properties()
     localProps.load(new FileInputStream(file('local.properties')))
-    //props.each { prop -> project.ext.set(prop.key, prop.value) }
     ext.gameDir = localProps['starsectorInstallDir']
     ext.lazylib = localProps['lazylibJar']
     ext.outputPath = localProps['outputPath']
 }
 
 dependencies {
-    compile 'org.jetbrains.kotlin:kotlin-stdlib-jre7'
-    compile fileTree(dir: gameDir, include: '*.jar', exclude: '*_obf.jar')
-    compile files(lazylib)
+    compileOnly 'org.jetbrains.kotlin:kotlin-stdlib-jre7'
+    compileOnly fileTree(dir: gameDir, include: '*.jar', exclude: '*_obf.jar')
+    compileOnly files(lazylib)
+    runtime ('org.jetbrains.kotlin:kotlin-stdlib-jre7') { transitive = true }
 }
 
 jar {
     //from sourceSets.main.java
     from sourceSets.main.kotlin
-    destinationDir file(outputPath + '/jar')
+    from { configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) } }
+    destinationDir file(Paths.get(outputPath, 'jars/'))
     archiveName 'lw_Console.jar'
 }
+
+defaultTasks 'buildMod'
 
 task printProps() {
     doLast {
@@ -49,19 +56,19 @@ task printProps() {
     }
 }
 
-task copyRes(type: Copy) {
-    from 'src/main/res'
+task copyModFiles(type: Copy) {
+    from 'src/main/mod'
     into outputPath
 }
 
-task buildMod(dependsOn: [jar, copyRes]) {
+task buildMod(dependsOn: [jar, copyModFiles]) {
     doLast {
-        println 'Mod folder created at \"' + outputPath + '\"'
+        println 'Mod folder created at \"' + file(outputPath).absolutePath + '\"'
     }
 }
 
 // TODO: Zip up buildMod results and include version number in filename
-task zip(dependsOn: buildMod/*, type: Zip*/) {
+task zipMod(dependsOn: buildMod/*, type: Zip*/) {
     /*from outputPath
     archiveName = 'todo'
     destinationDir = 'build/zip'*/
@@ -70,8 +77,8 @@ task zip(dependsOn: buildMod/*, type: Zip*/) {
     }
 }
 
-copyRes {
-    description = 'Copies mod files to the output directory'
+copyModFiles {
+    description = 'Copies non-compiled mod files to the output directory.'
     group = 'build'
 }
 
@@ -80,7 +87,7 @@ buildMod {
     group = 'build'
 }
 
-zip {
-    description = 'Creates a zip ready for distribution.'
+zipMod {
+    description = 'UNIMPLEMENTED. ##Builds the mod and creates a zip archive ready for distribution.##'
     group = 'build'
 }
