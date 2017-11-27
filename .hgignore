@@ -11,4 +11,4 @@ build/
 .project
 gradle.properties
 local.properties
-src/main/res/Example Mod-Added Commands.zip
+src/main/mod/Example Mod-Added Commands.zip
