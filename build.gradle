@@ -31,11 +31,12 @@ ext {
     ext.outputPath = localProps['outputPath']
 }
 
+//  Please note: any dependencies marked 'compile' will be included in the jar!
 dependencies {
-    compileOnly 'org.jetbrains.kotlin:kotlin-stdlib-jre7'
+    compile('org.jetbrains.kotlin:kotlin-stdlib') { transitive = false }
+    compile('org.jetbrains.kotlin:kotlin-stdlib-jre7') { transitive = false }
     compileOnly fileTree(dir: gameDir, include: '*.jar', exclude: '*_obf.jar')
     compileOnly files(lazylib)
-    runtime ('org.jetbrains.kotlin:kotlin-stdlib-jre7') { transitive = true }
 }
 
 jar {
