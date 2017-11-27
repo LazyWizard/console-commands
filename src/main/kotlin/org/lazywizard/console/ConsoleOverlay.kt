@@ -41,7 +41,7 @@ fun show(context: CommandContext) = with(ConsoleOverlayInternal(context,
 
 private class ConsoleOverlayInternal(private val context: CommandContext, mainColor: Color, secondaryColor: Color) : ConsoleListener {
     private val settings = Console.getSettings()
-    private val bgTextureId = glGenTextures()
+    private val bgTextureId = if (settings.showBackground) glGenTextures() else 0
     private val BYTE_FORMAT = DecimalFormat("#,##0.#")
     private val memory = ManagementFactory.getMemoryMXBean()
     private val font = Console.getFont()
@@ -74,16 +74,18 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         }
 
         // Save current screen image to texture
-        val buffer = BufferUtils.createByteBuffer(width.toInt() * height.toInt() * 3)
-        glReadPixels(0, 0, width.toInt(), height.toInt(), GL_RGB, GL_UNSIGNED_BYTE, buffer)
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, bgTextureId)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_R3_G3_B2, width.toInt(), height.toInt(), 0, GL_RGB, GL_UNSIGNED_BYTE, buffer)
-        buffer.clear()
+        if (settings.showBackground) {
+            val buffer = BufferUtils.createByteBuffer(width.toInt() * height.toInt() * 3)
+            glReadPixels(0, 0, width.toInt(), height.toInt(), GL_RGB, GL_UNSIGNED_BYTE, buffer)
+            glActiveTexture(GL_TEXTURE0)
+            glBindTexture(GL_TEXTURE_2D, bgTextureId)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_R3_G3_B2, width.toInt(), height.toInt(), 0, GL_RGB, GL_UNSIGNED_BYTE, buffer)
+            buffer.clear()
+        }
 
         // Show overlay until closed by player
         // FIXME: Alt+F4 only closes overlay, not game (closeRequested is reset after query)
@@ -98,7 +100,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         }
 
         // Clean up texture and clear any remaining input events
-        glDeleteTextures(bgTextureId)
+        if (settings.showBackground) glDeleteTextures(bgTextureId)
         Keyboard.destroy()
         Keyboard.create()
     }
@@ -351,21 +353,23 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
 
         // Draw background
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, bgTextureId)
-        glPushMatrix()
-        glBegin(GL_QUADS)
-        glColor4f(0.2f, 0.2f, 0.2f, 1f)
-        glTexCoord2f(0f, 0f)
-        glVertex2f(0f, 0f)
-        glTexCoord2f(1f, 0f)
-        glVertex2f(width, 0f)
-        glTexCoord2f(1f, 1f)
-        glVertex2f(width, height)
-        glTexCoord2f(0f, 1f)
-        glVertex2f(0f, height)
-        glEnd()
-        glPopMatrix()
+        if (settings.showBackground) {
+            glActiveTexture(GL_TEXTURE0)
+            glBindTexture(GL_TEXTURE_2D, bgTextureId)
+            glPushMatrix()
+            glBegin(GL_QUADS)
+            glColor4f(0.2f, 0.2f, 0.2f, 1f)
+            glTexCoord2f(0f, 0f)
+            glVertex2f(0f, 0f)
+            glTexCoord2f(1f, 0f)
+            glVertex2f(width, 0f)
+            glTexCoord2f(1f, 1f)
+            glVertex2f(width, height)
+            glTexCoord2f(0f, 1f)
+            glVertex2f(0f, height)
+            glEnd()
+            glPopMatrix()
+        }
 
         // Draw scrollback
         // TODO: Add scrollbar, scrolling

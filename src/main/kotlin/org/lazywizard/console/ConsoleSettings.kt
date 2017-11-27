@@ -10,11 +10,14 @@ import kotlin.reflect.KProperty
      - Add a var here, ensuring it uses one of the backing preference delegates
      - Update the Settings command's pop-up dialog to support it
  */
+ // TODO: Remove 'should' prefix from all variables
 object ConsoleSettings {
     private val prefs = Preferences.userNodeForPackage(Console::class.java)
     var commandSeparator by StringPref("commandSeparator", default = ";")
     var maxScrollback by IntPref("maxScrollback", default = 10_000)
     var typoCorrectionThreshold by FloatPref("typoCorrectionThreshold", default = 0.9f)
+    // TODO: Update Settings to support showBackground
+    var showBackground by BoolPref("showBackground", default = true)
     var shouldTransferStorageToHome by BoolPref("transferStorageToHome", default = false)
     var shouldShowEnteredCommands by BoolPref("showEnteredCommands", default = true)
     var shouldShowMemoryUsage by BoolPref("showMemoryUsage", default = true)
