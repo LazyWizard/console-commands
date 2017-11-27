@@ -250,9 +250,9 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
 
                 // PageUp/Down; scroll an entire page at once
                 if (keyPressed == KEY_PRIOR) {
-                    scrollOffset -= height - (100 + font.baseHeight)
+                    scrollOffset -= height - (80 + font.baseHeight)
                 } else if (keyPressed == KEY_NEXT) {
-                    scrollOffset += height - (100 + font.baseHeight)
+                    scrollOffset += height - (80 + font.baseHeight)
                 }
 
                 // Backspace handling; imitates vanilla text inputs
@@ -386,7 +386,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         glColorMask(true, true, true, true)
         glStencilFunc(GL_EQUAL, 1, 1)
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)
-        scrollback.draw(30f, 50f + font.baseHeight + scrollback.height - scrollOffset)
+        scrollback.draw(30f, 50f + font.baseHeight + scrollback.height + scrollOffset)
         glDisable(GL_STENCIL_TEST)
 
         // Draw input prompt
