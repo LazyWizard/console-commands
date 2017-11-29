@@ -6,9 +6,10 @@ apply plugin: 'java'
 apply plugin: 'kotlin'
 
 sourceCompatibility = 1.7
+defaultTasks 'buildMod'
 
 buildscript {
-    ext.kotlin_version = '1.1.61'
+    ext.kotlin_version = '1.2.0'
 
     repositories {
         mavenCentral()
@@ -34,9 +35,15 @@ ext {
 //  Please note: any dependencies marked 'compile' will be included in the jar!
 dependencies {
     compile('org.jetbrains.kotlin:kotlin-stdlib') { transitive = false }
-    compile('org.jetbrains.kotlin:kotlin-stdlib-jre7') { transitive = false }
+    compile('org.jetbrains.kotlin:kotlin-stdlib-jdk7') { transitive = false }
     compileOnly fileTree(dir: gameDir, include: '*.jar', exclude: '*_obf.jar')
     compileOnly files(lazylib)
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.6"
+    }
 }
 
 jar {
@@ -46,8 +53,6 @@ jar {
     destinationDir file(Paths.get(outputPath, 'jars/'))
     archiveName 'lw_Console.jar'
 }
-
-defaultTasks 'buildMod'
 
 task printProps() {
     doLast {
