@@ -1,4 +1,5 @@
 import java.nio.file.Paths
+import groovy.json.JsonSlurper
 
 // TODO: Add Example Commands mod as a sub-project and include its zip in the buildMod task
 
@@ -30,6 +31,7 @@ ext {
     ext.gameDir = localProps['starsectorInstallDir']
     ext.lazylib = localProps['lazylibJar']
     ext.outputPath = localProps['outputPath']
+    ext.modVersion = new JsonSlurper().parseText(file('src/main/mod/mod_info.json').text).version
 }
 
 //  Please note: any dependencies marked 'compile' will be included in the jar!
@@ -59,6 +61,7 @@ task printProps() {
         println 'Game directory: ' + gameDir
         println 'LazyLib jar: ' + lazylib
         println 'Output path: ' + outputPath
+        println 'Mod version: ' + modVersion
     }
 }
 
@@ -73,13 +76,13 @@ task buildMod(dependsOn: [jar, copyModFiles]) {
     }
 }
 
-// TODO: Zip up buildMod results and include version number in filename
-task zipMod(dependsOn: buildMod/*, type: Zip*/) {
-    /*from outputPath
-    archiveName = 'todo'
-    destinationDir = 'build/zip'*/
+task zipMod(type: Zip, dependsOn: buildMod) {
+    from(outputPath) { into 'Console Commands' }
+    include '**/*'
+    archiveName = "Console Commands ${modVersion}.zip"
+    destinationDir = file('build/zip/')
     doLast {
-        println 'Would zip mod now'
+        println 'Mod zip placed in \"' + destinationDir.absolutePath + '\"'
     }
 }
 
@@ -94,6 +97,6 @@ buildMod {
 }
 
 zipMod {
-    description = 'UNIMPLEMENTED. ##Builds the mod and creates a zip archive ready for distribution.##'
+    description = 'Builds the mod and creates a zip archive ready for distribution.'
     group = 'build'
 }
