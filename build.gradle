@@ -2,12 +2,22 @@ import java.nio.file.Paths
 import groovy.json.JsonSlurper
 
 // TODO: Add Example Commands mod as a sub-project and include its zip in the buildMod task
+// TODO: Include javadoc.zip in full build (probably only zipMod as doc takes time to build)
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
 
 sourceCompatibility = 1.7
 defaultTasks 'buildMod'
+
+ext {
+    Properties localProps = new Properties()
+    localProps.load(new FileInputStream(file('local.properties')))
+    ext.gameDir = localProps['starsectorInstallDir']
+    ext.lazylib = localProps['lazylibJar']
+    ext.outputPath = localProps['outputPath']
+    ext.modVersion = new JsonSlurper().parseText(file('src/main/mod/mod_info.json').text).version
+}
 
 buildscript {
     ext.kotlin_version = '1.2.0'
@@ -25,16 +35,7 @@ repositories {
     mavenCentral()
 }
 
-ext {
-    Properties localProps = new Properties()
-    localProps.load(new FileInputStream(file('local.properties')))
-    ext.gameDir = localProps['starsectorInstallDir']
-    ext.lazylib = localProps['lazylibJar']
-    ext.outputPath = localProps['outputPath']
-    ext.modVersion = new JsonSlurper().parseText(file('src/main/mod/mod_info.json').text).version
-}
-
-//  Please note: any dependencies marked 'compile' will be included in the jar!
+//  Please note: any dependencies marked 'compile' or 'runtime' will be included in the jar!
 dependencies {
     compile('org.jetbrains.kotlin:kotlin-stdlib') { transitive = false }
     compile('org.jetbrains.kotlin:kotlin-stdlib-jdk7') { transitive = false }

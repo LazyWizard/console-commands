@@ -39,6 +39,7 @@ fun show(context: CommandContext) = with(ConsoleOverlayInternal(context,
     }
 }
 
+// TODO: This uses a lot of hardcoded magic numbers; need to refactor these into constants at some point
 private class ConsoleOverlayInternal(private val context: CommandContext, mainColor: Color, secondaryColor: Color) : ConsoleListener {
     private val settings = Console.getSettings()
     private val bgTextureId = if (settings.showBackground) glGenTextures() else 0
@@ -56,6 +57,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     private val currentInput = StringBuilder()
     private var lastInput: String? = null
     private var scrollOffset = 0f
+    private var minScroll = 0f
     private var currentIndex = 0
     private var lastIndex = 0
     private var nextBlink = CURSOR_BLINK_SPEED
@@ -84,7 +86,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
             glTexImage2D(GL_TEXTURE_2D, 0, GL_R3_G3_B2, width.toInt(), height.toInt(), 0, GL_RGB, GL_UNSIGNED_BYTE, buffer)
-            buffer.clear()
+            //buffer.clear()
         }
 
         // Show overlay until closed by player
@@ -151,8 +153,8 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         }
 
         // TODO: Implement scrollback handling using mousewheel, page up/down
-        val scrollY = Mouse.getDY()
-        scrollOffset -= scrollY
+        val scrollY = Mouse.getDWheel()
+        scrollOffset -= scrollY * .2f
 
         val ctrlDown = Keyboard.isKeyDown(KEY_LCONTROL) || Keyboard.isKeyDown(KEY_RCONTROL)
         val shiftDown = Keyboard.isKeyDown(KEY_LSHIFT) || Keyboard.isKeyDown(KEY_RSHIFT)
@@ -250,9 +252,15 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
 
                 // PageUp/Down; scroll an entire page at once
                 if (keyPressed == KEY_PRIOR) {
-                    scrollOffset -= height - (80 + font.baseHeight)
+                    if (ctrlDown || shiftDown)
+                        scrollOffset = minScroll
+                    else
+                        scrollOffset -= height - (80 + font.baseHeight)
                 } else if (keyPressed == KEY_NEXT) {
-                    scrollOffset += height - (80 + font.baseHeight)
+                    if (ctrlDown || shiftDown)
+                        scrollOffset = 0f
+                    else
+                        scrollOffset += height - (80 + font.baseHeight)
                 }
 
                 // Backspace handling; imitates vanilla text inputs
@@ -274,8 +282,14 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                 // Return key handling
                 else if (keyPressed == KEY_RETURN) {
                     val command = currentInput.toString()
-                    if (command.toLowerCase() == "clear") scrollback.text = ""
-                    else Console.parseInput(command, context)
+                    when {
+                        command.toLowerCase() == "clear" -> scrollback.text = ""
+                        command.toLowerCase() == "exit" -> {
+                            isOpen = false
+                            return
+                        }
+                        else -> Console.parseInput(command, context)
+                    }
                     currentInput.setLength(0)
                     currentIndex = 0
                     lastInput = null
@@ -316,6 +330,10 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             needsTextUpdate = true
         }
 
+        // Ensure scrolling can't go beyond the bounds of the displayed text
+        minScroll = (-scrollback.height + (height - 80 - font.baseHeight)).coerceAtMost(0f)
+        scrollOffset = scrollOffset.coerceIn(minScroll, 0f)
+
         if (needsTextUpdate) {
             needsTextUpdate = false
             val cursor = if (showCursor) "|" else " "
@@ -326,8 +344,6 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             if (settings.shouldShowCursorIndex) input.appendText(" | Index: $currentIndex/${currentInput.length}")
             if (settings.shouldShowMemoryUsage) mem.text = getMemText()
 
-
-            scrollOffset.coerceIn(0f, scrollback.height)
             Console.advance(amount, this)
         }
     }
@@ -372,7 +388,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         }
 
         // Draw scrollback
-        // TODO: Add scrollbar, scrolling
+        // TODO: Add scrollbar
         glEnable(GL_STENCIL_TEST)
         glColorMask(false, false, false, false)
         glStencilFunc(GL_ALWAYS, 1, 1)
