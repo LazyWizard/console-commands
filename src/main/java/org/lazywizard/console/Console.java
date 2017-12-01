@@ -157,7 +157,7 @@ public class Console
 
         // Add stack trace of Throwable, with a few extra details
         stackTrace.append(ex.toString()).append("\n");
-        if (getSettings().getShouldShowExceptionDetails())
+        if (getSettings().getShowExceptionDetails())
         {
             final ClassLoader cl = Global.getSettings().getScriptClassLoader();
             for (StackTraceElement ste : ex.getStackTrace())
@@ -246,7 +246,7 @@ public class Console
                 return CommandResult.ERROR;
             }
 
-            if (getSettings().getShouldShowEnteredCommands())
+            if (getSettings().getShowEnteredCommands())
             {
                 showMessage("> " + input);
             }

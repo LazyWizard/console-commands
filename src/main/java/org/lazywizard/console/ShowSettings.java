@@ -47,7 +47,7 @@ public class ShowSettings implements BaseCommand
         private OptionPanelAPI options;
         private TextPanelAPI text;
         private Menu currentMenu;
-        private boolean showCommands, showMemory, showExceptions, showIndex, homeStorage;
+        private boolean showBackground, showCommands, showMemory, showExceptions, showIndex, homeStorage;
         private int red, green, blue, scrollback;
         private float threshold;
 
@@ -64,6 +64,7 @@ public class ShowSettings implements BaseCommand
 
         private enum Option
         {
+            SHOW_BACKGROUND,
             SHOW_COMMANDS,
             SHOW_MEMORY,
             SHOW_EXCEPTIONS,
@@ -95,11 +96,12 @@ public class ShowSettings implements BaseCommand
             blue = outputColor.getBlue();
             scrollback = settings.getMaxScrollback();
             threshold = settings.getTypoCorrectionThreshold();
-            homeStorage = settings.getShouldTransferStorageToHome();
-            showCommands = settings.getShouldShowEnteredCommands();
-            showMemory = settings.getShouldShowMemoryUsage();
-            showExceptions = settings.getShouldShowExceptionDetails();
-            showIndex = settings.getShouldShowCursorIndex();
+            homeStorage = settings.getTransferStorageToHome();
+            showBackground = settings.getShowBackground();
+            showCommands = settings.getShowEnteredCommands();
+            showMemory = settings.getShowMemoryUsage();
+            showExceptions = settings.getShowExceptionDetails();
+            showIndex = settings.getShowCursorIndex();
 
             goToMenu(Menu.MAIN);
         }
@@ -171,6 +173,9 @@ public class ShowSettings implements BaseCommand
                     text.addParagraph(""); // TODO: Description
 
                     // Misc overlay options
+                    options.addOption("Show background: " + (showBackground ? "true" : "false"),
+                    Option.SHOW_BACKGROUND, getToggleOptionColor(showBackground),
+                            "Whether to show the paused game in the background of the overlay.");
                     options.addOption("Show entered commands: " + (showCommands ? "true" : "false"),
                             Option.SHOW_COMMANDS, getToggleOptionColor(showCommands),
                             "Whether to show the commands you've entered in the overlay.");
@@ -226,6 +231,10 @@ public class ShowSettings implements BaseCommand
 
             switch ((Option) optionData)
             {
+                case SHOW_BACKGROUND:
+                    showBackground = !showBackground;
+                    goToMenu(Menu.OVERLAY);
+                    break;
                 case SHOW_COMMANDS:
                     showCommands = !showCommands;
                     goToMenu(Menu.OVERLAY);
@@ -261,11 +270,12 @@ public class ShowSettings implements BaseCommand
             settings.setOutputColor(new Color(red, green, blue));
             settings.setTypoCorrectionThreshold(threshold);
             settings.setMaxScrollback(scrollback);
-            settings.setShouldTransferStorageToHome(homeStorage);
-            settings.setShouldShowEnteredCommands(showCommands);
-            settings.setShouldShowMemoryUsage(showMemory);
-            settings.setShouldShowCursorIndex(showIndex);
-            settings.setShouldShowExceptionDetails(showExceptions);
+            settings.setTransferStorageToHome(homeStorage);
+            settings.setShowBackground(showBackground);
+            settings.setShowEnteredCommands(showCommands);
+            settings.setShowMemoryUsage(showMemory);
+            settings.setShowCursorIndex(showIndex);
+            settings.setShowExceptionDetails(showExceptions);
         }
 
         @Override

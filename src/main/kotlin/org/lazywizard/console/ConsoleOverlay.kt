@@ -86,7 +86,6 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
             glTexImage2D(GL_TEXTURE_2D, 0, GL_R3_G3_B2, width.toInt(), height.toInt(), 0, GL_RGB, GL_UNSIGNED_BYTE, buffer)
-            //buffer.clear()
         }
 
         // Show overlay until closed by player
@@ -341,8 +340,8 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             if (currentIndex == currentInput.length) input.text = "$currentInput$cursor"
             else input.text = "${currentInput.substring(0, currentIndex)}$cursor${currentInput.substring(currentIndex)}"
 
-            if (settings.shouldShowCursorIndex) input.appendText(" | Index: $currentIndex/${currentInput.length}")
-            if (settings.shouldShowMemoryUsage) mem.text = getMemText()
+            if (settings.showCursorIndex) input.appendText(" | Index: $currentIndex/${currentInput.length}")
+            if (settings.showMemoryUsage) mem.text = getMemText()
 
             Console.advance(amount, this)
         }
@@ -411,7 +410,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         input.draw(30f + prompt.width, 30f)
 
         // Draw misc stats
-        if (settings.shouldShowMemoryUsage) mem.draw(30f, height - font.baseHeight)
+        if (settings.showMemoryUsage) mem.draw(30f, height - font.baseHeight)
         if (Global.getSettings().isDevMode) devMode.draw(width - (30f + devMode.width), height - font.baseHeight)
 
         // Clear OpenGL flags
