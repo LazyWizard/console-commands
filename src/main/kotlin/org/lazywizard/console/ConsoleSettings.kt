@@ -10,7 +10,6 @@ import kotlin.reflect.KProperty
      - Add a var here, ensuring it uses one of the backing preference delegates
      - Update the Settings command's pop-up dialog to support it
  */
- // TODO: Remove 'should' prefix from all variables
 object ConsoleSettings {
     private val prefs = Preferences.userNodeForPackage(Console::class.java)
     var commandSeparator by StringPref("commandSeparator", default = ";")
@@ -18,11 +17,11 @@ object ConsoleSettings {
     var typoCorrectionThreshold by FloatPref("typoCorrectionThreshold", default = 0.9f)
     // TODO: Update Settings to support showBackground
     var showBackground by BoolPref("showBackground", default = true)
-    var shouldTransferStorageToHome by BoolPref("transferStorageToHome", default = false)
-    var shouldShowEnteredCommands by BoolPref("showEnteredCommands", default = true)
-    var shouldShowMemoryUsage by BoolPref("showMemoryUsage", default = true)
-    var shouldShowCursorIndex by BoolPref("showCursorIndex", default = false)
-    var shouldShowExceptionDetails by BoolPref("showExceptionDetails", default = false)
+    var transferStorageToHome by BoolPref("transferStorageToHome", default = false)
+    var showEnteredCommands by BoolPref("showEnteredCommands", default = true)
+    var showMemoryUsage by BoolPref("showMemoryUsage", default = true)
+    var showCursorIndex by BoolPref("showCursorIndex", default = false)
+    var showExceptionDetails by BoolPref("showExceptionDetails", default = false)
     var outputColor by ColorPref("outputColor", default = Color(255, 255, 0))
     var consoleSummonKey by KeystrokePref("consoleKeystroke",
             default = Keystroke(Keyboard.getKeyIndex("BACK"), true, false, false))

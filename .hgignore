@@ -7,7 +7,7 @@ syntax: glob
 bin/
 build/
 nbproject/
-out
+out/
 *.iml
 .classpath
 .project
