@@ -52,8 +52,8 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     private val query = font.createText(text = CommonStrings.INPUT_QUERY, color = secondaryColor, maxWidth = width, maxHeight = 30f)
     private val prompt = font.createText(text = "> ", color = secondaryColor, maxWidth = width, maxHeight = 30f)
     private val input = font.createText(text = "", color = mainColor, maxWidth = width - prompt.width, maxHeight = 45f)
-    private val mem = font.createText(text = getMemText(), color = secondaryColor)
-    private val devMode = font.createText(text = "DEVMODE", color = secondaryColor)
+    private val mem = font.createText(text = getMemText(), color = Color.LIGHT_GRAY)
+    private val devMode = font.createText(text = "DEVMODE", color = Color.LIGHT_GRAY)
     private val currentInput = StringBuilder()
     private var lastInput: String? = null
     private var scrollOffset = 0f
@@ -394,8 +394,8 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE)
         glBegin(GL_QUADS)
         glVertex2f(30f, 50f + font.baseHeight)          // LL
-        glVertex2f(30f, height - 30f)                   // UL
-        glVertex2f(width - 30f, height - 30f)           // UR
+        glVertex2f(30f, height - 40f)                   // UL
+        glVertex2f(width - 30f, height - 40f)           // UR
         glVertex2f(width - 30f, 50f + font.baseHeight)  // LR
         glEnd()
         glColorMask(true, true, true, true)
@@ -410,8 +410,8 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         input.draw(30f + prompt.width, 30f)
 
         // Draw misc stats
-        if (settings.showMemoryUsage) mem.draw(30f, height - font.baseHeight)
-        if (Global.getSettings().isDevMode) devMode.draw(width - (30f + devMode.width), height - font.baseHeight)
+        if (settings.showMemoryUsage) mem.draw(50f, height - font.baseHeight)
+        if (Global.getSettings().isDevMode) devMode.draw(width - (50f + devMode.width), height - font.baseHeight)
 
         // Clear OpenGL flags
         glPopMatrix()
