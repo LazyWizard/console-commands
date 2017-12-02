@@ -1,13 +1,8 @@
 package org.lazywizard.console;
 
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.FactionAPI;
@@ -145,6 +140,91 @@ public class CommandUtils
             {
                 closestDistance = distance;
                 bestMatch = str;
+            }
+        }
+
+        return bestMatch;
+    }
+
+    /**
+     * @return A {@link Map.Entry} whose key contains the closest match to {@code id} (or null if no match was found),
+     *         and whose value contains the {@link Collection} the match came from, if one was found.
+     */
+    public static Map.Entry<String, Collection<String>> findBestStringMatch(String id, Collection<String> ... sources)
+    {
+        Collection<String> bestSource = null;
+        String bestMatch = null;
+        double closestDistance = Console.getSettings().getTypoCorrectionThreshold();
+        for (Collection<String> toSearch : sources) {
+            if (toSearch.contains(id)) {
+                return new AbstractMap.SimpleImmutableEntry<>(id, toSearch);
+            }
+
+            id = id.toLowerCase();
+
+            for (String str : toSearch) {
+                double distance = calcSimilarity(id, str.toLowerCase());
+
+                if (distance == 1.0) {
+                    return new AbstractMap.SimpleImmutableEntry<>(id, toSearch);
+                }
+
+                if (distance > closestDistance) {
+                    closestDistance = distance;
+                    bestMatch = str;
+                    bestSource = toSearch;
+                }
+            }
+        }
+
+        return new AbstractMap.SimpleImmutableEntry<>(bestMatch, bestSource);
+    }
+
+    public static Map.Entry<String, Double> findBestStringMatchWithSimularity(String id, Collection<String> toSearch)
+    {
+        if (toSearch.contains(id))
+        {
+            return new AbstractMap.SimpleImmutableEntry<>(id, 1.0);
+        }
+
+        id = id.toLowerCase();
+        String bestMatch = null;
+        double closestDistance = Console.getSettings().getTypoCorrectionThreshold();
+
+        for (String str : toSearch)
+        {
+            double distance = calcSimilarity(id, str.toLowerCase());
+
+            if (distance == 1.0)
+            {
+                return new AbstractMap.SimpleImmutableEntry<>(str, 1.0);
+            }
+
+            if (distance > closestDistance)
+            {
+                closestDistance = distance;
+                bestMatch = str;
+            }
+        }
+
+        return new AbstractMap.SimpleImmutableEntry<>(bestMatch, closestDistance);
+    }
+
+    public static String bestMatch(List<Map.Entry<String, Float>> toSearch)
+    {
+        String bestMatch = null;
+        float bestScore = 0f;
+        for (Map.Entry<String, Float> entry: toSearch)
+        {
+            final String id = entry.getKey();
+            final float score = entry.getValue();
+            if (id != null)
+            {
+                if (bestMatch == null || score > bestScore)
+                {
+                    bestMatch = id;
+                    bestScore = score;
+                }
             }
         }
 

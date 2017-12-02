@@ -17,12 +17,11 @@ import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.MathUtils;
 
 import java.text.NumberFormat;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 // TODO: Potentially split into FindItem, FindWeapon, FindWing and FindHullmod?
 // FIXME: Prices are sometimes incorrect
+// FIXME: Stacks over 10k (ex: fuel) report incorrect totals
 public class FindItem implements BaseCommand
 {
     private static float getPrice()
@@ -44,26 +43,26 @@ public class FindItem implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
-        boolean isWeapon = true, isWing = false;
-        String id = CommandUtils.findBestStringMatch(args, Global.getSector().getAllWeaponIds());
+        boolean isWeapon = false, isWing = false;
+        final List allWeps = Global.getSector().getAllWeaponIds(),
+                allWings = Global.getSector().getAllFighterWingIds(),
+                allItems = Global.getSector().getEconomy().getAllCommodityIds();
+        final Map.Entry<String, Collection<String>> bestMatch =
+                CommandUtils.findBestStringMatch(args, allWeps, allWings, allItems);
+        final String id = bestMatch.getKey();
         if (id == null)
         {
-            isWeapon = false;
-            isWing = true;
-            id = CommandUtils.findBestStringMatch(args, Global.getSector().getAllFighterWingIds());
-            if (id == null)
-            {
-                isWing = false;
-                id = CommandUtils.findBestStringMatch(args, Global.getSector().getEconomy().getAllCommodityIds());
-                if (id == null)
-                {
-                    Console.showMessage("No weapons, LPCs or commodities found with id '"
-                            + args + "'.\nUse \"list commodities\", \"list wings\" or \"list weapons\""
-                            + " to show all valid options.");
-                    return CommandResult.ERROR;
-                }
-            }
+            Console.showMessage("No weapons, LPCs or commodities found with id '"
+                    + args + "'.\nUse \"list commodities\", \"list wings\" or \"list weapons\""
+                    + " to show all valid options.");
+            return CommandResult.ERROR;
         }
+
+        final Collection<String> source = bestMatch.getValue();
+        if (source == allWeps)
+            isWeapon = true;
+        else if (source == allWings)
+            isWing = true;
 
         // Weapon analysis has to be done through a cargo stack
         CargoStackAPI stack = null;
@@ -80,9 +79,9 @@ public class FindItem implements BaseCommand
                 Global.getSector().getPlayerFleet());
         final Map<SubmarketAPI, PriceData> found = new TreeMap<>(comparator),
                 foundFree = new TreeMap<>(comparator);
-        for (MarketAPI market : Global.getSector().getEconomy().getMarketsCopy())
+        for (final MarketAPI market : Global.getSector().getEconomy().getMarketsCopy())
         {
-            for (SubmarketAPI submarket : market.getSubmarketsCopy())
+            for (final SubmarketAPI submarket : market.getSubmarketsCopy())
             {
                 if (submarket.getPlugin() instanceof BaseSubmarketPlugin)
                 {
@@ -196,7 +195,7 @@ public class FindItem implements BaseCommand
 
         public String getFormattedPrice()
         {
-            return NumberFormat.getIntegerInstance().format(Math.round(pricePer));
+            return NumberFormat.getIntegerInstance().format(Math.round(getPrice()));
         }
 
         public int getAvailable()
