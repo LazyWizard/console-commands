@@ -1,4 +1,7 @@
-# Change this in your local copy to point at the folder containing starfarer.api.jar
+# Change this in your local copy to point at your JDK root folder
+jdkLocation=C:/Program Files/Java/jdk1.8.0_151
+
+# Change this to point at the folder containing starfarer.api.jar
 starsectorInstallDir=/home/user/games/starsector
 #starsectorInstallDir=C:/Program Files (x86)/Starsector/starsector-core
 
