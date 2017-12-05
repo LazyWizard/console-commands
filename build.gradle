@@ -13,6 +13,7 @@ defaultTasks 'buildMod'
 ext {
     Properties localProps = new Properties()
     localProps.load(new FileInputStream(file('local.properties')))
+    compileJava.options.forkOptions.executable = Paths.get(localProps['jdkLocation'].toString(), 'bin', 'javac.exe')
     ext.gameDir = localProps['starsectorInstallDir']
     ext.lazylib = localProps['lazylibJar']
     ext.outputPath = localProps['outputPath']
