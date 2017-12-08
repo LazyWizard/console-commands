@@ -11,11 +11,8 @@ import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.console.commands.FindItem.PriceData;
-import org.lazywizard.console.commands.FindItem.SortMarketsByDistance;
 
-import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 // FIXME: Prices are sometimes incorrect
 public class FindShip implements BaseCommand
@@ -64,10 +61,8 @@ public class FindShip implements BaseCommand
         //System.out.println(id);
 
         //final float shipPriceMod = Global.getSettings().getFloat("shipBuyPriceMult"); // Unused?
-        final Comparator<SubmarketAPI> comparator = new SortMarketsByDistance(
-                Global.getSector().getPlayerFleet());
-        final Map<SubmarketAPI, PriceData> found = new TreeMap<>(comparator),
-                foundFree = new TreeMap<>(comparator);
+        final List<PriceData> found = new ArrayList<>(),
+                foundFree = new ArrayList<>();
         for (MarketAPI market : Global.getSector().getEconomy().getMarketsCopy())
         {
             for (SubmarketAPI submarket : market.getSubmarketsCopy())
@@ -113,11 +108,11 @@ public class FindShip implements BaseCommand
                 {
                     if (isFree)
                     {
-                        foundFree.put(submarket, new PriceData(price, total, isIllegal));
+                        foundFree.add(new PriceData(submarket, price, total, isIllegal));
                     }
                     else
                     {
-                        found.put(submarket, new PriceData(price, total, isIllegal));
+                        found.add(new PriceData(submarket, price, total, isIllegal));
                     }
                 }
             }
@@ -129,13 +124,16 @@ public class FindShip implements BaseCommand
             return CommandResult.SUCCESS;
         }
 
+        final Comparator<PriceData> comparator = new FindItem.SortByMarketDistance(
+                Global.getSector().getPlayerFleet());
+
         if (!found.isEmpty())
         {
             Console.showMessage("Found " + found.size() + " markets with hull '" + id + "' for sale:");
-            for (Map.Entry<SubmarketAPI, PriceData> entry : found.entrySet())
+            Collections.sort(found, comparator);
+            for (final PriceData data : found)
             {
-                SubmarketAPI submarket = entry.getKey();
-                PriceData data = entry.getValue();
+                final SubmarketAPI submarket = data.getSubmarket();
                 Console.showMessage(" - " + data.getAvailable() + " available for "
                         + data.getFormattedPrice() + " credits at "
                         + submarket.getMarket().getName() + "'s "
@@ -150,10 +148,10 @@ public class FindShip implements BaseCommand
         if (!foundFree.isEmpty())
         {
             Console.showMessage("Found " + foundFree.size() + " storage tabs with hull '" + id + "' stored in them:");
-            for (Map.Entry<SubmarketAPI, PriceData> entry : foundFree.entrySet())
+            Collections.sort(foundFree, comparator);
+            for (final PriceData data : foundFree)
             {
-                SubmarketAPI submarket = entry.getKey();
-                PriceData data = entry.getValue();
+                final SubmarketAPI submarket = data.getSubmarket();
                 Console.showMessage(" - " + data.getAvailable() + " available at "
                         + submarket.getMarket().getName() + "'s "
                         + submarket.getNameOneLine() + " submarket ("
