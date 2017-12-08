@@ -47,7 +47,7 @@ public class FindItem implements BaseCommand
         final List allWeps = Global.getSector().getAllWeaponIds(),
                 allWings = Global.getSector().getAllFighterWingIds(),
                 allItems = Global.getSector().getEconomy().getAllCommodityIds();
-        final Map.Entry<String, Collection<String>> bestMatch =
+        final Map.Entry<String, List<String>> bestMatch =
                 CommandUtils.findBestStringMatch(args, allWeps, allWings, allItems);
         final String id = bestMatch.getKey();
         if (id == null)
@@ -75,10 +75,7 @@ public class FindItem implements BaseCommand
             stack = tmp.getStacksCopy().get(0);
         }
 
-        final Comparator<SubmarketAPI> comparator = new SortMarketsByDistance(
-                Global.getSector().getPlayerFleet());
-        final Map<SubmarketAPI, PriceData> found = new TreeMap<>(comparator),
-                foundFree = new TreeMap<>(comparator);
+        final List<PriceData> found = new ArrayList<>(), foundFree = new ArrayList<>();
         for (final MarketAPI market : Global.getSector().getEconomy().getMarketsCopy())
         {
             for (final SubmarketAPI submarket : market.getSubmarketsCopy())
@@ -119,11 +116,11 @@ public class FindItem implements BaseCommand
 
                     if (isFree)
                     {
-                        foundFree.put(submarket, new PriceData(price, total, isIllegal));
+                        foundFree.add(new PriceData(submarket, price, total, isIllegal));
                     }
                     else
                     {
-                        found.put(submarket, new PriceData(price, total, isIllegal));
+                        found.add(new PriceData(submarket, price, total, isIllegal));
                     }
                 }
             }
@@ -136,16 +133,19 @@ public class FindItem implements BaseCommand
             return CommandResult.SUCCESS;
         }
 
+        final Comparator<PriceData> comparator = new SortByMarketDistance(
+                Global.getSector().getPlayerFleet());
+
         if (!found.isEmpty())
         {
             Console.showMessage("Found " + found.size() + " markets with "
                     + (isWeapon ? "weapon '" : (isWing ? "LPC '" : "commodity '")) + id + "' for sale:");
-            for (Map.Entry<SubmarketAPI, PriceData> entry : found.entrySet())
+            Collections.sort(found, comparator);
+            for (final PriceData data : found)
             {
-                SubmarketAPI submarket = entry.getKey();
-                PriceData data = entry.getValue();
+                final SubmarketAPI submarket = data.submarket;
                 Console.showMessage(" - " + data.getAvailable() + " available for "
-                        + data.getFormattedPrice() + " credits at "
+                        + data.getFormattedPrice() + " credits each at "
                         + submarket.getMarket().getName() + "'s "
                         + submarket.getNameOneLine() + " submarket ("
                         + submarket.getFaction().getDisplayName() + ", "
@@ -159,10 +159,10 @@ public class FindItem implements BaseCommand
         {
             Console.showMessage("Found " + foundFree.size() + " storage tabs with "
                     + (isWeapon ? "weapon '" : (isWing ? "LPC '" : "commodity '")) + id + "' stored in them:");
-            for (Map.Entry<SubmarketAPI, PriceData> entry : foundFree.entrySet())
+            Collections.sort(foundFree, comparator);
+            for (final PriceData data : foundFree)
             {
-                SubmarketAPI submarket = entry.getKey();
-                PriceData data = entry.getValue();
+                final SubmarketAPI submarket = data.submarket;
                 Console.showMessage(" - " + data.getAvailable() + " available at "
                         + submarket.getMarket().getName() + "'s "
                         + submarket.getNameOneLine() + " submarket ("
@@ -175,57 +175,69 @@ public class FindItem implements BaseCommand
         return CommandResult.SUCCESS;
     }
 
-    public static class PriceData
+    static class PriceData
     {
+        private final SubmarketAPI submarket;
         private final float pricePer;
         private final int totalAvailable;
         private final boolean isIllegal;
 
-        public PriceData(float pricePer, int totalAvailable, boolean isIllegal)
+        PriceData(SubmarketAPI submarket, float pricePer, int totalAvailable, boolean isIllegal)
         {
+            this.submarket = submarket;
             this.pricePer = pricePer;
             this.totalAvailable = totalAvailable;
             this.isIllegal = isIllegal;
         }
 
-        public float getPrice()
+        public SubmarketAPI getSubmarket()
+        {
+            return submarket;
+        }
+
+        String getMarketName()
+        {
+            return submarket.getMarket().getName() + " " + submarket.getNameOneLine();
+        }
+
+        float getPrice()
         {
             return pricePer;
         }
 
-        public String getFormattedPrice()
+        String getFormattedPrice()
         {
             return NumberFormat.getIntegerInstance().format(Math.round(getPrice()));
         }
 
-        public int getAvailable()
+        String getAvailable()
         {
-            return totalAvailable;
+            return NumberFormat.getIntegerInstance().format(totalAvailable);
         }
 
-        public boolean isIllegal()
+        boolean isIllegal()
         {
             return isIllegal;
         }
     }
 
-    public static class SortMarketsByDistance implements Comparator<SubmarketAPI>
+    static class SortByMarketDistance implements Comparator<PriceData>
     {
         private final SectorEntityToken token;
         private final LocationAPI location;
 
-        public SortMarketsByDistance(SectorEntityToken token)
+        SortByMarketDistance(SectorEntityToken token)
         {
             this.token = token;
             location = token.getContainingLocation();
         }
 
         @Override
-        public int compare(SubmarketAPI o1, SubmarketAPI o2)
+        public int compare(PriceData o1, PriceData o2)
         {
             // Ensure there's an entity associated with this market
-            final SectorEntityToken t1 = o1.getMarket().getPrimaryEntity(),
-                    t2 = o2.getMarket().getPrimaryEntity();
+            final SectorEntityToken t1 = o1.getSubmarket().getMarket().getPrimaryEntity(),
+                    t2 = o2.getSubmarket().getMarket().getPrimaryEntity();
             if (t1 == null)
             {
                 //System.out.println(o1.getMarket().getName() + "'s primary entity was null!");

@@ -57,7 +57,8 @@ Changes to existing commands:
      submarket; this ensures the searched stockpiles are always up to date, at
      the expense of the command taking ~1 second to execute the first time
    - Results are sorted by distance to the market
-   - Added proper formatting to prices
+   - Added proper formatting to prices and amount available
+   - Fixed an issue with 100k+ stacks where the reported amount was way too low
    - Made it more clear when you enter an invalid ID versus when no goods are
      available in any market
  - GoTo:
