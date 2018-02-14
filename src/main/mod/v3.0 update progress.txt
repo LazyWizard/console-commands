@@ -1,15 +1,15 @@
-/===========================\
-| Main Tasks for v3.0 final |
-\===========================/
+/=============================================================\
+| Main Tasks for v3.0 final (must be finished before release) |
+\=============================================================/
  - Release new LazyLib version w/ Kotlin dependencies
- - Add scrollback support to new overlay
+ - Add scrollbar to new overlay
  - Polish new in-game settings menu
  - Fix campaign toggle commands (currently don't deactivate properly)
  - Finish testing and polish pass on all existing commands
 
-/===================================\
-| Low-Priority Tasks for v3.0 final |
-\===================================/
+/====================================================\
+| Low-Priority Tasks for v3.0 final (may be skipped) |
+\====================================================/
  - Implement tab autocompletion for command arguments
  - Look into making aliases set in-game, persistent
  - Polish pass on help entries in commands.csv
