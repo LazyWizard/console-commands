@@ -25,7 +25,7 @@ import java.util.*
 
 private val Log = Logger.getLogger(Console::class.java)
 private var history = ""
-private const val CURSOR_BLINK_SPEED = 0.8f
+private const val CURSOR_BLINK_SPEED = 0.7f
 
 fun show(context: CommandContext) = with(ConsoleOverlayInternal(context,
         Console.getSettings().outputColor, Console.getSettings().outputColor.darker()))
@@ -89,12 +89,15 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         }
 
         // Show overlay until closed by player
-        // FIXME: Alt+F4 only closes overlay, not game (closeRequested is reset after query)
         isOpen = true
         lastUpdate = Sys.getTime()
-        while (isOpen && !Display.isCloseRequested()) {
+        while (isOpen) {
             Display.update()
             checkInput()
+
+            // Alt+F4 support
+            if (Display.isCloseRequested()) System.exit(0)
+
             advance(calcDelta())
             render()
             Display.sync(40)
@@ -142,7 +145,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     }
 
     private fun getMemText(): String {
-        return "Memory used: ${asString(memory.heapMemoryUsage)}   |   Non-heap: ${asString(memory.nonHeapMemoryUsage)}"
+        return "Memory used: ${asString(memory.heapMemoryUsage)}" //"   |   Non-heap: ${asString(memory.nonHeapMemoryUsage)}"
     }
 
     private fun checkInput() {
@@ -167,7 +170,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                 // Always show the current cursor position after any keypress
                 showCursor = true
                 needsTextUpdate = true
-                nextBlink = CURSOR_BLINK_SPEED
+                nextBlink = CURSOR_BLINK_SPEED * 1.6f // Last a little longer than usual after a deliberate keypress
 
                 // Load last command when user presses up on keyboard
                 val keyPressed = Keyboard.getEventKey()
@@ -207,10 +210,10 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                     var firstMatch: String? = null
                     var nextMatch: String? = null
                     val commands = CommandStore.getLoadedCommands()
-                    Collections.sort(commands)
+                    commands.sort()
 
                     // Reverse order when shift is held down
-                    if (shiftDown) Collections.reverse(commands)
+                    if (shiftDown) commands.reverse()
 
                     for (command in commands) {
                         if (command.regionMatches(0, toIndex, 0, toIndex.length, true)) {
@@ -373,7 +376,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             glBindTexture(GL_TEXTURE_2D, bgTextureId)
             glPushMatrix()
             glBegin(GL_QUADS)
-            glColor4f(0.2f, 0.2f, 0.2f, 1f)
+            glColor4f(0.14f, 0.14f, 0.14f, 1f)
             glTexCoord2f(0f, 0f)
             glVertex2f(0f, 0f)
             glTexCoord2f(1f, 0f)
@@ -387,7 +390,6 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         }
 
         // Draw scrollback
-        // TODO: Add scrollbar
         glEnable(GL_STENCIL_TEST)
         glColorMask(false, false, false, false)
         glStencilFunc(GL_ALWAYS, 1, 1)
@@ -403,6 +405,9 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)
         scrollback.draw(30f, 50f + font.baseHeight + scrollback.height + scrollOffset)
         glDisable(GL_STENCIL_TEST)
+
+        // TODO: Draw scrollbar
+
 
         // Draw input prompt
         query.draw(30f, 50f)
