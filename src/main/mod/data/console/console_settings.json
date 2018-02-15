@@ -1,6 +1,7 @@
 {
     # The path to the bitmap font used by the overlay
-    "consoleFont":"graphics/fonts/insignia15LTaa.fnt",
+    "consoleFont":"graphics/fonts/scp_16.fnt",
+    #"consoleFont":"graphics/fonts/insignia15LTaa.fnt", # Starsector's font
 
     # Valid levels: OFF, FATAL, ERROR, WARN, INFO, DEBUG, ALL
     # INFO and above will save all console output to Starsector.log!
