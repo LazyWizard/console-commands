@@ -1,4 +1,4 @@
- 3.0 WIP 6 (XX XX, 2017)
+ 3.0 WIP 7 (XX XX, 2017)
 =========================
 Updated to be compatible with Starsector 0.8a+
 Completely rewrote the input system and added a custom console overlay:

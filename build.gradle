@@ -43,8 +43,8 @@ repositories {
 
 //  Please note: any dependencies marked 'compile' or 'runtime' will be included in the jar!
 dependencies {
-    compile('org.jetbrains.kotlin:kotlin-stdlib') { transitive = false }
-    compile('org.jetbrains.kotlin:kotlin-stdlib-jdk7') { transitive = false }
+    compileOnly('org.jetbrains.kotlin:kotlin-stdlib') { transitive = false }
+    compileOnly('org.jetbrains.kotlin:kotlin-stdlib-jdk7') { transitive = false }
     compileOnly fileTree(dir: gameDir, include: '*.jar', exclude: '*_obf.jar')
     compileOnly files(lazylib)
 }
