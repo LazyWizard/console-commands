@@ -12,9 +12,9 @@ import org.json.JSONObject;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommandStore.StoredCommand;
-import org.lazywizard.console.font.FontException;
-import org.lazywizard.console.font.FontLoader;
-import org.lazywizard.console.font.LazyFont;
+import org.lazywizard.lazylib.ui.FontException;
+import org.lazywizard.lazylib.ui.FontLoader;
+import org.lazywizard.lazylib.ui.LazyFont;
 
 import java.io.IOException;
 import java.security.CodeSource;

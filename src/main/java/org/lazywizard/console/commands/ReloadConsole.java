@@ -4,8 +4,7 @@ import org.json.JSONException;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommandStore;
 import org.lazywizard.console.Console;
-import org.lazywizard.console.ConsoleOverlay;
-import org.lazywizard.console.font.FontException;
+import org.lazywizard.lazylib.ui.FontException;
 
 import java.io.IOException;
 

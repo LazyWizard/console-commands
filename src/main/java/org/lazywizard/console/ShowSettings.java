@@ -8,7 +8,7 @@ import com.fs.starfarer.api.graphics.PositionAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.ui.ValueDisplayMode;
 import org.lazywizard.console.ConsoleSettings.Keystroke;
-import org.lazywizard.console.font.LazyFont.DrawableString;
+import org.lazywizard.lazylib.ui.LazyFont.DrawableString;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
