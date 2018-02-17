@@ -234,6 +234,7 @@ public class List_ implements BaseCommand
         }
 
         // Format and print the list of valid IDs
+        // TODO: Remove string wrapping once overlay breaks strings automatically
         Collections.sort(ids);
         final String results = CollectionUtils.implode(ids, (newLinePerItem ? "\n" : ", "));
         Console.showMessage("Known " + param + " (" + ids.size() + "):\n"
