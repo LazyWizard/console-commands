@@ -81,6 +81,8 @@ Changes to existing commands:
    - No longer accepts crew XP level or quality arguments. Updated syntax:
      SpawnFleet <factionId> <totalFP> [optionalName]
    - Still needs some tweaking for officer numbers and levels
+ - Status:
+   - Removed "detailed" argument; now always provides maximum detail
  - Storage:
    - Now opens immediately after closing the overlay rather than waiting for you
      to unpause the game
