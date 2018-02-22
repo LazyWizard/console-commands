@@ -1,5 +1,6 @@
  3.0 WIP 7 (XX XX, 2017)
 =========================
+(LazyLib 3.0 or higher is required for this mod to function!)
 Updated to be compatible with Starsector 0.8a+
 Completely rewrote the input system and added a custom console overlay:
  - Same system used for both campaign and combat (no more popups or dialogs)
@@ -25,6 +26,8 @@ New commands:
  - AddHullmod, adds the specified modspec to the player's inventory
  - AllHullmods, unlocks all unlearned hullmods
  - BlockRetreat, prevents a full retreat from being ordered by the enemy
+ - CopyModList, copies the list of active mods and their current versions so you
+   can paste that information into a bug report on the forums
  - ForceDeployAll, forces your opponent to deploy all reserves in their fleet
    (warning: this command can seriously impact game performance!)
  - ModInfo, shows detailed info about a mod, including what ships, fighter
