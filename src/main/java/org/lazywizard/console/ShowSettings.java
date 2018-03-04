@@ -49,13 +49,13 @@ public class ShowSettings implements BaseCommand
         private Menu currentMenu;
         private boolean showBackground, showCommands, showMemory, showExceptions, showIndex, homeStorage;
         private int red, green, blue, scrollback;
-        private float threshold;
+        private float threshold, fontScale;
 
         private enum Menu
         {
             MAIN,
             INPUT,
-            COLOR,
+            TEXT,
             OVERLAY,
             MISC,
             LISTEN_KEYSTROKE,
@@ -80,7 +80,8 @@ public class ShowSettings implements BaseCommand
             COLOR_G,
             COLOR_B,
             TYPO_THRESHOLD,
-            MAX_SCROLLBACK
+            MAX_SCROLLBACK,
+            TEXT_SCALE
         }
 
         @Override
@@ -94,6 +95,7 @@ public class ShowSettings implements BaseCommand
             red = outputColor.getRed();
             green = outputColor.getGreen();
             blue = outputColor.getBlue();
+            fontScale = settings.getFontScaling();
             scrollback = settings.getMaxScrollback();
             threshold = settings.getTypoCorrectionThreshold();
             homeStorage = settings.getTransferStorageToHome();
@@ -126,13 +128,13 @@ public class ShowSettings implements BaseCommand
                     text.addParagraph(""); // TODO: Description
                     options.addOption("Input settings", Menu.INPUT,
                             "Customize how the console is summoned and how commands are entered.");
-                    options.addOption("Color settings", Menu.COLOR,
-                            "Customize the colors of the console overlay.");
+                    options.addOption("Text settings", Menu.TEXT,
+                            "Customize the size and color of the console overlay's text.");
                     options.addOption("Misc overlay settings", Menu.OVERLAY,
                             "Customize the overlay.");
                     options.addOption("Misc console settings", Menu.MISC,
                             "Customize the behavior of the console itself.");
-                    options.addOption("Save and exit", Option.EXIT, ""); // TODO: Tooltip
+                    options.addOption("Save and exit", Option.EXIT, "Save settings and exit.");
                     options.setShortcut(Option.EXIT, Keyboard.KEY_ESCAPE, false, false, false, true);
                     break;
                 case INPUT:
@@ -152,8 +154,13 @@ public class ShowSettings implements BaseCommand
                             " Currently multiple commands are separated with '" + settings.getCommandSeparator() + "'.");
                     dialog.getVisualPanel().showCustomPanel(0f, 0f, new KeyListenerPlugin());
                     break;
-                case COLOR:
-                    text.addParagraph("This menu allows you to customize the color of the console overlay.");
+                case TEXT:
+                    text.addParagraph("This menu allows you to customize the text of the console overlay.");
+
+                    // Console overlay font size
+                    options.addSelector("Text Scaling Percentage", Selector.TEXT_SCALE, Color.WHITE, barWidth, 150f, 50, 150, ValueDisplayMode.VALUE,
+                    "Scale displayed text by this percentage of the base font size.");
+                    options.setSelectorValue(Selector.TEXT_SCALE, (int) (fontScale * 100));
 
                     // Console overlay font color
                     options.addSelector("Output Color (red)", Selector.COLOR_R, Color.RED, barWidth, 150f, 0f, 255f, ValueDisplayMode.X_OVER_Y_NO_SPACES,
@@ -268,6 +275,7 @@ public class ShowSettings implements BaseCommand
         private void saveOptions()
         {
             settings.setOutputColor(new Color(red, green, blue));
+            settings.setFontScaling(fontScale);
             settings.setTypoCorrectionThreshold(threshold);
             settings.setMaxScrollback(scrollback);
             settings.setTransferStorageToHome(homeStorage);
@@ -281,12 +289,13 @@ public class ShowSettings implements BaseCommand
         @Override
         public void advance(float amount)
         {
-            if (currentMenu == Menu.COLOR)
+            if (currentMenu == Menu.TEXT)
             {
                 // Clamp color components to int
                 red = (int) options.getSelectorValue(Selector.COLOR_R);
                 green = (int) options.getSelectorValue(Selector.COLOR_G);
                 blue = (int) options.getSelectorValue(Selector.COLOR_B);
+                fontScale = options.getSelectorValue(Selector.TEXT_SCALE) * .01f;
                 options.setSelectorValue(Selector.COLOR_R, red);
                 options.setSelectorValue(Selector.COLOR_G, green);
                 options.setSelectorValue(Selector.COLOR_B, blue);
@@ -340,6 +349,7 @@ public class ShowSettings implements BaseCommand
                 if (pos == null) return;
 
                 testString.setColor(new Color(red, green, blue));
+                testString.setFontSize(Console.getFont().getBaseHeight() * fontScale);
                 testString.draw(pos.getX(), pos.getY());
             }
         }

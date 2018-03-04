@@ -6,6 +6,7 @@ import com.fs.starfarer.api.Global
 import org.apache.log4j.Logger
 import org.lazywizard.console.BaseCommand.CommandContext
 import org.lazywizard.lazylib.StringUtils
+import org.lazywizard.lazylib.opengl.ColorUtils.glColor
 import org.lwjgl.BufferUtils
 import org.lwjgl.Sys
 import org.lwjgl.input.Keyboard
@@ -21,11 +22,12 @@ import java.awt.Color
 import java.lang.management.ManagementFactory
 import java.lang.management.MemoryUsage
 import java.text.DecimalFormat
-import java.util.*
 
+// 4, 227, 81
 private val Log = Logger.getLogger(Console::class.java)
 private var history = ""
 private const val CURSOR_BLINK_SPEED = 0.7f
+private const val HORIZONTAL_MARGIN = 30f // Don't go below 30; TODO: scale minor UI elements using this setting
 
 fun show(context: CommandContext) = with(ConsoleOverlayInternal(context,
         Console.getSettings().outputColor, Console.getSettings().outputColor.darker()))
@@ -39,7 +41,8 @@ fun show(context: CommandContext) = with(ConsoleOverlayInternal(context,
     }
 }
 
-// TODO: This uses a lot of hardcoded magic numbers; need to refactor these into constants at some point
+// TODO: This uses a lot of hardcoded numbers; need to refactor these into constants at some point
+// TODO: Rewrite this to use LazyLib's new UI classes
 private class ConsoleOverlayInternal(private val context: CommandContext, mainColor: Color, secondaryColor: Color) : ConsoleListener {
     private val settings = Console.getSettings()
     private val bgTextureId = if (settings.showBackground) glGenTextures() else 0
@@ -48,12 +51,18 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     private val font = Console.getFont()
     private val width = Display.getWidth() * Display.getPixelScaleFactor()
     private val height = Display.getHeight() * Display.getPixelScaleFactor()
-    private val scrollback = font.createText(text = history, color = mainColor, maxWidth = width - 60f)
+    private val fontSize = font.baseHeight * settings.fontScaling
+    private val minX = HORIZONTAL_MARGIN
+    private val maxX = (width * .86f) - HORIZONTAL_MARGIN // TODO: Find best-looking size
+    private val minY = 50f + fontSize
+    private val maxY = height - 40f
+    private val scrollback = font.createText(text = history, size = fontSize, color = mainColor, maxWidth = maxX - minX)
     private val query = font.createText(text = CommonStrings.INPUT_QUERY, color = secondaryColor, maxWidth = width, maxHeight = 30f)
     private val prompt = font.createText(text = "> ", color = secondaryColor, maxWidth = width, maxHeight = 30f)
     private val input = font.createText(text = "", color = mainColor, maxWidth = width - prompt.width, maxHeight = 45f)
     private val mem = font.createText(text = getMemText(), color = Color.LIGHT_GRAY)
     private val devMode = font.createText(text = "DEVMODE", color = Color.LIGHT_GRAY)
+    private val scrollbar = Scrollbar(maxX + 10f, minY, 10f, maxY - minY, secondaryColor, secondaryColor.darker().darker())
     private val currentInput = StringBuilder()
     private var lastInput: String? = null
     private var scrollOffset = 0f
@@ -65,6 +74,24 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     private var needsTextUpdate = true
     private var lastUpdate = Sys.getTime()
     private var isOpen = false
+
+    private class Scrollbar(val x: Float, val y: Float, val width: Float, val height: Float,
+                            val barColor: Color, val bgColor: Color) {
+        fun draw() {
+            glBegin(GL_QUADS)
+            glColor(bgColor, 0.15f, true)
+            glVertex2f(x, y)
+            glVertex2f(x, y + height)
+            glVertex2f(x + width, y + height)
+            glVertex2f(x + width, y)
+            glColor(barColor, 0.5f, true)
+            glVertex2f(x, y)
+            glVertex2f(x, y + (height / 2f))
+            glVertex2f(x + width, y + (height / 2f))
+            glVertex2f(x + width, y)
+            glEnd()
+        }
+    }
 
     fun show() {
         // Calculates time elapsed since last frame
@@ -123,7 +150,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     override fun showOutput(output: String): Boolean {
         if (!isOpen) return false
 
-        scrollback.appendText(StringUtils.wrapString(output, (width / font.baseHeight * 1.8f).toInt()))
+        scrollback.appendText(output)
         scrollOffset = 0f
         return true
     }
@@ -145,6 +172,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     }
 
     private fun getMemText(): String {
+        // TODO: Add setting to toggle non-heap memory usage visibility (default false) )
         return "Memory used: ${asString(memory.heapMemoryUsage)}" //"   |   Non-heap: ${asString(memory.nonHeapMemoryUsage)}"
     }
 
@@ -154,7 +182,6 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             return
         }
 
-        // TODO: Implement scrollback handling using mousewheel, page up/down
         val scrollY = Mouse.getDWheel()
         scrollOffset -= scrollY * .2f
 
@@ -257,12 +284,12 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                     if (ctrlDown || shiftDown)
                         scrollOffset = minScroll
                     else
-                        scrollOffset -= height - (80 + font.baseHeight)
+                        scrollOffset -= height - (80 + fontSize)
                 } else if (keyPressed == KEY_NEXT) {
                     if (ctrlDown || shiftDown)
                         scrollOffset = 0f
                     else
-                        scrollOffset += height - (80 + font.baseHeight)
+                        scrollOffset += height - (80 + fontSize)
                 }
 
                 // Backspace handling; imitates vanilla text inputs
@@ -325,6 +352,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     }
 
     private fun advance(amount: Float) {
+        // Handle cursor blinking
         nextBlink -= amount
         if (nextBlink <= 0f) {
             showCursor = !showCursor
@@ -333,13 +361,15 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         }
 
         // Ensure scrolling can't go beyond the bounds of the displayed text
-        minScroll = (-scrollback.height + (height - 80 - font.baseHeight)).coerceAtMost(0f)
+        minScroll = (-scrollback.height + (height - 80 - fontSize)).coerceAtMost(0f)
         scrollOffset = scrollOffset.coerceIn(minScroll, 0f)
 
+        // Only update our DrawableStrings when there's actually been a change
         if (needsTextUpdate) {
             needsTextUpdate = false
             val cursor = if (showCursor) "|" else " "
 
+            // Show blinking cursor in the proper position
             if (currentIndex == currentInput.length) input.text = "$currentInput$cursor"
             else input.text = "${currentInput.substring(0, currentIndex)}$cursor${currentInput.substring(currentIndex)}"
 
@@ -368,15 +398,15 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
 
         glEnable(GL_TEXTURE_2D)
         glEnable(GL_BLEND)
-        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
 
         // Draw background
         if (settings.showBackground) {
+            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
             glActiveTexture(GL_TEXTURE0)
             glBindTexture(GL_TEXTURE_2D, bgTextureId)
             glPushMatrix()
             glBegin(GL_QUADS)
-            glColor4f(0.14f, 0.14f, 0.14f, 1f)
+            glColor4f(0.1f, 0.1f, 0.1f, 1f)
             glTexCoord2f(0f, 0f)
             glVertex2f(0f, 0f)
             glTexCoord2f(1f, 0f)
@@ -390,24 +420,35 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         }
 
         // Draw scrollback
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
         glEnable(GL_STENCIL_TEST)
         glColorMask(false, false, false, false)
         glStencilFunc(GL_ALWAYS, 1, 1)
         glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE)
         glBegin(GL_QUADS)
-        glVertex2f(30f, 50f + font.baseHeight)          // LL
-        glVertex2f(30f, height - 40f)                   // UL
-        glVertex2f(width - 30f, height - 40f)           // UR
-        glVertex2f(width - 30f, 50f + font.baseHeight)  // LR
+        glVertex2f(minX, minY)  // LL
+        glVertex2f(minX, maxY)  // UL
+        glVertex2f(maxX, maxY)  // UR
+        glVertex2f(maxX, minY)  // LR
         glEnd()
         glColorMask(true, true, true, true)
         glStencilFunc(GL_EQUAL, 1, 1)
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)
-        scrollback.draw(30f, 50f + font.baseHeight + scrollback.height + scrollOffset)
+        scrollback.draw(minX, minY + scrollback.height + scrollOffset)
         glDisable(GL_STENCIL_TEST)
 
-        // TODO: Draw scrollbar
+        // Debug code; draws scrollback limits to test string wrapping is working correctly
+        /*glLineWidth(1f)
+        glColor(Color.WHITE)
+        glBegin(GL_LINES)
+        glVertex2f(minX - 1, minY)  // LL
+        glVertex2f(minX - 1, maxY)  // UL
+        glVertex2f(maxX + 1, maxY)  // UR
+        glVertex2f(maxX + 1, minY)  // LR
+        glEnd()*/
 
+        // TODO: Draw scrollbar
+        //System.out.println("Scroll: $scrollOffset | Min scroll: $minScroll  | Size: ${scrollback.height}")
 
         // Draw input prompt
         query.draw(30f, 50f)
@@ -415,8 +456,13 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         input.draw(30f + prompt.width, 30f)
 
         // Draw misc stats
-        if (settings.showMemoryUsage) mem.draw(50f, height - font.baseHeight)
-        if (Global.getSettings().isDevMode) devMode.draw(width - (50f + devMode.width), height - font.baseHeight)
+        if (settings.showMemoryUsage) mem.draw(50f, height - fontSize)
+        if (Global.getSettings().isDevMode) devMode.draw(maxX - (50f + devMode.width), height - fontSize)
+
+        // Draw scrollbar
+        glDisable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        scrollbar.draw()
 
         // Clear OpenGL flags
         glPopMatrix()
