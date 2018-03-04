@@ -12,10 +12,10 @@ import kotlin.reflect.KProperty
  */
 object ConsoleSettings {
     private val prefs = Preferences.userNodeForPackage(Console::class.java)
+    var fontScaling by FloatPref("fontScaling", default = 1.0f)
     var commandSeparator by StringPref("commandSeparator", default = ";")
     var maxScrollback by IntPref("maxScrollback", default = 10_000)
     var typoCorrectionThreshold by FloatPref("typoCorrectionThreshold", default = 0.9f)
-    // TODO: Update Settings to support showBackground
     var showBackground by BoolPref("showBackground", default = true)
     var transferStorageToHome by BoolPref("transferStorageToHome", default = false)
     var showEnteredCommands by BoolPref("showEnteredCommands", default = true)
@@ -111,11 +111,11 @@ object ConsoleSettings {
             if (!Keyboard.isKeyDown(keyCode)) return false
 
             if (ctrl && !(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)
-                    || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))) return false
+                            || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))) return false
             if (alt && !(Keyboard.isKeyDown(Keyboard.KEY_LMENU)
-                    || Keyboard.isKeyDown(Keyboard.KEY_RMENU))) return false
+                            || Keyboard.isKeyDown(Keyboard.KEY_RMENU))) return false
             if (shift && !(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)
-                    || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))) return false
+                            || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))) return false
 
             return true
         }

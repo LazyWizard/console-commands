@@ -106,11 +106,7 @@ public class Console
     public static void showMessage(String message, Level logLevel)
     {
         // Add message to the output queue
-        output.append(message);
-        if (!message.endsWith("\n"))
-        {
-            output.append('\n');
-        }
+        output.append('\n').append(message);
 
         // Also add to Starsector's log
         Log.log(logLevel, message);
