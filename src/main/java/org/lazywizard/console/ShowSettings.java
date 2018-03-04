@@ -295,7 +295,7 @@ public class ShowSettings implements BaseCommand
                 red = (int) options.getSelectorValue(Selector.COLOR_R);
                 green = (int) options.getSelectorValue(Selector.COLOR_G);
                 blue = (int) options.getSelectorValue(Selector.COLOR_B);
-                fontScale = options.getSelectorValue(Selector.TEXT_SCALE) * .01f;
+                fontScale = ((int) options.getSelectorValue(Selector.TEXT_SCALE)) / 100f;
                 options.setSelectorValue(Selector.COLOR_R, red);
                 options.setSelectorValue(Selector.COLOR_G, green);
                 options.setSelectorValue(Selector.COLOR_B, blue);
