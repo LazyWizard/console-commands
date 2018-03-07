@@ -5,7 +5,6 @@ package org.lazywizard.console
 import com.fs.starfarer.api.Global
 import org.apache.log4j.Logger
 import org.lazywizard.console.BaseCommand.CommandContext
-import org.lazywizard.lazylib.StringUtils
 import org.lazywizard.lazylib.opengl.ColorUtils.glColor
 import org.lwjgl.BufferUtils
 import org.lwjgl.Sys
@@ -147,6 +146,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         devMode.dispose()
     }
 
+    // TODO: Add explicit indentation support
     override fun showOutput(output: String): Boolean {
         if (!isOpen) return false
 
@@ -437,16 +437,6 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         scrollback.draw(minX, minY + scrollback.height + scrollOffset)
         glDisable(GL_STENCIL_TEST)
 
-        // Debug code; draws scrollback limits to test string wrapping is working correctly
-        /*glLineWidth(1f)
-        glColor(Color.WHITE)
-        glBegin(GL_LINES)
-        glVertex2f(minX - 1, minY)  // LL
-        glVertex2f(minX - 1, maxY)  // UL
-        glVertex2f(maxX + 1, maxY)  // UR
-        glVertex2f(maxX + 1, minY)  // LR
-        glEnd()*/
-
         // TODO: Draw scrollbar
         //System.out.println("Scroll: $scrollOffset | Min scroll: $minScroll  | Size: ${scrollback.height}")
 
@@ -463,6 +453,16 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         glDisable(GL_TEXTURE_2D)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         scrollbar.draw()
+
+        // Draw scrollback bounds
+        glLineWidth(1f)
+        glColor(Color.GRAY, 0.2f, true)
+        glBegin(GL_LINE_LOOP)
+        glVertex2f(minX - 1f, minY - 1f)  // LL
+        glVertex2f(minX - 1f, maxY + 1f)  // UL
+        glVertex2f(maxX + 1f, maxY + 1f)  // UR
+        glVertex2f(maxX + 1f, minY - 1f)  // LR
+        glEnd()
 
         // Clear OpenGL flags
         glPopMatrix()
