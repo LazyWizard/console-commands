@@ -51,7 +51,6 @@ public class NoCooldown implements BaseCommand
 
     private static class NoCooldownPlugin extends BaseEveryFrameCombatPlugin
     {
-        private final IntervalUtil nextCheck = new IntervalUtil(0.05f, 0.05f);
         private boolean active = true, firstRun = true;
         private CombatEngineAPI engine;
 
@@ -69,25 +68,19 @@ public class NoCooldown implements BaseCommand
                 return;
             }
 
-            nextCheck.advance(amount);
-            if (firstRun || nextCheck.intervalElapsed())
+            for (ShipAPI ship : engine.getShips())
             {
-                firstRun = false;
-
-                for (ShipAPI ship : engine.getShips())
+                if (ship.isHulk() || ship.isShuttlePod()
+                        || !(ship.getOwner() == FleetSide.PLAYER.ordinal()))
                 {
-                    if (ship.isHulk() || ship.isShuttlePod()
-                            || !(ship.getOwner() == FleetSide.PLAYER.ordinal()))
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    for (WeaponAPI wep : ship.getAllWeapons())
+                for (WeaponAPI wep : ship.getAllWeapons())
+                {
+                    if (wep.getCooldownRemaining() > 0f)
                     {
-                        if (wep.getCooldownRemaining() >= 0.1f)
-                        {
-                            wep.setRemainingCooldownTo(0.1f);
-                        }
+                        wep.setRemainingCooldownTo(0.0001f);
                     }
                 }
             }

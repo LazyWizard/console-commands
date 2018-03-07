@@ -77,6 +77,7 @@ Changes to existing commands:
    - "aliases", shows all aliases added through aliases.csv
    - "macros", shows all macros usable within the RunCode command
    - "tags", shows all tags and their associated commands
+ - NoCooldown negates cooldown entirely (previously set cooldown to 0.1 seconds)
  - Respec should properly reset skill-granted bonuses
  - SpawnFleet:
    - Updated to use FleetFactoryV2; mostly matches vanilla fleet compositions
