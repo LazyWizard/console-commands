@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModManagerAPI;
 import com.fs.starfarer.api.ModSpecAPI;
@@ -14,7 +15,6 @@ import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
-import org.lazywizard.lazylib.StringUtils;
 
 // TODO: A lot of these static methods should be moved to LazyLib's ModUtils
 // TODO: Remove string wrapping once overlay breaks strings automatically
@@ -122,10 +122,7 @@ public class ModInfo implements BaseCommand
             return " (" + toImplode.size() + "):\n" + CollectionUtils.implode(toImplode);
         }
 
-        // Just pretend you didn't see this abomination, okay?
-        return " (" + toImplode.size() + "):\n"
-                + StringUtils.indent(StringUtils.wrapString(CollectionUtils.implode(toImplode),
-                        80 - indent), pad(indent, ' '));
+        return " (" + toImplode.size() + "):\n" + CommandUtils.indent(CollectionUtils.implode(toImplode), indent);
     }
 
     public static String getInfo(ModSpecAPI mod)
@@ -139,7 +136,7 @@ public class ModInfo implements BaseCommand
                 .append("\n - Display name: ").append(mod.getName())
                 .append("\n - Author: ").append(mod.getAuthor())
                 .append("\n - Description:\n")
-                .append(StringUtils.indent(StringUtils.wrapString(mod.getDesc(),75), "     "))
+                .append(CommandUtils.indent(mod.getDesc(), 5))
                 .append("\n - Version: ").append(mod.getVersion())
                 .append("\n - Total conversion: ").append(mod.isTotalConversion())
                 .append("\n - Utility: ").append(mod.isUtility())

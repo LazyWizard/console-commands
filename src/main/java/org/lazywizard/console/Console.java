@@ -7,6 +7,7 @@ import com.fs.starfarer.api.campaign.InteractionDialogPlugin;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.lazywizard.console.BaseCommand.CommandContext;
@@ -15,6 +16,7 @@ import org.lazywizard.console.CommandStore.StoredCommand;
 import org.lazywizard.lazylib.ui.FontException;
 import org.lazywizard.lazylib.ui.FontLoader;
 import org.lazywizard.lazylib.ui.LazyFont;
+import org.lwjgl.opengl.Display;
 
 import java.io.IOException;
 import java.security.CodeSource;
@@ -83,6 +85,16 @@ public class Console
         return lastCommand;
     }
 
+    static float getFontSize()
+    {
+        return font.getBaseHeight() * getSettings().getFontScaling();
+    }
+
+    static float getScrollbackWidth()
+    {
+        return (Display.getWidth() * Display.getPixelScaleFactor() * .85f) - ConsoleOverlay.HORIZONTAL_MARGIN;
+    }
+
     public static Object getCommandTarget(CommandContext context)
     {
         return (context.isInCombat() ? Global.getCombatEngine().getPlayerShip().getShipTarget()
@@ -125,6 +137,28 @@ public class Console
     public static void showMessage(String message)
     {
         showMessage(message, Level.INFO);
+    }
+
+    /**
+     * Displays an indented message to the user. The message will be formatted and shown
+     * to the player when they reach a section of the game where it can be
+     * displayed properly (combat/campaign map).
+     * <p>
+     *
+     * @param preamble    An optional argument; this part of the message will not be indented.
+     * @param message     The indented message to show.
+     * @param indentation The number of spaces to indent {@code message} with.
+     *                    <p>
+     * @since 3.0
+     */
+    public static void showIndentedMessage(@Nullable String preamble, String message, int indentation)
+    {
+        if (preamble != null && !preamble.isEmpty())
+        {
+            showMessage(preamble);
+        }
+
+        showMessage(CommandUtils.indent(message, indentation), Level.INFO);
     }
 
     /**

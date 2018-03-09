@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModSpecAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
@@ -15,12 +16,8 @@ import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
-import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.CommandStore;
-import org.lazywizard.console.CommonStrings;
-import org.lazywizard.console.Console;
+import org.lazywizard.console.*;
 import org.lazywizard.lazylib.CollectionUtils;
-import org.lazywizard.lazylib.StringUtils;
 
 public class List_ implements BaseCommand
 {
@@ -124,9 +121,9 @@ public class List_ implements BaseCommand
                     final List<String> commandsWithTag = CommandStore.getCommandsWithTag(tag);
                     Collections.sort(commandsWithTag);
 
-                    ids.add(tag + " (" + commandsWithTag.size() + "):\n"
-                            + StringUtils.indent(StringUtils.wrapString(
-                                    CollectionUtils.implode(commandsWithTag),74), "   "));
+                    // Multi-indent is slightly more complicated to avoid word-wrapping issues
+                    ids.add(tag + " (" + commandsWithTag.size() + "):\n" + CommandUtils.indent(
+                            CollectionUtils.implode(commandsWithTag), 3, "   "));
                 }
                 break;
             case "mods":
@@ -209,8 +206,8 @@ public class List_ implements BaseCommand
                     ids.add(market.getId() + " in " + market.getContainingLocation().getName()
                             + " (" + market.getFaction().getDisplayName() + ", "
                             + (market.getFaction() == null ? "no faction)"
-                                    : market.getFaction().getRelationshipLevel(
-                                            player.getFaction()).getDisplayName() + ")"));
+                            : market.getFaction().getRelationshipLevel(
+                            player.getFaction()).getDisplayName() + ")"));
                 }
                 break;
             default:
@@ -223,7 +220,7 @@ public class List_ implements BaseCommand
             final String filter = args.substring(args.indexOf(' ') + 1);
             param += " starting with \"" + filter + "\"";
 
-            for (Iterator<String> iter = ids.iterator(); iter.hasNext();)
+            for (Iterator<String> iter = ids.iterator(); iter.hasNext(); )
             {
                 String id = iter.next().toLowerCase();
                 if (!id.startsWith(filter))
@@ -234,11 +231,9 @@ public class List_ implements BaseCommand
         }
 
         // Format and print the list of valid IDs
-        // TODO: Remove string wrapping once overlay breaks strings automatically
         Collections.sort(ids);
         final String results = CollectionUtils.implode(ids, (newLinePerItem ? "\n" : ", "));
-        Console.showMessage("Known " + param + " (" + ids.size() + "):\n"
-                + StringUtils.indent(StringUtils.wrapString(results,77), "   "));
+        Console.showIndentedMessage("Known " + param + " (" + ids.size() + "):", results, 3);
         return CommandResult.SUCCESS;
     }
 }
