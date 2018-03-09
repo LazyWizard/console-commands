@@ -1,18 +1,13 @@
 package org.lazywizard.console.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommandStore;
+import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
-import org.lazywizard.lazylib.StringUtils;
 
-// TODO: Remove string wrapping once overlay breaks strings automatically
+import java.util.*;
+
 public class Status implements BaseCommand
 {
     @Override
@@ -29,18 +24,17 @@ public class Status implements BaseCommand
         // Commands
         List<String> tmp = CommandStore.getLoadedCommands();
         Collections.sort(tmp);
-        commands = "(" + tmp.size() + ")\n" + CollectionUtils.implode(tmp);
+        commands = "(" + tmp.size() + "):\n" + CommandUtils.indent(CollectionUtils.implode(tmp), 3);
 
         // Tags
         tmp = CommandStore.getKnownTags();
         Collections.sort(tmp);
-        tags = "(" + tmp.size() + ")\n" + CollectionUtils.implode(tmp);
+        tags = "(" + tmp.size() + "):\n" + CommandUtils.indent(CollectionUtils.implode(tmp), 3);
 
         // Command sources
         tmp = new ArrayList<>(rawSources);
         Collections.sort(tmp);
-        sources = "(" + tmp.size() + ")\n"
-                + StringUtils.indent(CollectionUtils.implode(tmp, "\n"), "   ");
+        sources = "(" + tmp.size() + "):\n" + CommandUtils.indent(CollectionUtils.implode(tmp, "\n"), 3);
 
         // Aliases
         tmp = new ArrayList<>();
@@ -49,15 +43,14 @@ public class Status implements BaseCommand
             tmp.add(entry.getKey() + ": " + entry.getValue());
         }
         Collections.sort(tmp);
-        aliases = "(" + tmp.size() + ")\n"
-                + StringUtils.indent(CollectionUtils.implode(tmp, "\n"), "   ");
+        aliases = "(" + tmp.size() + "):\n" + CommandUtils.indent(CollectionUtils.implode(tmp, "\n"), 3);
 
         String status = "Console status:"
                 + "\n - Current context: " + context.name()
-                + "\n - Loaded commands: " + commands
-                + "\n - Loaded tags: " + tags
-                + "\n - Loaded aliases: " + aliases
-                + "\n - Mods that added commands: " + sources;
+                + "\n - Loaded commands " + commands
+                + "\n - Loaded tags " + tags
+                + "\n - Loaded aliases " + aliases
+                + "\n - Mods that added commands " + sources;
 
         Console.showMessage(status);
         return CommandResult.SUCCESS;

@@ -1,20 +1,17 @@
 package org.lazywizard.console;
 
-import java.text.NumberFormat;
-import java.util.*;
-
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.CargoAPI;
-import com.fs.starfarer.api.campaign.FactionAPI;
-import com.fs.starfarer.api.campaign.LocationAPI;
-import com.fs.starfarer.api.campaign.SectorEntityToken;
-import com.fs.starfarer.api.campaign.StarSystemAPI;
+import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI;
 import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Submarkets;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
+import org.jetbrains.annotations.Nullable;
+
+import java.text.NumberFormat;
+import java.util.*;
 
 // TODO: Javadoc this class
 public class CommandUtils
@@ -311,6 +308,42 @@ public class CommandUtils
     public static String format(float toFormat)
     {
         return NumberFormat.getNumberInstance().format(toFormat);
+    }
+
+    /**
+     * Indents and word-wraps a {@link String} to fit within the console's overlay.
+     *
+     * @param message             The {@link String} to be indented.
+     * @param indentation         The number of spaces to indent {@code message} with.
+     * @param existingIndentation Any existing indentation, for complicated messages that are indented multiple times.
+     * @return {@code message}, indented and word-wrapped to fit within the console overlay.
+     * @since 3.0
+     */
+    public static String indent(String message, int indentation, @Nullable String existingIndentation)
+    {
+        if (existingIndentation != null)
+        {
+            final float maxWidth = Console.getScrollbackWidth() - (Console.getFont().calcWidth(
+                    existingIndentation, Console.getFontSize()));
+            return Console.getFont().wrapString(message, Console.getFontSize(),
+                    maxWidth, Float.MAX_VALUE, indentation);
+        }
+
+        return Console.getFont().wrapString(message, Console.getFontSize(),
+                Console.getScrollbackWidth(), Float.MAX_VALUE, indentation);
+    }
+
+    /**
+     * Indents and word-wraps a {@link String} to fit within the console's overlay.
+     *
+     * @param message     The {@link String} to be indented.
+     * @param indentation The number of spaces to indent {@code message} with.
+     * @return {@code message}, indented and word-wrapped to fit within the console overlay.
+     * @since 3.0
+     */
+    public static String indent(String message, int indentation)
+    {
+        return indent(message, indentation, null);
     }
 
     public static FactionAPI findBestFactionMatch(String name)

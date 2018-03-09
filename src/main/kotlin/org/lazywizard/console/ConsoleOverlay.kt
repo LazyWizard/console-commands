@@ -26,7 +26,7 @@ import java.text.DecimalFormat
 private val Log = Logger.getLogger(Console::class.java)
 private var history = ""
 private const val CURSOR_BLINK_SPEED = 0.7f
-private const val HORIZONTAL_MARGIN = 30f // Don't go below 30; TODO: scale minor UI elements using this setting
+const val HORIZONTAL_MARGIN = 30f // Don't go below 30; TODO: scale minor UI elements using this setting
 
 fun show(context: CommandContext) = with(ConsoleOverlayInternal(context,
         Console.getSettings().outputColor, Console.getSettings().outputColor.darker()))
@@ -35,6 +35,8 @@ fun show(context: CommandContext) = with(ConsoleOverlayInternal(context,
         show()
     } catch (ex: Exception) {
         Console.showException("The console overlay encountered an error and was destroyed: ", ex)
+        Log.error("Scrollback at time of destruction:\n\n$history\n\n -- END SCROLLBACK --\n")
+        history = ""
     } finally {
         dispose()
     }
@@ -50,15 +52,15 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     private val font = Console.getFont()
     private val width = Display.getWidth() * Display.getPixelScaleFactor()
     private val height = Display.getHeight() * Display.getPixelScaleFactor()
-    private val fontSize = font.baseHeight * settings.fontScaling
+    private val fontSize = Console.getFontSize()
     private val minX = HORIZONTAL_MARGIN
-    private val maxX = (width * .86f) - HORIZONTAL_MARGIN // TODO: Find best-looking size
+    private val maxX = minX + Console.getScrollbackWidth()
     private val minY = 50f + fontSize
     private val maxY = height - 40f
     private val scrollback = font.createText(text = history, size = fontSize, color = mainColor, maxWidth = maxX - minX)
     private val query = font.createText(text = CommonStrings.INPUT_QUERY, color = secondaryColor, maxWidth = width, maxHeight = 30f)
     private val prompt = font.createText(text = "> ", color = secondaryColor, maxWidth = width, maxHeight = 30f)
-    private val input = font.createText(text = "", color = mainColor, maxWidth = width - prompt.width, maxHeight = 45f)
+    private val input = font.createText(text = "", color = mainColor, maxWidth = width - (prompt.width + 60f), maxHeight = 45f)
     private val mem = font.createText(text = getMemText(), color = Color.LIGHT_GRAY)
     private val devMode = font.createText(text = "DEVMODE", color = Color.LIGHT_GRAY)
     private val scrollbar = Scrollbar(maxX + 10f, minY, 10f, maxY - minY, secondaryColor, secondaryColor.darker().darker())
@@ -71,7 +73,6 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     private var nextBlink = CURSOR_BLINK_SPEED
     private var showCursor = true
     private var needsTextUpdate = true
-    private var lastUpdate = Sys.getTime()
     private var isOpen = false
 
     private class Scrollbar(val x: Float, val y: Float, val width: Float, val height: Float,
@@ -94,6 +95,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
 
     fun show() {
         // Calculates time elapsed since last frame
+        var lastUpdate = Sys.getTime()
         fun calcDelta(): Float {
             val curTime = Sys.getTime()
             val delta = (curTime - lastUpdate).toFloat() / Sys.getTimerResolution()
@@ -101,7 +103,9 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             return delta
         }
 
-        // Save current screen image to texture
+        // Save the current screen to a texture, to be used as the overlay background
+        // This texture will be extremely low quality to save VRAM, but since the
+        // background will be drawn darkened, the compression shouldn't be noticeable
         if (settings.showBackground) {
             val buffer = BufferUtils.createByteBuffer(width.toInt() * height.toInt() * 3)
             glReadPixels(0, 0, width.toInt(), height.toInt(), GL_RGB, GL_UNSIGNED_BYTE, buffer)
@@ -129,7 +133,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             Display.sync(40)
         }
 
-        // Clean up texture and clear any remaining input events
+        // Clean up background texture (if any) and clear any remaining input events
         if (settings.showBackground) glDeleteTextures(bgTextureId)
         Keyboard.destroy()
         Keyboard.create()
@@ -166,6 +170,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         return "${BYTE_FORMAT.format(digits)} ${units[digitGroups]}"
     }
 
+    // Creates readable memory usage string; ex: "8% (248.6 MB/2.9 GB)"
     private fun asString(usage: MemoryUsage): String = with(usage) {
         val percent = DecimalFormat.getPercentInstance().format(used / Math.max(max, committed).toDouble())
         "$percent (${asString(used)}/${asString(Math.max(max, committed))})"
