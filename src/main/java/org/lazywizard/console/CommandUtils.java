@@ -145,28 +145,33 @@ public class CommandUtils
 
     /**
      * @return A {@link Map.Entry} whose key contains the closest match to {@code id} (or null if no match was found),
-     *         and whose value contains the {@link Collection} the match came from, if one was found.
+     * and whose value contains the {@link Collection} the match came from, if one was found.
      */
-    public static Map.Entry<String, Collection<String>> findBestStringMatch(String id, Collection<String> ... sources)
+    public static Map.Entry<String, Collection<String>> findBestStringMatch(String id, Collection<String>... sources)
     {
         Collection<String> bestSource = null;
         String bestMatch = null;
         double closestDistance = Console.getSettings().getTypoCorrectionThreshold();
-        for (Collection<String> toSearch : sources) {
-            if (toSearch.contains(id)) {
+        for (Collection<String> toSearch : sources)
+        {
+            if (toSearch.contains(id))
+            {
                 return new AbstractMap.SimpleImmutableEntry<>(id, toSearch);
             }
 
             id = id.toLowerCase();
 
-            for (String str : toSearch) {
+            for (String str : toSearch)
+            {
                 double distance = calcSimilarity(id, str.toLowerCase());
 
-                if (distance == 1.0) {
+                if (distance == 1.0)
+                {
                     return new AbstractMap.SimpleImmutableEntry<>(id, toSearch);
                 }
 
-                if (distance > closestDistance) {
+                if (distance > closestDistance)
+                {
                     closestDistance = distance;
                     bestMatch = str;
                     bestSource = toSearch;
@@ -211,7 +216,7 @@ public class CommandUtils
     {
         String bestMatch = null;
         float bestScore = 0f;
-        for (Map.Entry<String, Float> entry: toSearch)
+        for (Map.Entry<String, Float> entry : toSearch)
         {
             final String id = entry.getKey();
             final float score = entry.getValue();
@@ -392,6 +397,53 @@ public class CommandUtils
         return bestMatch;
     }
 
+    public static MarketAPI findBestMarketMatch(String name)
+    {
+        name = name.toLowerCase();
+        MarketAPI bestMatch = null;
+        double closestDistance = Console.getSettings().getTypoCorrectionThreshold();
+
+        // Check IDs first in case multiple markets share the same name
+        final List<MarketAPI> markets = Global.getSector().getEconomy().getMarketsCopy();
+        for (MarketAPI market : markets)
+        {
+            double distance = calcSimilarity(name, market.getId().toLowerCase());
+
+            if (distance == 1.0)
+            {
+                return market;
+            }
+
+            if (distance > closestDistance)
+            {
+                closestDistance = distance;
+                bestMatch = market;
+            }
+        }
+
+        // Search again by name if no matching ID is found
+        if (bestMatch == null)
+        {
+            for (MarketAPI market : markets)
+            {
+                double distance = calcSimilarity(name, market.getName().toLowerCase());
+
+                if (distance == 1.0)
+                {
+                    return market;
+                }
+
+                if (distance > closestDistance)
+                {
+                    closestDistance = distance;
+                    bestMatch = market;
+                }
+            }
+        }
+
+        return bestMatch;
+    }
+
     public static StarSystemAPI findBestSystemMatch(String name)
     {
         name = name.toLowerCase();
@@ -439,7 +491,7 @@ public class CommandUtils
     }
 
     public static SectorEntityToken findBestTokenMatch(String name,
-            Collection<SectorEntityToken> toSearch)
+                                                       Collection<SectorEntityToken> toSearch)
     {
         name = name.toLowerCase();
         SectorEntityToken bestMatch = null;
@@ -487,7 +539,7 @@ public class CommandUtils
     }
 
     public static List<SectorEntityToken> getEntitiesWithTags(LocationAPI location,
-            String... tags)
+                                                              String... tags)
     {
         final Set<SectorEntityToken> tokens = new HashSet<>();
         for (String tag : tags)
@@ -505,7 +557,7 @@ public class CommandUtils
 
     @SuppressWarnings("deprecation")
     private static SectorEntityToken findTokenInLocation(String toFind,
-            LocationAPI location, String... validTags)
+                                                         LocationAPI location, String... validTags)
     {
         SectorEntityToken tmp = location.getEntityByName(toFind);
 
