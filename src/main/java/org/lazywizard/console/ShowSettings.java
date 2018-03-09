@@ -128,10 +128,8 @@ public class ShowSettings implements BaseCommand
                     text.addParagraph(""); // TODO: Description
                     options.addOption("Input settings", Menu.INPUT,
                             "Customize how the console is summoned and how commands are entered.");
-                    options.addOption("Text settings", Menu.TEXT,
-                            "Customize the size and color of the console overlay's text.");
-                    options.addOption("Misc overlay settings", Menu.OVERLAY,
-                            "Customize the overlay.");
+                    options.addOption("Overlay settings", Menu.OVERLAY,
+                            "Customize the console overlay.");
                     options.addOption("Misc console settings", Menu.MISC,
                             "Customize the behavior of the console itself.");
                     options.addOption("Save and exit", Option.EXIT, "Save settings and exit.");
@@ -180,6 +178,8 @@ public class ShowSettings implements BaseCommand
                     text.addParagraph(""); // TODO: Description
 
                     // Misc overlay options
+                    options.addOption("Text settings", Menu.TEXT,
+                            "Customize the size and color of the console overlay's text.");
                     options.addOption("Show background: " + (showBackground ? "true" : "false"),
                     Option.SHOW_BACKGROUND, getToggleOptionColor(showBackground),
                             "Whether to show the paused game in the background of the overlay.");
@@ -218,7 +218,13 @@ public class ShowSettings implements BaseCommand
                     break;
             }
 
-            if (menu != Menu.MAIN)
+            // Add back button
+            if (menu == Menu.TEXT)
+            {
+                options.addOption("Back", Menu.OVERLAY, "Return to the overlay settings menu.");
+                options.setShortcut(Menu.OVERLAY, Keyboard.KEY_ESCAPE, false, false, false, true);
+            }
+            else if (menu != Menu.MAIN)
             {
                 options.addOption("Back", Menu.MAIN, "Return to the main settings menu.");
                 options.setShortcut(Menu.MAIN, Keyboard.KEY_ESCAPE, false, false, false, true);
