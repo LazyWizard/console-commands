@@ -75,20 +75,41 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     private var needsTextUpdate = true
     private var isOpen = false
 
-    private class Scrollbar(val x: Float, val y: Float, val width: Float, val height: Float,
-                            val barColor: Color, val bgColor: Color) {
+    private inner class Scrollbar(val x: Float, val y: Float, val width: Float, val height: Float,
+                                  val barColor: Color, val bgColor: Color) {
+        var barY = y
+        var barHeight = 0f
+
+        // TODO: Handle mouse events (click+drag to scroll)
+        fun advance(amount: Float) {
+            val contentRatio = (maxY - minY) / scrollback.height
+            val scrollRatio = scrollOffset / minScroll
+            if (contentRatio > 1f) {
+                barHeight = 0f
+                barY = y
+            } else {
+                barHeight = height * contentRatio
+                barY = y + ((height - barHeight) * scrollRatio)
+            }
+        }
+
         fun draw() {
+            // Only draw scrollbar if content exceeds screen space
+            if (barHeight <= 0f) return
+
             glBegin(GL_QUADS)
-            glColor(bgColor, 0.15f, true)
+            // Background
+            glColor(bgColor, 0.2f, true)
             glVertex2f(x, y)
             glVertex2f(x, y + height)
             glVertex2f(x + width, y + height)
             glVertex2f(x + width, y)
+            // Foreground
             glColor(barColor, 0.5f, true)
-            glVertex2f(x, y)
-            glVertex2f(x, y + (height / 2f))
-            glVertex2f(x + width, y + (height / 2f))
-            glVertex2f(x + width, y)
+            glVertex2f(x, barY)
+            glVertex2f(x, barY + barHeight)
+            glVertex2f(x + width, barY + barHeight)
+            glVertex2f(x + width, barY)
             glEnd()
         }
     }
@@ -357,6 +378,8 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     }
 
     private fun advance(amount: Float) {
+        Console.advance(amount, this)
+
         // Handle cursor blinking
         nextBlink -= amount
         if (nextBlink <= 0f) {
@@ -380,9 +403,9 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
 
             if (settings.showCursorIndex) input.appendText(" | Index: $currentIndex/${currentInput.length}")
             if (settings.showMemoryUsage) mem.text = getMemText()
-
-            Console.advance(amount, this)
         }
+
+        scrollbar.advance(amount)
     }
 
     private fun render() {
