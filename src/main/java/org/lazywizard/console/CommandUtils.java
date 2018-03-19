@@ -52,8 +52,8 @@ public class CommandUtils
 
             // now try to find it in s2
             for (int ix2 = Math.max(0, ix - maxdist);
-                    ix2 < Math.min(s2.length(), ix + maxdist);
-                    ix2++)
+                 ix2 < Math.min(s2.length(), ix + maxdist);
+                 ix2++)
             {
                 if (ch == s2.charAt(ix2))
                 {
@@ -89,8 +89,10 @@ public class CommandUtils
         // (2) common prefix modification
         int p = 0; // length of prefix
         int last = Math.min(4, s1.length());
-        for (; p < last && s1.charAt(p) == s2.charAt(p); p++)
-      ;
+        while (p < last && s1.charAt(p) == s2.charAt(p))
+        {
+            p++;
+        }
 
         score += ((p * (1 - score)) / 10);
 
@@ -321,6 +323,7 @@ public class CommandUtils
      * @param message             The {@link String} to be indented.
      * @param indentation         The number of spaces to indent {@code message} with.
      * @param existingIndentation Any existing indentation, for complicated messages that are indented multiple times.
+     *                            Can be {@code null}.
      * @return {@code message}, indented and word-wrapped to fit within the console overlay.
      * @since 3.0
      */
