@@ -24,6 +24,7 @@ AllWings,org.lazywizard.console.commands.AllWings,"core,campaign",allwings [opti
 BlockRetreat,org.lazywizard.console.commands.BlockRetreat,"core,combat",blockretreat (no arguments),"Toggles whether the enemy can order a full retreat. Individual ships may still be able to flee."
 Clear,org.lazywizard.console.commands.Clear,"core,console",clear (no arguments),"Clears the console overlay's scrollback."
 CopyModList,org.lazywizard.console.commands.CopyModList,"core,console",copymodlist (no arguments),"Copies the list of active mods and their versions to the clipboard, so you can easily post them in a bug report on the official forums."
+DebugDialogs,org.lazywizard.console.commands.DebugDialogs,"core,campaign",debugdialogs (no arguments),"Toggles a mode where all rule-based dialogs will print any memory map changes when an option is selected."
 DevMode,org.lazywizard.console.commands.DevMode,"core,console",devmode [optionalOnOrOff],"Enables or disables dev mode. If no argument is given, acts as a toggle."
 EndCombat,org.lazywizard.console.commands.EndCombat,"core,combat",endcombat [optionalWinningSide],"Ends combat with the entered side as the winner (player or enemy). No ships are damaged by this command. If no side is entered, defaults to a player victory."
 #Find,org.lazywizard.console.commands.Find,"core,campaign",find <entityName>,"Lists all campaign entities whose name contains the given arguments (not case-sensitive), as well as their current locations."
