@@ -1,0 +1,5 @@
+id,trigger,conditions,script,text,options,notes
+consoleDebugOpen,OpenInteractionDialog,"$global.consoleDebug
+!$consoleChecked score:9999999","ConsoleShowMemoryChanges $option","[Dialog opened]",,
+consoleDebugSelected,DialogOptionSelected,"$global.consoleDebug
+!$consoleChecked score:9999999","ConsoleShowMemoryChanges $option","[Option selected: $option]",,

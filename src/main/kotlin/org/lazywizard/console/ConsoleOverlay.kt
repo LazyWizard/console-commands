@@ -82,9 +82,13 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
 
         // TODO: Handle mouse events (click+drag to scroll)
         fun advance(amount: Float) {
+            // Determine size and relative position of scrollbar
             val contentRatio = (maxY - minY) / scrollback.height
             val scrollRatio = scrollOffset / minScroll
-            if (contentRatio > 1f) {
+            // Don't draw the scrollbar if the screen can fit the entire scrollback
+            // scrollRatio should never be NaN unless contentRatio is infinity,
+            // but I'm including the check just in case the code changes later
+            if (contentRatio > 1f || scrollRatio.isNaN()) {
                 barHeight = 0f
                 barY = y
             } else {

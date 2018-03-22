@@ -1,5 +1,9 @@
 {
     "plugins":{
         "ConsoleCombatListener":"org.lazywizard.console.ConsoleCombatListener"
-    }
+    },
+
+    "ruleCommandPackages":[
+        "org.lazywizard.console.rulecmd"
+    ],
 }
