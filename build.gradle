@@ -1,8 +1,6 @@
 import java.nio.file.Paths
 import groovy.json.JsonSlurper
 
-// TODO: Add Example Commands mod as a sub-project and include its zip in the buildMod task
-
 apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'org.jetbrains.dokka'
@@ -95,7 +93,15 @@ task zipDoc(type: Zip, dependsOn: dokka) {
     destinationDir = file(outputPath)
 }
 
-task zipMod(type: Zip, dependsOn: [buildMod, zipDoc]) {
+task zipExample(type: Zip) {
+    from('src/main/examplemod')
+    into 'Example Mod-Added Commands'
+    include '**/*'
+    archiveName = 'Example Mod-Added Commands.zip'
+    destinationDir = file(outputPath)
+}
+
+task zipMod(type: Zip, dependsOn: [buildMod, zipDoc, zipExample]) {
     from(outputPath) { into 'Console Commands' }
     include '**/*'
     archiveName = "Console Commands ${modVersion}.zip"
@@ -117,5 +123,10 @@ buildMod {
 
 zipMod {
     description = 'Builds the mod and creates a zip archive ready for distribution.'
+    group = 'build'
+}
+
+zipExample {
+    description = 'Zips the example mod and adds its archive to the mod folder.'
     group = 'build'
 }
