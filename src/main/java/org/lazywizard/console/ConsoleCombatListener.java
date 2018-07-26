@@ -74,6 +74,7 @@ public class ConsoleCombatListener extends BaseEveryFrameCombatPlugin implements
             return false;
         }
 
+        // Fallback if the console overlay doesn't exist for some reason
         final String[] messages = output.split("\n");
         Collections.reverse(Arrays.asList(messages));
         for (String message : messages)
