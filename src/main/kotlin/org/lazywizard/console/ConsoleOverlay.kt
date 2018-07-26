@@ -212,6 +212,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             return
         }
 
+        // Mouse wheel scrolling
         val scrollY = Mouse.getDWheel()
         scrollOffset -= scrollY * .2f
 
@@ -248,7 +249,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                     continue
                 }
 
-                // Tab auto-completes the command
+                // Tab auto-completes the current command
                 if (keyPressed == KEY_TAB) {
                     // Get just the current command (separator support complicates things)
                     val startIndex = currentInput.lastIndexOf(settings.commandSeparator, currentIndex) + 1
@@ -412,6 +413,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         scrollbar.advance(amount)
     }
 
+    // TODO: Dynamically resize scrollback and input text to fit multiple lines of input
     private fun render() {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT)
         glClearColor(0f, 0f, 0f, 1f)

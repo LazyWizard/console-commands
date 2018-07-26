@@ -21,8 +21,8 @@ ext {
 }
 
 buildscript {
-    ext.kotlin_version = '1.2.30'
-    ext.dokka_version = '0.9.15'
+    ext.kotlin_version = '1.2.51'
+    ext.dokka_version = '0.9.17'
 
     repositories {
         mavenCentral()
@@ -62,8 +62,15 @@ jar {
 }
 
 dokka {
-    outputFormat = 'html'
+    outputFormat = 'javadoc'
     outputDirectory = "$buildDir/javadoc"
+    // Excludes
+    for (def subpackage : ['commands', 'rulecmd', 'ui']) {
+        packageOptions {
+            prefix = 'org.lazywizard.console.' + subpackage
+            suppress = true
+        }
+    }
 }
 
 task printProps() {
