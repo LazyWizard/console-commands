@@ -21,7 +21,7 @@ ext {
 }
 
 buildscript {
-    ext.kotlin_version = '1.2.51'
+    ext.kotlin_version = '1.2.61'
     ext.dokka_version = '0.9.17'
 
     repositories {
@@ -64,7 +64,7 @@ jar {
 dokka {
     outputFormat = 'javadoc'
     outputDirectory = "$buildDir/javadoc"
-    // Excludes
+    // Packages excluded from javadoc
     for (def subpackage : ['commands', 'rulecmd', 'ui']) {
         packageOptions {
             prefix = 'org.lazywizard.console.' + subpackage

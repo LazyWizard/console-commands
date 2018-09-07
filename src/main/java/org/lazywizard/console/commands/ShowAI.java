@@ -53,8 +53,10 @@ public class ShowAI implements BaseCommand
 
     private static class ShowAIPlugin extends BaseEveryFrameCombatPlugin
     {
+        private static final float BLINK_SPEED = 5f;
         private boolean active = true;
         private CombatEngineAPI engine;
+        private float alphaTimer = -1f; // Advances from -1 to 1; absolute value is used for smooth fading
 
         @Override
         public void advance(float amount, List<InputEventAPI> events)
@@ -63,6 +65,9 @@ public class ShowAI implements BaseCommand
             {
                 engine.removePlugin(this);
             }
+
+            alphaTimer += amount * BLINK_SPEED;
+            if (alphaTimer >= 1f) alphaTimer = -1f;
         }
 
         @Override
@@ -73,6 +78,9 @@ public class ShowAI implements BaseCommand
                 return;
             }
 
+            // Used to make the lines flash a bit for better readability (still not great w/ many lasers)
+            final float alpha = 0.5f + (0.2f * Math.abs(alphaTimer)), halfAlpha = alpha * 0.5f;
+
             // Set OpenGL flags
             glPushAttrib(GL_ALL_ATTRIB_BITS);
             glMatrixMode(GL_PROJECTION);
@@ -81,46 +89,43 @@ public class ShowAI implements BaseCommand
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
             // Draw the ship's target and maneuver targets
-            if (SHOW_TARGET || SHOW_MANEUVER_TARGET || SHOW_MOUSE_TARGET)
+            glBegin(GL_LINES);
+            for (ShipAPI ship : Global.getCombatEngine().getShips())
             {
-                glBegin(GL_LINES);
-                for (ShipAPI ship : Global.getCombatEngine().getShips())
+                final Vector2f shipLoc = ship.getLocation();
+
+                if (SHOW_TARGET && ship.getShipTarget() != null)
                 {
-                    final Vector2f shipLoc = ship.getLocation();
+                    final Vector2f targetLoc = ship.getShipTarget().getLocation();
+                    glColor(Color.RED, alpha, true);
+                    glVertex2f(shipLoc.x, shipLoc.y);
+                    glColor(Color.RED, halfAlpha, true);
+                    glVertex2f(targetLoc.x, targetLoc.y);
+                }
 
-                    if (SHOW_TARGET && ship.getShipTarget() != null)
+                if (SHOW_MANEUVER_TARGET && ship.getShipTarget() == null)
+                {
+                    final Object tmpTarget = ship.getAIFlags().getCustom(ShipwideAIFlags.AIFlags.MANEUVER_TARGET);
+                    if (tmpTarget instanceof ShipAPI)
                     {
-                        final Vector2f targetLoc = ship.getShipTarget().getLocation();
-                        glColor(Color.RED, .8f, true);
+                        final Vector2f targetLoc = ((ShipAPI) tmpTarget).getLocation();
+                        glColor(Color.CYAN, alpha, true);
                         glVertex2f(shipLoc.x, shipLoc.y);
-                        glColor(Color.RED, .25f, true);
-                        glVertex2f(targetLoc.x, targetLoc.y);
-                    }
-
-                    if (SHOW_MANEUVER_TARGET)
-                    {
-                        final Object tmpTarget = ship.getAIFlags().getCustom(ShipwideAIFlags.AIFlags.MANEUVER_TARGET);
-                        if (tmpTarget instanceof ShipAPI)
-                        {
-                            final Vector2f targetLoc = ((ShipAPI) tmpTarget).getLocation();
-                            glColor(Color.CYAN, .8f, true);
-                            glVertex2f(shipLoc.x, shipLoc.y);
-                            glColor(Color.CYAN, .25f, true);
-                            glVertex2f(targetLoc.x, targetLoc.y);
-                        }
-                    }
-
-                    if (SHOW_MOUSE_TARGET && ship.getMouseTarget() != null)
-                    {
-                        final Vector2f targetLoc = ship.getMouseTarget();
-                        glColor(Color.DARK_GRAY, .8f, true);
-                        glVertex2f(shipLoc.x, shipLoc.y);
-                        glColor(Color.DARK_GRAY, .25f, true);
+                        glColor(Color.CYAN, halfAlpha, true);
                         glVertex2f(targetLoc.x, targetLoc.y);
                     }
                 }
-                glEnd();
+
+                if (SHOW_MOUSE_TARGET && ship.getMouseTarget() != null)
+                {
+                    final Vector2f targetLoc = ship.getMouseTarget();
+                    glColor(Color.DARK_GRAY, alpha, true);
+                    glVertex2f(shipLoc.x, shipLoc.y);
+                    glColor(Color.DARK_GRAY, halfAlpha, true);
+                    glVertex2f(targetLoc.x, targetLoc.y);
+                }
             }
+            glEnd();
 
             // Finalize drawing
             glDisable(GL_BLEND);
