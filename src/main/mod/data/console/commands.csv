@@ -64,6 +64,7 @@ SetCommission,org.lazywizard.console.commands.SetCommission,"core,campaign",setc
 SetHome,org.lazywizard.console.commands.SetHome,"core,campaign",sethome [optionalHome],"Sets the point to be teleported to with the 'home' command.\nIf an argument is entered, the command will try to find a token with that name in the system. Otherwise, it will select a nearby object (or raw coordinates if no valid station or planet is found)."
 SetRelation,org.lazywizard.console.commands.SetRelationship,"core,campaign",setrelation all|<faction> [optionalTowardsFaction] <amount>,"Sets the relationship between two factions to the given number. If no second faction is entered, relationship with the player faction is affected. Faction relationships range between -100 and 100."
 Settings,org.lazywizard.console.ShowSettings,"core,console,campaign",settings (no arguments)|reset,"Opens the console settings menu. Entering 'reset' as an argument will reset console settings to their defaults (requires an application restart to take effect)."
+ShowAI,org.lazywizard.console.commands.ShowAI,"core,combat",showai (no arguments),"Toggles rendering of AI targets (ship target, maneuvering target, and mouse target) for all ships on the battle map."
 ShowBounds,org.lazywizard.console.commands.ShowBounds,"core,combat",showbounds (no arguments),"Toggles rendering of collision bounds, collision radius, and shield radius (if applicable) for all ships on the battle map."
 ShowLoc,org.lazywizard.console.commands.ShowLoc,"core,campaign,combat",showloc (no arguments),"Shows the coordinates of your current location."
 SourceOf,org.lazywizard.console.commands.SourceOf,"core,console",sourceof <command>|all,"Shows what mod a specific command came from, or all commands' sources if all is entered."
@@ -73,3 +74,6 @@ Storage,org.lazywizard.console.commands.Storage,"core,campaign",storage (no argu
 Suicide,org.lazywizard.console.commands.Suicide,"core,campaign,combat",suicide (no arguments),"Kills the currently piloted ship, or the entire player fleet if used on the campaign map."
 ToggleAI,org.lazywizard.console.commands.ToggleAI,"core,combat",toggleai (no arguments),"Toggles the AI of the selected ship."
 Traitor,org.lazywizard.console.commands.Traitor,"core,combat",traitor (no arguments),"Toggles the side the selected ship will fight for."
+
+
+#TestCom,org.lazywizard.console.commands.Test,"core",testcom (variable),"For quick testing. Don't bother uncommenting; it probably won't do anything interesting."

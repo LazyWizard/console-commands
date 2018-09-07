@@ -1,18 +1,7 @@
 package org.lazywizard.console.commands;
 
-import java.awt.Color;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
-import com.fs.starfarer.api.combat.CombatEngineAPI;
-import com.fs.starfarer.api.combat.ShieldAPI;
-import com.fs.starfarer.api.combat.ShipAPI;
-import com.fs.starfarer.api.combat.ViewportAPI;
+import com.fs.starfarer.api.combat.*;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.util.IntervalUtil;
 import com.fs.starfarer.api.util.Misc;
@@ -22,7 +11,13 @@ import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.FastTrig;
 import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
-import static org.lazywizard.lazylib.opengl.ColorUtils.*;
+
+import java.awt.*;
+import java.lang.ref.WeakReference;
+import java.util.*;
+import java.util.List;
+
+import static org.lazywizard.lazylib.opengl.ColorUtils.glColor;
 import static org.lwjgl.opengl.GL11.*;
 
 public class ShowBounds implements BaseCommand
@@ -49,7 +44,7 @@ public class ShowBounds implements BaseCommand
             tmp = new ShowBoundsPlugin();
             plugin = new WeakReference<>(tmp);
             Global.getCombatEngine().addPlugin(tmp);
-            Console.showMessage("Bounds rendering enabled.");
+            Console.showMessage("Bounds rendering enabled. Legend:\n - White lines: ship collision bounds\n - Gray circle: collision radius (collisions are only checked in this circle)\n - Blue circle: shield radius\n - Red ellipse: target radius (AI uses this for weapon distance checks)");
         }
         else
         {
@@ -93,7 +88,7 @@ public class ShowBounds implements BaseCommand
                     ship.setRenderBounds(true);
                 }
 
-                for (Iterator<ShipAPI> iter = renderers.keySet().iterator(); iter.hasNext();)
+                for (Iterator<ShipAPI> iter = renderers.keySet().iterator(); iter.hasNext(); )
                 {
                     if (!engine.isEntityInPlay(iter.next()))
                     {
@@ -175,7 +170,6 @@ public class ShowBounds implements BaseCommand
 
             if (SHOW_TARGET_RADIUS)
             {
-
                 final List<Vector2f> pointsAroundRadius = MathUtils.getPointsAlongCircumference(
                         ship.getLocation(), ship.getCollisionRadius() * 2f, NUM_POINTS, 0f);
                 for (int x = 0; x < NUM_POINTS; x++)
