@@ -126,7 +126,7 @@ public class ShowBounds implements BaseCommand
                     renderers.put(ship, new PointRenderer(ship));
                 }
 
-                renderers.get(ship).draw(ship.getLocation(), ship.getFacing());
+                renderers.get(ship).draw(ship);
             }
 
             // Finalize drawing
@@ -157,7 +157,7 @@ public class ShowBounds implements BaseCommand
             {
                 pointData.add(new PointData(MathUtils.getPointsAlongCircumference(
                         ship.getLocation(), ship.getCollisionRadius(), NUM_POINTS, 0f),
-                        new Color(.5f, .5f, .5f, .25f), false));
+                        new Color(.5f, .5f, .5f, .25f), false, true, true));
             }
 
             if (SHOW_SHIELD_RADIUS && ship.getShield() != null)
@@ -165,7 +165,8 @@ public class ShowBounds implements BaseCommand
                 final ShieldAPI shield = ship.getShield();
                 pointData.add(new PointData(MathUtils.getPointsAlongCircumference(
                         shield.getLocation(), shield.getRadius(), NUM_POINTS, 0f),
-                        new Color(0f, .5f, .5f, .25f), !shield.getLocation().equals(ship.getLocation())));
+                        new Color(0f, .5f, .5f, .25f), !shield.getLocation().equals(ship.getLocation()),
+                        true, false));
             }
 
             if (SHOW_TARGET_RADIUS)
@@ -181,20 +182,23 @@ public class ShowBounds implements BaseCommand
                 }
 
                 pointData.add(new PointData(pointsAroundRadius,
-                        new Color(1f, 0.25f, 0.25f, .25f), true));
+                        new Color(1f, 0.25f, 0.25f, .25f), true, false, false));
             }
 
             ship.getLocation().set(origLoc);
             ship.setFacing(origFacing);
         }
 
-        private void draw(Vector2f center, float facing)
+        private void draw(ShipAPI ship)
         {
-            facing = (float) Math.toRadians(facing);
+            final Vector2f center = ship.getLocation();
+            final float facing = (float) Math.toRadians(ship.getFacing());
             final float cos = (float) FastTrig.cos(facing),
                     sin = (float) FastTrig.sin(facing);
             for (PointData data : pointData)
             {
+                if ((ship.isHulk() && !data.drawIfHulk) || (ship.isPiece() && !data.drawIfPiece)) continue;
+
                 if (data.shouldRotate)
                 {
                     glColor(data.color);
@@ -224,13 +228,16 @@ public class ShowBounds implements BaseCommand
     {
         private final List<Vector2f> points;
         private final Color color;
-        private final boolean shouldRotate;
+        private final boolean shouldRotate, drawIfHulk, drawIfPiece;
 
-        private PointData(List<Vector2f> points, Color color, boolean shouldRotate)
+        private PointData(List<Vector2f> points, Color color, boolean shouldRotate,
+                          boolean drawIfHulk, boolean drawIfPiece)
         {
             this.points = points;
             this.color = color;
             this.shouldRotate = shouldRotate;
+            this.drawIfHulk = drawIfHulk;
+            this.drawIfPiece = drawIfPiece;
         }
     }
 }
