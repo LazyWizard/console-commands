@@ -1,5 +1,6 @@
 package org.lazywizard.console
 
+import com.fs.starfarer.api.input.InputEventAPI
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.util.prefs.Preferences
@@ -107,6 +108,7 @@ object ConsoleSettings {
     //</editor-fold>
 
     class Keystroke(val keyCode: Int, val ctrl: Boolean, val alt: Boolean, val shift: Boolean) {
+        // Will not consume events! Use the other method when InputEventAPI is available!
         fun isPressed(): Boolean {
             if (!Keyboard.isKeyDown(keyCode)) return false
 
@@ -118,6 +120,22 @@ object ConsoleSettings {
                             || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))) return false
 
             return true
+        }
+
+        fun isPressed(events: List<InputEventAPI>): Boolean {
+            for (event in events) {
+                if (!event.isKeyDownEvent) continue
+                if (event.eventValue != keyCode) continue
+
+                if (ctrl && !event.isCtrlDown) return false
+                if (alt && !event.isAltDown) return false
+                if (shift && !event.isShiftDown) return false
+
+                event.consume()
+                return true
+            }
+
+            return false
         }
 
         override fun toString(): String {

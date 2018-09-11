@@ -43,7 +43,6 @@ fun show(context: CommandContext) = with(ConsoleOverlayInternal(context,
 }
 
 // TODO: This uses a lot of hardcoded numbers; need to refactor these into constants at some point
-// TODO: Rewrite this to use LazyLib's new UI classes
 private class ConsoleOverlayInternal(private val context: CommandContext, mainColor: Color, secondaryColor: Color) : ConsoleListener {
     private val settings = Console.getSettings()
     private val bgTextureId = if (settings.showBackground) glGenTextures() else 0
@@ -160,8 +159,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
 
         // Clean up background texture (if any) and clear any remaining input events
         if (settings.showBackground) glDeleteTextures(bgTextureId)
-        Keyboard.destroy()
-        Keyboard.create()
+        while (Keyboard.next()) Keyboard.poll()
     }
 
     fun dispose() {

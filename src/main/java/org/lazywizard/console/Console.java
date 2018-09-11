@@ -95,7 +95,7 @@ public class Console
         return (Display.getWidth() * Display.getPixelScaleFactor() * .85f) - ConsoleOverlay.HORIZONTAL_MARGIN;
     }
 
-    public static Object getCommandTarget(CommandContext context)
+    static Object getCommandTarget(CommandContext context)
     {
         return (context.isInCombat() ? Global.getCombatEngine().getPlayerShip().getShipTarget()
                 : Global.getSector().getPlayerFleet().getInteractionTarget());
