@@ -5,5 +5,5 @@
   "utility":"true",
   "version":"0.3",
   "description":"Provides a template and several examples of adding custom commands to the console mod.",
-  "gameVersion":"0.8.2a"
+  "gameVersion":"0.8.1a"
 }

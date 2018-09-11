@@ -76,4 +76,4 @@ ToggleAI,org.lazywizard.console.commands.ToggleAI,"core,combat",toggleai (no arg
 Traitor,org.lazywizard.console.commands.Traitor,"core,combat",traitor (no arguments),"Toggles the side the selected ship will fight for."
 
 
-#TestCom,org.lazywizard.console.commands.Test,"core",testcom (variable),"For quick testing. Don't bother uncommenting; it probably won't do anything interesting."
+#TestCom,org.lazywizard.console.commands.Test,"core",testcom (variable),"Personal command for quick prototyping. Don't bother uncommenting; it probably won't do anything interesting."
