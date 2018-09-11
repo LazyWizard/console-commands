@@ -204,6 +204,15 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         return "Memory used: ${asString(memory.heapMemoryUsage)}" //"   |   Non-heap: ${asString(memory.nonHeapMemoryUsage)}"
     }
 
+    private fun getMemColor(usage: MemoryUsage): Color = with(usage) {
+        val total = Math.max(max, committed)
+        val portion = used / total
+        val remaining = total - used
+        if (remaining < (1024 * 1024 * 200) || portion > 0.9) return Color.RED
+        else if (remaining < (1024 * 1024 * 400) || portion > 0.8) return Color.YELLOW
+        return Color.GREEN
+    }
+
     private fun checkInput() {
         if (Keyboard.isKeyDown(KEY_ESCAPE)) {
             isOpen = false
@@ -405,7 +414,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             else input.text = "${currentInput.substring(0, currentIndex)}$cursor${currentInput.substring(currentIndex)}"
 
             if (settings.showCursorIndex) input.appendText(" | Index: $currentIndex/${currentInput.length}")
-            if (settings.showMemoryUsage) mem.text = getMemText()
+            if (settings.showMemoryUsage) { mem.text = getMemText(); mem.color = getMemColor(memory.heapMemoryUsage) }
         }
 
         scrollbar.advance(amount)
@@ -469,9 +478,6 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         scrollback.draw(minX, minY + scrollback.height + scrollOffset)
         glDisable(GL_STENCIL_TEST)
 
-        // TODO: Draw scrollbar
-        //System.out.println("Scroll: $scrollOffset | Min scroll: $minScroll  | Size: ${scrollback.height}")
-
         // Draw input prompt
         query.draw(30f, 50f)
         prompt.draw(30f, 30f)
@@ -488,7 +494,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
 
         // Draw scrollback bounds
         glLineWidth(1f)
-        glColor(Color.GRAY, 0.2f, true)
+        glColor(Color.GRAY, 0.1f, true)
         glBegin(GL_LINE_LOOP)
         glVertex2f(minX - 1f, minY - 1f)  // LL
         glVertex2f(minX - 1f, maxY + 1f)  // UL
