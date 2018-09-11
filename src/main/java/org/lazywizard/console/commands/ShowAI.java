@@ -6,6 +6,8 @@ import com.fs.starfarer.api.input.InputEventAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import org.lazywizard.lazylib.MathUtils;
+import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
@@ -70,6 +72,13 @@ public class ShowAI implements BaseCommand
             if (alphaTimer >= 1f) alphaTimer = -1f;
         }
 
+        private static Vector2f getLineEndpoint(ShipAPI source, ShipAPI target)
+        {
+            return MathUtils.getPointOnCircumference(source.getLocation(),
+                    MathUtils.getDistance(target, source.getLocation()),
+                    VectorUtils.getAngle(source.getLocation(), target.getLocation()));
+        }
+
         @Override
         public void renderInWorldCoords(ViewportAPI view)
         {
@@ -87,6 +96,7 @@ public class ShowAI implements BaseCommand
             glDisable(GL_TEXTURE_2D);
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glLineWidth(3f + (2f * Math.abs(alphaTimer)));
 
             // Draw the ship's target and maneuver targets
             glBegin(GL_LINES);
@@ -96,7 +106,7 @@ public class ShowAI implements BaseCommand
 
                 if (SHOW_TARGET && ship.getShipTarget() != null)
                 {
-                    final Vector2f targetLoc = ship.getShipTarget().getLocation();
+                    final Vector2f targetLoc = getLineEndpoint(ship, ship.getShipTarget());
                     glColor(Color.RED, alpha, true);
                     glVertex2f(shipLoc.x, shipLoc.y);
                     glColor(Color.RED, halfAlpha, true);
@@ -108,7 +118,7 @@ public class ShowAI implements BaseCommand
                     final Object tmpTarget = ship.getAIFlags().getCustom(ShipwideAIFlags.AIFlags.MANEUVER_TARGET);
                     if (tmpTarget instanceof ShipAPI)
                     {
-                        final Vector2f targetLoc = ((ShipAPI) tmpTarget).getLocation();
+                        final Vector2f targetLoc = getLineEndpoint(ship, ((ShipAPI) tmpTarget));
                         glColor(Color.CYAN, alpha, true);
                         glVertex2f(shipLoc.x, shipLoc.y);
                         glColor(Color.CYAN, halfAlpha, true);
