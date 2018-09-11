@@ -31,7 +31,7 @@ public class ConsoleCombatListener extends BaseEveryFrameCombatPlugin implements
         ShipAPI player = engine.getPlayerShip();
         if (player != null && engine.isEntityInPlay(player))
         {
-            if (Console.getSettings().getConsoleSummonKey().isPressed())
+            if (Console.getSettings().getConsoleSummonKey().isPressed(events))
             {
                 ConsoleOverlay.show(context);
             }
