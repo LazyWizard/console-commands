@@ -124,8 +124,7 @@ object ConsoleSettings {
 
         fun isPressed(events: List<InputEventAPI>): Boolean {
             for (event in events) {
-                if (!event.isKeyDownEvent) continue
-                if (event.eventValue != keyCode) continue
+                if (event.isConsumed || !event.isKeyDownEvent || event.eventValue != keyCode) continue
 
                 if (ctrl && !event.isCtrlDown) return false
                 if (alt && !event.isAltDown) return false
