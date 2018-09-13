@@ -139,9 +139,9 @@ object ConsoleSettings {
 
         override fun toString(): String {
             var str = if (keyCode == Keyboard.KEY_BACK) "BACKSPACE" else Keyboard.getKeyName(keyCode).toUpperCase()
-            if (shift) str = "SHIFT+" + str
-            if (alt) str = "ALT+" + str
-            if (ctrl) str = "CONTROL+" + str
+            if (shift) str = "SHIFT+$str"
+            if (alt) str = "ALT+$str"
+            if (ctrl) str = "CONTROL+$str"
             return str
         }
     }
