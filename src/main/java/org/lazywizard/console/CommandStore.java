@@ -98,10 +98,7 @@ public class CommandStore
                     commandTags.add(tag);
 
                     // Add to global list of tags
-                    if (!tags.contains(tag))
-                    {
-                        tags.add(tag);
-                    }
+                    tags.add(tag);
                 }
 
                 // Built command info, register it in the master command list

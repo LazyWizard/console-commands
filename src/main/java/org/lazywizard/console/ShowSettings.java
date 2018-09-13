@@ -340,8 +340,9 @@ public class ShowSettings implements BaseCommand
         private class ColorDisplayPlugin extends BaseUIPlugin
         {
             private PositionAPI pos;
-            private DrawableString testString = Console.getFont().createText(
-                    "This is what the console's text would\nlook like with the current settings.", Console.getSettings().getOutputColor());
+            private final DrawableString testString = Console.getFont().createText(
+                    "This is what the console's text would\nlook like with the current settings.",
+                    Console.getSettings().getOutputColor());
 
             @Override
             public void positionChanged(PositionAPI position)

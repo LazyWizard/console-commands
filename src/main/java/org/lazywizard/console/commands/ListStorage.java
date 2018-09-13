@@ -89,7 +89,7 @@ public class ListStorage implements BaseCommand
 
             final SubmarketAPI storage = market.getSubmarket(Submarkets.SUBMARKET_STORAGE);
             final SubmarketPlugin plugin = storage.getPlugin();
-            if (plugin == null || !(plugin instanceof StoragePlugin))
+            if (!(plugin instanceof StoragePlugin))
             {
                 continue;
             }
