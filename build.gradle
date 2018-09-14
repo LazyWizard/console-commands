@@ -21,7 +21,7 @@ ext {
 }
 
 buildscript {
-    ext.kotlin_version = '1.2.61'
+    ext.kotlin_version = '1.2.70'
     ext.dokka_version = '0.9.17'
 
     repositories {

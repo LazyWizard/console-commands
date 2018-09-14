@@ -14,7 +14,6 @@ import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommandStore.StoredCommand;
 import org.lazywizard.lazylib.ui.FontException;
-import org.lazywizard.lazylib.ui.FontLoader;
 import org.lazywizard.lazylib.ui.LazyFont;
 import org.lwjgl.opengl.Display;
 
@@ -57,7 +56,7 @@ public class Console
         // The sprite font used by the console overlay
         try
         {
-            font = FontLoader.loadFont(settingsFile.getString("consoleFont"));
+            font = LazyFont.loadFont(settingsFile.getString("consoleFont"));
         }
         catch (FontException ex)
         {
