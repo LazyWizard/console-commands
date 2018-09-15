@@ -192,10 +192,11 @@ public class ShowBounds implements BaseCommand
                     final List<Vector2f> points = new ArrayList<>(bounds.getSegments().size());
                     for (BoundsAPI.SegmentAPI segment : bounds.getSegments())
                     {
-                        points.add(segment.getP1());
+                        points.add(new Vector2f(segment.getP1()));
                     }
 
                     pointData.add(new PointData(points, new Color(1f, 1f, 1f, 1f), GL_LINE_LOOP, true, true, true));
+                    bounds.update(origLoc, origFacing);
                 }
             }
 
