@@ -23,6 +23,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class ShowBounds implements BaseCommand
 {
+    private static final boolean SHOW_COLLISION_BOUNDS = true;
     private static final boolean SHOW_COLLISION_RADIUS = true;
     private static final boolean SHOW_SHIELD_RADIUS = true;
     private static final boolean SHOW_TARGET_RADIUS = true;
@@ -154,7 +155,7 @@ public class ShowBounds implements BaseCommand
             {
                 pointData.add(new PointData(MathUtils.getPointsAlongCircumference(
                         ship.getLocation(), ship.getCollisionRadius(), NUM_POINTS, 0f),
-                        new Color(.5f, .5f, .5f, .25f), false, true, true));
+                        new Color(.5f, .5f, .5f, .25f), GL_POLYGON, false, true, true));
             }
 
             if (SHOW_SHIELD_RADIUS && ship.getShield() != null)
@@ -162,7 +163,7 @@ public class ShowBounds implements BaseCommand
                 final ShieldAPI shield = ship.getShield();
                 pointData.add(new PointData(MathUtils.getPointsAlongCircumference(
                         shield.getLocation(), shield.getRadius(), NUM_POINTS, 0f),
-                        new Color(0f, .5f, .5f, .25f), !shield.getLocation().equals(ship.getLocation()),
+                        new Color(0f, .5f, .5f, .25f), GL_POLYGON, !shield.getLocation().equals(ship.getLocation()),
                         true, false));
             }
 
@@ -179,7 +180,23 @@ public class ShowBounds implements BaseCommand
                 }
 
                 pointData.add(new PointData(pointsAroundRadius,
-                        new Color(1f, 0.25f, 0.25f, .25f), true, false, false));
+                        new Color(1f, 0.25f, 0.25f, .25f), GL_POLYGON, true, false, false));
+            }
+
+            if (SHOW_COLLISION_BOUNDS)
+            {
+                final BoundsAPI bounds = ship.getExactBounds();
+                if (bounds != null)
+                {
+                    bounds.update(ship.getLocation(), ship.getFacing());
+                    final List<Vector2f> points = new ArrayList<>(bounds.getSegments().size());
+                    for (BoundsAPI.SegmentAPI segment : bounds.getSegments())
+                    {
+                        points.add(segment.getP1());
+                    }
+
+                    pointData.add(new PointData(points, new Color(1f, 1f, 1f, 1f), GL_LINE_LOOP, true, true, true));
+                }
             }
 
             if (SHOW_FIGHTER_BAYS && ship.getNumFighterBays() > 0)
@@ -189,7 +206,7 @@ public class ShowBounds implements BaseCommand
                     if (slot.getWeaponType() == WeaponAPI.WeaponType.LAUNCH_BAY)
                     {
                         pointData.add(new PointData(MathUtils.getPointsAlongCircumference(slot.computePosition(ship),
-                                15f, 4, 0f), new Color(1f, 0.1f, 1f, 0.5f), true, true, false));
+                                15f, 4, 0f), new Color(1f, 0.1f, 1f, 0.5f), GL_POLYGON, true, true, false));
                     }
                 }
             }
@@ -200,19 +217,7 @@ public class ShowBounds implements BaseCommand
 
         private void draw(ShipAPI ship)
         {
-            final BoundsAPI bounds = ship.getExactBounds();
-            if (bounds != null)
-            {
-                bounds.update(ship.getLocation(), ship.getFacing());
-                glLineWidth(3f);
-                glColor(Color.WHITE);
-                glBegin(GL_LINE_LOOP);
-                for (BoundsAPI.SegmentAPI segment : bounds.getSegments()){
-                    glVertex2f(segment.getP1().x, segment.getP1().y);
-                }
-                glEnd();
-            }
-
+            glLineWidth(2f);
             final Vector2f center = ship.getLocation();
             final float facing = (float) Math.toRadians(ship.getFacing());
             final float cos = (float) FastTrig.cos(facing),
@@ -224,7 +229,7 @@ public class ShowBounds implements BaseCommand
                 if (data.shouldRotate)
                 {
                     glColor(data.color);
-                    glBegin(GL_POLYGON);
+                    glBegin(data.drawMode);
                     for (Vector2f point : data.points)
                     {
                         glVertex2f((point.x * cos) - (point.y * sin) + center.x,
@@ -235,7 +240,7 @@ public class ShowBounds implements BaseCommand
                 else
                 {
                     glColor(data.color);
-                    glBegin(GL_POLYGON);
+                    glBegin(data.drawMode);
                     for (Vector2f point : data.points)
                     {
                         glVertex2f(point.x + center.x, point.y + center.y);
@@ -250,13 +255,15 @@ public class ShowBounds implements BaseCommand
     {
         private final List<Vector2f> points;
         private final Color color;
+        private final int drawMode;
         private final boolean shouldRotate, drawIfHulk, drawIfPiece;
 
-        private PointData(List<Vector2f> points, Color color, boolean shouldRotate,
+        private PointData(List<Vector2f> points, Color color, int drawMode, boolean shouldRotate,
                           boolean drawIfHulk, boolean drawIfPiece)
         {
             this.points = points;
             this.color = color;
+            this.drawMode = drawMode;
             this.shouldRotate = shouldRotate;
             this.drawIfHulk = drawIfHulk;
             this.drawIfPiece = drawIfPiece;
