@@ -1,6 +1,6 @@
  3.0 WIP 7 (XX XX, 2017)
 =========================
-(LazyLib 3.0 or higher is required for this mod to function!)
+(LazyLib 2.3 or higher is required for this mod to function!)
 Updated to be compatible with Starsector 0.8a+
 Completely rewrote the input system and added a custom console overlay:
  - Same system used for both campaign and combat (no more popups or dialogs)
