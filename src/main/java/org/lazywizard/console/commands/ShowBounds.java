@@ -3,6 +3,7 @@ package org.lazywizard.console.commands;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.*;
 import com.fs.starfarer.api.input.InputEventAPI;
+import com.fs.starfarer.api.loading.WeaponSlotAPI;
 import com.fs.starfarer.api.util.IntervalUtil;
 import com.fs.starfarer.api.util.Misc;
 import org.lazywizard.console.BaseCommand;
@@ -25,6 +26,7 @@ public class ShowBounds implements BaseCommand
     private static final boolean SHOW_COLLISION_RADIUS = true;
     private static final boolean SHOW_SHIELD_RADIUS = true;
     private static final boolean SHOW_TARGET_RADIUS = true;
+    private static final boolean SHOW_FIGHTER_BAYS = true;
     private static final int NUM_POINTS = 144;
     private static WeakReference<ShowBoundsPlugin> plugin;
 
@@ -44,7 +46,12 @@ public class ShowBounds implements BaseCommand
             tmp = new ShowBoundsPlugin();
             plugin = new WeakReference<>(tmp);
             Global.getCombatEngine().addPlugin(tmp);
-            Console.showMessage("Bounds rendering enabled. Legend:\n - White lines: ship collision bounds\n - Gray circle: collision radius (collisions are only checked in this circle)\n - Blue circle: shield radius\n - Red ellipse: target radius (AI uses this for weapon distance checks)");
+            Console.showMessage("Bounds rendering enabled. Legend:\n" +
+                    " - White lines: ship collision bounds\n" +
+                    " - Gray circle: collision radius (collisions are only checked in this circle)\n" +
+                    " - Blue circle: shield radius\n" +
+                    " - Red ellipse: target radius (AI uses this for weapon distance checks)\n" +
+                    " - Purple diamonds: fighter launch bays");
         }
         else
         {
@@ -69,11 +76,6 @@ public class ShowBounds implements BaseCommand
         {
             if (!active)
             {
-                for (ShipAPI ship : engine.getShips())
-                {
-                    ship.setRenderBounds(false);
-                }
-
                 engine.removePlugin(this);
                 return;
             }
@@ -82,11 +84,6 @@ public class ShowBounds implements BaseCommand
             if (firstRun || nextCheck.intervalElapsed())
             {
                 firstRun = false;
-
-                for (ShipAPI ship : engine.getShips())
-                {
-                    ship.setRenderBounds(true);
-                }
 
                 for (Iterator<ShipAPI> iter = renderers.keySet().iterator(); iter.hasNext(); )
                 {
@@ -101,7 +98,7 @@ public class ShowBounds implements BaseCommand
         @Override
         public void renderInWorldCoords(ViewportAPI view)
         {
-            if (!(SHOW_COLLISION_RADIUS || SHOW_SHIELD_RADIUS || SHOW_TARGET_RADIUS))
+            if (!(SHOW_COLLISION_RADIUS || SHOW_SHIELD_RADIUS || SHOW_TARGET_RADIUS || SHOW_FIGHTER_BAYS))
             {
                 return;
             }
@@ -185,12 +182,37 @@ public class ShowBounds implements BaseCommand
                         new Color(1f, 0.25f, 0.25f, .25f), true, false, false));
             }
 
+            if (SHOW_FIGHTER_BAYS && ship.getNumFighterBays() > 0)
+            {
+                for (WeaponSlotAPI slot : ship.getHullSpec().getAllWeaponSlotsCopy())
+                {
+                    if (slot.getWeaponType() == WeaponAPI.WeaponType.LAUNCH_BAY)
+                    {
+                        pointData.add(new PointData(MathUtils.getPointsAlongCircumference(slot.computePosition(ship),
+                                15f, 4, 0f), new Color(1f, 0.1f, 1f, 0.5f), true, true, false));
+                    }
+                }
+            }
+
             ship.getLocation().set(origLoc);
             ship.setFacing(origFacing);
         }
 
         private void draw(ShipAPI ship)
         {
+            final BoundsAPI bounds = ship.getExactBounds();
+            if (bounds != null)
+            {
+                bounds.update(ship.getLocation(), ship.getFacing());
+                glLineWidth(3f);
+                glColor(Color.WHITE);
+                glBegin(GL_LINE_LOOP);
+                for (BoundsAPI.SegmentAPI segment : bounds.getSegments()){
+                    glVertex2f(segment.getP1().x, segment.getP1().y);
+                }
+                glEnd();
+            }
+
             final Vector2f center = ship.getLocation();
             final float facing = (float) Math.toRadians(ship.getFacing());
             final float cos = (float) FastTrig.cos(facing),
