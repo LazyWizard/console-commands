@@ -1,24 +1,20 @@
 package org.lazywizard.console;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import com.fs.starfarer.api.Global;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.lazylib.CollectionUtils;
+
+import java.io.IOException;
+import java.util.*;
 
 /**
  * The console mod's internal command storage. You can retrieve detailed
  * information on the loaded commands using this class.
- * <p>
+ *
  * @author LazyWizard
  * @since 2.0
  */
@@ -143,9 +139,9 @@ public class CommandStore
 
     /**
      * Returns all commands currently loaded by the mod.
-     * <p>
+     *
      * @return A {@link List} containing the names of all loaded commands.
-     * <p>
+     *
      * @since 2.0
      */
     public static List<String> getLoadedCommands()
@@ -160,11 +156,36 @@ public class CommandStore
     }
 
     /**
+     * Returns all commands applicable in the given context.
+     *
+     * @return A {@link List} containing the names of all loaded commands
+     *         that are applicable to the given context.
+     *
+     * @since 3.0
+     */
+    public static List<String> getApplicableCommands(CommandContext context)
+    {
+        final List<String> commands = new ArrayList<>(storedCommands.size());
+        for (StoredCommand tmp : storedCommands.values())
+        {
+            if ((context.isInCampaign() && tmp.tags.contains("combat") && !tmp.tags.contains("campaign"))
+                    || (context.isInCombat() && tmp.tags.contains("campaign") && !tmp.tags.contains("combat")))
+            {
+                continue;
+            }
+
+            commands.add(tmp.getName());
+        }
+
+        return commands;
+    }
+
+    /**
      * Returns all aliases currently registered by the mod.
-     * <p>
+     *
      * @return A {@link Map} containing all registered aliases as keys, with the
      *         commands they expand to as values.
-     * <p>
+     *
      * @since 2.4
      */
     public static Map<String, String> getAliases()
@@ -174,10 +195,10 @@ public class CommandStore
 
     /**
      * Returns all command tags that the mod is currently aware of.
-     * <p>
+     *
      * @return A {@link List} containing all tags used by the currently loaded
      *         commands.
-     * <p>
+     *
      * @since 2.0
      */
     public static List<String> getKnownTags()
@@ -187,12 +208,12 @@ public class CommandStore
 
     /**
      * Returns all commands with a specific tag.
-     * <p>
+     *
      * @param tag The tag to search for.
-     * <p>
+     *
      * @return A {@link List} containing the names of all loaded commands that
      *         use the tag {@code tag}.
-     * <p>
+     *
      * @since 2.0
      */
     public static List<String> getCommandsWithTag(String tag)
@@ -213,13 +234,13 @@ public class CommandStore
 
     /**
      * Retrieves the raw data for a specific command.
-     * <p>
+     *
      * @param command The name of the command to retrieve.
-     * <p>
+     *
      * @return The {@link StoredCommand} containing all of the data the console
      *         needs to use this command, such as its name, class, syntax, helpfile, and
      *         what mod registered it.
-     * <p>
+     *
      * @since 2.0
      */
     public static StoredCommand retrieveCommand(String command)
@@ -236,7 +257,7 @@ public class CommandStore
 
     /**
      * Contains detailed information on a loaded command.
-     * <p>
+     *
      * @since 2.0
      */
     public static final class StoredCommand
@@ -263,7 +284,7 @@ public class CommandStore
         }
 
         private StoredCommand(String commandName, Class<? extends BaseCommand> commandClass,
-                String syntax, String help, List<String> tags, String source)
+                              String syntax, String help, List<String> tags, String source)
         {
             this.name = commandName;
             this.commandClass = commandClass;
@@ -275,10 +296,10 @@ public class CommandStore
 
         /**
          * Returns the class object for this command's implementation.
-         * <p>
+         *
          * @return The {@link Class} of the {@link BaseCommand} implementation
          *         that will be instantiated when this command is run.
-         * <p>
+         *
          * @since 2.0
          */
         public Class<? extends BaseCommand> getCommandClass()
@@ -289,10 +310,10 @@ public class CommandStore
         /**
          * Returns the name of this command (what the player would enter to use
          * it).
-         * <p>
+         *
          * @return The name of this command, taken from the 'name' column of the
          *         CSV.
-         * <p>
+         *
          * @since 2.0
          */
         public String getName()
@@ -302,10 +323,10 @@ public class CommandStore
 
         /**
          * Returns the syntax for this command.
-         * <p>
+         *
          * @return The syntax for this command, taken from the 'syntax' column
          *         of the CSV.
-         * <p>
+         *
          * @since 2.0
          */
         public String getSyntax()
@@ -315,10 +336,10 @@ public class CommandStore
 
         /**
          * Returns the detailed usage instructions for this command.
-         * <p>
+         *
          * @return The detailed help for this command, taken from the 'help'
          *         column of the CSV.
-         * <p>
+         *
          * @since 2.0
          */
         public String getHelp()
@@ -328,10 +349,10 @@ public class CommandStore
 
         /**
          * Returns all tags associated with this command.
-         * <p>
+         *
          * @return All tags associated with this command, taken from the 'tags'
          *         column of the CSV.
-         * <p>
+         *
          * @since 2.0
          */
         public List<String> getTags()
@@ -343,11 +364,11 @@ public class CommandStore
          * Returns the complete file path of the CSV this command was loaded
          * from (<b>not</b> the relative path). Useful for determining which mod
          * added this command.
-         * <p>
+         *
          * @return The complete file path of the CSV this command was loaded
          *         from. There is no other way to retrieve this information in
          *         the current API.
-         * <p>
+         *
          * @since 2.0
          */
         public String getSource()
