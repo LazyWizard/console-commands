@@ -1,24 +1,26 @@
 package org.lazywizard.console.commands;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommandStore;
 import org.lazywizard.console.CommandStore.StoredCommand;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
 
+import java.util.Collections;
+import java.util.List;
+
 public class Help implements BaseCommand
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
-        if (args.isEmpty())
+        if (args.isEmpty() || args.equalsIgnoreCase("all"))
         {
-            List<String> commands = CommandStore.getLoadedCommands();
+            List<String> commands = (args.isEmpty() ? CommandStore.getApplicableCommands(context)
+                    : CommandStore.getLoadedCommands());
             Collections.sort(commands);
-            Console.showMessage("Loaded commands:\n"
+            Console.showMessage((args.isEmpty() ? "Applicable commands for context " + context.name()
+                    + " (use \"help all\" for a full list):\n" : "Loaded commands:\n")
                     + CollectionUtils.implode(commands));
             Console.showMessage("\nYou can chain multiple commands together by separating them with '"
                     + Console.getSettings().getCommandSeparator() + "'. Use the 'List' command to obtain the various" +
@@ -29,8 +31,7 @@ public class Help implements BaseCommand
                     + " commands that have that tag. Console settings can be changed with the 'Settings' command.");
             List<String> tags = CommandStore.getKnownTags();
             Collections.sort(tags);
-            Console.showMessage("\nValid tags: "
-                    + CollectionUtils.implode(tags));
+            Console.showMessage("\nValid tags: " + CollectionUtils.implode(tags));
             return CommandResult.SUCCESS;
         }
         else

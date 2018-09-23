@@ -282,7 +282,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                     // If no further matches are found, start again from beginning
                     var firstMatch: String? = null
                     var nextMatch: String? = null
-                    val commands = CommandStore.getLoadedCommands()
+                    val commands = CommandStore.getApplicableCommands(context)
                     commands.sort()
 
                     // Reverse order when shift is held down
