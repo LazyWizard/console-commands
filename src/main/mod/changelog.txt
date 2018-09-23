@@ -12,7 +12,9 @@ Memory usage is now shown in console overlay (disable using Settings command)
 Sounds are no longer played when a command encounters an error
 Fixed control+backspace to delete the current word instead of last word in input
 Fixed control+backspace deleting multiple words when using the command separator
+Fixed bug where combat devmode shortcuts would run after the console was closed
 Fixed tab completion when using the command separator
+Tab completion won't include combat-only commands in the campaign and vice versa
 Minor update to typo correction, please let me know if it's more/less accurate
 If exception stack traces are enabled, show source jars in exception details
 Aliases that execute multiple commands will respect custom command separators:
@@ -28,8 +30,11 @@ New commands:
  - BlockRetreat, prevents a full retreat from being ordered by the enemy
  - CopyModList, copies the list of active mods and their current versions so you
    can paste that information into a bug report on the forums
+ - DebugDialogs, shows all changes to the various memory maps when selecting a
+   choice during a rules-based dialog
  - ForceDeployAll, forces your opponent to deploy all reserves in their fleet
    (warning: this command can seriously impact game performance!)
+ - GameArgs, shows the command-line arguments used to launch Starsector
  - ModInfo, shows detailed info about a mod, including what ships, fighter
    wings, weapons and commodities it adds to the game
  - SetCommission, sets the faction the player is commissioned to work for, or
@@ -38,6 +43,11 @@ New commands:
    - Allows you to change console settings in-game
    - Entering "reset" as an argument restores console settings to their defaults
      (only takes effect after closing and re-opening the game)
+ - ShowAI, shows the target and maneuver target of every ship on the battle map
+ - SpawnAsteroids, allows you to spawn asteroids on the battle map
+   - Click and drag to set velocity
+   - TODO: Press <something> to cycle between asteroid sizes
+   - Press escape to return to regular gameplay
 Changes to existing commands:
  - All AddX commands will no longer allow you to drop into negative quantities
  - AddCrew:
@@ -67,8 +77,10 @@ Changes to existing commands:
  - GoTo:
    - Will redirect to the Jump command if a star system's name is entered
    - Teleports you to your move destination if no argument is entered
- - Help gives some additional information on advanced console features such as
-   tab completion and command chaining
+ - Help:
+   - Gives some additional information on advanced console features such as tab
+     completion and command chaining
+   - Won't show combat-only commands when used in the campaign, and vice versa
  - Kill and Nuke credit kills to the player flagship
  - List accepts several new arguments:
    - "hullmods", shows all hullmods that can be unlocked with a modspec item
@@ -79,6 +91,11 @@ Changes to existing commands:
    - "tags", shows all tags and their associated commands
  - NoCooldown negates cooldown entirely (previously set cooldown to 0.1 seconds)
  - Respec should properly reset skill-granted bonuses
+ - ShowBounds:
+   - Uses own bounds renderer instead of Starsector's built-in debug one
+     (this means no more giant green/white squares on ships)
+   - Fighter bays are now shown as purple diamonds
+   - Don't show shield radius/targeting ellipse for ship pieces
  - SpawnFleet:
    - Updated to use FleetFactoryV2; mostly matches vanilla fleet compositions
      now (spawned fleets are of fleet type "large patrol")
