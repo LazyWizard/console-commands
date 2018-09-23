@@ -55,7 +55,7 @@ public class SpawnAsteroids implements BaseCommand
 
         // TODO: Ensure only one plugin exists at a time
         Global.getCombatEngine().addPlugin(new SpawnPlugin(size));
-        Console.showMessage("Click and drag to spawn asteroids.");
+        Console.showMessage("Click and drag to spawn asteroids, press space to finish spawning.");
         return CommandResult.SUCCESS;
     }
 
@@ -63,11 +63,13 @@ public class SpawnAsteroids implements BaseCommand
     {
         private int asteroidSize;
         private final Vector2f spawnLoc = new Vector2f(0f, 0f);
+        private final boolean wasPaused;
         private boolean mouseDown = false;
 
         private SpawnPlugin(int asteroidSize)
         {
             this.asteroidSize = asteroidSize;
+            wasPaused = Global.getCombatEngine().isPaused();
         }
 
         @Override
@@ -87,8 +89,9 @@ public class SpawnAsteroids implements BaseCommand
                 if (event.isKeyDownEvent() && event.getEventValue() == Keyboard.KEY_ESCAPE)
                 {
                     event.consume();
-                    engine.getCombatUI().addMessage(0, Console.getSettings().getOutputColor(), "Canceled.");
+                    engine.getCombatUI().addMessage(0, Console.getSettings().getOutputColor(), "Finished.");
                     engine.removePlugin(this);
+                    engine.setPaused(wasPaused);
                     return;
                 }
                 else if (event.isMouseDownEvent() && event.getEventValue() == 0)
@@ -114,6 +117,9 @@ public class SpawnAsteroids implements BaseCommand
                     event.consume();
                 }
             }
+
+            // Engine must be paused to work around mouse event consumption bug
+            engine.setPaused(true);
         }
 
         @Override
