@@ -145,10 +145,19 @@ public class SpawnAsteroids implements BaseCommand
         @Override
         public void renderInWorldCoords(ViewportAPI view)
         {
+            final Vector2f mouseLoc = new Vector2f(view.convertScreenXToWorldX(Mouse.getX()),
+                    view.convertScreenYToWorldY(Mouse.getY()));
+            // TODO: resize circle based on size of asteroid to be spawned
+            final float circleSize = 10f;
+
+            glDisable(GL_TEXTURE_2D);
+            glLineWidth(5f);
+            glColor(Console.getSettings().getOutputColor());
+
+            // If the mouse is down, draw the velocity of the asteroid to be spawned
+            // Velocity is capped at 600, so draw anything beyond that darkened
             if (mouseDown)
             {
-                final Vector2f mouseLoc = new Vector2f(view.convertScreenXToWorldX(Mouse.getX()),
-                        view.convertScreenYToWorldY(Mouse.getY()));
                 final Vector2f drawLoc;
                 final boolean beyondRange;
                 if (MathUtils.isWithinRange(spawnLoc, mouseLoc, 600))
@@ -162,10 +171,8 @@ public class SpawnAsteroids implements BaseCommand
                             VectorUtils.getAngle(spawnLoc, mouseLoc));
                     beyondRange = true;
                 }
-                glDisable(GL_TEXTURE_2D);
-                glLineWidth(5f);
-                glColor(Console.getSettings().getOutputColor());
-                DrawUtils.drawCircle(spawnLoc.x, spawnLoc.y, 10f, 16, false);
+
+                DrawUtils.drawCircle(spawnLoc.x, spawnLoc.y, circleSize, 16, false);
                 glBegin(GL_LINES);
                 glVertex2f(spawnLoc.x, spawnLoc.y);
                 glVertex2f(drawLoc.x, drawLoc.y);
@@ -176,6 +183,10 @@ public class SpawnAsteroids implements BaseCommand
                     glVertex2f(mouseLoc.x, mouseLoc.y);
                 }
                 glEnd();
+            }
+            else
+            {
+                DrawUtils.drawCircle(mouseLoc.x, mouseLoc.y, circleSize, 16, false);
             }
         }
     }
