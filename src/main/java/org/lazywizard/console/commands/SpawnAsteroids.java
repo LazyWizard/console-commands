@@ -45,15 +45,19 @@ public class SpawnAsteroids implements BaseCommand
             case "": // No argument, random size
                 size = -1;
                 break;
+            case "0":
             case "tiny":
                 size = 0;
                 break;
+            case "1":
             case "small":
                 size = 1;
                 break;
+            case "2":
             case "medium":
                 size = 2;
                 break;
+            case "3":
             case "large":
                 size = 3;
                 break;
@@ -142,15 +146,32 @@ public class SpawnAsteroids implements BaseCommand
             engine.setPaused(true);
         }
 
+        private static float getAsteroidSize(int sizeCategory)
+        {
+            switch (sizeCategory)
+            {
+                case 0:
+                    return 5f;
+                case 1:
+                    return 10f;
+                case 2:
+                    return 18f;
+                case 3:
+                    return 26f;
+                default:
+                    return 10f;
+            }
+        }
+
         @Override
         public void renderInWorldCoords(ViewportAPI view)
         {
             final Vector2f mouseLoc = new Vector2f(view.convertScreenXToWorldX(Mouse.getX()),
                     view.convertScreenYToWorldY(Mouse.getY()));
-            // TODO: resize circle based on size of asteroid to be spawned
-            final float circleSize = 10f;
+            final float circleSize = getAsteroidSize(asteroidSize);
 
             glDisable(GL_TEXTURE_2D);
+            glEnable(GL_BLEND);
             glLineWidth(5f);
             glColor(Console.getSettings().getOutputColor());
 
@@ -158,6 +179,10 @@ public class SpawnAsteroids implements BaseCommand
             // Velocity is capped at 600, so draw anything beyond that darkened
             if (mouseDown)
             {
+                DrawUtils.drawCircle(spawnLoc.x, spawnLoc.y, circleSize, 32, false);
+
+                if (spawnLoc.equals(mouseLoc)) return;
+
                 final Vector2f drawLoc;
                 final boolean beyondRange;
                 if (MathUtils.isWithinRange(spawnLoc, mouseLoc, 600))
@@ -172,7 +197,6 @@ public class SpawnAsteroids implements BaseCommand
                     beyondRange = true;
                 }
 
-                DrawUtils.drawCircle(spawnLoc.x, spawnLoc.y, circleSize, 16, false);
                 glBegin(GL_LINES);
                 glVertex2f(spawnLoc.x, spawnLoc.y);
                 glVertex2f(drawLoc.x, drawLoc.y);
@@ -186,7 +210,7 @@ public class SpawnAsteroids implements BaseCommand
             }
             else
             {
-                DrawUtils.drawCircle(mouseLoc.x, mouseLoc.y, circleSize, 16, false);
+                DrawUtils.drawCircle(mouseLoc.x, mouseLoc.y, circleSize, 32, false);
             }
         }
     }
