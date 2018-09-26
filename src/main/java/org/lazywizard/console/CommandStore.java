@@ -156,7 +156,9 @@ public class CommandStore
     }
 
     /**
-     * Returns all commands applicable in the given context.
+     * Returns all commands applicable in the given {@link CommandContext}. A command will only be excluded if it
+     * contains the opposite tag and does not contain the matching one (ex: for {@link CommandContext#CAMPAIGN_MAP},
+     * commands will only be excluded if they contain the tag "combat" but <i>not</i> the tag "campaign".
      *
      * @return A {@link List} containing the names of all loaded commands
      *         that are applicable to the given context.

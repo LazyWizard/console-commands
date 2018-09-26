@@ -74,7 +74,7 @@ public class Console
         return ConsoleSettings.INSTANCE;
     }
 
-    static LazyFont getFont()
+    public static LazyFont getFont()
     {
         return font;
     }
