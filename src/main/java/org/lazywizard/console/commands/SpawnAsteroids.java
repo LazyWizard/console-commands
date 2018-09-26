@@ -11,6 +11,8 @@ import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.MathUtils;
 import org.lazywizard.lazylib.VectorUtils;
 import org.lazywizard.lazylib.opengl.DrawUtils;
+import org.lazywizard.lazylib.ui.LazyFont;
+import org.lazywizard.lazylib.ui.LazyFont.DrawableString;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector2f;
@@ -68,23 +70,25 @@ public class SpawnAsteroids implements BaseCommand
 
         // TODO: Ensure only one plugin exists at a time
         engine.addPlugin(new SpawnPlugin(size));
-        engine.getCombatUI().addMessage(0, Console.getSettings().getOutputColor(),
-                "Click and drag to spawn asteroids, press space to finish spawning.");
         Console.showMessage("Click and drag to spawn asteroids, press space to finish spawning.");
         return CommandResult.SUCCESS;
     }
 
     private static class SpawnPlugin extends BaseEveryFrameCombatPlugin
     {
-        private int asteroidSize;
+        private final DrawableString text;
         private final Vector2f spawnLoc = new Vector2f(0f, 0f);
         private final boolean wasPaused;
+        private int asteroidSize;
         private boolean mouseDown = false;
 
         private SpawnPlugin(int asteroidSize)
         {
             this.asteroidSize = asteroidSize;
             wasPaused = Global.getCombatEngine().isPaused();
+            final LazyFont font = Console.getFont();
+            text = font.createText("Click and drag to spawn asteroids, press space to finish spawning.",
+                    Console.getSettings().getOutputColor());
         }
 
         @Override
@@ -170,12 +174,14 @@ public class SpawnAsteroids implements BaseCommand
                     view.convertScreenYToWorldY(Mouse.getY()));
             final float circleSize = getAsteroidSize(asteroidSize);
 
-            glDisable(GL_TEXTURE_2D);
             glEnable(GL_BLEND);
+            glEnable(GL_TEXTURE_2D);
+            text.draw(mouseLoc.x - (text.getWidth() / 2f), mouseLoc.y - 50f);
+            glDisable(GL_TEXTURE_2D);
             glLineWidth(5f);
             glColor(Console.getSettings().getOutputColor());
 
-            // If the mouse is down, draw the velocity of the asteroid to be spawned
+            // If the mouse button is held down, draw the velocity of the asteroid to be spawned
             // Velocity is capped at 600, so draw anything beyond that darkened
             if (mouseDown)
             {
@@ -208,6 +214,7 @@ public class SpawnAsteroids implements BaseCommand
                 }
                 glEnd();
             }
+            // If the mouse button is not held down, draw a circle around the mouse cursor to show this command is active
             else
             {
                 DrawUtils.drawCircle(mouseLoc.x, mouseLoc.y, circleSize, 32, false);
