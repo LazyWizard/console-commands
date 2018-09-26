@@ -17,6 +17,7 @@ Fixed tab completion when using the command separator
 Tab completion won't include combat-only commands in the campaign and vice versa
 Minor update to typo correction, please let me know if it's more/less accurate
 If exception stack traces are enabled, show source jars in exception details
+Version Checker no longer warns that the Example Commands mod is unsupported
 Aliases that execute multiple commands will respect custom command separators:
  - Always use ; to separate commands in aliases.csv; will be replaced at runtime
 Added isCampaignAccessible() to CommandContext:
@@ -47,7 +48,7 @@ New commands:
  - SpawnAsteroids, allows you to spawn asteroids on the battle map
    - Click and drag to set velocity
    - TODO: Press <something> to cycle between asteroid sizes
-   - Press escape to return to regular gameplay
+   - Press spacebar to return to regular gameplay
 Changes to existing commands:
  - All AddX commands will no longer allow you to drop into negative quantities
  - AddCrew:
