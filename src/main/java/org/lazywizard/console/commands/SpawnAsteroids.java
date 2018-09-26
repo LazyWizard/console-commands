@@ -11,7 +11,6 @@ import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.MathUtils;
 import org.lazywizard.lazylib.VectorUtils;
 import org.lazywizard.lazylib.opengl.DrawUtils;
-import org.lazywizard.lazylib.ui.LazyFont;
 import org.lazywizard.lazylib.ui.LazyFont.DrawableString;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -40,55 +39,69 @@ public class SpawnAsteroids implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        // TODO: Have size selectable within the combat plugin (number keys? +/-?)
-        final int size;
-        switch (args.toLowerCase())
-        {
-            case "": // No argument, random size
-                size = -1;
-                break;
-            case "0":
-            case "tiny":
-                size = 0;
-                break;
-            case "1":
-            case "small":
-                size = 1;
-                break;
-            case "2":
-            case "medium":
-                size = 2;
-                break;
-            case "3":
-            case "large":
-                size = 3;
-                break;
-            default:
-                Console.showMessage("Valid asteroid sizes: tiny, small, medium, large.");
-                return CommandResult.BAD_SYNTAX;
-        }
-
         // TODO: Ensure only one plugin exists at a time
-        engine.addPlugin(new SpawnPlugin(size));
-        Console.showMessage("Click and drag to spawn asteroids, press space to finish spawning.");
+        engine.addPlugin(new SpawnPlugin());
+        Console.showMessage("You can now spawn asteroids using the mouse once the console is closed.");
         return CommandResult.SUCCESS;
     }
 
     private static class SpawnPlugin extends BaseEveryFrameCombatPlugin
     {
         private final DrawableString text;
-        private final Vector2f spawnLoc = new Vector2f(0f, 0f);
+        private final Vector2f spawnLoc;
         private final boolean wasPaused;
-        private int asteroidSize;
+        private int asteroidSize = -1;
         private boolean mouseDown = false;
 
-        private SpawnPlugin(int asteroidSize)
+        private static String getAsteroidDesc(int sizeCategory)
         {
-            this.asteroidSize = asteroidSize;
+            switch (sizeCategory)
+            {
+                case 0:
+                    return "tiny";
+                case 1:
+                    return "small";
+                case 2:
+                    return "medium";
+                case 3:
+                    return "large";
+                default:
+                    return "random";
+            }
+        }
+
+        private static float getAsteroidSize(int sizeCategory)
+        {
+            switch (sizeCategory)
+            {
+                case 0:
+                    return 5f;
+                case 1:
+                    return 10f;
+                case 2:
+                    return 18f;
+                case 3:
+                    return 26f;
+                default:
+                    return 10f;
+            }
+        }
+
+        private SpawnPlugin()
+        {
+            spawnLoc = new Vector2f(0f, 0f);
             wasPaused = Global.getCombatEngine().isPaused();
-            final LazyFont font = Console.getFont();
-            text = font.createText("Click and drag to spawn asteroids, press space to finish spawning.",
-                    Console.getSettings().getOutputColor());
+            text = Console.getFont().createText();
+            text.setColor(Console.getSettings().getOutputColor());
+            updateText();
+        }
+
+        private void updateText()
+        {
+            final String sizeDesc = getAsteroidDesc(asteroidSize);
+            text.setText("Click and drag to spawn asteroids, or press spacebar to finish spawning.\n" +
+                    "Press 6-9 to select asteroid size, or 0 for random sizes.\n" +
+                    "Current asteroid size: " + sizeDesc);
         }
 
         @Override
@@ -113,14 +126,27 @@ public class SpawnAsteroids implements BaseCommand
                     continue;
                 }
 
-                if (event.isKeyDownEvent() && event.getEventValue() == Keyboard.KEY_SPACE)
+                if (event.isKeyDownEvent())
                 {
-                    event.consume();
-                    engine.getCombatUI().addMessage(0, Console.getSettings().getOutputColor(),
-                            "Finished spawning asteroids.");
-                    engine.removePlugin(this);
-                    engine.setPaused(wasPaused);
-                    return;
+                    final int eventValue = event.getEventValue();
+                    if (eventValue == Keyboard.KEY_SPACE)
+                    {
+                        event.consume();
+                        engine.getCombatUI().addMessage(0, Console.getSettings().getOutputColor(),
+                                "Finished spawning asteroids.");
+                        engine.removePlugin(this);
+                        engine.setPaused(wasPaused);
+                        return;
+                    }
+
+                    // Select size using keyboard shortcuts
+                    if (eventValue >= Keyboard.KEY_6 && eventValue <= Keyboard.KEY_0)
+                    {
+                        asteroidSize = (eventValue == Keyboard.KEY_0) ? -1 : eventValue - Keyboard.KEY_6;
+
+                        updateText();
+                        event.consume();
+                    }
                 }
                 else if (event.isMouseDownEvent() && event.getEventValue() == 0)
                 {
@@ -148,23 +174,6 @@ public class SpawnAsteroids implements BaseCommand
 
             // Engine must be paused to work around mouse event consumption bug
             engine.setPaused(true);
-        }
-
-        private static float getAsteroidSize(int sizeCategory)
-        {
-            switch (sizeCategory)
-            {
-                case 0:
-                    return 5f;
-                case 1:
-                    return 10f;
-                case 2:
-                    return 18f;
-                case 3:
-                    return 26f;
-                default:
-                    return 10f;
-            }
         }
 
         @Override
