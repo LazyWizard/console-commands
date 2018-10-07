@@ -5,6 +5,7 @@ import com.fs.starfarer.api.characters.MutableCharacterStatsAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+
 import static org.lazywizard.console.CommandUtils.*;
 
 public class AddSkillPoints implements BaseCommand
@@ -40,9 +41,8 @@ public class AddSkillPoints implements BaseCommand
         else
         {
             final int removed = Math.min(-amount, player.getPoints());
-            player.addPoints(removed);
-            Console.showMessage("Removed " + format(removed)
-                    + " skill points from your character.");
+            player.addPoints(-removed);
+            Console.showMessage("Removed " + format(removed) + " skill points from your character.");
         }
 
         return CommandResult.SUCCESS;
