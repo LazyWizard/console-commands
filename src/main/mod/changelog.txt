@@ -47,7 +47,7 @@ New commands:
  - ShowAI, shows the target and maneuver target of every ship on the battle map
  - SpawnAsteroids, allows you to spawn asteroids on the battle map
    - Click and drag to set velocity
-   - TODO: Press <something> to cycle between asteroid sizes
+   - Press 6-0 to cycle between asteroid sizes
    - Press spacebar to return to regular gameplay
 Changes to existing commands:
  - All AddX commands will no longer allow you to drop into negative quantities
@@ -62,7 +62,9 @@ Changes to existing commands:
  - AddOrdnancePoints will grant a percentage bonus instead of flat if the
    argument ends with %
  - AddShip will redirect to AddWing if a wing ID is entered
- - AddSkillPoints now adds character points, used for both skills and aptitudes
+ - AddSkillPoints:
+   - Now adds character points, used for both skills and aptitudes
+   - Fix for negative point amounts wrongly adding skill points
  - AddWing and AllWings properly add LPCs instead of fleet members
  - AddXP will cap XP at what's needed for the maximum character level
  - FindItem/FindShip:

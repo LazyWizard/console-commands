@@ -4,8 +4,8 @@ jdkLocation=C:/Program Files/Java/jdk1.8.0_151
 # Change this to point at the folder containing starfarer.api.jar
 starsectorInstallDir=C:/Program Files (x86)/Fractal Softworks/Starsector/starsector-core
 
-# Change this to point at your local LazyLib jar
-lazylibJar=C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib/jars/LazyLib.jar
+# Change this to point at your local LazyLib install (the root mod folder, not the jars subfolder)
+lazylibDir=C:/Program Files (x86)/Fractal Softworks/Starsector/mods/LazyLib
 
 # Point outputPath at your Console mod folder for faster testing
 outputPath=build/mod
