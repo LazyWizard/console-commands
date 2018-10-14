@@ -76,5 +76,4 @@ Suicide,org.lazywizard.console.commands.Suicide,"core,campaign,combat",suicide (
 ToggleAI,org.lazywizard.console.commands.ToggleAI,"core,combat",toggleai (no arguments),"Toggles the AI of the selected ship."
 Traitor,org.lazywizard.console.commands.Traitor,"core,combat",traitor (no arguments),"Toggles the side the selected ship will fight for."
 
-
-#TestCom,org.lazywizard.console.commands.Test,"core",testcom (variable),"Personal command for quick prototyping. Don't bother uncommenting; it probably won't do anything interesting."
+#Test,org.lazywizard.console.commands.personal.Test,"core",test (variable),"Personal command for quick prototyping. Don't bother uncommenting; it probably won't do anything interesting."

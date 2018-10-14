@@ -1,5 +1,6 @@
-import java.nio.file.Paths
 import groovy.json.JsonSlurper
+
+import java.nio.file.Paths
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
@@ -11,13 +12,24 @@ defaultTasks 'buildMod'
 ext {
     Properties localProps = new Properties()
     localProps.load(new FileInputStream(file('local.properties')))
-    compileJava.options.fork = true
-    compileJava.options.forkOptions.executable = Paths.get(localProps['jdkLocation'].toString(), 'bin', 'javac.exe')
-    compileKotlin.kotlinOptions.jdkHome = Paths.get(localProps['jdkLocation'].toString())
+    
+    // Local build environment config, set in local.properties
     ext.gameDir = localProps['starsectorInstallDir']
-    ext.lazylib = localProps['lazylibJar']
+    ext.lazylibDir = localProps['lazylibDir']
     ext.outputPath = localProps['outputPath']
     ext.modVersion = new JsonSlurper().parseText(file('src/main/mod/mod_info.json').text).version
+    
+    // JDK config, unnecessary if your JAVA_HOME environment variable is set
+    // TODO: Test this on a new install; something seems broken with latest Kotlin compiler
+    //compileJava.options.fork = true
+    //compileJava.options.forkOptions.executable = Paths.get(localProps['jdkLocation'].toString(), 'bin', 'javac.exe')
+    //compileKotlin.kotlinOptions.jdkHome = Paths.get(localProps['jdkLocation'].toString())
+    //gradle.java.home = compileKotlin.kotlinOptions.jdkHome
+    
+    // Use Starsector's bundled JRE for bootstrap classpath (ensures compiling with newer JDKs won't cause issues)
+    /*tasks.withType(JavaCompile) {
+        options.bootstrapClasspath = files(gameDir + '/jre/lib/rt.jar')
+    }*/
 }
 
 buildscript {
@@ -44,19 +56,20 @@ dependencies {
     compileOnly('org.jetbrains.kotlin:kotlin-stdlib') { transitive = false }
     compileOnly('org.jetbrains.kotlin:kotlin-stdlib-jdk7') { transitive = false }
     compileOnly fileTree(dir: gameDir, include: '*.jar', exclude: '*_obf.jar')
-    compileOnly files(lazylib)
+    compileOnly fileTree(dir: lazylibDir + '/jars/', include: '*.jar')
 }
 
 compileKotlin {
     kotlinOptions {
-        jvmTarget = "1.6"
+        jvmTarget = "1.6" // At the moment Kotlin only supports Java 6 or 8, and since Starsector uses Java 7...
+        noReflect = true
     }
 }
 
 jar {
     //from sourceSets.main.java
     from sourceSets.main.kotlin
-    from { configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) } }
+    from { configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) } } // Include source files in jar
     destinationDir file(Paths.get(outputPath, 'jars/'))
     archiveName 'lw_Console.jar'
 }
@@ -76,7 +89,7 @@ dokka {
 task printProps() {
     doLast {
         println 'Game directory: ' + gameDir
-        println 'LazyLib jar: ' + lazylib
+        println 'LazyLib directory: ' + lazylibDir
         println 'Output path: ' + outputPath
         println 'Mod version: ' + modVersion
     }
