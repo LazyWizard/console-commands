@@ -12,20 +12,20 @@ defaultTasks 'buildMod'
 ext {
     Properties localProps = new Properties()
     localProps.load(new FileInputStream(file('local.properties')))
-    
+
     // Local build environment config, set in local.properties
     ext.gameDir = localProps['starsectorInstallDir']
     ext.lazylibDir = localProps['lazylibDir']
     ext.outputPath = localProps['outputPath']
     ext.modVersion = new JsonSlurper().parseText(file('src/main/mod/mod_info.json').text).version
-    
+
     // JDK config, unnecessary if your JAVA_HOME environment variable is set
     // TODO: Test this on a new install; something seems broken with latest Kotlin compiler
     //compileJava.options.fork = true
     //compileJava.options.forkOptions.executable = Paths.get(localProps['jdkLocation'].toString(), 'bin', 'javac.exe')
     //compileKotlin.kotlinOptions.jdkHome = Paths.get(localProps['jdkLocation'].toString())
     //gradle.java.home = compileKotlin.kotlinOptions.jdkHome
-    
+
     // Use Starsector's bundled JRE for bootstrap classpath (ensures compiling with newer JDKs won't cause issues)
     /*tasks.withType(JavaCompile) {
         options.bootstrapClasspath = files(gameDir + '/jre/lib/rt.jar')

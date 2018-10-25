@@ -127,14 +127,6 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             return delta
         }
 
-        // TODO: Remove this after testing!
-        /*scrollback.drawDebug = true
-        query.drawDebug = true
-        prompt.drawDebug = true
-        input.drawDebug = true
-        mem.drawDebug = true
-        devMode.drawDebug = true*/
-
         // Save the current screen to a texture, to be used as the overlay background
         // This texture will be extremely low quality to save VRAM, but since the
         // background will be drawn darkened, the compression shouldn't be noticeable
