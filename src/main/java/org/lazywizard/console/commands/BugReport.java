@@ -4,24 +4,53 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModSpecAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.Console;
+import org.lwjgl.LWJGLUtil;
+import org.lwjgl.Sys;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CopyModList implements BaseCommand
+public class BugReport implements BaseCommand
 {
     private static String getModString(ModSpecAPI mod)
     {
         return mod.getName() + " " + mod.getVersion() + " by " + mod.getAuthor() + "\n";
     }
 
+    private static String getPlatformString()
+    {
+        return "Platform: " + LWJGLUtil.getPlatformName() + " (" + (Sys.is64Bit() ? "64" : "32") + "-bit)\n";
+    }
+
+    private static String getDisplayString()
+    {
+        final DisplayMode displayMode = Display.getDisplayMode();
+        return "Resolution: " + Display.getWidth() + "x" + Display.getHeight() + " ("
+                + displayMode.getFrequency() + "hz, " + displayMode.getBitsPerPixel() + "bpp, "
+                + (Display.isFullscreen() ? "fullscreen" : "windowed") + ")\n";
+    }
+
+    private static String getDriverString()
+    {
+        return "Graphics driver: " + Display.getAdapter() + "\nDriver version: " + Display.getVersion() + ")\n";
+    }
+
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
-        final StringBuilder modData = new StringBuilder(256);
-        modData.append(" Active mod list:\n------------------\n");
+        final StringBuilder modData = new StringBuilder(1024);
+
+        modData.append(" System specs:\n---------------\n");
+        modData.append(getPlatformString());
+        //modData.append(getDriverString()); // Almost never works
+        modData.append(getDisplayString());
+        modData.append("Launch args: " + GameArgs.getLaunchArgs() + "\n");
+
+        modData.append("\n Active mod list:\n------------------\n");
         final List<ModSpecAPI> allMods = Global.getSettings().getModManager().getEnabledModsCopy(),
                 regularMods = new ArrayList<>(), utilityMods = new ArrayList<>();
         ModSpecAPI tcMod = null;
@@ -75,9 +104,11 @@ public class CopyModList implements BaseCommand
             }
         }
 
-        final StringSelection copiedData = new StringSelection(modData.toString());
+        final String modDataString = modData.toString();
+        final StringSelection copiedData = new StringSelection(modDataString);
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(copiedData, copiedData);
-        Console.showMessage("Active mod list has been copied to the clipboard and is ready to paste.");
+        Console.showMessage(modDataString);
+        Console.showMessage("This data has also been copied to the clipboard and is ready to paste into a support thread.");
         return CommandResult.SUCCESS;
     }
 }

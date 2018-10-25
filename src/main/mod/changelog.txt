@@ -29,8 +29,8 @@ New commands:
  - AddHullmod, adds the specified modspec to the player's inventory
  - AllHullmods, unlocks all unlearned hullmods
  - BlockRetreat, prevents a full retreat from being ordered by the enemy
- - CopyModList, copies the list of active mods and their current versions so you
-   can paste that information into a bug report on the forums
+ - BugReport, copies basic system information as well as the list of active mods
+   and their current versions, so you can paste that information on the forums
  - DebugDialogs, shows all changes to the various memory maps when selecting a
    choice during a rules-based dialog
  - ForceDeployAll, forces your opponent to deploy all reserves in their fleet
