@@ -36,7 +36,7 @@ public class BugReport implements BaseCommand
 
     private static String getDriverString()
     {
-        return "Graphics driver: " + Display.getAdapter() + "\nDriver version: " + Display.getVersion() + ")\n";
+        return "Graphics driver: " + Display.getAdapter() + "\nDriver version: " + Display.getVersion() + "\n";
     }
 
     @Override
