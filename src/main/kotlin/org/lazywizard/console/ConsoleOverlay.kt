@@ -79,8 +79,8 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         var barY = y
         var barHeight = 0f
 
-        // TODO: Handle mouse events (click+drag to scroll)
-        fun advance(amount: Float) {
+        // TODO: Re-add amount parameter and handle mouse events (click+drag to scroll)
+        fun advance() {
             // Determine size and relative position of scrollbar
             val contentRatio = (maxY - minY) / scrollback.height
             val scrollRatio = scrollOffset / minScroll
@@ -417,7 +417,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             if (settings.showMemoryUsage) { mem.text = getMemText(); mem.color = getMemColor(memory.heapMemoryUsage) }
         }
 
-        scrollbar.advance(amount)
+        scrollbar.advance()
     }
 
     // TODO: Dynamically resize scrollback and input text to fit multiple lines of input

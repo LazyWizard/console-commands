@@ -1,9 +1,16 @@
 {
-    "plugins":{
-        "ConsoleCombatListener":"org.lazywizard.console.ConsoleCombatListener"
+    "plugins": {
+        "ConsoleCombatListener": "org.lazywizard.console.ConsoleCombatListener",
+        "ConsoleCombatCheatManager": "org.lazywizard.console.CombatCheatManager"
     },
 
-    "ruleCommandPackages":[
+    "graphics": {
+        "ui": {
+            "console_status": "graphics/console/ui/statusicon.png"
+        }
+    },
+
+    "ruleCommandPackages": [
         "org.lazywizard.console.rulecmd"
-    ],
+    ]
 }
