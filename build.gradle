@@ -56,7 +56,9 @@ dependencies {
     compileOnly('org.jetbrains.kotlin:kotlin-stdlib') { transitive = false }
     compileOnly('org.jetbrains.kotlin:kotlin-stdlib-jdk7') { transitive = false }
     compileOnly fileTree(dir: gameDir, include: '*.jar', exclude: '*_obf.jar')
-    compileOnly fileTree(dir: lazylibDir + '/jars/', include: '*.jar')
+    compileOnly files(lazylibDir + '/jars/LazyLib.jar')
+    compileOnly files(lazylibDir + '/jars/LazyLib-Kotlin.jar')
+    //compileOnly fileTree(dir: lazylibDir + '/jars/', include: '*.jar')
 }
 
 compileKotlin {
@@ -141,12 +143,12 @@ buildMod {
     group = 'build'
 }
 
-zipMod {
-    description = 'Builds the mod and creates a zip archive ready for distribution.'
+zipExample {
+    description = 'Zips the example mod and adds its archive to the mod folder.'
     group = 'build'
 }
 
-zipExample {
-    description = 'Zips the example mod and adds its archive to the mod folder.'
+zipMod {
+    description = 'Builds the mod and creates a zip archive ready for distribution.'
     group = 'build'
 }

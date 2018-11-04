@@ -75,12 +75,12 @@ private data class CombatCheatData(val id: String, val statusDesc: String, val p
     }
 
     fun onStart() {
-        for (ship in Global.getCombatEngine().ships) if (appliesTo(ship)) plugin.onStart(Global.getCombatEngine())
+        plugin.onStart(Global.getCombatEngine())
     }
 
     fun onEnd() {
         unapply()
-        for (ship in Global.getCombatEngine().ships) if (appliesTo(ship)) plugin.onEnd(Global.getCombatEngine())
+        plugin.onEnd(Global.getCombatEngine())
     }
 }
 
@@ -98,7 +98,7 @@ abstract class CheatPlugin {
     /** Called when cheat is toggled off, before [onEnd]. Do not rely on this being called! */
     open fun unapply(ship: ShipAPI) {}
 
-    /** Called when cheat is toggled on, before effects are applied to any ships. */
+    /** Called when cheat is toggled on, before [advance] is called on any ships. */
     open fun onStart(engine: CombatEngineAPI) {}
 
     /** Only called when cheat is toggled off - do not rely on this being called! */

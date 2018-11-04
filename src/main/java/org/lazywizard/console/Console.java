@@ -27,7 +27,6 @@ import java.util.regex.Pattern;
 /**
  * The main class of the console mod. Most of its methods aren't publicly
  * accessible, so this is mainly used to display messages to the player.
- * <p>
  *
  * @author LazyWizard
  * @since 2.0
@@ -106,15 +105,14 @@ public class Console
      * Displays a message to the user. The message will be formatted and shown
      * to the player when they reach a section of the game where it can be
      * displayed properly (combat/campaign map).
-     * <p>
      *
      * @param message  The message to show.
      * @param logLevel If this is equal to/higher than the "consoleLogLevel"
      *                 setting, this message will be logged in Starsector.log.
-     *                 <p>
+     *
      * @since 2.0
      */
-    public static void showMessage(String message, Level logLevel)
+    public static void showMessage(Object message, Level logLevel)
     {
         // Add message to the output queue
         output.append('\n').append(message);
@@ -127,13 +125,12 @@ public class Console
      * Displays a message to the user. The message will be formatted and shown
      * to the player when they reach a section of the game where it can be
      * displayed properly (combat/campaign map).
-     * <p>
      *
      * @param message The message to show.
-     *                <p>
+     *
      * @since 2.0
      */
-    public static void showMessage(String message)
+    public static void showMessage(Object message)
     {
         showMessage(message, Level.INFO);
     }
@@ -142,35 +139,33 @@ public class Console
      * Displays an indented message to the user. The message will be formatted and shown
      * to the player when they reach a section of the game where it can be
      * displayed properly (combat/campaign map).
-     * <p>
      *
      * @param preamble    An optional argument; this part of the message will not be indented.
      * @param message     The indented message to show.
      * @param indentation The number of spaces to indent {@code message} with.
-     *                    <p>
+     *
      * @since 3.0
      */
-    public static void showIndentedMessage(@Nullable String preamble, String message, int indentation)
+    public static void showIndentedMessage(@Nullable String preamble, Object message, int indentation)
     {
         if (preamble != null && !preamble.isEmpty())
         {
             showMessage(preamble);
         }
 
-        showMessage(CommandUtils.indent(message, indentation), Level.INFO);
+        showMessage(CommandUtils.indent(message.toString(), indentation), Level.INFO);
     }
 
     /**
      * Displays the stack trace of a {@link Throwable}.
-     * <p>
      *
      * @param message An optional message to show before the stack trace. Can be
      *                {@code null}.
      * @param ex      The {@link Throwable} whose stack trace will be shown.
-     *                <p>
+     *
      * @since 2.0
      */
-    public static void showException(String message, Throwable ex)
+    public static void showException(Object message, Throwable ex)
     {
         final StringBuilder stackTrace = new StringBuilder(256);
 
@@ -178,7 +173,7 @@ public class Console
         if (message != null)
         {
             stackTrace.append(message);
-            if (!message.endsWith("\n"))
+            if (!message.toString().endsWith("\n"))
             {
                 stackTrace.append("\n");
             }
