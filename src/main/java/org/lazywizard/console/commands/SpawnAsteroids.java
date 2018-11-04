@@ -23,6 +23,28 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class SpawnAsteroids implements BaseCommand
 {
+    private static final String PLUGIN_DATA_ID = "lw_console_spawnasteroids_plugin";
+
+    private static SpawnPlugin getPlugin()
+    {
+        return (SpawnPlugin) Global.getCombatEngine().getCustomData().get(PLUGIN_DATA_ID);
+    }
+
+    private static void registerPlugin(SpawnPlugin plugin){
+        Global.getCombatEngine().addPlugin(plugin);
+        Global.getCombatEngine().getCustomData().put(PLUGIN_DATA_ID, plugin);
+    }
+
+    private static void removePlugin()
+    {
+        final SpawnPlugin plugin = getPlugin();
+        if (plugin != null)
+        {
+            Global.getCombatEngine().getCustomData().remove(PLUGIN_DATA_ID);
+            Global.getCombatEngine().removePlugin(plugin);
+        }
+    }
+
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
@@ -39,8 +61,14 @@ public class SpawnAsteroids implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        // TODO: Ensure only one plugin exists at a time
-        engine.addPlugin(new SpawnPlugin());
+        if (getPlugin() != null)
+        {
+            Console.showMessage("Error: SpawnAsteroids command is already active!");
+            return CommandResult.ERROR;
+        }
+
+        // Ensures only one plugin exists at a time
+        registerPlugin(new SpawnPlugin());
         Console.showMessage("You can now spawn asteroids using the mouse once the console is closed.");
         return CommandResult.SUCCESS;
     }
@@ -134,7 +162,7 @@ public class SpawnAsteroids implements BaseCommand
                         event.consume();
                         engine.getCombatUI().addMessage(0, Console.getSettings().getOutputColor(),
                                 "Finished spawning asteroids.");
-                        engine.removePlugin(this);
+                        removePlugin();
                         engine.setPaused(wasPaused);
                         return;
                     }
