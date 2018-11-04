@@ -235,6 +235,13 @@ public class Console
 
     private static CommandResult runCommand(String input, CommandContext context)
     {
+        if ("clear".equals(input.toLowerCase()))
+        {
+            output.setLength(0);
+            ConsoleOverlay.clear();
+            return CommandResult.SUCCESS;
+        }
+
         String[] tmp = input.split(" ", 2);
         String com = tmp[0].toLowerCase();
         String args = (tmp.length > 1 ? tmp[1] : "");

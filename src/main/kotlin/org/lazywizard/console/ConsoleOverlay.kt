@@ -27,19 +27,26 @@ private val Log = Logger.getLogger(Console::class.java)
 private var history = ""
 private const val CURSOR_BLINK_SPEED = 0.7f
 const val HORIZONTAL_MARGIN = 30f // Don't go below 30; TODO: scale minor UI elements using this setting
+private var overlay: ConsoleOverlayInternal? = null
 
 fun show(context: CommandContext) = with(ConsoleOverlayInternal(context,
         Console.getSettings().outputColor, Console.getSettings().outputColor.darker()))
 {
     try {
+        overlay = this
         show()
     } catch (ex: Exception) {
         Console.showException("The console overlay encountered an error and was destroyed: ", ex)
         Log.error("Scrollback at time of destruction:\n\n$history\n\n -- END SCROLLBACK --\n")
         history = ""
     } finally {
+        overlay = null
         dispose()
     }
+}
+
+fun clear() {
+    overlay?.clear()
 }
 
 // TODO: This uses a lot of hardcoded numbers; need to refactor these into constants at some point
@@ -160,6 +167,10 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         // Clean up background texture (if any) and clear any remaining input events
         if (settings.showBackground) glDeleteTextures(bgTextureId)
         while (Keyboard.next()) Keyboard.poll()
+    }
+
+    fun clear() {
+        scrollback.text = ""
     }
 
     fun dispose() {
@@ -350,7 +361,6 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                 else if (keyPressed == KEY_RETURN) {
                     val command = currentInput.toString()
                     when {
-                        command.toLowerCase() == "clear" -> scrollback.text = ""
                         command.toLowerCase() == "exit" -> {
                             isOpen = false
                             return
