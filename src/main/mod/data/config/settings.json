@@ -1,7 +1,7 @@
 {
     "plugins": {
         "ConsoleCombatListener": "org.lazywizard.console.ConsoleCombatListener",
-        "ConsoleCombatCheatManager": "org.lazywizard.console.CombatCheatManager"
+        "ConsoleCombatCheatManager": "org.lazywizard.console.cheatmanager.CombatCheatManager"
     },
 
     "graphics": {
