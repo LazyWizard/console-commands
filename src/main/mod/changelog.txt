@@ -7,6 +7,7 @@ Completely rewrote the input system and added a custom console overlay:
  - Uses custom font renderer (please don't use these classes yourself, wait for
    their eventual inclusion in LazyLib once the code is stable and bug-free)
  - Supports mouse/keyboard scrolling and copy+paste
+Console.showMessage() accepts any Object, not just Strings
 Most console settings are now chosen in-game, persistent between updates
 Memory usage is now shown in console overlay (disable using Settings command)
 Sounds are no longer played when a command encounters an error
