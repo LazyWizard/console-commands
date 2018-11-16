@@ -157,7 +157,7 @@ public class ShowSettings implements BaseCommand
 
                     // Console overlay font size
                     options.addSelector("Text Scaling Percentage", Selector.TEXT_SCALE, Color.WHITE, barWidth, 150f, 50, 150, ValueDisplayMode.VALUE,
-                    "Scale displayed text by this percentage of the base font size.");
+                            "Scale displayed text by this percentage of the base font size.");
                     options.setSelectorValue(Selector.TEXT_SCALE, (int) (fontScale * 100));
 
                     // Console overlay font color
@@ -181,7 +181,7 @@ public class ShowSettings implements BaseCommand
                     options.addOption("Text settings", Menu.TEXT,
                             "Customize the size and color of the console overlay's text.");
                     options.addOption("Show background: " + (showBackground ? "true" : "false"),
-                    Option.SHOW_BACKGROUND, getToggleOptionColor(showBackground),
+                            Option.SHOW_BACKGROUND, getToggleOptionColor(showBackground),
                             "Whether to show the paused game in the background of the overlay.");
                     options.addOption("Show entered commands: " + (showCommands ? "true" : "false"),
                             Option.SHOW_COMMANDS, getToggleOptionColor(showCommands),

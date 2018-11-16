@@ -1,9 +1,9 @@
 package org.lazywizard.console
 
 import com.fs.starfarer.api.input.InputEventAPI
+import org.lazywizard.lazylib.JSONUtils
 import org.lwjgl.input.Keyboard
 import java.awt.Color
-import java.util.prefs.Preferences
 import kotlin.reflect.KProperty
 
 /*
@@ -12,7 +12,7 @@ import kotlin.reflect.KProperty
      - Update the Settings command's pop-up dialog to support it
  */
 object ConsoleSettings {
-    private val prefs = Preferences.userNodeForPackage(Console::class.java)
+    private val settings = JSONUtils.loadCommonJSON("lw_console_settings.json")
     var fontScaling by FloatPref("fontScaling", default = 1.0f)
     var commandSeparator by StringPref("commandSeparator", default = ";")
     var maxScrollback by IntPref("maxScrollback", default = 10_000)
@@ -27,51 +27,56 @@ object ConsoleSettings {
     var consoleSummonKey by KeystrokePref("consoleKeystroke",
             default = Keystroke(Keyboard.getKeyIndex("BACK"), true, false, false))
 
-    fun resetToDefaults() = prefs.clear()
+    // TODO: Test once 0.9a lands
+    fun resetToDefaults() = JSONUtils.clear(settings)
 
-    //<editor-fold defaultstate="collapsed" desc="Preference-backed delegates">
+    //<editor-fold defaultstate="collapsed" desc="Delegate implementations">
     private class StringPref(val key: String, default: String) {
-        private var field = prefs.get(key, default)
+        private var field = settings.optString(key, default)
 
         operator fun getValue(consoleSettings: ConsoleSettings, property: KProperty<*>): String = field
         operator fun setValue(consoleSettings: ConsoleSettings, property: KProperty<*>, value: String) {
             field = value
-            prefs.put(key, value)
+            settings.put(key, value)
+            settings.save()
         }
     }
 
     private class BoolPref(val key: String, default: Boolean) {
-        private var field = prefs.getBoolean(key, default)
+        private var field = settings.optBoolean(key, default)
 
         operator fun getValue(consoleSettings: ConsoleSettings, property: KProperty<*>): Boolean = field
         operator fun setValue(consoleSettings: ConsoleSettings, property: KProperty<*>, value: Boolean) {
             field = value
-            prefs.putBoolean(key, value)
+            settings.put(key, value)
+            settings.save()
         }
     }
 
     private class IntPref(val key: String, default: Int) {
-        private var field = prefs.getInt(key, default)
+        private var field = settings.optInt(key, default)
 
         operator fun getValue(consoleSettings: ConsoleSettings, property: KProperty<*>): Int = field
         operator fun setValue(consoleSettings: ConsoleSettings, property: KProperty<*>, value: Int) {
             field = value
-            prefs.putInt(key, value)
+            settings.put(key, value)
+            settings.save()
         }
     }
 
     private class FloatPref(val key: String, default: Float) {
-        private var field = prefs.getFloat(key, default)
+        private var field = settings.optDouble(key, default.toDouble()).toFloat()
 
         operator fun getValue(consoleSettings: ConsoleSettings, property: KProperty<*>): Float = field
         operator fun setValue(consoleSettings: ConsoleSettings, property: KProperty<*>, value: Float) {
             field = value
-            prefs.putFloat(key, value)
+            settings.put(key, value)
+            settings.save()
         }
     }
 
     private class ColorPref(val key: String, default: Color) {
-        private var field = parseColor(prefs.get(key, asString(default)))
+        private var field = parseColor(settings.optString(key, asString(default)))
 
         private fun asString(color: Color): String = "${color.red}|${color.green}|${color.blue}"
         private fun parseColor(color: String): Color {
@@ -83,12 +88,13 @@ object ConsoleSettings {
         operator fun getValue(consoleSettings: ConsoleSettings, property: KProperty<*>): Color = field
         operator fun setValue(consoleSettings: ConsoleSettings, property: KProperty<*>, value: Color) {
             field = value
-            prefs.put(key, asString(value))
+            settings.put(key, asString(value))
+            settings.save()
         }
     }
 
     private class KeystrokePref(val key: String, default: Keystroke) {
-        private var field = parseKeystroke(prefs.get(key, asString(default)))
+        private var field = parseKeystroke(settings.optString(key, asString(default)))
 
         private fun asString(keystroke: Keystroke) = "${keystroke.keyCode}|${keystroke.ctrl}|${keystroke.alt}|${keystroke.shift}"
         private fun parseKeystroke(keystroke: String): Keystroke {
@@ -102,7 +108,8 @@ object ConsoleSettings {
         operator fun getValue(consoleSettings: ConsoleSettings, property: KProperty<*>): Keystroke = field
         operator fun setValue(consoleSettings: ConsoleSettings, property: KProperty<*>, value: Keystroke) {
             field = value
-            prefs.put(key, asString(value))
+            settings.put(key, asString(value))
+            settings.save()
         }
     }
     //</editor-fold>
