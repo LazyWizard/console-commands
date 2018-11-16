@@ -95,12 +95,12 @@ abstract class CheatPlugin {
     /** Called once per applicable ship per frame the command is active. */
     abstract fun advance(ship: ShipAPI, amount: Float)
 
-    /** Called when cheat is toggled off, before [onEnd]. Do not rely on this being called! */
+    /** Called when cheat is toggled off. Do not rely on this being called! */
     open fun unapply(ship: ShipAPI) {}
 
     /** Called when cheat is toggled on, before [advance] is called on any ships. */
     open fun onStart(engine: CombatEngineAPI) {}
 
-    /** Only called when cheat is toggled off - do not rely on this being called! */
+    /** Only called when cheat is toggled off, after [unapply] is called on all ships. Do not rely on this being called! */
     open fun onEnd(engine: CombatEngineAPI) {}
 }

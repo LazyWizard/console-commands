@@ -9,7 +9,7 @@ public class Clear implements BaseCommand
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
-        Console.showMessage("This is only a dummy implementation. How did you do this?");
+        Console.showMessage("This is only a dummy implementation. How did you get this to run?");
         return CommandResult.SUCCESS;
     }
 }
