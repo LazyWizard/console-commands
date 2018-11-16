@@ -3,14 +3,14 @@
 \=============================================================/
  - Release new LazyLib version w/ Kotlin dependencies
  - Polish new in-game settings menu
- - Fix campaign toggle commands (currently don't deactivate properly)
- - Finish testing and polish pass on all existing commands
+ - Fix campaign toggle commands (currently don't deactivate properly; fixed in 0.9a)
 
 /====================================================\
 | Low-Priority Tasks for v3.0 final (may be skipped) |
 \====================================================/
  - Implement tab autocompletion for command arguments
- - Look into making aliases set in-game, persistent
+ - Look into making aliases set in-game, persistent (requires 0.9a)
+ - Finish testing and polish pass on all existing commands
  - Polish pass on help entries in commands.csv
  - Various minor todo items scattered throughout the code
 

@@ -18,10 +18,9 @@ public class ConsoleCombatListener extends BaseEveryFrameCombatPlugin implements
     private CommandContext context;
 
     @Override
-    public void advance(float amount, List<InputEventAPI> events)
+    public void processInputPreCoreControls(float amount, List<InputEventAPI> events)
     {
         CombatEngineAPI engine = Global.getCombatEngine();
-
         if (engine == null)
         {
             return;
@@ -37,7 +36,7 @@ public class ConsoleCombatListener extends BaseEveryFrameCombatPlugin implements
             }
 
             // Advance the console and all combat commands
-            Console.advance(amount, this);
+            Console.advance(this);
         }
     }
 

@@ -38,6 +38,7 @@ public class Console
     // Stores the output of the console until it can be displayed
     private static StringBuilder output = new StringBuilder();
     private static String lastCommand;
+    private static CommandContext currentContext = CommandContext.COMBAT_MISSION;
 
     /**
      * Forces the console to reload its settings from the settings file.
@@ -76,6 +77,11 @@ public class Console
     public static LazyFont getFont()
     {
         return font;
+    }
+
+    public static CommandContext getContext()
+    {
+        return currentContext;
     }
 
     static String getLastCommand()
@@ -235,17 +241,18 @@ public class Console
 
     private static CommandResult runCommand(String input, CommandContext context)
     {
-        if ("clear".equals(input.toLowerCase()))
+        String[] tmp = input.split(" ", 2);
+        String com = tmp[0].toLowerCase();
+        String args = (tmp.length > 1 ? tmp[1] : "");
+        CommandResult result;
+
+        // Support for clearing the overlay history
+        if ("clear".equals(com))
         {
             output.setLength(0);
             ConsoleOverlay.clear();
             return CommandResult.SUCCESS;
         }
-
-        String[] tmp = input.split(" ", 2);
-        String com = tmp[0].toLowerCase();
-        String args = (tmp.length > 1 ? tmp[1] : "");
-        CommandResult result;
 
         // Alias with arguments support
         if (CommandStore.getAliases().containsKey(com))
@@ -379,10 +386,9 @@ public class Console
         }
     }
 
-    static void advance(float amount, ConsoleListener listener)
+    static void advance(ConsoleListener listener)
     {
-        // Just check the output queue for now
-        //PersistentCommandManager.advance(amount, listener);
+        currentContext = listener.getContext();
         showOutput(listener);
     }
 

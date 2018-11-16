@@ -128,12 +128,12 @@ public class SpawnAsteroids implements BaseCommand
         {
             final String sizeDesc = getAsteroidDesc(asteroidSize);
             text.setText("Click and drag to spawn asteroids, or press spacebar to finish spawning.\n" +
-                    "Press 6-9 to select asteroid size, or 0 for random sizes.\n" +
+                    "Press 1-4 to select asteroid size, or 5 for random sizes.\n" +
                     "Current asteroid size: " + sizeDesc);
         }
 
         @Override
-        public void advance(float amount, List<InputEventAPI> events)
+        public void processInputPreCoreControls(float amount, List<InputEventAPI> events)
         {
             final CombatEngineAPI engine = Global.getCombatEngine();
             if (engine.getCombatUI().isShowingCommandUI())
@@ -168,9 +168,9 @@ public class SpawnAsteroids implements BaseCommand
                     }
 
                     // Select size using keyboard shortcuts
-                    if (eventValue >= Keyboard.KEY_6 && eventValue <= Keyboard.KEY_0)
+                    if (eventValue >= Keyboard.KEY_1 && eventValue <= Keyboard.KEY_5)
                     {
-                        asteroidSize = (eventValue == Keyboard.KEY_0) ? -1 : eventValue - Keyboard.KEY_6;
+                        asteroidSize = (eventValue == Keyboard.KEY_5) ? -1 : eventValue - Keyboard.KEY_1;
 
                         updateText();
                         event.consume();

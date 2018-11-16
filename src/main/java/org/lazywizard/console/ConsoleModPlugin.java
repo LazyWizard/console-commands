@@ -20,6 +20,6 @@ public class ConsoleModPlugin extends BaseModPlugin
     @Override
     public void onGameLoad(boolean newGame)
     {
-        Global.getSector().addTransientScript(new ConsoleCampaignListener());
+        Global.getSector().getListenerManager().addListener(new ConsoleCampaignListener(), true);
     }
 }
