@@ -36,7 +36,7 @@ public class ForceMarketUpdate implements BaseCommand
                 if (submarket.getPlugin() instanceof BaseSubmarketPlugin)
                 {
                     final BaseSubmarketPlugin plugin = (BaseSubmarketPlugin) submarket.getPlugin();
-                    plugin.setSinceLastCargoUpdate(plugin.getMinCargoUpdateInterval() + 1);
+                    plugin.setSinceLastCargoUpdate(plugin.getMinSWUpdateInterval() + 1);
                     totalSubmarkets++;
                     plugin.updateCargoPrePlayerInteraction();
                 }

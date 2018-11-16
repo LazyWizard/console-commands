@@ -400,7 +400,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     }
 
     private fun advance(amount: Float) {
-        Console.advance(amount, this)
+        Console.advance(this)
 
         // Handle cursor blinking
         nextBlink -= amount

@@ -27,8 +27,10 @@ object ConsoleSettings {
     var consoleSummonKey by KeystrokePref("consoleKeystroke",
             default = Keystroke(Keyboard.getKeyIndex("BACK"), true, false, false))
 
-    // TODO: Test once 0.9a lands
-    fun resetToDefaults() = JSONUtils.clear(settings)
+    fun resetToDefaults() {
+        JSONUtils.clear(settings)
+        settings.save()
+    }
 
     //<editor-fold defaultstate="collapsed" desc="Delegate implementations">
     private class StringPref(val key: String, default: String) {
@@ -115,19 +117,6 @@ object ConsoleSettings {
     //</editor-fold>
 
     class Keystroke(val keyCode: Int, val ctrl: Boolean, val alt: Boolean, val shift: Boolean) {
-        // Will not consume events! Use the other method when InputEventAPI is available!
-        fun isPressed(): Boolean {
-            if (!Keyboard.isKeyDown(keyCode)) return false
-
-            if (ctrl && !(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)
-                            || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))) return false
-            if (alt && !(Keyboard.isKeyDown(Keyboard.KEY_LMENU)
-                            || Keyboard.isKeyDown(Keyboard.KEY_RMENU))) return false
-            if (shift && !(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)
-                            || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))) return false
-
-            return true
-        }
 
         fun isPressed(events: List<InputEventAPI>): Boolean {
             for (event in events) {

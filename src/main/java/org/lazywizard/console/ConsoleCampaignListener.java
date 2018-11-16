@@ -1,52 +1,47 @@
 package org.lazywizard.console;
 
-import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignUIAPI;
+import com.fs.starfarer.api.campaign.listeners.CampaignInputListener;
+import com.fs.starfarer.api.input.InputEventAPI;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.lazylib.StringUtils;
 
-public class ConsoleCampaignListener implements EveryFrameScript, ConsoleListener
+import java.util.List;
+
+public class ConsoleCampaignListener implements CampaignInputListener, ConsoleListener
 {
-    private transient float timeUntilNotify = 0.5f;
-
     @Override
-    public boolean isDone()
+    public int getListenerInputPriority()
     {
-        return false;
+        return 9999;
     }
 
     @Override
-    public boolean runWhilePaused()
+    public void processCampaignInputPreCore(List<InputEventAPI> events)
     {
-        return true;
-    }
-
-    @Override
-    public void advance(float amount)
-    {
-        if (timeUntilNotify > 0f)
-        {
-            timeUntilNotify -= amount;
-        }
-
         final CampaignUIAPI ui = Global.getSector().getCampaignUI();
-        if (!ui.isShowingDialog() && !ui.isShowingMenu() && Console.getSettings().getConsoleSummonKey().isPressed())
+        if (!ui.isShowingDialog() && !ui.isShowingMenu() && Console.getSettings().getConsoleSummonKey().isPressed(events))
         {
             ConsoleOverlay.show(getContext());
         }
 
-        Console.advance(amount, this);
+        Console.advance(this);
+    }
+
+    @Override
+    public void processCampaignInputPreFleetControl(List<InputEventAPI> events)
+    {
+    }
+
+    @Override
+    public void processCampaignInputPostCore(List<InputEventAPI> events)
+    {
     }
 
     @Override
     public boolean showOutput(String output)
     {
-        if (timeUntilNotify > 0f)
-        {
-            return false;
-        }
-
         for (String message : output.split("\n"))
         {
             message = StringUtils.wrapString(message, 80);
