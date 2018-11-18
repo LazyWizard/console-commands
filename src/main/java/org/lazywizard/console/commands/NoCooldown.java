@@ -1,6 +1,7 @@
 package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.combat.ShipAPI;
+import com.fs.starfarer.api.combat.ShipSystemAPI;
 import com.fs.starfarer.api.combat.WeaponAPI;
 import org.jetbrains.annotations.NotNull;
 import org.lazywizard.console.BaseCommand;
@@ -33,7 +34,7 @@ public class NoCooldown implements BaseCommand
             if (CombatCheatManager.isEnabled(CHEAT_ID))
             {
                 CombatCheatManager.disableCheat(CHEAT_ID);
-                Console.showMessage("Weapon cooldowns enabled.");
+                Console.showMessage("Cooldowns enabled.");
                 return CommandResult.SUCCESS;
             }
             else
@@ -55,7 +56,7 @@ public class NoCooldown implements BaseCommand
 
         CombatCheatManager.enableCheat(CHEAT_ID, "No Cooldowns (" + appliesTo.name() + ")",
                 new NoCooldownPlugin(), appliesTo);
-        Console.showMessage("Weapon cooldownds disabled for " + appliesTo.name() + ".");
+        Console.showMessage("Cooldowns disabled for " + appliesTo.name() + ".");
         return CommandResult.SUCCESS;
     }
 
@@ -71,6 +72,9 @@ public class NoCooldown implements BaseCommand
                     wep.setRemainingCooldownTo(0.0001f);
                 }
             }
+
+            final ShipSystemAPI system = ship.getSystem();
+            if (system != null && system.isCoolingDown()) system.setCooldownRemaining(0.0001f);
         }
 
         @Override
