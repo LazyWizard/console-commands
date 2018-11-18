@@ -52,9 +52,7 @@ class CombatCheatManager : BaseEveryFrameCombatPlugin() {
         if (plugins.isEmpty()) return
 
         Global.getCombatEngine().maintainStatusForPlayerShip(DATA_ID, icon, "Active cheats", buildStatusDesc(), true)
-        for (data in plugins.values) {
-            data.advance(amount, events)
-        }
+        for (data in plugins.values) data.advance(amount, events)
     }
 }
 
@@ -97,7 +95,7 @@ abstract class CheatPlugin {
     /** Called once per frame while the command is active, before [advance] is called on applicable ships. */
     open fun advance(amount: Float, events: List<@JvmSuppressWildcards InputEventAPI>) {}
 
-    /** Called once per applicable ship per frame the command is active. */
+    /** Called once per applicable ship per frame while the command is active. */
     open fun advance(ship: ShipAPI, amount: Float) {}
 
     /** Called when cheat is toggled off. Do not rely on this being called! */
