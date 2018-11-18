@@ -34,7 +34,6 @@ FindShip,org.lazywizard.console.commands.FindShip,"core,campaign",findship <hull
 Flameout,org.lazywizard.console.commands.Flameout,"core,combat",flameout,"Forces a flameout of all engines on your current target, or the player ship if no ship is targeted."
 ForceDeployAll,org.lazywizard.console.commands.ForceDeployAll,"core,combat",forcedeployall (no arguments),"Forces the enemy to deploy all reserved ships regardless of remaining deployment points. Results may be disastrous for performance."
 ForceMarketUpdate,org.lazywizard.console.commands.ForceMarketUpdate,"core,campaign",forcemarketupdate (no arguments),"Forces an inventory refresh of all submarkets in the sector."
-GameArgs,org.lazywizard.console.commands.GameArgs,"core,console",gameargs (no arguments),"Prints the command line arguments passed into Starsector. Also copies them to the system clipboard so you can paste them elsewhere."
 God,org.lazywizard.console.commands.God,"core,combat",god (no arguments),"Toggles invincibility for all ships on your side."
 GoTo,org.lazywizard.console.commands.GoTo,"core,campaign",goto [optionalLocationName],"Teleports your fleet to the token with the given name in this system, if any exists. The argument 'home' will function identically to the 'home' command. If no argument is entered, teleports your fleet to its current move destination."
 Help,org.lazywizard.console.commands.Help,"core,console",help [optionalCommand],"Shows a list of all commands, or the details on using a specific command if one is entered as an argument."

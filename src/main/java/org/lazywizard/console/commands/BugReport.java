@@ -11,6 +11,7 @@ import org.lwjgl.opengl.DisplayMode;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,16 @@ public class BugReport implements BaseCommand
     private static String getPlatformString()
     {
         return "Platform: " + LWJGLUtil.getPlatformName() + " (" + (Sys.is64Bit() ? "64" : "32") + "-bit)\n";
+    }
+
+    private static String getLaunchArgs()
+    {
+        final StringBuilder cmdLine = new StringBuilder();
+        for (String arg : ManagementFactory.getRuntimeMXBean().getInputArguments())
+        {
+            cmdLine.append(arg).append(" ");
+        }
+        return cmdLine.toString();
     }
 
     private static String getDisplayString()
@@ -44,11 +55,12 @@ public class BugReport implements BaseCommand
     {
         final StringBuilder modData = new StringBuilder(1024);
 
-        modData.append(" System specs:\n---------------\n");
+        modData.append(" System info:\n---------------\n");
+        modData.append("Game version: " + Global.getSettings().getVersionString() + "\n");
         modData.append(getPlatformString());
         //modData.append(getDriverString()); // Almost never works
         modData.append(getDisplayString());
-        modData.append("Launch args: " + GameArgs.getLaunchArgs() + "\n");
+        modData.append("Launch args: " + getLaunchArgs() + "\n");
 
         modData.append("\n Active mod list:\n------------------\n");
         final List<ModSpecAPI> allMods = Global.getSettings().getModManager().getEnabledModsCopy(),
