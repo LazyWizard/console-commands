@@ -1,23 +1,14 @@
 package org.lazywizard.console.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModSpecAPI;
-import com.fs.starfarer.api.campaign.CampaignFleetAPI;
-import com.fs.starfarer.api.campaign.FactionAPI;
-import com.fs.starfarer.api.campaign.LocationAPI;
-import com.fs.starfarer.api.campaign.PlanetAPI;
-import com.fs.starfarer.api.campaign.SectorAPI;
-import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import org.lazywizard.console.*;
 import org.lazywizard.lazylib.CollectionUtils;
+
+import java.util.*;
 
 public class List_ implements BaseCommand
 {
@@ -164,6 +155,9 @@ public class List_ implements BaseCommand
             case "commodities":
             case "items":
                 ids = new ArrayList<>(sector.getEconomy().getAllCommodityIds());
+                break;
+            case "specials":
+                ids = AddSpecial.getSpecialItemIds();
                 break;
             case "systems":
             case "locations":

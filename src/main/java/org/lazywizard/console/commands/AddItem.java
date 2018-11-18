@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.CargoAPI.CargoItemType;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+
 import static org.lazywizard.console.CommandUtils.*;
 
 public class AddItem implements BaseCommand
@@ -52,13 +53,18 @@ public class AddItem implements BaseCommand
             tmp[0] = tmp[1];
         }
 
-        final String id = findBestStringMatch(tmp[0],
-                Global.getSector().getEconomy().getAllCommodityIds());
+        String id = findBestStringMatch(tmp[0], Global.getSector().getEconomy().getAllCommodityIds());
         if (id == null)
         {
-            Console.showMessage("No commodity found with id '" + tmp[0]
-                    + "'! Use 'list items' for a complete list of valid ids.");
-            return CommandResult.ERROR;
+            id = findBestStringMatch(tmp[0], AddSpecial.getSpecialItemIds());
+            if (id == null)
+            {
+                Console.showMessage("No commodity found with id '" + tmp[0]
+                        + "'! Use 'list items' for a complete list of valid ids.");
+                return CommandResult.ERROR;
+            }
+
+            return new AddSpecial().runCommand(tmp[0], context);
         }
 
         Global.getSector().getPlayerFleet().getCargo().addItems(
