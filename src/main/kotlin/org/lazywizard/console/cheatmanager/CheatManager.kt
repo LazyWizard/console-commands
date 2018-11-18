@@ -10,17 +10,21 @@ private typealias CData = MutableMap<String, CombatCheatData>
 
 class CombatCheatManager : BaseEveryFrameCombatPlugin() {
     private val icon = Global.getSettings().getSpriteName("ui", "console_status")
+    private val plugins: CData by lazy(LazyThreadSafetyMode.NONE) {
+        PluginManager.getPlugins()
+    }
 
     private companion object PluginManager {
         private const val DATA_ID = "lw_console_cheats"
-        private val plugins: CData
-            get() {
-                @Suppress("UNCHECKED_CAST")
-                return Global.getCombatEngine().customData.getOrPut(DATA_ID) { HashMap<String, CheatPlugin>() } as CData
-            }
+
+        @Suppress("UNCHECKED_CAST")
+        private fun getPlugins(): CData {
+            return Global.getCombatEngine().customData.getOrPut(DATA_ID) { HashMap<String, CheatPlugin>() } as CData
+        }
 
         @JvmStatic
         fun enableCheat(id: String, statusDesc: String, plugin: CheatPlugin, appliesTo: CheatTarget?) {
+            val plugins = getPlugins()
             plugins[id]?.onEnd()
 
             val data = CombatCheatData(id, statusDesc, plugin, appliesTo)
@@ -30,11 +34,11 @@ class CombatCheatManager : BaseEveryFrameCombatPlugin() {
 
         @JvmStatic
         fun disableCheat(id: String) {
-            plugins.remove(id)?.unapply()
+            getPlugins().remove(id)?.unapply()
         }
 
         @JvmStatic
-        fun isEnabled(id: String) = plugins.containsKey(id)
+        fun isEnabled(id: String) = getPlugins().containsKey(id)
 
         @JvmStatic
         @JvmOverloads
