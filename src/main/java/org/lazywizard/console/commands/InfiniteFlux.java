@@ -78,5 +78,11 @@ public class InfiniteFlux implements BaseCommand
                 flux.stopOverload();
             }
         }
+
+        @Override
+        public boolean runWhilePaused()
+        {
+            return false;
+        }
     }
 }

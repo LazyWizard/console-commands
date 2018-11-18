@@ -66,6 +66,8 @@ private data class CombatCheatData(val id: String, val statusDesc: String, val p
     }
 
     fun advance(amount: Float, events: List<InputEventAPI>) {
+        if (!plugin.runWhilePaused()) return
+
         plugin.advance(amount, events)
         if (appliesTo != null) for (ship in Global.getCombatEngine().ships) if (appliesTo(ship)) plugin.advance(ship, amount)
     }
@@ -106,4 +108,7 @@ abstract class CheatPlugin {
 
     /** Only called when cheat is toggled off, after [unapply] is called on all ships. Do not rely on this being called! */
     open fun onEnd(engine: CombatEngineAPI) {}
+
+    /** Whether the [advance] methods should be called while the game is paused. */
+    abstract fun runWhilePaused(): Boolean
 }

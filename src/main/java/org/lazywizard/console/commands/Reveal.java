@@ -66,5 +66,11 @@ public class Reveal implements BaseCommand
             final float radius = Math.max(engine.getMapWidth(), engine.getMapHeight());
             fow.revealAroundPoint(this, 0f, 0f, radius);
         }
+
+        @Override
+        public boolean runWhilePaused()
+        {
+            return true;
+        }
     }
 }

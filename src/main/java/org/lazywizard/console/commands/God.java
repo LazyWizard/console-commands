@@ -76,5 +76,11 @@ public class God implements BaseCommand
             ship.getMutableStats().getEmpDamageTakenMult().unmodify(CHEAT_ID);
             ship.getMutableStats().getArmorDamageTakenMult().unmodify(CHEAT_ID);
         }
+
+        @Override
+        public boolean runWhilePaused()
+        {
+            return false;
+        }
     }
 }

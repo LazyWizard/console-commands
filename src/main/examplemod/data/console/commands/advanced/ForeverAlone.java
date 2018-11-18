@@ -31,7 +31,7 @@ public class ForeverAlone implements BaseCommand
         SectorAPI tmp = (SectorAPI) lastSector.get();
         if (tmp != null && tmp == Global.getSector())
         {
-            Global.getSector().removeScriptsOfClass(ForeverAloneScript.class);
+            Global.getSector().removeTransientScriptsOfClass(ForeverAloneScript.class);
             lastSector.clear();
             Console.showMessage("I have friends!");
             return CommandResult.SUCCESS;
