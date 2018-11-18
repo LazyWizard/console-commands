@@ -1,9 +1,6 @@
 package org.lazywizard.console.commands;
 
-import java.lang.ref.WeakReference;
-import java.util.List;
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.FogOfWarAPI;
 import com.fs.starfarer.api.combat.StatBonus;
@@ -11,81 +8,63 @@ import com.fs.starfarer.api.fleet.MutableFleetStatsAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.mission.FleetSide;
 import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.BaseCommand.CommandContext;
-import org.lazywizard.console.BaseCommand.CommandResult;
-import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import org.lazywizard.console.cheatmanager.CheatPlugin;
+import org.lazywizard.console.cheatmanager.CombatCheatManager;
+
+import java.util.List;
 
 public class Reveal implements BaseCommand
 {
-    private static WeakReference<RevealPlugin> plugin;
+    private static final String CHEAT_ID = "lw_console_reveal";
 
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
+        // In campaign, just give the player fleet a massive sensor boost
         if (context.isInCampaign())
         {
-            final String bonusId = CommonStrings.MOD_ID + "_reveal";
             final MutableFleetStatsAPI stats = Global.getSector().getPlayerFleet().getStats();
             final StatBonus rangeMod = stats.getSensorRangeMod();
             final StatBonus strengthMod = stats.getSensorStrengthMod();
-            if (rangeMod.getFlatBonus(bonusId) != null)
+            if (rangeMod.getFlatBonus(CHEAT_ID) != null)
             {
-                rangeMod.unmodify(bonusId);
-                strengthMod.unmodify(bonusId);
+                rangeMod.unmodify(CHEAT_ID);
+                strengthMod.unmodify(CHEAT_ID);
                 Console.showMessage("Sensors returned to normal.");
                 return CommandResult.SUCCESS;
             }
 
-            rangeMod.modifyFlat(bonusId, 999_999f, "Console");
-            strengthMod.modifyFlat(bonusId, 999_999f, "Console");
+            rangeMod.modifyFlat(CHEAT_ID, 999_999f, "Console");
+            strengthMod.modifyFlat(CHEAT_ID, 999_999f, "Console");
             Console.showMessage("Sensor strength maximized.");
             return CommandResult.SUCCESS;
         }
 
-        RevealPlugin tmp;
-        if (plugin == null || plugin.get() == null
-                || plugin.get().engine != Global.getCombatEngine())
+        // In combat, toggles a cheat plugin to handle per-frame reveals
+        if (CombatCheatManager.isEnabled(CHEAT_ID))
         {
-            tmp = new RevealPlugin();
-            plugin = new WeakReference<>(tmp);
-            Global.getCombatEngine().addPlugin(tmp);
-            Console.showMessage("Fog of war disabled.");
+            CombatCheatManager.disableCheat(CHEAT_ID);
+            Console.showMessage("Fog of war enabled.");
+            return CommandResult.SUCCESS;
         }
         else
         {
-            tmp = plugin.get();
-            plugin.clear();
-            tmp.active = false;
-            Console.showMessage("Fog of war enabled.");
+            CombatCheatManager.enableCheat(CHEAT_ID, "Reveal Map", new RevealPlugin(), null);
+            Console.showMessage("Fog of war disabled.");
+            return CommandResult.SUCCESS;
         }
-
-        return CommandResult.SUCCESS;
     }
 
-    private static class RevealPlugin extends BaseEveryFrameCombatPlugin
+    private static class RevealPlugin extends CheatPlugin
     {
-        private boolean active = true;
-        private CombatEngineAPI engine;
-
         @Override
         public void advance(float amount, List<InputEventAPI> events)
         {
-            if (!active)
-            {
-                engine.removePlugin(this);
-                return;
-            }
-
-            FogOfWarAPI fow = engine.getFogOfWar(FleetSide.PLAYER.ordinal());
-            float radius = Math.max(engine.getMapWidth(), engine.getMapHeight());
+            final CombatEngineAPI engine = Global.getCombatEngine();
+            final FogOfWarAPI fow = engine.getFogOfWar(FleetSide.PLAYER.ordinal());
+            final float radius = Math.max(engine.getMapWidth(), engine.getMapHeight());
             fow.revealAroundPoint(this, 0f, 0f, radius);
-        }
-
-        @Override
-        public void init(CombatEngineAPI engine)
-        {
-            this.engine = engine;
         }
     }
 }
