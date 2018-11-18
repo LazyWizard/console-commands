@@ -27,7 +27,7 @@ public class InfiniteSupplies implements BaseCommand
         SectorAPI tmp = lastSector.get();
         if (tmp != null && tmp == Global.getSector())
         {
-            Global.getSector().removeScriptsOfClass(InfiniteSuppliesScript.class);
+            Global.getSector().removeTransientScriptsOfClass(InfiniteSuppliesScript.class);
             lastSector.clear();
             Console.showMessage("Infinite supplies disabled.");
             return CommandResult.SUCCESS;

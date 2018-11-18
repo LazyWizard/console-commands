@@ -9,7 +9,6 @@ import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
-// FIXME: This (and all campaign toggle commands) is broken in .7a+
 public class InfiniteFuel implements BaseCommand
 {
     private static WeakReference<SectorAPI> lastSector = new WeakReference<>(null);
@@ -26,7 +25,7 @@ public class InfiniteFuel implements BaseCommand
         SectorAPI tmp = lastSector.get();
         if (tmp != null && tmp == Global.getSector())
         {
-            Global.getSector().removeScriptsOfClass(InfiniteFuelScript.class);
+            Global.getSector().removeTransientScriptsOfClass(InfiniteFuelScript.class);
             lastSector.clear();
             Console.showMessage("Infinite fuel disabled.");
             return CommandResult.SUCCESS;
