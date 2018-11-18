@@ -124,7 +124,16 @@ public class ShowBounds implements BaseCommand
                     renderers.put(ship, new PointRenderer(ship));
                 }
 
-                renderers.get(ship).draw(ship);
+                // When a ship explodes into chunks, the main piece is still the same ship object
+                // This checks for that situation and refreshes the renderer
+                PointRenderer renderer = renderers.get(ship);
+                if (ship.isPiece() && !renderer.wasPiece)
+                {
+                    renderer = new PointRenderer(ship);
+                    renderers.put(ship, renderer);
+                }
+
+                renderer.draw(ship);
             }
 
             // Finalize drawing
@@ -143,9 +152,11 @@ public class ShowBounds implements BaseCommand
     private static class PointRenderer
     {
         private final List<PointData> pointData = new ArrayList<>(3);
+        private final boolean wasPiece;
 
         private PointRenderer(ShipAPI ship)
         {
+            wasPiece = ship.isPiece();
             final Vector2f origLoc = new Vector2f(ship.getLocation());
             final float origFacing = ship.getFacing();
             ship.setFacing(0f);
