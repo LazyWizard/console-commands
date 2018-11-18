@@ -1,23 +1,24 @@
 package org.lazywizard.console.commands;
 
-import java.util.List;
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.CombatTaskManagerAPI;
-import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.mission.FleetSide;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import org.lazywizard.console.cheatmanager.CheatPlugin;
+import org.lazywizard.console.cheatmanager.CombatCheatManager;
+
+import java.util.List;
 
 public class BlockRetreat implements BaseCommand
 {
     private static final Logger Log = Logger.getLogger(BlockRetreat.class);
-    private static final String PLUGIN_ID = "BlockRetreat";
+    private static final String CHEAT_ID = "lw_console_god";
 
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -35,55 +36,66 @@ public class BlockRetreat implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        final CombatTaskManagerAPI tm = engine.getFleetManager(FleetSide.ENEMY)
-                .getTaskManager(false);
-        final boolean canRetreat = !tm.isPreventFullRetreat();
-        tm.setPreventFullRetreat(canRetreat);
-
-        // Fix for battles never ending while this command is active
-        if (!canRetreat && !CommandUtils.isCombatPluginRegistered(PLUGIN_ID))
+        if (CombatCheatManager.isEnabled(CHEAT_ID))
         {
-            final EveryFrameCombatPlugin plugin = new EnsureBattleEndPlugin();
-            CommandUtils.registerCombatPlugin(PLUGIN_ID, plugin);
-            engine.addPlugin(plugin);
+            CombatCheatManager.disableCheat(CHEAT_ID);
+            Console.showMessage("Enemy retreat is now allowed.");
+            return CommandResult.SUCCESS;
         }
-        else if (canRetreat && CommandUtils.isCombatPluginRegistered(PLUGIN_ID))
+        else
         {
-            engine.removePlugin(CommandUtils.getRegisteredCombatPlugin(PLUGIN_ID));
-            CommandUtils.deregisterCombatPlugin(PLUGIN_ID);
+            CombatCheatManager.enableCheat(CHEAT_ID, "Prevent Enemy Retreat", new BlockRetreatPlugin(), null);
+            Console.showMessage("Enemy retreat is now prevented.");
+            return CommandResult.SUCCESS;
         }
-
-        Console.showMessage("Enemy retreat is now " + (canRetreat ? "allowed." : "blocked."));
-        return CommandResult.SUCCESS;
     }
 
-    private static class EnsureBattleEndPlugin extends BaseEveryFrameCombatPlugin
+    private static class BlockRetreatPlugin extends CheatPlugin
     {
         private static final float TIME_BETWEEN_CHECKS = 1f;
         private float nextCheck = TIME_BETWEEN_CHECKS;
+        private boolean endedCombat = false;
+
+        @Override
+        public void onStart(@NotNull CombatEngineAPI engine)
+        {
+            final CombatTaskManagerAPI tm = engine.getFleetManager(FleetSide.ENEMY).getTaskManager(false);
+            tm.setPreventFullRetreat(true);
+        }
+
+        @Override
+        public void onEnd(@NotNull CombatEngineAPI engine)
+        {
+            final CombatTaskManagerAPI tm = engine.getFleetManager(FleetSide.ENEMY)
+                    .getTaskManager(false);
+            tm.setPreventFullRetreat(false);
+        }
 
         @Override
         public void advance(float amount, List<InputEventAPI> events)
         {
-            final CombatEngineAPI engine = Global.getCombatEngine();
-            if (engine.isPaused())
-            {
-                return;
-            }
+            if (endedCombat) return;
 
+            // Ensure battle ends when all enemies are defeated
             nextCheck -= amount;
             if (nextCheck <= 0f)
             {
-                if (engine.getFleetManager(FleetSide.ENEMY).getDeployedCopy().isEmpty())
+                if (Global.getCombatEngine().getFleetManager(FleetSide.ENEMY).getDeployedCopy().isEmpty())
                 {
                     Log.info("Forcing player victory");
-                    engine.endCombat(1f, FleetSide.PLAYER);
-                    engine.removePlugin(this);
+                    Global.getCombatEngine().endCombat(1f, FleetSide.PLAYER);
+                    endedCombat = true;
                     return;
                 }
 
                 nextCheck = TIME_BETWEEN_CHECKS;
             }
+        }
+
+        @Override
+        public boolean runWhilePaused()
+        {
+            return true;
         }
     }
 }

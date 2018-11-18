@@ -45,7 +45,7 @@ public class Reveal implements BaseCommand
         if (CombatCheatManager.isEnabled(CHEAT_ID))
         {
             CombatCheatManager.disableCheat(CHEAT_ID);
-            Console.showMessage("Fog of war enabled.");
+            Console.showMessage("Fog of war re-enabled.");
             return CommandResult.SUCCESS;
         }
         else

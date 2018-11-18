@@ -34,7 +34,7 @@ public class NoCooldown implements BaseCommand
             if (CombatCheatManager.isEnabled(CHEAT_ID))
             {
                 CombatCheatManager.disableCheat(CHEAT_ID);
-                Console.showMessage("Cooldowns enabled.");
+                Console.showMessage("Cooldowns re-enabled.");
                 return CommandResult.SUCCESS;
             }
             else
