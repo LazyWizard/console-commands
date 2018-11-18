@@ -123,7 +123,7 @@ task zipExample(type: Zip) {
     destinationDir = file(outputPath)
 }
 
-task zipMod(type: Zip, dependsOn: [buildMod, zipDoc, zipExample]) {
+task zipMod(type: Zip, dependsOn: [clean, buildMod, zipDoc, zipExample]) {
     from(outputPath) { into 'Console Commands' }
     include '**/*'
     archiveName = "Console Commands ${modVersion}.zip"

@@ -1,4 +1,5 @@
 command,class,tags,syntax,help
+# TODO: Update help and syntax fields for combat toggle commands to show target arguments
 AddCommandPoints,org.lazywizard.console.commands.AddCommandPoints,"core,combat",addcommandpoints <amount>|remove,"Adds a bonus granting the specified amount of extra command points to your fleet. Repeating this command will replace the previous bonus, not stack with it. You can remove the bonus with the argument 'remove'."
 AddCredits,org.lazywizard.console.commands.AddCredits,"core,campaign",addcredits <amount>,"Adds the specified amount of credits to your fleet's account."
 AddCrew,org.lazywizard.console.commands.AddCrew,"core,campaign",addcrew [optionalAmount],"Adds the specified amount of crew to your fleet's cargo, or as many as your fleet needs if no amount is entered."
@@ -49,7 +50,7 @@ Kill,org.lazywizard.console.commands.Kill,"core,campaign,combat",kill (no argume
 List,org.lazywizard.console.commands.List_,"core,campaign",list ships|variants|wings|weapons|items|specials|factions|systems|planets|stations|markets|aliases|commands|mods [optionalStartsWithFilter],"Lists all internal IDs of a specific category for use with this mod's commands. Results can be further refined by adding a second argument to restrict results to IDs that start with the entered filter.\nValid categories: ships, variants, wings, weapons, items, specials, factions, systems, planets, stations, markets, aliases, commands, mods"
 #ListStorage,org.lazywizard.console.commands.ListStorage,"core,campaign",liststorage (no arguments),"Lists every ship and item you have left in a storage tab, as well as their locations."
 ModInfo,org.lazywizard.console.commands.ModInfo,"core,console",modinfo <modId>,"Shows information about a mod, such as what you'd find in its mod_info.json, whether it is enabled or not, and what ships, wings and weapons it adds."
-NoCooldown,org.lazywizard.console.commands.NoCooldown,"core,combat",nocooldown (no arguments),"Toggles weapon cooldowns for all ships on your side."
+NoCooldown,org.lazywizard.console.commands.NoCooldown,"core,combat",nocooldown (no arguments),"Toggles weapon and system cooldowns for all ships on your side."
 Nuke,org.lazywizard.console.commands.Nuke,"core,combat",nuke (no arguments),"Destroys all enemies on the battle map. All kills will be credited to the player."
 OpenMarket,org.lazywizard.console.commands.OpenMarket,"core,campaign",openmarket <marketId>,"Opens a market's interaction dialog after you close the console."
 Reload,org.lazywizard.console.commands.ReloadConsole,"core,console",reload (no arguments),"Reloads all console commands and settings."
@@ -69,6 +70,7 @@ ShowBounds,org.lazywizard.console.commands.ShowBounds,"core,combat",showbounds (
 ShowLoc,org.lazywizard.console.commands.ShowLoc,"core,campaign,combat",showloc (no arguments),"Shows the coordinates of your current location."
 SourceOf,org.lazywizard.console.commands.SourceOf,"core,console",sourceof <command>|all,"Shows what mod a specific command came from, or all commands' sources if all is entered."
 SpawnAsteroids,org.lazywizard.console.commands.SpawnAsteroids,"core,combat",spawnasteroids (no arguments),"Allows you to spawn asteroids at will. Click and drag to control their spawn position and starting velocity. Press 6-0 to select asteroid size, and spacebar to exit spawn mode."
+#SpawnDerelict,org.lazywizard.console.commands.SpawnDerelict,"core,campaign",spawnderelict <id>,TODO
 #SpawnFleet,org.lazywizard.console.commands.SpawnFleet,"core,campaign",spawnfleet <faction> <totalFP> [optionalName],"Spawns a fleet of the given size and affiliated with the specified faction near the player character."
 Status,org.lazywizard.console.commands.Status,"core,console",status,"Shows debug information about the console's current status."
 Storage,org.lazywizard.console.commands.Storage,"core,campaign",storage (no arguments)|clear|clear ships,"Opens the Abandoned Terraforming Platform's storage from anywhere in the campaign. If the ATP doesn't exist this command will try to find a market with an unlocked storage tab, or open player cargo instead as a last resort.\nEntering \"clear\" will delete all stored cargo, and \"clear ships\" will delete all stored ships."

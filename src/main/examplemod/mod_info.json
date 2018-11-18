@@ -1,10 +1,10 @@
 {
   "id":"console_examplecommands",
   "name":"Console Commands - Example Commands",
-  "author":"YourNameHere",
+  "author":"LazyWizard",
   "utility":"true",
-  "version":"0.3",
+  "version":"0.4",
   "suppressVCUnsupported":true,
   "description":"Provides a template and several examples of adding custom commands to the console mod.",
-  "gameVersion":"0.8.1a"
+  "gameVersion":"0.9a"
 }
