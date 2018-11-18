@@ -71,5 +71,11 @@ public class InfiniteCR implements BaseCommand
                                 * ship.getMutableStats().getCRLossPerSecondPercent().getBonusMult());
             }
         }
+
+        @Override
+        public boolean runWhilePaused()
+        {
+            return false;
+        }
     }
 }

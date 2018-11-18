@@ -20,7 +20,7 @@ ext {
     ext.modVersion = new JsonSlurper().parseText(file('src/main/mod/mod_info.json').text).version
 
     // JDK config, unnecessary if your JAVA_HOME environment variable is set
-    // TODO: Test this on a new install; something seems broken with latest Kotlin compiler
+    // Need to test this on a new install; something seems broken with latest Kotlin compiler
     //compileJava.options.fork = true
     //compileJava.options.forkOptions.executable = Paths.get(localProps['jdkLocation'].toString(), 'bin', 'javac.exe')
     //compileKotlin.kotlinOptions.jdkHome = Paths.get(localProps['jdkLocation'].toString())
