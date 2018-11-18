@@ -13,11 +13,11 @@ class CombatCheatManager : BaseEveryFrameCombatPlugin() {
 
     private companion object PluginManager {
         private const val DATA_ID = "lw_console_cheats"
-        private val plugins: CData by lazy(LazyThreadSafetyMode.NONE)
-        {
-            @Suppress("UNCHECKED_CAST")
-            Global.getCombatEngine().customData.getOrPut(DATA_ID) { HashMap<String, CheatPlugin>() } as CData
-        }
+        private val plugins: CData
+            get() {
+                @Suppress("UNCHECKED_CAST")
+                return Global.getCombatEngine().customData.getOrPut(DATA_ID) { HashMap<String, CheatPlugin>() } as CData
+            }
 
         @JvmStatic
         fun enableCheat(id: String, statusDesc: String, plugin: CheatPlugin, appliesTo: CheatTarget?) {
