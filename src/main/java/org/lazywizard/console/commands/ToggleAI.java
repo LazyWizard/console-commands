@@ -1,16 +1,13 @@
 package org.lazywizard.console.commands;
 
-import java.util.Map;
-import java.util.WeakHashMap;
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.combat.ShipAIPlugin;
-import com.fs.starfarer.api.combat.ShipAPI;
-import com.fs.starfarer.api.combat.ShipCommand;
-import com.fs.starfarer.api.combat.ShipwideAIFlags;
-import com.fs.starfarer.api.combat.WeaponGroupAPI;
+import com.fs.starfarer.api.combat.*;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+
+import java.util.Map;
+import java.util.WeakHashMap;
 
 public class ToggleAI implements BaseCommand
 {
@@ -108,6 +105,12 @@ public class ToggleAI implements BaseCommand
         @Override
         public void cancelCurrentManeuver()
         {
+        }
+
+        @Override
+        public ShipAIConfig getConfig()
+        {
+            return null;
         }
     }
 }
