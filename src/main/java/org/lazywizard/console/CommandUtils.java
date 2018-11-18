@@ -620,41 +620,6 @@ public class CommandUtils
         return token.getCargo();
     }
 
-    @SuppressWarnings("unchecked")
-    private static Map<String, EveryFrameCombatPlugin> getPluginData()
-    {
-        final Map<String, Object> data = Global.getCombatEngine().getCustomData();
-        Map<String, EveryFrameCombatPlugin> pluginData
-                = (Map<String, EveryFrameCombatPlugin>) data.get(COMBAT_PDATA_ID);
-        if (pluginData == null)
-        {
-            pluginData = new HashMap<>();
-            data.put(COMBAT_PDATA_ID, pluginData);
-        }
-
-        return pluginData;
-    }
-
-    public static void registerCombatPlugin(String id, EveryFrameCombatPlugin plugin)
-    {
-        getPluginData().put(id, plugin);
-    }
-
-    public static void deregisterCombatPlugin(String id)
-    {
-        getPluginData().remove(id);
-    }
-
-    public static boolean isCombatPluginRegistered(String id)
-    {
-        return getPluginData().containsKey(id);
-    }
-
-    public static EveryFrameCombatPlugin getRegisteredCombatPlugin(String id)
-    {
-        return getPluginData().get(id);
-    }
-
     private CommandUtils()
     {
     }

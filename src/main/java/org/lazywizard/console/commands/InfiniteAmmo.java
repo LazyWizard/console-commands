@@ -2,6 +2,7 @@ package org.lazywizard.console.commands;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
+
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
@@ -11,15 +12,20 @@ import com.fs.starfarer.api.combat.WeaponAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.mission.FleetSide;
 import com.fs.starfarer.api.util.IntervalUtil;
+import org.jetbrains.annotations.NotNull;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import org.lazywizard.console.cheatmanager.CheatPlugin;
+import org.lazywizard.console.cheatmanager.CheatTarget;
+import org.lazywizard.console.cheatmanager.CombatCheatManager;
+import org.lazywizard.lazylib.CollectionUtils;
 
 public class InfiniteAmmo implements BaseCommand
 {
-    private static WeakReference<InfiniteAmmoPlugin> plugin;
+    private static final String CHEAT_ID = "lw_console_infiniteammo";
 
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -30,77 +36,63 @@ public class InfiniteAmmo implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        InfiniteAmmoPlugin tmp;
-        if (plugin == null || plugin.get() == null
-                || plugin.get().engine != Global.getCombatEngine())
+        // If no argument is entered:
+        // - If cheat is not enabled, enable it for the player only
+        // - If cheat is already enabled, disable it
+        CheatTarget appliesTo = null;
+        if (args.isEmpty())
         {
-            tmp = new InfiniteAmmoPlugin();
-            plugin = new WeakReference<>(tmp);
-            Global.getCombatEngine().addPlugin(tmp);
-            Console.showMessage("Infinite ammo enabled.");
-        }
-        else
-        {
-            tmp = plugin.get();
-            plugin.clear();
-            tmp.active = false;
-            Console.showMessage("Infinite ammo disabled.");
+            if (CombatCheatManager.isEnabled(CHEAT_ID))
+            {
+                CombatCheatManager.disableCheat(CHEAT_ID);
+                Console.showMessage("Infinite ammo disabled.");
+                return CommandResult.SUCCESS;
+            }
+            else
+            {
+                appliesTo = CheatTarget.PLAYER;
+            }
         }
 
+        // If argument is entered, try to parse it as a valid cheat target
+        if (appliesTo == null)
+        {
+            appliesTo = CombatCheatManager.parseTargets(args);
+            if (appliesTo == null)
+            {
+                Console.showMessage("Bad target! Valid targets: " + CollectionUtils.implode(CheatTarget.class) + ".");
+                return CommandResult.ERROR;
+            }
+        }
+
+        CombatCheatManager.enableCheat(CHEAT_ID, "Infinite Ammo (" + appliesTo.name() + ")",
+                new InfiniteAmmoPlugin(), appliesTo);
+        Console.showMessage("Infinite ammo enabled for " + appliesTo.name() + ".");
         return CommandResult.SUCCESS;
     }
 
-    private static class InfiniteAmmoPlugin extends BaseEveryFrameCombatPlugin
+    private static class InfiniteAmmoPlugin extends CheatPlugin
     {
-        private final IntervalUtil nextCheck = new IntervalUtil(0.1f, 0.1f);
-        private boolean active = true, firstRun = true;
-        private CombatEngineAPI engine;
 
         @Override
-        public void advance(float amount, List<InputEventAPI> events)
+        public void advance(@NotNull ShipAPI ship, float amount)
         {
-            if (!active)
+            for (WeaponAPI wep : ship.getAllWeapons())
             {
-                engine.removePlugin(this);
-                return;
+                wep.resetAmmo();
             }
 
-            if (engine.isPaused())
+            final ShipSystemAPI system = ship.getSystem();
+            if (system != null && system.getAmmo() < system.getMaxAmmo())
             {
-                return;
-            }
-
-            nextCheck.advance(amount);
-            if (firstRun || nextCheck.intervalElapsed())
-            {
-                firstRun = false;
-
-                for (ShipAPI ship : engine.getShips())
-                {
-                    if (ship.isHulk() || ship.isShuttlePod()
-                            || !(ship.getOwner() == FleetSide.PLAYER.ordinal()))
-                    {
-                        continue;
-                    }
-
-                    for (WeaponAPI wep : ship.getAllWeapons())
-                    {
-                        wep.resetAmmo();
-                    }
-
-                    final ShipSystemAPI system = ship.getSystem();
-                    if (system != null && system.getAmmo() < system.getMaxAmmo())
-                    {
-                        system.setAmmo(system.getMaxAmmo());
-                    }
-                }
+                system.setAmmo(system.getMaxAmmo());
             }
         }
 
         @Override
-        public void init(CombatEngineAPI engine)
+        public boolean runWhilePaused()
         {
-            this.engine = engine;
+            return false;
         }
     }
 }
