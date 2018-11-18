@@ -8,6 +8,8 @@ import org.lazywizard.console.Console;
 
 public class DebugDialogs implements BaseCommand
 {
+    public static final String MEMORY_KEY = "$consoleDebug";
+
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
@@ -18,8 +20,8 @@ public class DebugDialogs implements BaseCommand
         }
 
         final MemoryAPI memory = Global.getSector().getMemory();
-        final boolean debugEnabled = !memory.getBoolean("$consoleDebug");
-        Global.getSector().getMemory().set("$consoleDebug", debugEnabled);
+        final boolean debugEnabled = !memory.getBoolean(MEMORY_KEY);
+        Global.getSector().getMemory().set(MEMORY_KEY, debugEnabled);
 
         if (debugEnabled)
         {
