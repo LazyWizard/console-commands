@@ -201,7 +201,7 @@ public class ShowSettings implements BaseCommand
                     text.addParagraph(""); // TODO: Description
 
                     // Typo correction sensitivity
-                    options.addSelector("Typo detection threshold", Selector.TYPO_THRESHOLD, Color.WHITE, barWidth, 150f, 0f, 1f, ValueDisplayMode.PERCENT,
+                    options.addSelector("Typo detection threshold", Selector.TYPO_THRESHOLD, Color.WHITE, barWidth, 150f, 0.5f, 1f, ValueDisplayMode.PERCENT,
                             "Controls how sensitive typo detection is. A higher value means fewer (but more accurate) suggestions when you enter something wrong.");
                     options.setSelectorValue(Selector.TYPO_THRESHOLD, threshold);
 
@@ -310,7 +310,7 @@ public class ShowSettings implements BaseCommand
             {
                 scrollback = Math.round(options.getSelectorValue(Selector.MAX_SCROLLBACK) / 100f) * 100;
                 options.setSelectorValue(Selector.MAX_SCROLLBACK, scrollback);
-                threshold = Math.round(options.getSelectorValue(Selector.TYPO_THRESHOLD) * 100f) / 100f;
+                threshold = Math.round(options.getSelectorValue(Selector.TYPO_THRESHOLD) * 100f) * 0.01f;
                 options.setSelectorValue(Selector.TYPO_THRESHOLD, threshold);
             }
         }

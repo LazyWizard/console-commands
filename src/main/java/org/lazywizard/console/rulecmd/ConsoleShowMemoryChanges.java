@@ -80,7 +80,7 @@ public class ConsoleShowMemoryChanges extends BaseCommandPlugin
                 final String key = entry.getKey();
                 if (!newMem.containsKey(key))
                 {
-                    report.append("Removed entry: " + asString(category, key, entry.getValue(), isLocal) + "\n");
+                    report.append("Removed entry: ").append(asString(category, key, entry.getValue(), isLocal)).append("\n");
                 }
             }
             for (Map.Entry<String, Object> entry : newMem.entrySet())
@@ -88,15 +88,15 @@ public class ConsoleShowMemoryChanges extends BaseCommandPlugin
                 final String key = entry.getKey();
                 if (!oldMem.containsKey(key))
                 {
-                    report.append("New entry: " + asString(category, key, entry.getValue(), isLocal) + "\n");
+                    report.append("New entry: ").append(asString(category, key, entry.getValue(), isLocal)).append("\n");
                 }
                 else
                 {
                     final Object oldValue = oldMem.get(key), newValue = entry.getValue();
                     if (!newValue.equals(oldValue))
                     {
-                        report.append("Changed value: " + asString(category, key, newValue, isLocal)
-                                + ", was " + asString(oldValue) + "\n");
+                        report.append("Changed value: ").append(asString(category, key, newValue, isLocal))
+                                .append(", was ").append(asString(oldValue)).append("\n");
                     }
                 }
             }
@@ -127,6 +127,7 @@ public class ConsoleShowMemoryChanges extends BaseCommandPlugin
         {
             dialog.getTextPanel().addParagraph(Misc.replaceTokensFromMemory("[Option ran: $option]", memoryMap));
         }
+
         return false;
     }
 }
