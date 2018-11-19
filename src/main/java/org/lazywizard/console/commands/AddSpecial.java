@@ -40,11 +40,10 @@ public class AddSpecial implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
-        String[] tmp = args.split(" ");
-        final String data = (tmp.length > 1 ? CollectionUtils.implode(Arrays.asList(
-                Arrays.copyOfRange(tmp, 1, tmp.length)), " ") : null);
+        final String[] tmp = args.split(" ", 2);
+        final String data = (tmp.length > 1 ? tmp[1] : null);
 
-        String id = findBestStringMatch(tmp[0], getSpecialItemIds());
+        final String id = findBestStringMatch(tmp[0], getSpecialItemIds());
         if (id == null)
         {
             Console.showMessage("No special item found with id '" + tmp[0]
