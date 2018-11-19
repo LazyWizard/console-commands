@@ -10,9 +10,7 @@ private typealias CData = MutableMap<String, CombatCheatData>
 
 class CombatCheatManager : BaseEveryFrameCombatPlugin() {
     private val icon = Global.getSettings().getSpriteName("ui", "console_status")
-    private val plugins: CData by lazy(LazyThreadSafetyMode.NONE) {
-        PluginManager.getPlugins()
-    }
+    private val plugins: CData by lazy(LazyThreadSafetyMode.NONE) { getPlugins() }
 
     private companion object PluginManager {
         private const val DATA_ID = "lw_console_cheats"

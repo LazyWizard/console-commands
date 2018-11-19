@@ -52,7 +52,16 @@ public class AddSpecial implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        Global.getSector().getPlayerFleet().getCargo().addSpecial(new SpecialItemData(id, data), 1f);
+        try
+        {
+            Global.getSector().getPlayerFleet().getCargo().addSpecial(new SpecialItemData(id, data), 1f);
+        }
+        catch (Exception ex)
+        {
+            Console.showMessage("Invalid data '" + data + "' for special item type '" + id + "'!");
+            return CommandResult.ERROR;
+        }
+
         Console.showMessage("Added " + id + "'" + (data != null ? " with data '" + data + "'" : "") + " to player inventory.");
         return CommandResult.SUCCESS;
     }
