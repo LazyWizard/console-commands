@@ -4,6 +4,7 @@ aap,addskillpoints
 acp,addcommandpoints
 aop,addordnancepoints
 asp,addskillpoints
+br,blockretreat
 ia,infiniteammo
 if,infiniteflux
 nc,nocooldown

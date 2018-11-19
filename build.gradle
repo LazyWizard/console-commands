@@ -133,6 +133,10 @@ task zipMod(type: Zip, dependsOn: [clean, buildMod, zipDoc, zipExample]) {
     }
 }
 
+buildMod.mustRunAfter(clean)
+buildMod.mustRunAfter(zipDoc)
+buildMod.mustRunAfter(zipExample)
+
 copyModFiles {
     description = 'Copies non-compiled mod files to the output directory.'
     group = 'build'
