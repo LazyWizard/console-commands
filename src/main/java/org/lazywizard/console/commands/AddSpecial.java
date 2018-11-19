@@ -52,6 +52,16 @@ public class AddSpecial implements BaseCommand
             return CommandResult.ERROR;
         }
 
+        if (data == null)
+        {
+            final String[] restricted = {"fighter_bp", "industry_bp", "modspec", "ship_bp", "weapon_bp"};
+            if (Arrays.asList(restricted).contains(id))
+            {
+                Console.showMessage("Error: special items of type '" + id + "' must have data passed in!");
+                return CommandResult.ERROR;
+            }
+        }
+
         try
         {
             Global.getSector().getPlayerFleet().getCargo().addSpecial(new SpecialItemData(id, data), 1f);
