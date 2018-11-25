@@ -1,5 +1,6 @@
 package org.lazywizard.console.commands;
 
+import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import org.jetbrains.annotations.NotNull;
 import org.lazywizard.console.BaseCommand;
@@ -63,15 +64,29 @@ public class God implements BaseCommand
         @Override
         public void advance(@NotNull ShipAPI ship, float amount)
         {
-            ship.getMutableStats().getEmpDamageTakenMult().modifyMult(CHEAT_ID, 0f);
-            ship.getMutableStats().getArmorDamageTakenMult().modifyMult(CHEAT_ID, 0.00001f);
+            final MutableShipStatsAPI stats = ship.getMutableStats();
+            stats.getCombatEngineRepairTimeMult().modifyMult(CHEAT_ID, 0f);
+            stats.getCombatWeaponRepairTimeMult().modifyMult(CHEAT_ID, 0f);
+            stats.getEnergyDamageTakenMult().modifyMult(CHEAT_ID, 0f);
+            stats.getKineticDamageTakenMult().modifyMult(CHEAT_ID, 0f);
+            stats.getHighExplosiveDamageTakenMult().modifyMult(CHEAT_ID, 0f);
+            stats.getFragmentationDamageTakenMult().modifyMult(CHEAT_ID, 0f);
+            stats.getEmpDamageTakenMult().modifyMult(CHEAT_ID, 0f);
+            stats.getArmorDamageTakenMult().modifyMult(CHEAT_ID, 0.00001f);
         }
 
         @Override
         public void unapply(@NotNull ShipAPI ship)
         {
-            ship.getMutableStats().getEmpDamageTakenMult().unmodify(CHEAT_ID);
-            ship.getMutableStats().getArmorDamageTakenMult().unmodify(CHEAT_ID);
+            final MutableShipStatsAPI stats = ship.getMutableStats();
+            stats.getCombatEngineRepairTimeMult().unmodify(CHEAT_ID);
+            stats.getCombatWeaponRepairTimeMult().unmodify(CHEAT_ID);
+            stats.getEnergyDamageTakenMult().unmodify(CHEAT_ID);
+            stats.getKineticDamageTakenMult().unmodify(CHEAT_ID);
+            stats.getHighExplosiveDamageTakenMult().unmodify(CHEAT_ID);
+            stats.getFragmentationDamageTakenMult().unmodify(CHEAT_ID);
+            stats.getEmpDamageTakenMult().unmodify(CHEAT_ID);
+            stats.getArmorDamageTakenMult().unmodify(CHEAT_ID);
         }
 
         @Override
