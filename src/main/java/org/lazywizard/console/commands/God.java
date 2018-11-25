@@ -10,7 +10,6 @@ import org.lazywizard.console.cheatmanager.CheatTarget;
 import org.lazywizard.console.cheatmanager.CombatCheatManager;
 import org.lazywizard.lazylib.CollectionUtils;
 
-// FIXME: Ships will not shoot at invincible targets in 0.9a
 public class God implements BaseCommand
 {
     private static final String CHEAT_ID = "lw_console_god";
@@ -64,7 +63,6 @@ public class God implements BaseCommand
         @Override
         public void advance(@NotNull ShipAPI ship, float amount)
         {
-            ship.getMutableStats().getHullDamageTakenMult().modifyMult(CHEAT_ID, 0f);
             ship.getMutableStats().getEmpDamageTakenMult().modifyMult(CHEAT_ID, 0f);
             ship.getMutableStats().getArmorDamageTakenMult().modifyMult(CHEAT_ID, 0.00001f);
         }
@@ -72,7 +70,6 @@ public class God implements BaseCommand
         @Override
         public void unapply(@NotNull ShipAPI ship)
         {
-            ship.getMutableStats().getHullDamageTakenMult().unmodify(CHEAT_ID);
             ship.getMutableStats().getEmpDamageTakenMult().unmodify(CHEAT_ID);
             ship.getMutableStats().getArmorDamageTakenMult().unmodify(CHEAT_ID);
         }

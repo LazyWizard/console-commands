@@ -6,8 +6,8 @@ import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin.CustomRepImpact;
 import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin.RepActionEnvelope;
 import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin.RepActions;
 import com.fs.starfarer.api.impl.campaign.ids.Factions;
-import com.fs.starfarer.api.impl.campaign.intel.BaseMissionIntel;
 import com.fs.starfarer.api.impl.campaign.intel.BaseMissionIntel.MissionResult;
+import com.fs.starfarer.api.impl.campaign.intel.BaseMissionIntel.MissionState;
 import com.fs.starfarer.api.impl.campaign.intel.FactionCommissionIntel;
 import com.fs.starfarer.api.impl.campaign.rulecmd.missions.Commission;
 import com.fs.starfarer.api.util.Misc;
@@ -22,8 +22,9 @@ public class SetCommission implements BaseCommand
     private static final Logger Log = Logger.getLogger(SetCommission.class);
 
     /**
-     * @return The faction the player used to work with, or {@code null} if
-     *         they didn't have a commission.
+     * Ends and returns the player's current commission (if one exists; returns {@code null} otherwise).
+     *
+     * @return The faction the player used to work with, or {@code null} if they didn't have a commission.
      */
     public static FactionAPI endCurrentCommission()
     {
@@ -33,7 +34,7 @@ public class SetCommission implements BaseCommand
             final FactionCommissionIntel intel = Misc.getCommissionIntel();
             final MissionResult result = intel.createResignedCommissionResult(true, true, null);
             intel.setMissionResult(result);
-            intel.setMissionState(BaseMissionIntel.MissionState.ABANDONED);
+            intel.setMissionState(MissionState.ABANDONED);
             intel.endMission();
         }
 
@@ -63,8 +64,7 @@ public class SetCommission implements BaseCommand
                 return CommandResult.ERROR;
             }
 
-            Console.showMessage("Ended existing commission with "
-                    + curFaction.getDisplayNameWithArticle());
+            Console.showMessage("Ended existing commission with " + curFaction.getDisplayNameWithArticle() + ".");
             return CommandResult.SUCCESS;
         }
 
@@ -107,8 +107,7 @@ public class SetCommission implements BaseCommand
         }
 
         new FactionCommissionIntel(newFaction).missionAccepted();
-        Console.showMessage("Began commission with "
-                + newFaction.getDisplayNameWithArticle() + ".");
+        Console.showMessage("Began commission with " + newFaction.getDisplayNameWithArticle() + ".");
         return CommandResult.SUCCESS;
     }
 }
