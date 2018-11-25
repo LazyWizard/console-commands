@@ -66,10 +66,10 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     private val scrollback = font.createText(text = history, size = fontSize, color = mainColor, maxWidth = maxX - minX)
     private val query = font.createText(text = CommonStrings.INPUT_QUERY, color = secondaryColor, maxWidth = width, maxHeight = 30f)
     private val prompt = font.createText(text = "> ", color = secondaryColor, maxWidth = width, maxHeight = 30f)
-    private val input = font.createText(text = "", color = mainColor, maxWidth = width - (prompt.width + 60f), maxHeight = 45f)
+    private val input = font.createText(text = "", color = mainColor, maxWidth = width - (prompt.width + 60f), maxHeight = fontSize * 15)
     private val mem = font.createText(text = getMemText(), color = Color.LIGHT_GRAY)
     private val devMode = font.createText(text = "DEVMODE", color = Color.LIGHT_GRAY)
-    private val scrollbar = Scrollbar(maxX + 10f, minY, 10f, maxY - minY, secondaryColor, secondaryColor.darker().darker())
+    private val scrollbar = Scrollbar(10f, secondaryColor, secondaryColor.darker().darker())
     private val currentInput = StringBuilder()
     private var lastInput: String? = null
     private var scrollOffset = 0f
@@ -81,19 +81,17 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     private var needsTextUpdate = true
     private var isOpen = false
 
-    private inner class Scrollbar(val x: Float, val y: Float, val width: Float, val height: Float,
-                                  val barColor: Color, val bgColor: Color) {
-        var barY = y
-        var barHeight = 0f
-
-        // TODO: Re-add amount parameter and handle mouse events (click+drag to scroll)
-        fun advance() {
+    private inner class Scrollbar(val width: Float, val barColor: Color, val bgColor: Color) {
+        fun draw(x: Float, y: Float, height: Float) {
             // Determine size and relative position of scrollbar
             val contentRatio = (maxY - minY) / scrollback.height
             val scrollRatio = scrollOffset / minScroll
+
             // Don't draw the scrollbar if the screen can fit the entire scrollback
             // scrollRatio should never be NaN unless contentRatio is infinity,
             // but I'm including the check just in case the code changes later
+            val barHeight: Float
+            val barY: Float
             if (contentRatio > 1f || scrollRatio.isNaN()) {
                 barHeight = 0f
                 barY = y
@@ -101,9 +99,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                 barHeight = height * contentRatio
                 barY = y + ((height - barHeight) * scrollRatio)
             }
-        }
 
-        fun draw() {
             // Only draw scrollbar if content exceeds screen space
             if (barHeight <= 0f) return
 
@@ -359,18 +355,26 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                 }
                 // Return key handling
                 else if (keyPressed == KEY_RETURN) {
-                    val command = currentInput.toString()
-                    when {
-                        command.toLowerCase() == "exit" -> {
-                            isOpen = false
-                            return
-                        }
-                        else -> Console.parseInput(command, context)
+                    // Shift+enter to enter a newline
+                    // TODO: Ensure newlines are supported everywhere
+                    if (shiftDown) {
+                        currentInput.insert(currentIndex, '\n')
                     }
-                    currentInput.setLength(0)
-                    currentIndex = 0
-                    lastInput = null
-                    lastIndex = 0
+                    // Enter to execute current command
+                    else {
+                        val command = currentInput.toString()
+                        when {
+                            command.toLowerCase() == "exit" -> {
+                                isOpen = false
+                                return
+                            }
+                            else -> Console.parseInput(command, context)
+                        }
+                        currentInput.setLength(0)
+                        currentIndex = 0
+                        lastInput = null
+                        lastIndex = 0
+                    }
                 }
                 // Paste handling
                 else if (keyPressed == KEY_V && ctrlDown && Sys.getClipboard() != null) {
@@ -426,11 +430,8 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             if (settings.showCursorIndex) input.appendText(" | Index: $currentIndex/${currentInput.length}")
             if (settings.showMemoryUsage) { mem.text = getMemText(); mem.color = getMemColor(memory.heapMemoryUsage) }
         }
-
-        scrollbar.advance()
     }
 
-    // TODO: Dynamically resize scrollback and input text to fit multiple lines of input
     private fun render() {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT)
         glClearColor(0f, 0f, 0f, 1f)
@@ -470,7 +471,10 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             glPopMatrix()
         }
 
+        val inputHeight = Math.max(fontSize, input.height)
+
         // Draw scrollback
+        val minY = minY + (inputHeight - fontSize)
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
         glEnable(GL_STENCIL_TEST)
         glColorMask(false, false, false, false)
@@ -489,9 +493,9 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         glDisable(GL_STENCIL_TEST)
 
         // Draw input prompt
-        query.draw(30f, 50f)
-        prompt.draw(30f, 30f)
-        input.draw(30f + prompt.width, 30f)
+        query.draw(30f, 35f + inputHeight)
+        prompt.draw(30f, 15f + inputHeight)
+        input.draw(30f + prompt.width, 15f + inputHeight)
 
         // Draw misc stats
         if (settings.showMemoryUsage) mem.draw(50f, height - fontSize)
@@ -500,7 +504,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         // Draw scrollbar
         glDisable(GL_TEXTURE_2D)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        scrollbar.draw()
+        scrollbar.draw(maxX + 10f, minY, maxY - minY)
 
         // Draw scrollback bounds
         glLineWidth(1f)
