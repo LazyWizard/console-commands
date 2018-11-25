@@ -1,7 +1,8 @@
 /=============================================================\
 | Main Tasks for v3.0 final (must be finished before release) |
 \=============================================================/
- - Polish new in-game settings menu
+ - Polish in-game settings menu
+ - Scale overlay's input to fit entered text
 
 /====================================================\
 | Low-Priority Tasks for v3.0 final (may be skipped) |
