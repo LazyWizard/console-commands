@@ -8,8 +8,8 @@ import kotlin.reflect.KProperty
 
 /*
     To add a new setting:
-     - Add a var here, ensuring it uses one of the backing preference delegates
-     - Update the Settings command's pop-up dialog to support it
+     - Add a var here, ensuring it uses one of the common data-backed delegates (IntPref, StringPref, etc)
+     - Update the Settings command's pop-up dialog to support changing it
  */
 object ConsoleSettings {
     private val settings = JSONUtils.loadCommonJSON("lw_console_settings.json")

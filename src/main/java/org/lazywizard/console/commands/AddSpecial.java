@@ -6,7 +6,6 @@ import com.fs.starfarer.api.campaign.SpecialItemSpecAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
-import org.lazywizard.lazylib.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,10 +50,11 @@ public class AddSpecial implements BaseCommand
             return CommandResult.ERROR;
         }
 
+        // Prevent crashes when spawning data-less blueprints - can't do anything about mod content, unfortunately
         if (data == null)
         {
-            final String[] restricted = {"fighter_bp", "industry_bp", "modspec", "ship_bp", "weapon_bp"};
-            if (Arrays.asList(restricted).contains(id))
+            final String[] needsData = {"fighter_bp", "industry_bp", "modspec", "ship_bp", "weapon_bp"};
+            if (Arrays.asList(needsData).contains(id))
             {
                 Console.showMessage("Error: special items of type '" + id + "' must have data passed in!");
                 return CommandResult.ERROR;
