@@ -2,11 +2,14 @@ package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FactionAPI;
-import com.fs.starfarer.api.campaign.rules.MemoryAPI;
+import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin.CustomRepImpact;
+import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin.RepActionEnvelope;
+import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin.RepActions;
 import com.fs.starfarer.api.impl.campaign.ids.Factions;
-import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
-import com.fs.starfarer.api.impl.campaign.missions.FactionCommissionMission;
-import com.fs.starfarer.api.impl.campaign.missions.FactionCommissionMissionEvent;
+import com.fs.starfarer.api.impl.campaign.intel.BaseMissionIntel;
+import com.fs.starfarer.api.impl.campaign.intel.BaseMissionIntel.MissionResult;
+import com.fs.starfarer.api.impl.campaign.intel.FactionCommissionIntel;
+import com.fs.starfarer.api.impl.campaign.rulecmd.missions.Commission;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
 import org.lazywizard.console.BaseCommand;
@@ -27,15 +30,11 @@ public class SetCommission implements BaseCommand
         final FactionAPI curFaction = Misc.getCommissionFaction();
         if (curFaction != null)
         {
-            final FactionCommissionMissionEvent oldEvent = Misc.getCommissionEvent();
-            if (oldEvent != null)
-            {
-                Global.getSector().getEventManager().endEvent(oldEvent);
-            }
-
-            final MemoryAPI mem = Global.getSector().getCharacterData().getMemoryWithoutUpdate();
-            mem.unset(MemFlags.FCM_FACTION);
-            mem.unset(MemFlags.FCM_EVENT);
+            final FactionCommissionIntel intel = Misc.getCommissionIntel();
+            final MissionResult result = intel.createResignedCommissionResult(true, true, null);
+            intel.setMissionResult(result);
+            intel.setMissionState(BaseMissionIntel.MissionState.ABANDONED);
+            intel.endMission();
         }
 
         return curFaction;
@@ -95,11 +94,19 @@ public class SetCommission implements BaseCommand
         final FactionAPI oldFaction = endCurrentCommission();
         if (oldFaction != null)
         {
-            Console.showMessage("Ended existing commission with "
-                    + oldFaction.getDisplayNameWithArticle());
+            Console.showMessage("Ended existing commission with " + oldFaction.getDisplayNameWithArticle());
         }
 
-        new FactionCommissionMission(newFaction.getId()).playerAccept(null);
+        if (!newFaction.getRelToPlayer().isAtWorst(Commission.COMMISSION_REQ))
+        {
+            final CustomRepImpact impact = new CustomRepImpact();
+            impact.ensureAtWorst = Commission.COMMISSION_REQ;
+            Global.getSector().adjustPlayerReputation(new RepActionEnvelope(RepActions.CUSTOM, impact), newFaction.getId());
+            Console.showMessage("Relationship with " + newFaction.getDisplayNameWithArticle()
+                    + " boosted to minimum commission rep.");
+        }
+
+        new FactionCommissionIntel(newFaction).missionAccepted();
         Console.showMessage("Began commission with "
                 + newFaction.getDisplayNameWithArticle() + ".");
         return CommandResult.SUCCESS;
