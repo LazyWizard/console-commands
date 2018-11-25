@@ -1,9 +1,7 @@
 /=============================================================\
 | Main Tasks for v3.0 final (must be finished before release) |
 \=============================================================/
- - Release new LazyLib version w/ Kotlin dependencies
  - Polish new in-game settings menu
- - Fix campaign toggle commands (currently don't deactivate properly; fixed in 0.9a)
 
 /====================================================\
 | Low-Priority Tasks for v3.0 final (may be skipped) |
