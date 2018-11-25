@@ -6,6 +6,7 @@ import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
+import org.jetbrains.annotations.Nullable;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
@@ -13,6 +14,12 @@ import org.lwjgl.util.vector.Vector2f;
 
 public class Home implements BaseCommand
 {
+    @Nullable
+    public static SectorEntityToken getHome()
+    {
+        return (SectorEntityToken) Global.getSector().getPersistentData().get(CommonStrings.DATA_HOME_ID);
+    }
+
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
@@ -22,17 +29,14 @@ public class Home implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        final SectorAPI sector = Global.getSector();
-        final SectorEntityToken home = (SectorEntityToken) sector.getPersistentData()
-                .get(CommonStrings.DATA_HOME_ID);
-
+        final SectorEntityToken home = getHome();
         if (home == null)
         {
             Console.showMessage("No home found! Use SetHome first!");
             return CommandResult.ERROR;
         }
 
-        final CampaignFleetAPI playerFleet = sector.getPlayerFleet();
+        final CampaignFleetAPI playerFleet = Global.getSector().getPlayerFleet();
         final LocationAPI loc = home.getContainingLocation();
         if (loc != playerFleet.getContainingLocation())
         {
@@ -48,7 +52,7 @@ public class Home implements BaseCommand
         playerFleet.addAssignment(FleetAssignment.GO_TO_LOCATION, home, 1f);
         Console.showMessage("Teleported to " + home.getFullName()
                 + " in " + (loc.isHyperspace() ? "hyperspace" : "the "
-                        + loc.getName() + " system") + " successfully.");
+                + loc.getName() + " system") + " successfully.");
         return CommandResult.SUCCESS;
     }
 }

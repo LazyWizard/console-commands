@@ -17,25 +17,38 @@ import org.lazywizard.lazylib.campaign.CargoUtils;
 
 import java.util.Map;
 
-// TODO: Automatically move storage to Home if it has an unlocked storage tab
 public class Storage implements BaseCommand
 {
     public static SectorEntityToken getStorageStation()
     {
         // Which abandoned station Storage uses is only set once, ever
         Map<String, Object> data = Global.getSector().getPersistentData();
-        CargoAPI toTransfer = null;
         if (data.containsKey(CommonStrings.DATA_STORAGE_ID))
         {
-            // Compatibility fix for those who used the broken Storage command
-            Object tmp = data.get(CommonStrings.DATA_STORAGE_ID);
-            if (tmp instanceof CargoAPI)
+            // Check if we have the setting enabled to automatically transfer storage to Home
+            final SectorEntityToken storageStation = (SectorEntityToken) data.get(CommonStrings.DATA_STORAGE_ID);
+            final SectorEntityToken home = Home.getHome();
+            if (Console.getSettings().getTransferStorageToHome() && (home != null) && (storageStation != home))
             {
-                toTransfer = (CargoAPI) tmp;
+                // Transfer old Storage contents to new station
+                CargoAPI toTransfer = storageStation.getMarket().getSubmarket(Submarkets.SUBMARKET_STORAGE).getCargo();
+                if (toTransfer != null)
+                {
+                    Console.showMessage("Transferring existing storage from " + storageStation.getFullName()
+                            + " in " + storageStation.getContainingLocation().getName()
+                            + " to Home.\nTo disable this behavior, use the Settings command.");
+                    CargoAPI transferTo = home.getMarket().getSubmarket(Submarkets.SUBMARKET_STORAGE).getCargo();
+                    CargoUtils.moveCargo(toTransfer, transferTo);
+                    CargoUtils.moveMothballedShips(toTransfer, transferTo);
+                    data.put(CommonStrings.DATA_STORAGE_ID, home);
+                    Console.showMessage("Storage set to " + home.getFullName()
+                            + " in " + home.getContainingLocation().getName() + ".");
+                    return home;
+                }
             }
             else
             {
-                return (SectorEntityToken) tmp;
+                return storageStation;
             }
         }
 
@@ -92,17 +105,6 @@ public class Storage implements BaseCommand
         if (storageStation == null)
         {
             return null;
-        }
-
-        // Transfer old Storage contents to new station
-        if (toTransfer != null)
-        {
-            Console.showMessage("Transferred old Storage data.");
-            CargoAPI transferTo = storageStation.getMarket().getSubmarket(
-                    Submarkets.SUBMARKET_STORAGE).getCargo();
-            CargoUtils.moveCargo(toTransfer, transferTo);
-            CargoUtils.moveMothballedShips(toTransfer, transferTo);
-            data.remove(CommonStrings.DATA_STORAGE_ID);
         }
 
         data.put(CommonStrings.DATA_STORAGE_ID, storageStation);

@@ -214,7 +214,6 @@ public class ShowSettings implements BaseCommand
                     options.addOption("Always use Home's market for Storage: " + (homeStorage ? "true" : "false"),
                             Option.HOME_STORAGE, getToggleOptionColor(homeStorage),
                             "When enabled, the contents of your Storage will automatically transfer to your Home's storage submarket if it has one.");
-                    options.setEnabled(Option.HOME_STORAGE, false); // TODO
                     break;
             }
 
