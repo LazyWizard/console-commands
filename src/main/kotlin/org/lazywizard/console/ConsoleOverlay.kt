@@ -67,6 +67,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     private val prompt = font.createText(text = "> ", color = secondaryColor, maxWidth = width, maxHeight = 30f)
     private val input = font.createText(text = "", color = mainColor, maxWidth = width - (prompt.width + 60f), maxHeight = fontSize * 20)
     private val mem = font.createText(text = getMemText(), color = Color.LIGHT_GRAY)
+    private val curContext = font.createText(text = context.name, color = secondaryColor)
     private val devMode = font.createText(text = "DEVMODE", color = Color.LIGHT_GRAY)
     private val scrollbar = Scrollbar(10f, secondaryColor, secondaryColor.darker().darker())
     private val currentInput = StringBuilder()
@@ -176,6 +177,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         prompt.dispose()
         input.dispose()
         mem.dispose()
+        curContext.dispose()
         devMode.dispose()
     }
 
@@ -494,6 +496,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         // Draw misc stats
         if (settings.showMemoryUsage) mem.draw(50f, height - fontSize)
         if (Global.getSettings().isDevMode) devMode.draw(maxX - (50f + devMode.width), height - fontSize)
+        curContext.draw(Math.max(150f + mem.width, (width / 2f) - (curContext.width / 2f)), height - fontSize)
 
         // Draw scrollbar
         glDisable(GL_TEXTURE_2D)

@@ -319,8 +319,8 @@ public class Console
         // Runcode and Alias ignore separators
         // Hopefully the ONLY hardcoded command support I'll add to this mod...
         CommandResult worstResult;
-        if ((rawInput.length() >= 7 && rawInput.substring(0, 7).equalsIgnoreCase("runcode"))
-                || (rawInput.length() >= 5 && rawInput.substring(0, 5).equalsIgnoreCase("alias")))
+        String toLower = rawInput.toLowerCase();
+        if (toLower.startsWith("runcode") || toLower.startsWith("alias"))
         {
             worstResult = runCommand(rawInput, context);
         }
@@ -335,13 +335,14 @@ public class Console
             for (String input : rawInput.split(separator))
             {
                 input = input.trim();
+                toLower = input.toLowerCase();
                 if (!input.isEmpty())
                 {
                     // Whole-line alias support
-                    if (aliases.containsKey(input.toLowerCase()))
+                    if (aliases.containsKey(toLower))
                     {
-                        for (String input2 : aliases.get(input.toLowerCase())
-                                .replace(";", getSettings().getCommandSeparator()).split(separator))
+                        for (String input2 : aliases.get(toLower).replace(";",
+                                getSettings().getCommandSeparator()).split(separator))
                         {
                             input2 = input2.trim();
                             if (!input2.isEmpty())
