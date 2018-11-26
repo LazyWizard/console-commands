@@ -419,7 +419,10 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             else input.text = "${currentInput.substring(0, currentIndex)}$cursor${currentInput.substring(currentIndex)}"
 
             if (settings.showCursorIndex) input.appendText(" | Index: $currentIndex/${currentInput.length}")
-            if (settings.showMemoryUsage) { mem.text = getMemText(); mem.color = getMemColor(memory.heapMemoryUsage) }
+            if (settings.showMemoryUsage) {
+                mem.text = getMemText()
+                mem.color = getMemColor(memory.heapMemoryUsage)
+            }
         }
     }
 

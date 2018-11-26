@@ -316,10 +316,11 @@ public class Console
             return;
         }
 
-        // Runcode ignores separators
+        // Runcode and Alias ignore separators
         // Hopefully the ONLY hardcoded command support I'll add to this mod...
         CommandResult worstResult;
-        if (rawInput.length() >= 7 && rawInput.substring(0, 7).equalsIgnoreCase("runcode"))
+        if ((rawInput.length() >= 7 && rawInput.substring(0, 7).equalsIgnoreCase("runcode"))
+                || (rawInput.length() >= 5 && rawInput.substring(0, 5).equalsIgnoreCase("alias")))
         {
             worstResult = runCommand(rawInput, context);
         }
