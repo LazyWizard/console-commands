@@ -12,7 +12,7 @@ import kotlin.reflect.KProperty
      - Update the Settings command's pop-up dialog to support changing it
  */
 object ConsoleSettings {
-    private val settings = JSONUtils.loadCommonJSON("lw_console_settings.json")
+    private val settings = JSONUtils.loadCommonJSON("config/lw_console_settings.json")
     var fontScaling by FloatPref("fontScaling", default = 1.0f)
     var commandSeparator by StringPref("commandSeparator", default = ";")
     var maxScrollback by IntPref("maxScrollback", default = 10_000)
