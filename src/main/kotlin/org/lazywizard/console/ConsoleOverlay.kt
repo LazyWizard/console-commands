@@ -22,7 +22,6 @@ import java.lang.management.ManagementFactory
 import java.lang.management.MemoryUsage
 import java.text.DecimalFormat
 
-// 4, 227, 81
 private val Log = Logger.getLogger(Console::class.java)
 private var history = ""
 private const val CURSOR_BLINK_SPEED = 0.7f
@@ -66,7 +65,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     private val scrollback = font.createText(text = history, size = fontSize, color = mainColor, maxWidth = maxX - minX)
     private val query = font.createText(text = CommonStrings.INPUT_QUERY, color = secondaryColor, maxWidth = width, maxHeight = 30f)
     private val prompt = font.createText(text = "> ", color = secondaryColor, maxWidth = width, maxHeight = 30f)
-    private val input = font.createText(text = "", color = mainColor, maxWidth = width - (prompt.width + 60f), maxHeight = fontSize * 15)
+    private val input = font.createText(text = "", color = mainColor, maxWidth = width - (prompt.width + 60f), maxHeight = fontSize * 20)
     private val mem = font.createText(text = getMemText(), color = Color.LIGHT_GRAY)
     private val devMode = font.createText(text = "DEVMODE", color = Color.LIGHT_GRAY)
     private val scrollbar = Scrollbar(10f, secondaryColor, secondaryColor.darker().darker())
@@ -355,26 +354,18 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                 }
                 // Return key handling
                 else if (keyPressed == KEY_RETURN) {
-                    // Shift+enter to enter a newline
-                    // TODO: Ensure newlines are supported everywhere
-                    if (shiftDown) {
-                        currentInput.insert(currentIndex, '\n')
-                    }
-                    // Enter to execute current command
-                    else {
-                        val command = currentInput.toString()
-                        when {
-                            command.toLowerCase() == "exit" -> {
-                                isOpen = false
-                                return
-                            }
-                            else -> Console.parseInput(command, context)
+                    val command = currentInput.toString()
+                    when {
+                        command.toLowerCase() == "exit" -> {
+                            isOpen = false
+                            return
                         }
-                        currentInput.setLength(0)
-                        currentIndex = 0
-                        lastInput = null
-                        lastIndex = 0
+                        else -> Console.parseInput(command, context)
                     }
+                    currentInput.setLength(0)
+                    currentIndex = 0
+                    lastInput = null
+                    lastIndex = 0
                 }
                 // Paste handling
                 else if (keyPressed == KEY_V && ctrlDown && Sys.getClipboard() != null) {

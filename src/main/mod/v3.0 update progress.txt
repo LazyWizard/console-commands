@@ -2,7 +2,7 @@
 | Main Tasks for v3.0 final (must be finished before release) |
 \=============================================================/
  - Polish in-game settings menu
- - Scale overlay's input to fit entered text
+ - ToggleCondition command
 
 /====================================================\
 | Low-Priority Tasks for v3.0 final (may be skipped) |
@@ -11,6 +11,7 @@
  - Look into making aliases set in-game, persistent (requires 0.9a)
  - Finish testing and polish pass on all existing commands
  - Polish pass on help entries in commands.csv
+ - Alias command
  - Various minor todo items scattered throughout the code
 
 
