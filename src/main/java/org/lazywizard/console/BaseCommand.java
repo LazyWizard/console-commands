@@ -5,7 +5,7 @@ import com.fs.starfarer.api.combat.CombatEngineAPI;
 
 /**
  * The basic interface all console commands must implement.
- * <p>
+ *
  * @author LazyWizard
  * @since 2.0
  */
@@ -14,33 +14,33 @@ public interface BaseCommand
     /**
      * Represents the success status of a command. Returned by
      * {@link BaseCommand#runCommand(String, BaseCommand.CommandContext)}.
-     * <p>
+     *
      * @since 2.0
      */
     enum CommandResult
     {
         /**
          * Command ran successfully.
-         * <p>
+         *
          * @since 2.0
          */
         SUCCESS,
         /**
          * Command had the wrong arguments passed in.
-         * <p>
+         *
          * @since 2.0
          */
         BAD_SYNTAX,
         /**
          * Command was used in the wrong context (ex: entering a campaign-only
          * command in a mission).
-         * <p>
+         *
          * @since 2.0
          */
         WRONG_CONTEXT,
         /**
          * Something went wrong while executing the command.
-         * <p>
+         *
          * @since 2.0
          */
         ERROR
@@ -48,43 +48,49 @@ public interface BaseCommand
 
     /**
      * Represents what screen the player was on when they used the command.
-     * <p>
+     *
      * @since 2.0
      */
     enum CommandContext
     {
         /**
          * Command was entered on the campaign map.
-         * <p>
+         *
          * @since 2.0
          */
         CAMPAIGN_MAP,
         /**
+         * Command was entered in a market.
+         *
+         * @since 3.0
+         */
+        CAMPAIGN_MARKET,
+        /**
          * Command was entered during a battle in the campaign (doesn't include
          * simulation battles).
-         * <p>
+         *
          * @since 2.0
          */
         COMBAT_CAMPAIGN,
         /**
          * Command was entered during a mission.
-         * <p>
+         *
          * @since 2.0
          */
         COMBAT_MISSION,
         /**
          * Command was entered during a refit simulation battle.
-         * <p>
+         *
          * @since 2.0
          */
         COMBAT_SIMULATION;
 
         /**
          * Returns whether this context is on the combat map.
-         * <p>
+         *
          * @return {@code true} if the game is on the combat map, {@code false}
          *         otherwise.
-         * <p>
+         *
          * @since 2.4
          */
         public boolean isInCombat()
@@ -94,25 +100,25 @@ public interface BaseCommand
 
         /**
          * Returns whether this context is on the campaign map.
-         * <p>
+         *
          * @return {@code true} if the game is on the campaign map,
          *         {@code false} otherwise.
-         * <p>
+         *
          * @since 2.4
          */
         public boolean isInCampaign()
         {
-            return (this == CAMPAIGN_MAP);
+            return (this == CAMPAIGN_MAP || this == CAMPAIGN_MARKET);
         }
 
         /**
          * Returns whether the player is in campaign mode, including in campaign
          * battles (even refit simulation battles).
-         * <p>
+         *
          * @return {@code true} if the player is on the campaign map, in a
          *         campaign battle, or running a simulation in a campaign refit
          *         screen.
-         * <p>
+         *
          * @since 3.0
          */
         public boolean isCampaignAccessible()
@@ -134,9 +140,9 @@ public interface BaseCommand
      *                string if no arguments were entered.
      * @param context Where this command was called from (campaign, combat,
      *                mission, simulation, etc).
-     * <p>
+     *
      * @return A {@link CommandResult} describing the result of execution.
-     * <p>
+     *
      * @since 2.0
      */
     CommandResult runCommand(String args, CommandContext context);
