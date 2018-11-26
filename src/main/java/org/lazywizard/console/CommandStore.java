@@ -7,6 +7,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.lazylib.CollectionUtils;
+import org.lazywizard.lazylib.JSONUtils;
+import org.lazywizard.lazylib.JSONUtils.CommonDataJSONObject;
 
 import java.io.IOException;
 import java.util.*;
@@ -24,6 +26,7 @@ public class CommandStore
     private static final Map<String, StoredCommand> storedCommands = new HashMap<>();
     private static final Map<String, String> aliases = new HashMap<>();
     private static final Set<String> tags = new HashSet<>();
+    private static CommonDataJSONObject aliasData = null;
 
     /**
      * Forces the console to clear its stored commands and reload them from the
@@ -45,7 +48,7 @@ public class CommandStore
         final JSONArray commandData = Global.getSettings().getMergedSpreadsheetDataForMod(
                 "command", CommonStrings.PATH_CSV, CommonStrings.MOD_ID);
         final ClassLoader loader = Global.getSettings().getScriptClassLoader();
-        for (int x = 0; x < commandData.length(); x++)
+        for (int i = 0; i < commandData.length(); i++)
         {
             // Defined here so we can use them in the catch block
             String commandName = null;
@@ -54,7 +57,7 @@ public class CommandStore
 
             try
             {
-                final JSONObject row = commandData.getJSONObject(x);
+                final JSONObject row = commandData.getJSONObject(i);
                 commandName = row.getString("command");
 
                 // Skip empty rows
@@ -116,22 +119,22 @@ public class CommandStore
 
         // Populate alias mapping
         aliases.clear();
-        final JSONArray aliasData = Global.getSettings().getMergedSpreadsheetDataForMod(
-                "alias", CommonStrings.PATH_ALIAS, CommonStrings.MOD_ID);
-        for (int x = 0; x < aliasData.length(); x++)
+        try
         {
-            try
+            aliasData = JSONUtils.loadCommonJSON("config/lw_console_aliases.json", "data/console/aliases.default");
+            for (Iterator iter = aliasData.keys(); iter.hasNext(); )
             {
-                final JSONObject row = aliasData.getJSONObject(x);
-                final String alias = row.getString("alias");
-                final String command = row.getString("command");
-
-                aliases.put(alias.toLowerCase(), command);
+                final String alias = (String) iter.next();
+                final String toRun = aliasData.optString(alias, null);
+                if (toRun != null)
+                {
+                    aliases.put(alias.toLowerCase(), toRun);
+                }
             }
-            catch (JSONException ex)
-            {
-                Console.showException("Failed to parse aliases", ex);
-            }
+        }
+        catch (JSONException ex)
+        {
+            Console.showException("Failed to parse aliases", ex);
         }
 
         Log.info("Loaded aliases: " + CollectionUtils.implode(getAliases().keySet()));
@@ -193,6 +196,40 @@ public class CommandStore
     public static Map<String, String> getAliases()
     {
         return new HashMap<>(aliases);
+    }
+
+    /**
+     * Registers an alias to be used as shorthand for long or multiple commands..
+     *
+     * @param alias   The alias to register.
+     * @param command The command that will be run in place of {@code alias}. This can include separators to run
+     *                multiple commands. If {@code null} is passed in, removes any existing alias instead.
+     *
+     * @throws IOException
+     * @Throws JSONException
+     * @since 3.0
+     */
+    public static void registerAlias(String alias, String command) throws IOException, JSONException
+    {
+        alias = alias.toLowerCase();
+        if (command == null)
+        {
+            if (!aliases.containsKey(alias))
+            {
+                return;
+            }
+
+            aliasData.remove(alias);
+            aliasData.save();
+            aliases.remove(alias);
+        }
+        else
+        {
+            command = command.replaceAll(Console.getSettings().getCommandSeparator(), ";");
+            aliasData.put(alias, command);
+            aliasData.save();
+            aliases.put(alias, command);
+        }
     }
 
     /**
