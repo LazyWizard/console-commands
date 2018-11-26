@@ -174,7 +174,8 @@ public class CommandStore
         for (StoredCommand tmp : storedCommands.values())
         {
             if ((context.isInCampaign() && tmp.tags.contains("combat") && !tmp.tags.contains("campaign"))
-                    || (context.isInCombat() && tmp.tags.contains("campaign") && !tmp.tags.contains("combat")))
+                    || (context.isInCombat() && tmp.tags.contains("campaign") && !tmp.tags.contains("combat"))
+                    || (context == CommandContext.CAMPAIGN_MARKET && !tmp.tags.contains("marketsafe")))
             {
                 continue;
             }
