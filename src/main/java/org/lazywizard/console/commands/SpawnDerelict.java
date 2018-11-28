@@ -36,9 +36,9 @@ public class SpawnDerelict implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
-        if (!args.endsWith("_Hull"))
+        if (!args.toLowerCase().endsWith("_hull"))
         {
-            args = args + "_Hull";
+            args += "_Hull";
         }
 
         final String id = findBestStringMatch(args, Global.getSector().getAllEmptyVariantIds());
