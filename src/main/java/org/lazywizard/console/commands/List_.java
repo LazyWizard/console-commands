@@ -4,7 +4,10 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModSpecAPI;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
+import com.fs.starfarer.api.characters.MarketConditionSpecAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.lazywizard.console.*;
 import org.lazywizard.lazylib.CollectionUtils;
 
@@ -202,6 +205,32 @@ public class List_ implements BaseCommand
                             + (market.getFaction() == null ? "no faction)"
                             : market.getFaction().getRelationshipLevel(
                             player.getFaction()).getDisplayName() + ")"));
+                }
+                break;
+            case "conditions":
+                newLinePerItem = true;
+                ids = new ArrayList<>();
+                /*final Collection conditions = Global.getSettings().getAllSpecs(MarketConditionSpecAPI.class);
+                for (Object obj : conditions)
+                {
+                    final MarketConditionSpecAPI condition = (MarketConditionSpecAPI) obj;
+                    ids.add(condition.getId() + " (" + condition.getName() + ")");
+                }*/
+                try
+                {
+                    final JSONArray csv = Global.getSettings().getMergedSpreadsheetDataForMod(
+                            "id", "data/campaign/market_conditions.csv", "starsector-core");
+                    for (int i = 0; i < csv.length(); i++)
+                    {
+                        final JSONObject row = csv.getJSONObject(i);
+                        final String name = row.optString("name", null);
+                        ids.add(row.getString("id") + ((name == null || name.isEmpty()) ? "" : " (" + name + ")"));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.showException("Failed to generate market conditions list!", ex);
+                    return CommandResult.ERROR;
                 }
                 break;
             default:

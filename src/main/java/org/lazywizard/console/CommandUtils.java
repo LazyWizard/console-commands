@@ -4,11 +4,13 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI;
-import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
+import com.fs.starfarer.api.characters.MarketConditionSpecAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Submarkets;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import org.jetbrains.annotations.Nullable;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.text.NumberFormat;
 import java.util.*;
@@ -147,7 +149,7 @@ public class CommandUtils
 
     /**
      * @return A {@link Map.Entry} whose key contains the closest match to {@code id} (or null if no match was found),
-     * and whose value contains the {@link Collection} the match came from, if one was found.
+     *         and whose value contains the {@link Collection} the match came from, if one was found.
      */
     public static Map.Entry<String, Collection<String>> findBestStringMatch(String id, Collection<String>... sources)
     {
@@ -324,7 +326,9 @@ public class CommandUtils
      * @param indentation         The number of spaces to indent {@code message} with.
      * @param existingIndentation Any existing indentation, for complicated messages that are indented multiple times.
      *                            Can be {@code null}.
+     *
      * @return {@code message}, indented and word-wrapped to fit within the console overlay.
+     *
      * @since 3.0
      */
     public static String indent(String message, int indentation, @Nullable String existingIndentation)
@@ -346,7 +350,9 @@ public class CommandUtils
      *
      * @param message     The {@link String} to be indented.
      * @param indentation The number of spaces to indent {@code message} with.
+     *
      * @return {@code message}, indented and word-wrapped to fit within the console overlay.
+     *
      * @since 3.0
      */
     public static String indent(String message, int indentation)
@@ -445,6 +451,83 @@ public class CommandUtils
         }
 
         return bestMatch;
+    }
+
+    public static MarketConditionSpecAPI findBestMarketConditionMatch(String name)
+    {
+        if (Global.getSettings().getMarketConditionSpec(name) != null)
+        {
+            return Global.getSettings().getMarketConditionSpec(name);
+        }
+
+        final List<String> names = new ArrayList<>(), ids = new ArrayList<>();
+        try
+        {
+            final JSONArray csv = Global.getSettings().getMergedSpreadsheetDataForMod(
+                    "id", "data/campaign/market_conditions.csv", "starsector-core");
+            for (int i = 0; i < csv.length(); i++)
+            {
+                final JSONObject row = csv.getJSONObject(i);
+                final String id = row.getString("id");
+                final String cName = row.getString("name");
+                ids.add(id);
+                names.add(cName);
+            }
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+
+        name = name.toLowerCase();
+        String bestMatch = null;
+        double closestDistance = Console.getSettings().getTypoCorrectionThreshold();
+
+        // Check IDs first in case multiple conditions share the same name
+        for (String id : ids)
+        {
+            double distance = calcSimilarity(name, id.toLowerCase());
+
+            if (distance == 1.0)
+            {
+                return Global.getSettings().getMarketConditionSpec(id);
+            }
+
+            if (distance > closestDistance)
+            {
+                closestDistance = distance;
+                bestMatch = id;
+            }
+        }
+
+        // Search again by name if no matching ID is found
+        if (bestMatch == null)
+        {
+            for (int i = 0; i < names.size(); i++)
+            {
+                final String tmp = names.get(i);
+                final String id = ids.get(i);
+                double distance = calcSimilarity(name, tmp.toLowerCase());
+
+                if (distance == 1.0)
+                {
+                    return Global.getSettings().getMarketConditionSpec(id);
+                }
+
+                if (distance > closestDistance)
+                {
+                    closestDistance = distance;
+                    bestMatch = id;
+                }
+            }
+        }
+
+        if (bestMatch == null)
+        {
+            return null;
+        }
+
+        return Global.getSettings().getMarketConditionSpec(bestMatch);
     }
 
     public static StarSystemAPI findBestSystemMatch(String name)

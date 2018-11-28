@@ -1,6 +1,9 @@
 package org.lazywizard.console;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.CampaignUIAPI;
+import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 
 /**
@@ -26,14 +29,14 @@ public interface BaseCommand
          */
         SUCCESS,
         /**
-         * Command had the wrong arguments passed in.
+         * Command had the wrong arguments passed in. Returning this will automatically display the syntax field from
+         * your commands.csv, so you usually don't need to include an error message.
          *
          * @since 2.0
          */
         BAD_SYNTAX,
         /**
-         * Command was used in the wrong context (ex: entering a campaign-only
-         * command in a mission).
+         * Command was used in the wrong context (ex: entering a campaign-only command in a mission).
          *
          * @since 2.0
          */
@@ -64,10 +67,10 @@ public interface BaseCommand
          *
          * @since 3.0
          */
+        // TODO: Add to changelog
         CAMPAIGN_MARKET,
         /**
-         * Command was entered during a battle in the campaign (doesn't include
-         * simulation battles).
+         * Command was entered during a battle in the campaign (doesn't include simulation battles).
          *
          * @since 2.0
          */
@@ -88,8 +91,7 @@ public interface BaseCommand
         /**
          * Returns whether this context is on the combat map.
          *
-         * @return {@code true} if the game is on the combat map, {@code false}
-         *         otherwise.
+         * @return {@code true} if the game is on the combat map, {@code false} otherwise.
          *
          * @since 2.4
          */
@@ -101,8 +103,7 @@ public interface BaseCommand
         /**
          * Returns whether this context is on the campaign map.
          *
-         * @return {@code true} if the game is on the campaign map,
-         *         {@code false} otherwise.
+         * @return {@code true} if the game is on the campaign map, {@code false} otherwise.
          *
          * @since 2.4
          */
@@ -112,12 +113,24 @@ public interface BaseCommand
         }
 
         /**
-         * Returns whether the player is in campaign mode, including in campaign
-         * battles (even refit simulation battles).
+         * Returns whether the player is interacting with a market-containing entity.
          *
-         * @return {@code true} if the player is on the campaign map, in a
-         *         campaign battle, or running a simulation in a campaign refit
-         *         screen.
+         * @return {@code true} if the player is in dialog with a market-containing entity, {@code false} otherwise.
+         *
+         * @since 3.0
+         */
+        // TODO: Add to changelog
+        public boolean isInMarket()
+        {
+            return (this == CAMPAIGN_MARKET);
+        }
+
+        /**
+         * Returns whether the player is in campaign mode, including in campaign battles (even refit simulation
+         * battles).
+         *
+         * @return {@code true} if the player is on the campaign map, in a campaign battle, or running a simulation in a
+         *         campaign refit screen.
          *
          * @since 3.0
          */
@@ -131,15 +144,58 @@ public interface BaseCommand
             final CombatEngineAPI engine = Global.getCombatEngine();
             return engine != null && (engine.isInCampaign() || engine.isInCampaignSim());
         }
+
+        /**
+         * Returns the {@link SectorEntityToken} the player is in a dialog with, if any.
+         *
+         * @return The {@link SectorEntityToken} the player is currently in dialog with, or {@code null} if they are not
+         *         in a dialog.
+         *
+         * @since 3.0
+         */
+        // TODO: Add to changelog
+        public SectorEntityToken getEntityInteractedWith()
+        {
+            if (!isInCampaign())
+            {
+                return null;
+            }
+
+            final CampaignUIAPI ui = Global.getSector().getCampaignUI();
+            if (ui == null || ui.getCurrentInteractionDialog() == null)
+            {
+                return null;
+            }
+
+            return ui.getCurrentInteractionDialog().getInteractionTarget();
+        }
+
+        /**
+         * Returns the {@link MarketAPI} of the {@link SectorEntityToken) }the player is in a dialog with, if any.
+         *
+         * @return The {@link MarketAPI} of the {@link SectorEntityToken} the player is currently in dialog with, or
+         *         {@code null} if they are not in a dialog with a market-containing entity.
+         *
+         * @since 3.0
+         */
+        // TODO: Add to changelog
+        public MarketAPI getMarket()
+        {
+            if (this != CAMPAIGN_MARKET)
+            {
+                return null;
+            }
+
+            return Global.getSector().getCampaignUI().getCurrentInteractionDialog().getInteractionTarget().getMarket();
+        }
     }
 
     /**
      * Called when the player enters your command.
      *
-     * @param args    The arguments passed into this command. Will be an empty
-     *                string if no arguments were entered.
-     * @param context Where this command was called from (campaign, combat,
-     *                mission, simulation, etc).
+     * @param args    The arguments passed into this command. Will be an empty {@link String} if no arguments were
+     *                entered.
+     * @param context Where this command was called from (campaign, combat, mission, simulation, etc).
      *
      * @return A {@link CommandResult} describing the result of execution.
      *
