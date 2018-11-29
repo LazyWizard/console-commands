@@ -4,17 +4,50 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModSpecAPI;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
-import com.fs.starfarer.api.characters.MarketConditionSpecAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
+import com.fs.starfarer.api.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.lazywizard.console.*;
 import org.lazywizard.lazylib.CollectionUtils;
 
+import java.lang.ref.SoftReference;
 import java.util.*;
 
 public class List_ implements BaseCommand
 {
+    private static SoftReference<List<Pair<String, String>>> conditionCache = null;
+
+    public static List<Pair<String, String>> getMarketConditionIdsWithNames()
+    {
+        if (conditionCache != null && conditionCache.get() != null)
+        {
+            return conditionCache.get();
+        }
+
+        try
+        {
+            final List<Pair<String, String>> conditionIdsWithNames = new ArrayList<>();
+            final JSONArray csv = Global.getSettings().getMergedSpreadsheetDataForMod(
+                    "id", "data/campaign/market_conditions.csv", "starsector-core");
+            for (int i = 0; i < csv.length(); i++)
+            {
+                final JSONObject row = csv.getJSONObject(i);
+                final String id = row.getString("id");
+                final String name = row.optString("name", null);
+                conditionIdsWithNames.add(new Pair<>(id, name));
+            }
+
+            conditionCache = new SoftReference<>(conditionIdsWithNames);
+            return conditionIdsWithNames;
+        }
+        catch (Exception ex)
+        {
+            Console.showException("Failed to generate market conditions list!", ex);
+            return Collections.emptyList();
+        }
+    }
+
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
@@ -216,21 +249,10 @@ public class List_ implements BaseCommand
                     final MarketConditionSpecAPI condition = (MarketConditionSpecAPI) obj;
                     ids.add(condition.getId() + " (" + condition.getName() + ")");
                 }*/
-                try
+                for (Pair<String, String> pair : getMarketConditionIdsWithNames())
                 {
-                    final JSONArray csv = Global.getSettings().getMergedSpreadsheetDataForMod(
-                            "id", "data/campaign/market_conditions.csv", "starsector-core");
-                    for (int i = 0; i < csv.length(); i++)
-                    {
-                        final JSONObject row = csv.getJSONObject(i);
-                        final String name = row.optString("name", null);
-                        ids.add(row.getString("id") + ((name == null || name.isEmpty()) ? "" : " (" + name + ")"));
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.showException("Failed to generate market conditions list!", ex);
-                    return CommandResult.ERROR;
+                    final String id = pair.one, name = pair.two;
+                    ids.add(id + ((name == null || name.isEmpty()) ? "" : " (" + name + ")"));
                 }
                 break;
             default:
