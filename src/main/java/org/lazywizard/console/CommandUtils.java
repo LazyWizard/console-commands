@@ -8,9 +8,9 @@ import com.fs.starfarer.api.characters.MarketConditionSpecAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Submarkets;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
+import com.fs.starfarer.api.util.Pair;
 import org.jetbrains.annotations.Nullable;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.lazywizard.console.commands.List_;
 
 import java.text.NumberFormat;
 import java.util.*;
@@ -460,32 +460,15 @@ public class CommandUtils
             return Global.getSettings().getMarketConditionSpec(name);
         }
 
-        final List<String> names = new ArrayList<>(), ids = new ArrayList<>();
-        try
-        {
-            final JSONArray csv = Global.getSettings().getMergedSpreadsheetDataForMod(
-                    "id", "data/campaign/market_conditions.csv", "starsector-core");
-            for (int i = 0; i < csv.length(); i++)
-            {
-                final JSONObject row = csv.getJSONObject(i);
-                final String id = row.getString("id");
-                final String cName = row.getString("name");
-                ids.add(id);
-                names.add(cName);
-            }
-        }
-        catch (Exception ex)
-        {
-            return null;
-        }
-
         name = name.toLowerCase();
         String bestMatch = null;
         double closestDistance = Console.getSettings().getTypoCorrectionThreshold();
 
         // Check IDs first in case multiple conditions share the same name
-        for (String id : ids)
+        final List<Pair<String, String>> pairs = List_.getMarketConditionIdsWithNames();
+        for (Pair<String, String> pair : pairs)
         {
+            final String id = pair.one;
             double distance = calcSimilarity(name, id.toLowerCase());
 
             if (distance == 1.0)
@@ -503,21 +486,19 @@ public class CommandUtils
         // Search again by name if no matching ID is found
         if (bestMatch == null)
         {
-            for (int i = 0; i < names.size(); i++)
+            for (Pair<String, String> pair : pairs)
             {
-                final String tmp = names.get(i);
-                final String id = ids.get(i);
-                double distance = calcSimilarity(name, tmp.toLowerCase());
+                double distance = calcSimilarity(name, pair.two.toLowerCase());
 
                 if (distance == 1.0)
                 {
-                    return Global.getSettings().getMarketConditionSpec(id);
+                    return Global.getSettings().getMarketConditionSpec(pair.one);
                 }
 
                 if (distance > closestDistance)
                 {
                     closestDistance = distance;
-                    bestMatch = id;
+                    bestMatch = pair.one;
                 }
             }
         }
