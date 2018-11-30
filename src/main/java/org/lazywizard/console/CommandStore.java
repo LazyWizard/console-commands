@@ -173,11 +173,18 @@ public class CommandStore
         final List<String> commands = new ArrayList<>(storedCommands.size());
         for (StoredCommand tmp : storedCommands.values())
         {
-            if ((context.isInCampaign() && tmp.tags.contains("combat") && !tmp.tags.contains("campaign")
-                    && !(context == CommandContext.CAMPAIGN_MARKET && tmp.tags.contains("market")))
-                    || (context.isInCombat() && tmp.tags.contains("campaign") && !tmp.tags.contains("combat")))
+            if (context.isInCampaign())
             {
-                continue;
+                // Exclude combat-only commands when on the campaign layer
+                if (tmp.tags.contains("combat") && !tmp.tags.contains("campaign")) continue;
+
+                // Exclude market-only commands when not in a market
+                if (!context.isInMarket() && tmp.tags.contains("market")) continue;
+            }
+            else if (context.isInCombat())
+            {
+                // Exclude campaign-only commands when in combat
+                if (tmp.tags.contains("campaign") && !tmp.tags.contains("combat")) continue;
             }
 
             commands.add(tmp.getName());

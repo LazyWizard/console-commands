@@ -3,14 +3,13 @@ package org.lazywizard.console.commands;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
 import com.fs.starfarer.api.characters.MarketConditionSpecAPI;
+import com.fs.starfarer.api.impl.campaign.procgen.ConditionGenDataSpec;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.lazywizard.console.CommandUtils.findBestMarketConditionMatch;
 
@@ -46,17 +45,72 @@ public class ToggleCondition implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        final String condition = spec.getId();
-        if (market.hasCondition(condition))
+        // If condition already exists, remove it
+        final String id = spec.getId();
+        if (market.hasCondition(id))
         {
-            market.removeCondition(condition);
-            Console.showMessage("Removed condition '" + condition + "' from market '" + market.getName() + "'.");
+            market.removeCondition(id);
+            market.reapplyConditions();
+            Console.showMessage("Removed condition '" + id + "' from market '" + market.getName() + "'.");
             return CommandResult.SUCCESS;
         }
 
-        // FIXME: new conditions not showing up (need to check vanilla setup files)
-        market.addCondition(condition);
-        Console.showMessage("Added condition '" + condition + "' to market '" + market.getName() + "'.");
+        // Create condition and mark any existing conditions that conflict with it for later removal
+        final MarketConditionAPI condition = market.getSpecificCondition(market.addCondition(id));
+        final ConditionGenDataSpec gen = condition.getGenSpec();
+        final Set<String> toRemove = new HashSet<>();
+        if (gen != null)
+        {
+            final Set<String> mutuallyExclusive = gen.getRequiresNotAny();
+            for (MarketConditionAPI otherCon : market.getConditions())
+            {
+                if (otherCon == condition) continue;
+
+                // Automatically remove any mutually exclusive conditions
+                if (mutuallyExclusive.contains(otherCon.getId()))
+                {
+                    toRemove.add(otherCon.getId());
+                    Console.showMessage("Removed mutually-exclusive condition '" + otherCon.getId()
+                            + "' from market '" + market.getName() + "'.");
+                    continue;
+                }
+
+                // Only allow one condition from the same condition group
+                final ConditionGenDataSpec otherGen = otherCon.getGenSpec();
+                if (otherGen != null && gen.getGroup().equals(otherGen.getGroup()))
+                {
+                    toRemove.add(otherCon.getId());
+                    Console.showMessage("Removed existing condition '" + otherCon.getId()
+                            + "' of same type from market '" + market.getName() + "'.");
+                }
+            }
+        }
+
+        // Only allow one population condition
+        if (id.startsWith("population_"))
+        {
+            for (MarketConditionAPI otherCon : market.getConditions())
+            {
+                if ((otherCon != condition) && otherCon.getId().startsWith("population_"))
+                {
+                    toRemove.add(otherCon.getId());
+                    Console.showMessage("Removed existing population condition '" + otherCon.getId()
+                            + "' from market '" + market.getName() + "'.");
+                }
+            }
+        }
+
+        // Remove all conflicting conditions
+        for (String tmp : toRemove) market.removeCondition(tmp);
+
+        // Ensure new condition is visible
+        if (condition.requiresSurveying())
+        {
+            condition.setSurveyed(true);
+        }
+
+        market.reapplyConditions();
+        Console.showMessage("Added condition '" + id + "' to market '" + market.getName() + "'.");
         return CommandResult.SUCCESS;
     }
 }
