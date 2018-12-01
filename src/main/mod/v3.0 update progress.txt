@@ -1,7 +1,6 @@
 /=============================================================\
 | Main Tasks for v3.0 final (must be finished before release) |
 \=============================================================/
- - ToggleCondition command
  - Update campaign commands to support CommandContext.CAMPAIGN_MARKET
 
 /====================================================\
