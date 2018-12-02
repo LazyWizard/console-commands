@@ -25,10 +25,10 @@ public interface CommandListener
      * @param context            The current console {@link CommandContext}.
      * @param alreadyIntercepted Whether another, higher-priority {@link CommandListener} has already declared they will
      *                           intercept execution for this command. If {@code true}, your listener should not do
-     *                           anything.
+     *                           anything that affects execution of the command.
      *
-     * @return {true} if your listener will take over execution of the command from its normal implementation, {@code
-     *         false} otherwise.
+     * @return {@code true} if your listener will take over execution of the command from its normal implementation,
+     *         {@code false} otherwise.
      *
      * @since 3.0
      */
