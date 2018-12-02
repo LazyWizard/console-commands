@@ -2,6 +2,7 @@ package org.lazywizard.console;
 
 import com.fs.starfarer.api.Global;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,6 +25,7 @@ public class CommandStore
 {
     private static final Logger Log = Global.getLogger(CommandStore.class);
     private static final Map<String, StoredCommand> storedCommands = new HashMap<>();
+    private static final SortedMap<String, ListenerData> listeners = new TreeMap<>();
     private static final Map<String, String> aliases = new HashMap<>();
     private static final Set<String> tags = new HashSet<>();
     private static CommonDataJSONObject aliasData = null;
@@ -138,6 +140,55 @@ public class CommandStore
         }
 
         Log.info("Loaded aliases: " + CollectionUtils.implode(getAliases().keySet()));
+
+        // Populate listeners
+        listeners.clear();
+        final JSONArray listenerData = Global.getSettings().getMergedSpreadsheetDataForMod(
+                "listenerId", CommonStrings.PATH_LISTENER_CSV, CommonStrings.MOD_ID);
+        for (int i = 0; i < listenerData.length(); i++)
+        {
+            // Defined here so we can use them in the catch block
+            String listenerId = null;
+            String listenerPath = null;
+            String listenerSource = null;
+            int listenerPriority = 0;
+
+            try
+            {
+                final JSONObject row = listenerData.getJSONObject(i);
+                listenerId = row.getString("listenerId");
+
+                // Skip empty rows
+                if (listenerId.isEmpty())
+                {
+                    continue;
+                }
+
+                // Load these first so we can display them if there's an error
+                listenerPath = row.getString("listenerClass");
+                listenerPriority = row.optInt("priority", 0);
+                listenerSource = row.getString("fs_rowSource");
+
+                // Check if the class is valid
+                final Class listenerClass = loader.loadClass(listenerPath);
+                if (!CommandListener.class.isAssignableFrom(listenerClass))
+                {
+                    throw new Exception(listenerClass.getCanonicalName()
+                            + " does not extend " + CommandListener.class.getCanonicalName());
+                }
+
+                // Built command info, register it in the master command list
+                listeners.put(listenerId.toLowerCase(), new ListenerData(
+                        (CommandListener) listenerClass.newInstance(), listenerPriority));
+                Log.debug("Loaded listener " + listenerId + " (class: "
+                        + listenerClass.getCanonicalName() + ") from " + listenerSource);
+            }
+            catch (Exception ex)
+            {
+                Console.showException("Failed to load listener " + listenerId
+                        + " (class: " + listenerPath + ") from " + listenerSource, ex);
+            }
+        }
     }
 
     /**
@@ -277,6 +328,24 @@ public class CommandStore
         }
 
         return commands;
+    }
+
+    /**
+     * Returns all {@link CommandListener}s that are registered with the console.
+     *
+     * @return All registered {@link CommandListener}s.
+     *
+     * @since 3.0
+     */
+    public static List<CommandListener> getListeners()
+    {
+        final List<CommandListener> commandListeners = new ArrayList<>(listeners.size());
+        for (ListenerData tmp : listeners.values())
+        {
+            commandListeners.add(tmp.listener);
+        }
+
+        return commandListeners;
     }
 
     /**
@@ -421,6 +490,25 @@ public class CommandStore
         public String getSource()
         {
             return source;
+        }
+    }
+
+    private static class ListenerData implements Comparable<ListenerData>
+    {
+        private final CommandListener listener;
+        private final int priority;
+
+        private ListenerData(CommandListener listener, int priority)
+        {
+            this.listener = listener;
+            this.priority = priority;
+        }
+
+        @Override
+        public int compareTo(@NotNull ListenerData other)
+        {
+            // Highest priority wins
+            return Integer.compare(other.priority, priority);
         }
     }
 

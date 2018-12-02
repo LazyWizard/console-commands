@@ -45,6 +45,12 @@ public class CommonStrings
      * @since 2.0
      */
     public static final String PATH_RUNCODE_MACROS = "data/console/runcode_macros.csv";
+    /**
+     * The path to command_listeners.csv, used for listening for and intercepting input.
+     *
+     * @since 3.0
+     */
+    public static final String PATH_LISTENER_CSV = "data/console/command_listeners.csv";
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Common messages">

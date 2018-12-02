@@ -1,0 +1,6 @@
+listenerId,listenerClass,priority
+# listenerId - The unique ID for this listener
+# listenerClass - Called before (with a chance to take over execution) and after the console executes each command
+# (listenerClass must implement CommandListener)
+# priority - The listener with the highest priority wins when intercepting execution of a command
+#listlistener,org.lazywizard.console.commands.personal.ListOverrideTest,10
