@@ -82,6 +82,7 @@ public class ConsoleCombatListener extends BaseEveryFrameCombatPlugin implements
             ui.addMessage(0, Console.getSettings().getOutputColor(), message);
         }
 
+        ConsoleOverlay.addToHistory(output);
         return true;
     }
 }

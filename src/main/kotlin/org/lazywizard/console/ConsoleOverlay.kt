@@ -48,6 +48,10 @@ fun clear() {
     overlay?.clear()
 }
 
+internal fun addToHistory(toAdd: String) {
+    history += toAdd
+}
+
 // TODO: This uses a lot of hardcoded numbers; need to refactor these into constants at some point
 private class ConsoleOverlayInternal(private val context: CommandContext, mainColor: Color, secondaryColor: Color) : ConsoleListener {
     private val settings = Console.getSettings()
