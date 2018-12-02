@@ -21,9 +21,9 @@ public class ListOverrideTest implements CommandListener
     }
 
     @Override
-    public CommandResult onExecute(String command, String args, CommandContext context)
+    public CommandResult execute(String command, String args, CommandContext context)
     {
-        Console.showMessage("onExecute");
+        Console.showMessage("execute");
         return CommandResult.SUCCESS;
     }
 

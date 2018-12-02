@@ -28,7 +28,7 @@ public interface CommandListener
      *                           anything that affects execution of the command.
      *
      * @return {@code true} if your listener will take over execution of the command from its normal implementation,
-     *         {@code false} otherwise. If {@code true}, {@link #onExecute(String, String, CommandContext)} will be
+     *         {@code false} otherwise. If {@code true}, {@link #execute(String, String, CommandContext)} will be
      *         called by the console if your listener was the highest priority listener to request execution takeover.
      *
      * @since 3.0
@@ -50,7 +50,7 @@ public interface CommandListener
      * @see BaseCommand#runCommand(String, CommandContext)
      * @since 3.0
      */
-    CommandResult onExecute(String command, String args, CommandContext context);
+    CommandResult execute(String command, String args, CommandContext context);
 
     /**
      * Called after a command is run, regardless of whether execution was intercepted by a {@link CommandListener} or

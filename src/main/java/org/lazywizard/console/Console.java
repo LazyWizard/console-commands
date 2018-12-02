@@ -304,7 +304,7 @@ public class Console
 
             if (interceptor != null)
             {
-                result = interceptor.onExecute(com, args, context);
+                result = interceptor.execute(com, args, context);
             }
             else
             {
