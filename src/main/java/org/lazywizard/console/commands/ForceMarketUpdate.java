@@ -40,6 +40,7 @@ public class ForceMarketUpdate implements BaseCommand
                     plugin.setSinceLastCargoUpdate(plugin.getMinSWUpdateInterval() + 1);
                     totalSubmarkets++;
                     plugin.updateCargoPrePlayerInteraction();
+                    plugin.setSinceSWUpdate(0);
                 }
             }
         }
