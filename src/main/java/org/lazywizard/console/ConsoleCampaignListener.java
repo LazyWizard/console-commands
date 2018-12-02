@@ -55,6 +55,7 @@ public class ConsoleCampaignListener implements CampaignInputListener, ConsoleLi
                     Console.getSettings().getOutputColor());
         }
 
+        ConsoleOverlay.addToHistory(output);
         return true;
     }
 
