@@ -177,7 +177,7 @@ public class CommandStore
                             + " does not extend " + CommandListener.class.getCanonicalName());
                 }
 
-                // Built command info, register it in the master command list
+                // Register listener
                 listeners.put(listenerId.toLowerCase(), new ListenerData(
                         (CommandListener) listenerClass.newInstance(), listenerPriority));
                 Log.debug("Loaded listener " + listenerId + " (class: "
