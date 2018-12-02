@@ -25,7 +25,7 @@ public class CommandStore
 {
     private static final Logger Log = Global.getLogger(CommandStore.class);
     private static final Map<String, StoredCommand> storedCommands = new HashMap<>();
-    private static final SortedMap<String, ListenerData> listeners = new TreeMap<>();
+    private static final Set<ListenerData> listeners = new TreeSet<>();
     private static final Map<String, String> aliases = new HashMap<>();
     private static final Set<String> tags = new HashSet<>();
     private static CommonDataJSONObject aliasData = null;
@@ -178,8 +178,7 @@ public class CommandStore
                 }
 
                 // Register listener
-                listeners.put(listenerId.toLowerCase(), new ListenerData(
-                        (CommandListener) listenerClass.newInstance(), listenerPriority));
+                listeners.add(new ListenerData((CommandListener) listenerClass.newInstance(), listenerPriority));
                 Log.debug("Loaded listener " + listenerId + " (class: "
                         + listenerClass.getCanonicalName() + ") from " + listenerSource);
             }
@@ -340,7 +339,7 @@ public class CommandStore
     public static List<CommandListener> getListeners()
     {
         final List<CommandListener> commandListeners = new ArrayList<>(listeners.size());
-        for (ListenerData tmp : listeners.values())
+        for (ListenerData tmp : listeners)
         {
             commandListeners.add(tmp.listener);
         }
