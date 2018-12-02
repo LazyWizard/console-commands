@@ -20,6 +20,7 @@ import org.lwjgl.opengl.Display;
 import java.io.IOException;
 import java.security.CodeSource;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -266,6 +267,18 @@ public class Console
             }
         }
 
+        // Command listener support
+        final List<CommandListener> listeners = CommandStore.getListeners();
+        CommandListener interceptor = null;
+        for (CommandListener listener : listeners)
+        {
+            // Listeners are given the opportunity to take over execution of the command
+            if (listener.onPreExecute(com, args, context, (interceptor != null)))
+            {
+                if (interceptor == null) interceptor = listener;
+            }
+        }
+
         try
         {
             StoredCommand stored = CommandStore.retrieveCommand(com);
@@ -289,21 +302,32 @@ public class Console
                 showMessage("> " + input);
             }
 
-            BaseCommand command = stored.getCommandClass().newInstance();
-            result = command.runCommand(args, context);
+            if (interceptor != null)
+            {
+                result = interceptor.onExecute(com, args, context);
+            }
+            else
+            {
+                final BaseCommand command = stored.getCommandClass().newInstance();
+                result = command.runCommand(args, context);
+            }
 
             if (result == CommandResult.BAD_SYNTAX
                     && !stored.getSyntax().isEmpty())
             {
                 showMessage("Syntax: " + stored.getSyntax());
             }
-
         }
         catch (Exception ex)
         {
             showException("Failed to execute command \"" + input
                     + "\" in context " + context, ex);
             return CommandResult.ERROR;
+        }
+
+        for (CommandListener listener : listeners)
+        {
+            listener.onPostExecute(com, args, result, context, interceptor);
         }
 
         return result;
