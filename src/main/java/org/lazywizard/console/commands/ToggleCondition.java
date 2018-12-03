@@ -1,9 +1,11 @@
 package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
+import com.fs.starfarer.api.campaign.econ.MarketAPI.SurveyLevel;
 import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
 import com.fs.starfarer.api.characters.MarketConditionSpecAPI;
 import com.fs.starfarer.api.impl.campaign.procgen.ConditionGenDataSpec;
+import com.fs.starfarer.api.util.Misc;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
@@ -103,8 +105,8 @@ public class ToggleCondition implements BaseCommand
         // Remove all conflicting conditions
         for (String tmp : toRemove) market.removeCondition(tmp);
 
-        // Ensure new condition is visible
-        if (condition.requiresSurveying())
+        // Ensure new condition is visible if market has already been surveyed
+        if (market.getSurveyLevel() == SurveyLevel.FULL && condition.requiresSurveying())
         {
             condition.setSurveyed(true);
         }

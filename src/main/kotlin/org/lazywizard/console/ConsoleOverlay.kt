@@ -360,18 +360,27 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                 }
                 // Return key handling
                 else if (keyPressed == KEY_RETURN) {
-                    val command = currentInput.toString()
-                    when {
-                        command.toLowerCase() == "exit" -> {
-                            isOpen = false
-                            return
-                        }
-                        else -> Console.parseInput(command, context)
+                    // Shift+enter to enter a newline
+                    // TODO: Ensure newlines are supported everywhere (currently replaced with spaces where not supported)
+                    if (shiftDown) {
+                        currentInput.insert(currentIndex, '\n')
                     }
-                    currentInput.setLength(0)
-                    currentIndex = 0
-                    lastInput = null
-                    lastIndex = 0
+                    // Enter to execute current command
+                    else {
+                        val command = currentInput.toString()
+                        when {
+                            command.toLowerCase() == "exit" -> {
+                                isOpen = false
+                                return
+                            }
+                            command.toLowerCase().startsWith("runcode ") -> Console.parseInput(command, context)
+                            else -> Console.parseInput(command.replace('\n', ' '), context)
+                        }
+                        currentInput.setLength(0)
+                        currentIndex = 0
+                        lastInput = null
+                        lastIndex = 0
+                    }
                 }
                 // Paste handling
                 else if (keyPressed == KEY_V && ctrlDown && Sys.getClipboard() != null) {

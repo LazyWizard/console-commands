@@ -11,9 +11,9 @@ public class ListOverrideTest2 implements CommandListener
     @Override
     public boolean onPreExecute(String command, String args, CommandContext context, boolean alreadyIntercepted)
     {
-        if ("list".equals(command))
+        if ("list".equals(command) && "test".equals(args))
         {
-            Console.showMessage("onPreExecute lowPriority");
+            Console.showMessage("onPreExecute lowPriority (intercepted already: " + alreadyIntercepted + ")");
             return true;
         }
 
@@ -24,15 +24,15 @@ public class ListOverrideTest2 implements CommandListener
     public CommandResult execute(String command, String args, CommandContext context)
     {
         Console.showMessage("execute lowPriority");
-        return CommandResult.SUCCESS;
+        throw new RuntimeException("This should never run!");
     }
 
     @Override
     public void onPostExecute(String command, String args, CommandResult result, CommandContext context, @Nullable CommandListener interceptedBy)
     {
-        if ("list".equals(command))
+        if ("list".equals(command) && "test".equals(args))
         {
-            Console.showMessage("onPostExecute lowPriority");
+            Console.showMessage("onPostExecute lowPriority (nterceptor: " + interceptedBy + ")");
         }
     }
 }
