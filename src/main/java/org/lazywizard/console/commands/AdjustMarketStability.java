@@ -10,7 +10,6 @@ import static org.lazywizard.console.CommandUtils.findBestMarketMatch;
 import static org.lazywizard.console.CommandUtils.isInteger;
 
 // TODO: Test whether this sticks, add to changelog
-// TODO: AddMarketCondition, RemoveMarketCondition commands
 public class AdjustMarketStability implements BaseCommand
 {
     @Override

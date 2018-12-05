@@ -32,6 +32,12 @@ public class CommonStrings
      */
     public static final String PATH_CSV = "data/console/commands.csv";
     /**
+     * The path to the config file in common data, automatically generated via the Settings command.
+     *
+     * @since 3.0
+     */
+    public static final String PATH_COMMON_DATA = "config/lw_console_settings.json";
+    /**
      * The path to runcode_imports.csv, used for setting custom imports for the
      * RunCode command.
      *

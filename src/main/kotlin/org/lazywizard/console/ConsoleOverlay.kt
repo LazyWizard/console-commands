@@ -361,7 +361,6 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                 // Return key handling
                 else if (keyPressed == KEY_RETURN) {
                     // Shift+enter to enter a newline
-                    // TODO: Ensure newlines are supported everywhere (currently replaced with spaces where not supported)
                     if (shiftDown) {
                         currentInput.insert(currentIndex, '\n')
                     }
@@ -373,6 +372,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                                 isOpen = false
                                 return
                             }
+                            // TODO: Ensure newlines are supported everywhere (currently replaced with spaces where not supported)
                             command.toLowerCase().startsWith("runcode ") -> Console.parseInput(command, context)
                             else -> Console.parseInput(command.replace('\n', ' '), context)
                         }
