@@ -1,6 +1,7 @@
 command,class,tags,syntax,help
 # TODO: Update help and syntax fields for combat toggle commands to show target arguments
 AddCommandPoints,org.lazywizard.console.commands.AddCommandPoints,"core,combat",addcommandpoints <amount>|remove,"Adds a bonus granting the specified amount of extra command points to your fleet. Repeating this command will replace the previous bonus, not stack with it. You can remove the bonus with the argument 'remove'."
+AddCondition,org.lazywizard.console.commands.AddCondition,"core,campaign,market",addcondition <conditionId>,"Adds a condition to a market.\nUse 'list conditions' to list all valid market conditions."
 AddCredits,org.lazywizard.console.commands.AddCredits,"core,campaign",addcredits <amount>,"Adds the specified amount of credits to your fleet's account."
 AddCrew,org.lazywizard.console.commands.AddCrew,"core,campaign",addcrew [optionalAmount],"Adds the specified amount of crew to your fleet's cargo, or as many as your fleet needs if no amount is entered."
 AddFuel,org.lazywizard.console.commands.AddFuel,"core,campaign",addfuel [optionalAmount],"Adds the specified amount of fuel to your fleet's cargo, or as much as your fleet can carry if no amount is entered."
@@ -54,6 +55,7 @@ NoCooldown,org.lazywizard.console.commands.NoCooldown,"core,combat",nocooldown (
 Nuke,org.lazywizard.console.commands.Nuke,"core,combat",nuke (no arguments),"Destroys all enemies on the battle map. All kills will be credited to the player."
 OpenMarket,org.lazywizard.console.commands.OpenMarket,"core,campaign",openmarket <marketId>,"Opens a market's interaction dialog after you close the console."
 Reload,org.lazywizard.console.commands.ReloadConsole,"core,console",reload (no arguments),"Reloads all console commands and settings."
+RemoveCondition,org.lazywizard.console.commands.RemoveCondition,"core,campaign,market",removecondition <conditionId>,"Removes a condition from a market.\nUse without arguments to list all existing conditions for the current market."
 RemoveHulks,org.lazywizard.console.commands.RemoveHulks,"core,combat",removehulks (no arguments),"Destroys all hulks on the battle map. This will affect loot and ship recovery after the battle is over!"
 Repair,org.lazywizard.console.commands.Repair,"core,campaign,combat",repair (no arguments),"Repairs all friendly ships on the battle map if used in combat, or all ships in your fleet on the campaign map."
 Respec,org.lazywizard.console.commands.Respec,"core,campaign",respec (no arguments),"Resets skills and attributes to zero and refunds all spent points."
@@ -76,7 +78,6 @@ Status,org.lazywizard.console.commands.Status,"core,console",status,"Shows debug
 Storage,org.lazywizard.console.commands.Storage,"core,campaign",storage (no arguments)|clear|clear ships,"Opens the Abandoned Terraforming Platform's storage from anywhere in the campaign. If the ATP doesn't exist this command will try to find a market with an unlocked storage tab, or open player cargo instead as a last resort.\nEntering \"clear\" will delete all stored cargo, and \"clear ships\" will delete all stored ships."
 Suicide,org.lazywizard.console.commands.Suicide,"core,campaign,combat",suicide (no arguments),"Kills the currently piloted ship, or the entire player fleet if used on the campaign map."
 ToggleAI,org.lazywizard.console.commands.ToggleAI,"core,combat",toggleai (no arguments),"Toggles the AI of the selected ship."
-ToggleCondition,org.lazywizard.console.commands.ToggleCondition,"core,campaign,market",togglecondition <marketId> <conditionId>,"Adds a condition to a market, or removes it if that market already has it.\nUse 'list conditions' to list all valid market conditions."
 Traitor,org.lazywizard.console.commands.Traitor,"core,combat",traitor (no arguments),"Toggles the side the selected ship will fight for."
 
 #Test,org.lazywizard.console.testing.Test,"core",test (variable),"Personal command for quick prototyping. Don't bother uncommenting; it probably won't do anything interesting."

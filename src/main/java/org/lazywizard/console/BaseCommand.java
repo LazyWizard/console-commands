@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.CampaignUIAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The basic interface all console commands must implement.
@@ -154,6 +155,7 @@ public interface BaseCommand
          * @since 3.0
          */
         // TODO: Add to changelog
+        @Nullable
         public SectorEntityToken getEntityInteractedWith()
         {
             if (!isInCampaign())
@@ -171,7 +173,7 @@ public interface BaseCommand
         }
 
         /**
-         * Returns the {@link MarketAPI} of the {@link SectorEntityToken) }the player is in a dialog with, if any.
+         * Returns the {@link MarketAPI} of the {@link SectorEntityToken) the player is in a dialog with, if any.
          *
          * @return The {@link MarketAPI} of the {@link SectorEntityToken} the player is currently in dialog with, or
          *         {@code null} if they are not in a dialog with a market-containing entity.
@@ -179,6 +181,7 @@ public interface BaseCommand
          * @since 3.0
          */
         // TODO: Add to changelog
+        @Nullable
         public MarketAPI getMarket()
         {
             if (this != CAMPAIGN_MARKET)
