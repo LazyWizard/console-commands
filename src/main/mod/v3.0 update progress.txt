@@ -2,6 +2,7 @@
 | Main Tasks for v3.0 final (must be finished before release) |
 \=============================================================/
  - Update campaign commands to support CommandContext.CAMPAIGN_MARKET
+ - Add AddIndustry, RemoveIndustry, RemoveCondition commands (and rename ToggleCondition to AddCondition)
 
 /====================================================\
 | Low-Priority Tasks for v3.0 final (may be skipped) |
