@@ -106,7 +106,7 @@ internal class ConsoleCombatListener : BaseEveryFrameCombatPlugin(), ConsoleList
 
         // Main menu check
         val player = engine.playerShip
-        if (player != null && engine.isEntityInPlay(player)) {
+        if (player != null) {
             if (Console.getSettings().consoleSummonKey.isPressed(events)) {
                 show(context)
             }
