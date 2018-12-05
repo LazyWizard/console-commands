@@ -5,7 +5,6 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI.SurveyLevel;
 import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
 import com.fs.starfarer.api.characters.MarketConditionSpecAPI;
 import com.fs.starfarer.api.impl.campaign.procgen.ConditionGenDataSpec;
-import com.fs.starfarer.api.util.Misc;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
@@ -15,7 +14,7 @@ import java.util.*;
 
 import static org.lazywizard.console.CommandUtils.findBestMarketConditionMatch;
 
-public class ToggleCondition implements BaseCommand
+public class AddCondition implements BaseCommand
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -47,14 +46,13 @@ public class ToggleCondition implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        // If condition already exists, remove it
+        // Check if condition already exists
         final String id = spec.getId();
         if (market.hasCondition(id))
         {
-            market.removeCondition(id);
-            market.reapplyConditions();
-            Console.showMessage("Removed condition '" + id + "' from market '" + market.getName() + "'.");
-            return CommandResult.SUCCESS;
+            Console.showMessage("Condition '" + id + "' already exists in market '" + market.getName()
+                    + "'. Use RemoveCondition if you want to remove it.");
+            return CommandResult.ERROR;
         }
 
         // Create condition and mark any existing conditions that conflict with it for later removal
