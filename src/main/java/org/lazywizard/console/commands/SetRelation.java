@@ -11,7 +11,7 @@ import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
 
-public class SetRelationship implements BaseCommand
+public class SetRelation implements BaseCommand
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)

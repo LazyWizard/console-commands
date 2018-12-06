@@ -25,10 +25,10 @@ import java.text.DecimalFormat
 private val Log = Logger.getLogger(Console::class.java)
 private var history = ""
 private const val CURSOR_BLINK_SPEED = 0.7f
-const val HORIZONTAL_MARGIN = 30f // Don't go below 30; TODO: scale minor UI elements using this setting
+internal const val HORIZONTAL_MARGIN = 30f // Don't go below 30; TODO: scale minor UI elements using this setting
 private var overlay: ConsoleOverlayInternal? = null
 
-fun show(context: CommandContext) = with(ConsoleOverlayInternal(context,
+internal fun show(context: CommandContext) = with(ConsoleOverlayInternal(context,
         Console.getSettings().outputColor, Console.getSettings().outputColor.darker()))
 {
     try {
@@ -44,7 +44,7 @@ fun show(context: CommandContext) = with(ConsoleOverlayInternal(context,
     }
 }
 
-fun clear() {
+internal fun clear() {
     overlay?.clear()
 }
 
@@ -53,10 +53,11 @@ internal fun addToHistory(toAdd: String) {
 }
 
 // TODO: This uses a lot of hardcoded numbers; need to refactor these into constants at some point
+// TODO: Move UI element instantiation into initializer to make size/position details clearer
 private class ConsoleOverlayInternal(private val context: CommandContext, mainColor: Color, secondaryColor: Color) : ConsoleListener {
     private val settings = Console.getSettings()
     private val bgTextureId = if (settings.showBackground) glGenTextures() else 0
-    private val BYTE_FORMAT = DecimalFormat("#,##0.#")
+    private val byteFormat = DecimalFormat("#,##0.#")
     private val memory = ManagementFactory.getMemoryMXBean()
     private val font = Console.getFont()
     private val width = Display.getWidth() * Display.getPixelScaleFactor()
@@ -69,7 +70,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     private val scrollback = font.createText(text = history, size = fontSize, color = mainColor, maxWidth = maxX - minX)
     private val query = font.createText(text = CommonStrings.INPUT_QUERY, color = secondaryColor, maxWidth = width, maxHeight = 30f)
     private val prompt = font.createText(text = "> ", color = secondaryColor, maxWidth = width, maxHeight = 30f)
-    private val input = font.createText(text = "", color = mainColor, maxWidth = width - (prompt.width + 60f), maxHeight = fontSize * 20)
+    private val input = font.createText(text = "", color = mainColor, maxWidth = width - (prompt.width + 60f), maxHeight = fontSize * 30)
     private val mem = font.createText(text = getMemText(), color = Color.LIGHT_GRAY)
     private val curContext = font.createText(text = context.name, color = secondaryColor)
     private val devMode = font.createText(text = "DEVMODE", color = Color.LIGHT_GRAY)
@@ -202,7 +203,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         val units = arrayOf("B", "kB", "MB", "GB", "TB")
         val digitGroups = (Math.log10(size.toDouble()) / Math.log10(1024.0)).toInt()
         val digits = size / Math.pow(1024.0, digitGroups.toDouble())
-        return "${BYTE_FORMAT.format(digits)} ${units[digitGroups]}"
+        return "${byteFormat.format(digits)} ${units[digitGroups]}"
     }
 
     // Creates readable memory usage string; ex: "8% (248.6 MB/2.9 GB)"
@@ -368,12 +369,12 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                     else {
                         val command = currentInput.toString()
                         when {
-                            command.toLowerCase() == "exit" -> {
+                            command.equals("exit", true) -> {
                                 isOpen = false
                                 return
                             }
                             // TODO: Ensure newlines are supported everywhere (currently replaced with spaces where not supported)
-                            command.toLowerCase().startsWith("runcode ") -> Console.parseInput(command, context)
+                            command.startsWith("runcode ", true) -> Console.parseInput(command, context)
                             else -> Console.parseInput(command.replace('\n', ' '), context)
                         }
                         currentInput.setLength(0)
@@ -384,7 +385,8 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                 }
                 // Paste handling
                 else if (keyPressed == KEY_V && ctrlDown && Sys.getClipboard() != null) {
-                    currentInput.insert(currentIndex, Sys.getClipboard().replace('\n', ' '))
+                    val pasted = Sys.getClipboard() ?: continue
+                    currentInput.insert(currentIndex, pasted)
                 }
                 // Normal typing
                 else {

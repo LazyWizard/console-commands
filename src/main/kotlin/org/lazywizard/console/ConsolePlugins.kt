@@ -59,9 +59,7 @@ internal class ConsoleModPlugin : BaseModPlugin() {
 }
 
 internal class ConsoleCampaignListener : CampaignInputListener, ConsoleListener {
-    override fun getListenerInputPriority(): Int {
-        return 9999
-    }
+    override fun getListenerInputPriority(): Int = 9999
 
     override fun processCampaignInputPreCore(events: List<InputEventAPI>) {
         val ui = Global.getSector().campaignUI
