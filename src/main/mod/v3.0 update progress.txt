@@ -1,14 +1,12 @@
 /=============================================================\
 | Main Tasks for v3.0 final (must be finished before release) |
 \=============================================================/
- - Update campaign commands to support CommandContext.CAMPAIGN_MARKET
- - Add AddIndustry, RemoveIndustry, RemoveCondition commands (and rename ToggleCondition to AddCondition)
+ - Update existing campaign commands to support CommandContext.CAMPAIGN_MARKET
+ - Add AddIndustry, RemoveIndustry commands
 
 /====================================================\
 | Low-Priority Tasks for v3.0 final (may be skipped) |
 \====================================================/
- - Polish in-game settings menu
- - Add command listener to detect when a command is run
  - Implement tab autocompletion for command arguments
  - Finish testing and polish pass on all existing commands
  - Polish pass on help entries in commands.csv
