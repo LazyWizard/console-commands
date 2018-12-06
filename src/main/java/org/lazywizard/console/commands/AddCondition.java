@@ -11,6 +11,7 @@ import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static org.lazywizard.console.CommandUtils.findBestMarketConditionMatch;
 
@@ -87,11 +88,12 @@ public class AddCondition implements BaseCommand
         }
 
         // Only allow one population condition
-        if (id.startsWith("population_"))
+        final Pattern populationRegex = Pattern.compile("^population_\\d+$");
+        if (populationRegex.matcher(id).matches())
         {
             for (MarketConditionAPI otherCon : market.getConditions())
             {
-                if ((otherCon != condition) && otherCon.getId().startsWith("population_"))
+                if ((otherCon != condition) && populationRegex.matcher(otherCon.getId()).matches())
                 {
                     toRemove.add(otherCon.getId());
                     Console.showMessage("Removed existing population condition '" + otherCon.getId()
