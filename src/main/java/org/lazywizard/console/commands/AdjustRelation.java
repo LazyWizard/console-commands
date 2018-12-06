@@ -12,7 +12,7 @@ import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
 
-public class AdjustRelationship implements BaseCommand
+public class AdjustRelation implements BaseCommand
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
