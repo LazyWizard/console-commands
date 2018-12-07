@@ -95,6 +95,7 @@ public class AddIndustry implements BaseCommand
                 market.removeIndustry(upgrade.getId(), null, true);
                 Console.showMessage("Removed existing industry '" + upgrade.getId()
                         + "' of same upgrade path from market '" + market.getName() + "'.");
+                break;
             }
         }
         if (existing != null)
@@ -108,6 +109,7 @@ public class AddIndustry implements BaseCommand
                     market.removeIndustry(downgrade.getId(), null, true);
                     Console.showMessage("Removed existing industry '" + downgrade.getId()
                             + "' of same upgrade path from market '" + market.getName() + "'.");
+                    break;
                 }
             }
         }
