@@ -226,7 +226,7 @@ public class CommandStore
             if (context.isInCampaign())
             {
                 // Exclude combat-only commands when on the campaign layer
-                if (tmp.tags.contains("combat") && !tmp.tags.contains("campaign")) continue;
+                if (tmp.tags.contains("combat") && !(tmp.tags.contains("campaign") || tmp.tags.contains("market"))) continue;
 
                 // Exclude market-only commands when not in a market
                 if (!context.isInMarket() && tmp.tags.contains("market")) continue;
@@ -234,7 +234,7 @@ public class CommandStore
             else if (context.isInCombat())
             {
                 // Exclude campaign-only commands when in combat
-                if (tmp.tags.contains("campaign") && !tmp.tags.contains("combat")) continue;
+                if ((tmp.tags.contains("campaign") || tmp.tags.contains("market")) && !tmp.tags.contains("combat")) continue;
             }
 
             commands.add(tmp.getName());
