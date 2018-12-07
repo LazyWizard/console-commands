@@ -3,6 +3,7 @@
 \=============================================================/
  - Update existing campaign commands to support CommandContext.CAMPAIGN_MARKET
  - Add AddIndustry, RemoveIndustry commands
+ - Update changelog
 
 /====================================================\
 | Low-Priority Tasks for v3.0 final (may be skipped) |
