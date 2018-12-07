@@ -11,6 +11,7 @@ import org.lazywizard.lazylib.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.lazywizard.console.CommandUtils.findBestMarketConditionMatch;
 
@@ -51,6 +52,13 @@ public class RemoveCondition implements BaseCommand
         {
             Console.showMessage("Market '" + market.getName() + "' does not have condition '" + id + "'!");
             return CommandResult.ERROR;
+        }
+
+        // Don't allow player to completely remove population condition
+        if (id.matches("^population_\\d+$") && market.hasIndustry("population"))
+        {
+            // FIXME: underlying industry is not updated
+            market.addCondition("population_1");
         }
 
         market.removeCondition(id);

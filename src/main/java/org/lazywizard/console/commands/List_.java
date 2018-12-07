@@ -5,6 +5,7 @@ import com.fs.starfarer.api.ModSpecAPI;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
+import com.fs.starfarer.api.loading.IndustrySpecAPI;
 import com.fs.starfarer.api.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -243,16 +244,18 @@ public class List_ implements BaseCommand
             case "conditions":
                 newLinePerItem = true;
                 ids = new ArrayList<>();
-                /*final Collection conditions = Global.getSettings().getAllSpecs(MarketConditionSpecAPI.class);
-                for (Object obj : conditions)
-                {
-                    final MarketConditionSpecAPI condition = (MarketConditionSpecAPI) obj;
-                    ids.add(condition.getId() + " (" + condition.getName() + ")");
-                }*/
                 for (Pair<String, String> pair : getMarketConditionIdsWithNames())
                 {
                     final String id = pair.one, name = pair.two;
                     ids.add(id + ((name == null || name.isEmpty()) ? "" : " (" + name + ")"));
+                }
+                break;
+            case "industries":
+                newLinePerItem = true;
+                ids = new ArrayList<>();
+                for (IndustrySpecAPI spec : Global.getSettings().getAllIndustrySpecs())
+                {
+                    ids.add(spec.getId() + " (" + spec.getName() + ")");
                 }
                 break;
             default:
