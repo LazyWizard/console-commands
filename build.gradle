@@ -80,7 +80,7 @@ dokka {
     outputFormat = 'javadoc'
     outputDirectory = "$buildDir/javadoc"
     // Packages excluded from javadoc
-    for (def subpackage : ['commands', 'rulecmd', 'ui']) {
+    for (def subpackage : ['commands', 'rulecmd', 'ui', 'testing']) {
         packageOptions {
             prefix = 'org.lazywizard.console.' + subpackage
             suppress = true

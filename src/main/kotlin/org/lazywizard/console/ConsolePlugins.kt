@@ -89,8 +89,7 @@ internal class ConsoleCampaignListener : CampaignInputListener, ConsoleListener 
     }
 
     override fun getContext(): CommandContext {
-        val dialog = Global.getSector().campaignUI.currentInteractionDialog
-        return if (dialog != null && dialog.interactionTarget.market != null) {
+        return if (Global.getSector()?.campaignUI?.currentInteractionDialog?.interactionTarget?.market != null) {
             CommandContext.CAMPAIGN_MARKET
         } else CommandContext.CAMPAIGN_MAP
     }
@@ -128,7 +127,7 @@ internal class ConsoleCombatListener : BaseEveryFrameCombatPlugin(), ConsoleList
     }
 
     override fun showOutput(output: String): Boolean {
-        val ui = Global.getCombatEngine().combatUI ?: return false
+        val ui = Global.getCombatEngine()?.combatUI ?: return false
 
         // Fallback if the console overlay doesn't exist for some reason
         val messages = output.split('\n').dropLastWhile { it.isEmpty() }.toTypedArray()
