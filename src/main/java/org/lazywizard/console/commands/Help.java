@@ -25,7 +25,8 @@ public class Help implements BaseCommand
             Console.showMessage("\nYou can chain multiple commands together by separating them with '"
                     + Console.getSettings().getCommandSeparator() + "'. Use the 'List' command to obtain the various" +
                     " IDs needed for commands. The console also supports tab completion for commands (press tab and the" +
-                    " console will cycle through all commands starting with what you've already input).");
+                    " console will cycle through all commands starting with what you've already input)." +
+                    " You can also input a newline with shift+enter to break your command into multiple lines.");
             Console.showMessage("\nYou can use 'help <command>' for more information"
                     + " on a specific command or 'help <tag>' to only list"
                     + " commands that have that tag. Console settings can be changed with the 'Settings' command.");

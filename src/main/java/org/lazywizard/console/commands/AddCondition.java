@@ -68,10 +68,11 @@ public class AddCondition implements BaseCommand
                 if (otherCon == condition) continue;
 
                 // Automatically remove any mutually exclusive conditions
+                final String otherId = otherCon.getId();
                 if (mutuallyExclusive.contains(otherCon.getId()))
                 {
-                    toRemove.add(otherCon.getId());
-                    Console.showMessage("Removed mutually-exclusive condition '" + otherCon.getId()
+                    toRemove.add(otherId);
+                    Console.showMessage("Removed mutually-exclusive condition '" + otherId
                             + "' from market '" + market.getName() + "'.");
                     continue;
                 }
@@ -80,8 +81,8 @@ public class AddCondition implements BaseCommand
                 final ConditionGenDataSpec otherGen = otherCon.getGenSpec();
                 if (otherGen != null && gen.getGroup().equals(otherGen.getGroup()))
                 {
-                    toRemove.add(otherCon.getId());
-                    Console.showMessage("Removed existing condition '" + otherCon.getId()
+                    toRemove.add(otherId);
+                    Console.showMessage("Removed existing condition '" + otherId
                             + "' of same type from market '" + market.getName() + "'.");
                 }
             }
@@ -93,10 +94,11 @@ public class AddCondition implements BaseCommand
         {
             for (MarketConditionAPI otherCon : market.getConditions())
             {
-                if ((otherCon != condition) && populationRegex.matcher(otherCon.getId()).matches())
+                final String otherId = otherCon.getId();
+                if ((otherCon != condition) && populationRegex.matcher(otherId).matches())
                 {
-                    toRemove.add(otherCon.getId());
-                    Console.showMessage("Removed existing population condition '" + otherCon.getId()
+                    toRemove.add(otherId);
+                    Console.showMessage("Removed existing population condition '" + otherId
                             + "' from market '" + market.getName() + "'.");
                 }
             }

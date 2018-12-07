@@ -8,6 +8,7 @@ import com.fs.starfarer.api.characters.MarketConditionSpecAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Submarkets;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
+import com.fs.starfarer.api.loading.IndustrySpecAPI;
 import com.fs.starfarer.api.util.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.lazywizard.console.commands.List_;
@@ -509,6 +510,51 @@ public class CommandUtils
         }
 
         return Global.getSettings().getMarketConditionSpec(bestMatch);
+    }
+
+    public static IndustrySpecAPI findBestIndustryMatch(String name)
+    {
+        name = name.toLowerCase();
+        IndustrySpecAPI bestMatch = null;
+        double closestDistance = Console.getSettings().getTypoCorrectionThreshold();
+
+        for (IndustrySpecAPI industry : Global.getSettings().getAllIndustrySpecs())
+        {
+            double distance = calcSimilarity(name, industry.getId().toLowerCase());
+
+            if (distance == 1.0)
+            {
+                return industry;
+            }
+
+            if (distance > closestDistance)
+            {
+                closestDistance = distance;
+                bestMatch = industry;
+            }
+        }
+
+        // Search again by name if no matching ID is found
+        if (bestMatch == null)
+        {
+            for (IndustrySpecAPI industry : Global.getSettings().getAllIndustrySpecs())
+            {
+                double distance = calcSimilarity(name, industry.getName().toLowerCase());
+
+                if (distance == 1.0)
+                {
+                    return industry;
+                }
+
+                if (distance > closestDistance)
+                {
+                    closestDistance = distance;
+                    bestMatch = industry;
+                }
+            }
+        }
+
+        return bestMatch;
     }
 
     public static StarSystemAPI findBestSystemMatch(String name)
