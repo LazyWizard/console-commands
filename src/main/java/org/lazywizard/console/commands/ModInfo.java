@@ -17,7 +17,6 @@ import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
 
 // TODO: A lot of these static methods should be moved to LazyLib's ModUtils
-// TODO: Remove string wrapping once overlay breaks strings automatically
 public class ModInfo implements BaseCommand
 {
     private static final Logger Log = Logger.getLogger(ModInfo.class);

@@ -32,6 +32,9 @@ internal class ConsoleModPlugin : BaseModPlugin() {
         }
     }
 
+    // Config file is either empty (never used Settings), or an empty JSONObject (used "settings reset")
+    private fun needsSetup() = Global.getSettings().readTextFileFromCommon(CommonStrings.PATH_COMMON_DATA).trim().length < 5
+
     @Throws(Exception::class)
     override fun onApplicationLoad() {
         migrateSettings()
@@ -39,8 +42,8 @@ internal class ConsoleModPlugin : BaseModPlugin() {
         // Load console settings
         ReloadConsole.reloadConsole()
 
-        Console.showMessage("Console loaded, summon with ${Console.getSettings().consoleSummonKey}" +
-                " (use Settings command to change).", Level.DEBUG)
+        Console.showMessage("Console loaded, summon with ${Console.getSettings().consoleSummonKey}.", Level.DEBUG);
+        if (needsSetup()) Console.showMessage("The console has not been customized yet. Use the Settings command to configure it.", Level.DEBUG);
     }
 
     override fun onGameLoad(newGame: Boolean) {
@@ -81,7 +84,7 @@ internal class ConsoleCampaignListener : CampaignInputListener, ConsoleListener 
 
     override fun showOutput(output: String): Boolean {
         for (tmp in output.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
-            val message = StringUtils.wrapString(tmp, 80)
+            val message = StringUtils.wrapString(tmp, 100)
             Global.getSector().campaignUI.addMessage(message, Console.getSettings().outputColor)
         }
 
