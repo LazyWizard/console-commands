@@ -1,5 +1,5 @@
-console - system commands that can run anywhere: reloading the console, viewing help files, etc
 core - for commands that come bundled with Console Commands; please don't use this tag in your mods
+console - system commands that can run anywhere: reloading the console, viewing help files, etc
 campaign - command works on the campaign map (does not include markets)
 market - command works when docked with a market-containing entity
 combat - command works on the combat map

@@ -151,7 +151,7 @@ public class CommandStore
             String listenerId = null;
             String listenerPath = null;
             String listenerSource = null;
-            int listenerPriority = 0;
+            int listenerPriority;
 
             try
             {
@@ -208,10 +208,36 @@ public class CommandStore
         return commands;
     }
 
+    private static boolean isApplicable(StoredCommand command, CommandContext context)
+    {
+        final List<String> tags = command.tags;
+
+        if (tags.contains("console"))
+        {
+            return true;
+        }
+        else if (context.isInMarket())
+        {
+            return tags.contains("market") || (!tags.contains("combat") && !tags.contains("campaign"));
+        }
+        else if (context.isInCampaign())
+        {
+            return tags.contains("campaign") || (!tags.contains("combat") && !tags.contains("market"));
+        }
+        else if (context.isInCombat())
+        {
+            return tags.contains("combat") || (!tags.contains("campaign") && !tags.contains("market"));
+        }
+
+        return true;
+    }
+
     /**
      * Returns all commands applicable in the given {@link CommandContext}. A command will only be excluded if it
-     * contains the opposite tag and does not contain the matching one (ex: for {@link CommandContext#CAMPAIGN_MAP},
-     * commands will only be excluded if they contain the tag "combat" but <i>not</i> the tag "campaign".
+     * contains an opposing tag and does not contain the matching one (ex: for {@link CommandContext#CAMPAIGN_MAP},
+     * commands will only be excluded if they contain the tag "combat" or "market" but <i>not</i> the tag "campaign".
+     * <p>
+     * Commands with the tag "console" are assumed to be system-level, and will run anywhere.
      *
      * @return A {@link List} containing the names of all loaded commands
      *         that are applicable to the given context.
@@ -220,33 +246,13 @@ public class CommandStore
      */
     public static List<String> getApplicableCommands(CommandContext context)
     {
-        final List<String> commands = new ArrayList<>(storedCommands.size());
-        for (StoredCommand tmp : storedCommands.values())
+        final List<String> commands = new ArrayList<>();
+        for (StoredCommand command : storedCommands.values())
         {
-            if (context.isInMarket())
+            if (isApplicable(command, context))
             {
-                if ((tmp.tags.contains("combat") || tmp.tags.contains("campaign")) && !tmp.tags.contains("market"))
-                {
-                    continue;
-                }
+                commands.add(command.getName());
             }
-            else if (context.isInCampaign())
-            {
-                if ((tmp.tags.contains("combat") || tmp.tags.contains("market")) && !tmp.tags.contains("campaign"))
-                {
-                    continue;
-                }
-            }
-            else if (context.isInCombat())
-            {
-                // Exclude campaign-only commands when in combat
-                if ((tmp.tags.contains("campaign") || tmp.tags.contains("market")) && !tmp.tags.contains("combat"))
-                {
-                    continue;
-                }
-            }
-
-            commands.add(tmp.getName());
         }
 
         return commands;
@@ -273,7 +279,7 @@ public class CommandStore
      *                multiple commands. If {@code null} is passed in, removes any existing alias instead.
      *
      * @throws IOException
-     * @Throws JSONException
+     * @throws JSONException
      * @since 3.0
      */
     public static void registerAlias(String alias, String command) throws IOException, JSONException
@@ -518,6 +524,7 @@ public class CommandStore
             // Highest priority wins
             return Integer.compare(other.priority, priority);
         }
+
     }
 
     private CommandStore()
