@@ -89,7 +89,7 @@ internal class ConsoleCampaignListener : CampaignInputListener, ConsoleListener 
     }
 
     override fun getContext(): CommandContext {
-        return if (Global.getSector()?.campaignUI?.currentInteractionDialog?.interactionTarget?.market != null) {
+        return if (Global.getSector().campaignUI?.currentInteractionDialog?.interactionTarget?.market != null) {
             CommandContext.CAMPAIGN_MARKET
         } else CommandContext.CAMPAIGN_MAP
     }
