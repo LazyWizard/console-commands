@@ -97,7 +97,7 @@ public class Console
 
     static float getScrollbackWidth()
     {
-        return (Display.getWidth() * Display.getPixelScaleFactor() * .85f) - ConsoleOverlay.HORIZONTAL_MARGIN;
+        return (Display.getWidth() * Display.getPixelScaleFactor()) - ConsoleOverlay.HORIZONTAL_MARGIN * 2f;
     }
 
     static Object getCommandTarget(CommandContext context)
