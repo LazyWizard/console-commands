@@ -137,13 +137,8 @@ public interface BaseCommand
          */
         public boolean isCampaignAccessible()
         {
-            if (isInCampaign())
-            {
-                return true;
-            }
-
             final CombatEngineAPI engine = Global.getCombatEngine();
-            return engine != null && (engine.isInCampaign() || engine.isInCampaignSim());
+            return isInCampaign() || (engine != null && engine.isInCampaign() || engine.isInCampaignSim());
         }
 
         /**
@@ -164,12 +159,8 @@ public interface BaseCommand
             }
 
             final CampaignUIAPI ui = Global.getSector().getCampaignUI();
-            if (ui == null || ui.getCurrentInteractionDialog() == null)
-            {
-                return null;
-            }
-
-            return ui.getCurrentInteractionDialog().getInteractionTarget();
+            return ((ui == null || ui.getCurrentInteractionDialog() == null) ? null
+                    : ui.getCurrentInteractionDialog().getInteractionTarget());
         }
 
         /**
@@ -189,7 +180,8 @@ public interface BaseCommand
                 return null;
             }
 
-            return Global.getSector().getCampaignUI().getCurrentInteractionDialog().getInteractionTarget().getMarket();
+            final SectorEntityToken interactingWith = getEntityInteractedWith();
+            return ((interactingWith == null) ? null : interactingWith.getMarket());
         }
     }
 

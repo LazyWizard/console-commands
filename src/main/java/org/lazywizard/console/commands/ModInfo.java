@@ -54,14 +54,14 @@ public class ModInfo implements BaseCommand
 
                 // Skip rows not from that mod
                 final String source = row.getString("fs_rowSource");
-                System.out.print(id + ": " + modDir + " vs " + source + ", ");
+                //System.out.print(id + ": " + modDir + " vs " + source + ", ");
                 if (source == null || !source.endsWith(modDir))
                 {
-                    System.out.println("MISMATCH");
+                    //System.out.println("MISMATCH");
                     continue;
                 }
 
-                System.out.println("MATCH");
+                //System.out.println("MATCH");
                 added.add(id);
             }
         }

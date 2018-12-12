@@ -43,7 +43,7 @@ internal class ConsoleModPlugin : BaseModPlugin() {
         ReloadConsole.reloadConsole()
 
         Console.showMessage("Console loaded, summon with ${Console.getSettings().consoleSummonKey}.", Level.DEBUG);
-        if (needsSetup()) Console.showMessage("The console has not been customized yet. Use the Settings command to configure it.", Level.DEBUG);
+        if (needsSetup()) Console.showMessage("Use the Settings command to configure the console.", Level.DEBUG);
     }
 
     override fun onGameLoad(newGame: Boolean) {

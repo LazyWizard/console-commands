@@ -1,6 +1,7 @@
 package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.impl.campaign.DebugFlags;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.Console;
 
@@ -24,6 +25,7 @@ public class DevMode implements BaseCommand
 
         devMode = !devMode;
         Global.getSettings().setDevMode(devMode);
+        if (Console.getSettings().getDevModeTogglesDebugFlags()) DebugFlags.setStandardConfig();
         Console.showMessage("Dev mode is now " + (devMode ? "enabled." : "disabled."));
         return CommandResult.SUCCESS;
     }

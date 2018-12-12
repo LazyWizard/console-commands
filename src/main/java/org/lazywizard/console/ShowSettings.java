@@ -47,7 +47,7 @@ public class ShowSettings implements BaseCommand
         private OptionPanelAPI options;
         private TextPanelAPI text;
         private Menu currentMenu;
-        private boolean showBackground, showCommands, showMemory, showExceptions, showIndex, homeStorage;
+        private boolean showBackground, showCommands, showMemory, showExceptions, showIndex, homeStorage, devModeFlags;
         private int red, green, blue, scrollback;
         private float threshold, fontScale;
 
@@ -70,6 +70,7 @@ public class ShowSettings implements BaseCommand
             SHOW_EXCEPTIONS,
             SHOW_INDEX,
             HOME_STORAGE,
+            DEVMODE_FLAGS,
             TEST_COLOR,
             EXIT
         }
@@ -99,6 +100,7 @@ public class ShowSettings implements BaseCommand
             scrollback = settings.getMaxScrollback();
             threshold = settings.getTypoCorrectionThreshold();
             homeStorage = settings.getTransferStorageToHome();
+            devModeFlags = settings.getDevModeTogglesDebugFlags();
             showBackground = settings.getShowBackground();
             showCommands = settings.getShowEnteredCommands();
             showMemory = settings.getShowMemoryUsage();
@@ -214,6 +216,11 @@ public class ShowSettings implements BaseCommand
                     options.addOption("Always use Home's market for Storage: " + (homeStorage ? "true" : "false"),
                             Option.HOME_STORAGE, getToggleOptionColor(homeStorage),
                             "When enabled, the contents of your Storage will automatically transfer to your Home's storage submarket if it has one.");
+
+                    // Whether the devmode command also resets the flags in DebugFlags
+                    options.addOption("Toggle debug flags with DevMode: " + (devModeFlags ? "true" : " false"),
+                            Option.DEVMODE_FLAGS, getToggleOptionColor(devModeFlags),
+                            "When enabled, toggling devmode will also reset all debug flags (faction control override, etc).");
                     break;
             }
 
@@ -267,6 +274,10 @@ public class ShowSettings implements BaseCommand
                     homeStorage = !homeStorage;
                     goToMenu(Menu.MISC);
                     break;
+                case DEVMODE_FLAGS:
+                    devModeFlags = !devModeFlags;
+                    goToMenu(Menu.MISC);
+                    break;
                 case TEST_COLOR:
                     text.addParagraph("Here is what the console's output would look like with color {"
                             + red + ", " + green + ", " + blue + "}.", new Color(red, green, blue));
@@ -284,6 +295,7 @@ public class ShowSettings implements BaseCommand
             settings.setTypoCorrectionThreshold(threshold);
             settings.setMaxScrollback(scrollback);
             settings.setTransferStorageToHome(homeStorage);
+            settings.setDevModeTogglesDebugFlags(devModeFlags);
             settings.setShowBackground(showBackground);
             settings.setShowEnteredCommands(showCommands);
             settings.setShowMemoryUsage(showMemory);
