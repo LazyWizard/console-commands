@@ -28,7 +28,7 @@ private const val CURSOR_BLINK_SPEED = 0.7f
 internal const val HORIZONTAL_MARGIN = 30f // Don't go below 30; TODO: scale minor UI elements using this setting
 private var overlay: ConsoleOverlayInternal? = null
 
-internal fun show(context: CommandContext) = with(ConsoleOverlayInternal(context,
+fun show(context: CommandContext) = with(ConsoleOverlayInternal(context,
         Console.getSettings().outputColor, Console.getSettings().outputColor.darker()))
 {
     try {
@@ -44,7 +44,7 @@ internal fun show(context: CommandContext) = with(ConsoleOverlayInternal(context
     }
 }
 
-internal fun clear() {
+fun clear() {
     overlay?.clear()
 }
 

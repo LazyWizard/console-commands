@@ -19,6 +19,7 @@ object ConsoleSettings {
     var typoCorrectionThreshold by FloatPref("typoCorrectionThreshold", default = 0.9f)
     var showBackground by BoolPref("showBackground", default = true)
     var transferStorageToHome by BoolPref("transferStorageToHome", default = true)
+    var devModeTogglesDebugFlags by BoolPref("devModeTogglesDebugFlags", default = true)
     var showEnteredCommands by BoolPref("showEnteredCommands", default = true)
     var showMemoryUsage by BoolPref("showMemoryUsage", default = true)
     var showCursorIndex by BoolPref("showCursorIndex", default = false)
