@@ -5,6 +5,7 @@ import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin
 import com.fs.starfarer.api.combat.CombatEngineAPI
 import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.input.InputEventAPI
+import com.sun.webkit.plugin.PluginManager
 import org.lazywizard.console.Console
 
 private typealias CData = MutableMap<String, CombatCheatData>
@@ -13,7 +14,7 @@ class CombatCheatManager : BaseEveryFrameCombatPlugin() {
     private val icon = Global.getSettings().getSpriteName("ui", "console_status")
     private val plugins: CData by lazy(LazyThreadSafetyMode.NONE) { getPlugins() }
 
-    private companion object PluginManager {
+    companion object PluginManager {
         private const val DATA_ID = "lw_console_cheats"
 
         @Suppress("UNCHECKED_CAST")
@@ -43,6 +44,15 @@ class CombatCheatManager : BaseEveryFrameCombatPlugin() {
         fun getDefaultTarget(): CheatTarget = Console.getSettings().defaultCombatCheatTarget
 
         @JvmStatic
+        fun isTarget(ship: ShipAPI, target: CheatTarget?): Boolean = when (target) {
+            CheatTarget.PLAYER -> ship === Global.getCombatEngine().playerShip
+            CheatTarget.FLEET -> ship.owner == 0
+            CheatTarget.ENEMY -> ship.owner == 1
+            CheatTarget.ALL -> true
+            null -> false
+        }
+
+        @JvmStatic
         @JvmOverloads
         fun parseTargets(str: String, vararg allowedTargets: CheatTarget = CheatTarget.values()): CheatTarget? = try {
             val result = CheatTarget.valueOf(str.toUpperCase())
@@ -63,13 +73,7 @@ class CombatCheatManager : BaseEveryFrameCombatPlugin() {
 }
 
 private data class CombatCheatData(val id: String, val statusDesc: String, val plugin: CheatPlugin, val appliesTo: CheatTarget?) {
-    fun appliesTo(ship: ShipAPI): Boolean = when (appliesTo) {
-        CheatTarget.PLAYER -> ship === Global.getCombatEngine().playerShip
-        CheatTarget.FLEET -> ship.owner == 0
-        CheatTarget.ENEMY -> ship.owner == 1
-        CheatTarget.ALL -> true
-        null -> false
-    }
+    fun appliesTo(ship: ShipAPI): Boolean = CombatCheatManager.isTarget(ship, appliesTo)
 
     fun advance(amount: Float, events: List<InputEventAPI>) {
         if (!plugin.runWhilePaused() && Global.getCombatEngine().isPaused) return
