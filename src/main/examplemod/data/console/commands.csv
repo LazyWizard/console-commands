@@ -14,7 +14,7 @@ Echo,data.console.commands.basic.Echo,"example,console",echo <text>,"An example 
 Dogpile,data.console.commands.intermediate.Dogpile,"example,campaign",dogpile (no arguments),"Summons all hostile fleets in the system to attack the player."
 FlipShips,data.console.commands.intermediate.FlipShips,"example,combat",flipships (no arguments),"Rotates all ships on the combat map by 180 degrees."
 SetFacing,data.console.commands.intermediate.SetFacing,"example,combat",setfacing <angle>,"Sets the facing of the targeted ship (or the player if no target is selected) to the specified angle in degrees."
-StormGod,data.console.commands.intermediate.StormGod,"example,campaign",stormgod (no arguments),"Lets you pass through hyperspace storms freely."
 # Advanced complexity, runs until the next reload and can be toggled off and on
 FlakJacket,data.console.commands.advanced.FlakJacket,"example,combat",flakjacket (no arguments),"Surrounds the player ship with an impenetrable field of flak."
 ForeverAlone,data.console.commands.advanced.ForeverAlone,"example,campaign",foreveralone (no arguments),"Prevents your ship from approaching other fleets."
+StormGod,data.console.commands.advanced.StormGod,"example,campaign",stormgod (no arguments),"Lets you pass through hyperspace storms freely."
