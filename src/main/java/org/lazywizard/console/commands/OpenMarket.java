@@ -1,7 +1,5 @@
 package org.lazywizard.console.commands;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import org.lazywizard.console.BaseCommand;
@@ -9,6 +7,9 @@ import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class OpenMarket implements BaseCommand
 {
@@ -21,21 +22,20 @@ public class OpenMarket implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        final List<String> markets = new ArrayList<>();
-        for (MarketAPI market : Global.getSector().getEconomy().getMarketsCopy())
+        final MarketAPI market = CommandUtils.findBestMarketMatch(args);
+        if (market == null)
         {
-            markets.add(market.getId());
-        }
+            final List<String> markets = new ArrayList<>();
+            for (MarketAPI tmp : Global.getSector().getEconomy().getMarketsCopy())
+            {
+                markets.add(tmp.getId() + " (" + tmp.getName() + ")");
+            }
 
-        final String bestMatch = CommandUtils.findBestStringMatch(args, markets);
-        if (bestMatch == null)
-        {
             Console.showMessage("No such market '" + args + "'!\nValid markets: "
                     + CollectionUtils.implode(markets));
             return CommandResult.ERROR;
         }
 
-        final MarketAPI market = Global.getSector().getEconomy().getMarket(bestMatch);
         if (market.getPrimaryEntity() == null)
         {
             Console.showMessage("No interactable campaign entity found for market '" + args + "'.");
