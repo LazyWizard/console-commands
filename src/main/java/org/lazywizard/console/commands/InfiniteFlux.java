@@ -38,7 +38,7 @@ public class InfiniteFlux implements BaseCommand
             }
             else
             {
-                appliesTo = CheatTarget.PLAYER;
+                appliesTo = Console.getSettings().getDefaultCombatCheatTarget();
             }
         }
 

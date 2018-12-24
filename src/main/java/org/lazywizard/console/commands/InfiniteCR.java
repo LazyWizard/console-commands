@@ -37,7 +37,7 @@ public class InfiniteCR implements BaseCommand
             }
             else
             {
-                appliesTo = CheatTarget.PLAYER;
+                appliesTo = Console.getSettings().getDefaultCombatCheatTarget();
             }
         }
 

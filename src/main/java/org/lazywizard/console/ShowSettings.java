@@ -8,6 +8,7 @@ import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.ui.PositionAPI;
 import com.fs.starfarer.api.ui.ValueDisplayMode;
 import org.lazywizard.console.ConsoleSettings.Keystroke;
+import org.lazywizard.console.cheatmanager.CheatTarget;
 import org.lazywizard.lazylib.ui.LazyFont.DrawableString;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -50,6 +51,7 @@ public class ShowSettings implements BaseCommand
         private boolean showBackground, showCommands, showMemory, showExceptions, showIndex, homeStorage, devModeFlags;
         private int red, green, blue, scrollback;
         private float threshold, fontScale;
+        private CheatTarget defaultTarget;
 
         private enum Menu
         {
@@ -69,6 +71,7 @@ public class ShowSettings implements BaseCommand
             SHOW_MEMORY,
             SHOW_EXCEPTIONS,
             SHOW_INDEX,
+            DEFAULT_TARGET,
             HOME_STORAGE,
             DEVMODE_FLAGS,
             TEST_COLOR,
@@ -99,6 +102,7 @@ public class ShowSettings implements BaseCommand
             fontScale = settings.getFontScaling();
             scrollback = settings.getMaxScrollback();
             threshold = settings.getTypoCorrectionThreshold();
+            defaultTarget = settings.getDefaultCombatCheatTarget();
             homeStorage = settings.getTransferStorageToHome();
             devModeFlags = settings.getDevModeTogglesDebugFlags();
             showBackground = settings.getShowBackground();
@@ -113,6 +117,13 @@ public class ShowSettings implements BaseCommand
         private static Color getToggleOptionColor(boolean isEnabled)
         {
             return (isEnabled ? Color.GREEN : Color.ORANGE);
+        }
+
+        private static <T extends Enum> T cycleEnum(T toCycle)
+        {
+            final Object[] values = toCycle.getDeclaringClass().getEnumConstants();
+            final int index = (toCycle.ordinal() >= values.length - 1 ? 0 : toCycle.ordinal() + 1);
+            return (T) values[index];
         }
 
         private void goToMenu(Menu menu)
@@ -212,6 +223,10 @@ public class ShowSettings implements BaseCommand
                             "How many characters of output history will be stored in the overlay between uses. A higher value means slightly more RAM used by the console.");
                     options.setSelectorValue(Selector.MAX_SCROLLBACK, scrollback);
 
+                    // Default target for combat cheats
+                    options.addOption("Default combat cheat target: " + defaultTarget, Option.DEFAULT_TARGET,
+                            "The default target for combat cheat commands when no argument is passed in.");
+
                     // Use Home market as Storage
                     options.addOption("Always use Home's market for Storage: " + (homeStorage ? "true" : "false"),
                             Option.HOME_STORAGE, getToggleOptionColor(homeStorage),
@@ -270,6 +285,10 @@ public class ShowSettings implements BaseCommand
                     showExceptions = !showExceptions;
                     goToMenu(Menu.OVERLAY);
                     break;
+                case DEFAULT_TARGET:
+                    defaultTarget = cycleEnum(defaultTarget);
+                    goToMenu(Menu.MISC);
+                    break;
                 case HOME_STORAGE:
                     homeStorage = !homeStorage;
                     goToMenu(Menu.MISC);
@@ -294,6 +313,7 @@ public class ShowSettings implements BaseCommand
             settings.setFontScaling(fontScale);
             settings.setTypoCorrectionThreshold(threshold);
             settings.setMaxScrollback(scrollback);
+            settings.setDefaultCombatCheatTarget(defaultTarget);
             settings.setTransferStorageToHome(homeStorage);
             settings.setDevModeTogglesDebugFlags(devModeFlags);
             settings.setShowBackground(showBackground);

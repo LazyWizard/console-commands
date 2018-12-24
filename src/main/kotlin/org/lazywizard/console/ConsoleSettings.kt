@@ -1,6 +1,7 @@
 package org.lazywizard.console
 
 import com.fs.starfarer.api.input.InputEventAPI
+import org.lazywizard.console.cheatmanager.CheatTarget
 import org.lazywizard.lazylib.JSONUtils
 import org.lwjgl.input.Keyboard
 import java.awt.Color
@@ -20,6 +21,7 @@ object ConsoleSettings {
     var showBackground by BoolPref("showBackground", default = true)
     var transferStorageToHome by BoolPref("transferStorageToHome", default = true)
     var devModeTogglesDebugFlags by BoolPref("devModeTogglesDebugFlags", default = true)
+    var defaultCombatCheatTarget by EnumPref("defaultCombatCheatTarget", clazz = CheatTarget::class.java, default = CheatTarget.PLAYER)
     var showEnteredCommands by BoolPref("showEnteredCommands", default = true)
     var showMemoryUsage by BoolPref("showMemoryUsage", default = true)
     var showCursorIndex by BoolPref("showCursorIndex", default = false)
@@ -92,6 +94,23 @@ object ConsoleSettings {
         operator fun setValue(consoleSettings: ConsoleSettings, property: KProperty<*>, value: Color) {
             field = value
             settings.put(key, asString(value))
+            settings.save()
+        }
+    }
+
+    private class EnumPref<T : Enum<T>>(val key: String, val clazz: Class<T>, default: T) {
+        private var field = parseEnum(settings.optString(key, default.toString()), default)
+
+        private fun parseEnum(enum: String, default: T): T = try {
+            java.lang.Enum.valueOf(clazz, enum)
+        } catch (ex: Exception) {
+            default
+        }
+
+        operator fun getValue(consoleSettings: ConsoleSettings, property: KProperty<*>): T = field
+        operator fun setValue(consoleSettings: ConsoleSettings, property: KProperty<*>, value: T) {
+            field = value
+            settings.put(key, value.toString())
             settings.save()
         }
     }
