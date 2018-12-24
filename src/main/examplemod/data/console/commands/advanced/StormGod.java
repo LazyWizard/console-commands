@@ -1,4 +1,4 @@
-package data.console.commands.intermediate;
+package data.console.commands.advanced;
 
 import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;

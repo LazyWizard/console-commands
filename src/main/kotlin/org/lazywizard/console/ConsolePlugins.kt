@@ -1,6 +1,7 @@
 package org.lazywizard.console
 
 import com.fs.starfarer.api.BaseModPlugin
+import com.fs.starfarer.api.GameState
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.listeners.CampaignInputListener
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin
@@ -103,21 +104,18 @@ internal class ConsoleCombatListener : BaseEveryFrameCombatPlugin(), ConsoleList
     private lateinit var context: CommandContext
 
     override fun processInputPreCoreControls(amount: Float, events: List<InputEventAPI>) {
-        val engine = Global.getCombatEngine() ?: return
-
-        // Main menu check
-        val player = engine.playerShip
-        if (player != null) {
-            if (Console.getSettings().consoleSummonKey.isPressed(events)) {
-                show(context)
-            }
-
-            // Advance the console and all combat commands
-            Console.advance(this)
+        if (Console.getSettings().consoleSummonKey.isPressed(events)) {
+            show(context)
         }
+
+        // Advance the console and all combat commands
+        Console.advance(this)
     }
 
     override fun init(engine: CombatEngineAPI) {
+        // Don't run on the title screen
+        if (Global.getCurrentState() == GameState.TITLE) engine.removePlugin(this)
+
         // Determine what context this battle is in
         context = when {
             engine.isSimulation -> CommandContext.COMBAT_SIMULATION

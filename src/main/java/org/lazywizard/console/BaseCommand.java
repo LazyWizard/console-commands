@@ -98,7 +98,7 @@ public interface BaseCommand
          */
         public boolean isInCombat()
         {
-            return (this != CAMPAIGN_MAP);
+            return (this == COMBAT_CAMPAIGN || this == COMBAT_MISSION || this == COMBAT_SIMULATION);
         }
 
         /**
@@ -138,7 +138,7 @@ public interface BaseCommand
         public boolean isCampaignAccessible()
         {
             final CombatEngineAPI engine = Global.getCombatEngine();
-            return isInCampaign() || (engine != null && engine.isInCampaign() || engine.isInCampaignSim());
+            return isInCampaign() || (engine != null && (engine.isInCampaign() || engine.isInCampaignSim()));
         }
 
         /**

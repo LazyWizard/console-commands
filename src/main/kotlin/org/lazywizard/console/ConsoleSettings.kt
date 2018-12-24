@@ -21,7 +21,7 @@ object ConsoleSettings {
     var showBackground by BoolPref("showBackground", default = true)
     var transferStorageToHome by BoolPref("transferStorageToHome", default = true)
     var devModeTogglesDebugFlags by BoolPref("devModeTogglesDebugFlags", default = true)
-    var defaultCombatCheatTarget by EnumPref("defaultCombatCheatTarget", clazz = CheatTarget::class.java, default = CheatTarget.PLAYER)
+    var defaultCombatCheatTarget by EnumPref("defaultCombatCheatTarget", enumClass = CheatTarget::class.java, default = CheatTarget.PLAYER)
     var showEnteredCommands by BoolPref("showEnteredCommands", default = true)
     var showMemoryUsage by BoolPref("showMemoryUsage", default = true)
     var showCursorIndex by BoolPref("showCursorIndex", default = false)
@@ -98,11 +98,9 @@ object ConsoleSettings {
         }
     }
 
-    private class EnumPref<T : Enum<T>>(val key: String, val clazz: Class<T>, default: T) {
-        private var field = parseEnum(settings.optString(key, default.toString()), default)
-
-        private fun parseEnum(enum: String, default: T): T = try {
-            java.lang.Enum.valueOf(clazz, enum)
+    private class EnumPref<T : Enum<T>>(val key: String, enumClass: Class<T>, default: T) {
+        private var field = try {
+            java.lang.Enum.valueOf(enumClass, settings.optString(key, default.name))
         } catch (ex: Exception) {
             default
         }
@@ -110,7 +108,7 @@ object ConsoleSettings {
         operator fun getValue(consoleSettings: ConsoleSettings, property: KProperty<*>): T = field
         operator fun setValue(consoleSettings: ConsoleSettings, property: KProperty<*>, value: T) {
             field = value
-            settings.put(key, value.toString())
+            settings.put(key, value.name)
             settings.save()
         }
     }
