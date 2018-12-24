@@ -39,7 +39,7 @@ public class NoCooldown implements BaseCommand
             }
             else
             {
-                appliesTo = CheatTarget.PLAYER;
+                appliesTo = Console.getSettings().getDefaultCombatCheatTarget();
             }
         }
 

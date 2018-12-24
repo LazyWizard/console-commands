@@ -5,6 +5,7 @@ import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin
 import com.fs.starfarer.api.combat.CombatEngineAPI
 import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.input.InputEventAPI
+import org.lazywizard.console.Console
 
 private typealias CData = MutableMap<String, CombatCheatData>
 
@@ -37,6 +38,9 @@ class CombatCheatManager : BaseEveryFrameCombatPlugin() {
 
         @JvmStatic
         fun isEnabled(id: String) = getPlugins().containsKey(id)
+
+        @JvmStatic
+        fun getDefaultTarget(): CheatTarget = Console.getSettings().defaultCombatCheatTarget
 
         @JvmStatic
         @JvmOverloads
