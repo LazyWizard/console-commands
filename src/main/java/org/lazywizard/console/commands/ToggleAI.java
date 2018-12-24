@@ -5,33 +5,42 @@ import com.fs.starfarer.api.combat.*;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import org.lazywizard.console.cheatmanager.CheatTarget;
+import org.lazywizard.console.cheatmanager.CombatCheatManager;
+import org.lazywizard.lazylib.CollectionUtils;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 public class ToggleAI implements BaseCommand
 {
-    private static final Map<ShipAPI, ShipAIPlugin> ais = new WeakHashMap<>();
+    private static final String CDATA_ID = CommonStrings.MOD_ID + "_toggleai_ais";
 
-    @Override
-    public CommandResult runCommand(String args, CommandContext context)
+    @SuppressWarnings("unchecked")
+    private static Map<ShipAPI, ShipAIPlugin> getAIMap()
     {
-        if (!context.isInCombat())
+        Map<ShipAPI, ShipAIPlugin> aiMap = (Map<ShipAPI, ShipAIPlugin>) Global.getCombatEngine().getCustomData().get(CDATA_ID);
+        if (aiMap == null)
         {
-            Console.showMessage(CommonStrings.ERROR_COMBAT_ONLY);
-            return CommandResult.WRONG_CONTEXT;
+            aiMap = new HashMap<>();
+            Global.getCombatEngine().getCustomData().put(CDATA_ID, aiMap);
         }
 
-        ShipAPI target = Global.getCombatEngine().getPlayerShip().getShipTarget();
-        if (target == null)
-        {
-            Console.showMessage("No target found!");
-            return CommandResult.ERROR;
-        }
+        return aiMap;
+    }
 
-        if (ais.containsKey(target))
+    private static boolean isAIDisabled(ShipAPI target)
+    {
+        return getAIMap().containsKey(target);
+    }
+
+    private static void setAIEnabled(ShipAPI target, boolean enabled)
+    {
+        final Map<ShipAPI, ShipAIPlugin> aiMap = getAIMap();
+        if (enabled && aiMap.containsKey(target))
         {
-            ShipAIPlugin ai = ais.remove(target);
+            final ShipAIPlugin ai = aiMap.remove(target);
             if (ai == null)
             {
                 target.resetDefaultAI();
@@ -42,30 +51,98 @@ public class ToggleAI implements BaseCommand
             }
 
             target.getShipAI().forceCircumstanceEvaluation();
-            Console.showMessage("Re-enabled AI of target");
         }
-        else
+        else if (!enabled && !aiMap.containsKey(target))
         {
-            ais.put(target, target.getShipAI());
+            aiMap.put(target, target.getShipAI());
             target.setShipAI(new NullAI(target));
 
             for (WeaponGroupAPI group : target.getWeaponGroupsCopy())
             {
                 group.toggleOff();
             }
+        }
+    }
 
+    @Override
+    public CommandResult runCommand(String args, CommandContext context)
+    {
+        if (!context.isInCombat())
+        {
+            Console.showMessage(CommonStrings.ERROR_COMBAT_ONLY);
+            return CommandResult.WRONG_CONTEXT;
+        }
+
+        if (!args.isEmpty())
+        {
+            final String[] tmp = args.split(" ");
+            if (tmp.length != 2)
+            {
+                return CommandResult.BAD_SYNTAX;
+            }
+
+            final CheatTarget[] validTargets = {CheatTarget.FLEET, CheatTarget.ENEMY, CheatTarget.ALL};
+            final CheatTarget target = CombatCheatManager.parseTargets(tmp[0], validTargets);
+            if (target == null)
+            {
+                Console.showMessage("Bad target! Valid targets: " + CollectionUtils.implode(Arrays.asList(validTargets)) + ".");
+                return CommandResult.ERROR;
+            }
+
+            final String arg = tmp[1].toLowerCase();
+            boolean enabled;
+            if ("off".equals(arg) || "false".equals(arg))
+            {
+                enabled = false;
+            }
+            else if ("on".equals(arg) || "true".equals(arg))
+            {
+                enabled = true;
+            }
+            else
+            {
+                return CommandResult.BAD_SYNTAX;
+            }
+
+            for (ShipAPI ship : Global.getCombatEngine().getShips())
+            {
+                if (CombatCheatManager.isTarget(ship, target))
+                {
+                    setAIEnabled(ship, enabled);
+                }
+            }
+
+            Console.showMessage((enabled ? "Enabled" : "Disabled") + " AI for " + target);
+            return CommandResult.SUCCESS;
+        }
+
+        final ShipAPI target = Global.getCombatEngine().getPlayerShip().getShipTarget();
+        if (target == null)
+        {
+            Console.showMessage("No target found!");
+            return CommandResult.ERROR;
+        }
+
+        if (isAIDisabled(target))
+        {
+            setAIEnabled(target, true);
+            Console.showMessage("Re-enabled AI of target");
+        }
+        else
+        {
+            setAIEnabled(target, false);
             Console.showMessage("Disabled AI of target");
         }
 
         return CommandResult.SUCCESS;
     }
 
-    private static class NullAI implements ShipAIPlugin
+    static class NullAI implements ShipAIPlugin
     {
         private final ShipAPI ship;
         private final ShipwideAIFlags flags;
 
-        private NullAI(ShipAPI ship)
+        NullAI(ShipAPI ship)
         {
             this.ship = ship;
             flags = new ShipwideAIFlags();
