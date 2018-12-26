@@ -162,7 +162,7 @@ public class AllBlueprints implements BaseCommand
             final List<String> unlocked = new ArrayList<>();
             for (WeaponSpecAPI spec : Global.getSettings().getAllWeaponSpecs())
             {
-                if (!player.knowsWeapon(spec.getWeaponId()))
+                if (isLearnable(spec) && !player.knowsWeapon(spec.getWeaponId()))
                 {
                     player.addKnownWeapon(spec.getWeaponId(), true);
                     unlocked.add(spec.getWeaponId() + " (" + spec.getWeaponName() + ")");
