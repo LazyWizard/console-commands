@@ -3,6 +3,7 @@
 \=============================================================/
  - Update existing campaign commands to support CommandContext.CAMPAIGN_MARKET
  - Update changelog
+ - Entering a cheat command with an active target should toggle it off
 
 /====================================================\
 | Low-Priority Tasks for v3.0 final (may be skipped) |
