@@ -1,7 +1,6 @@
 package org.lazywizard.console
 
 import com.fs.starfarer.api.BaseModPlugin
-import com.fs.starfarer.api.GameState
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.listeners.CampaignInputListener
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin
@@ -104,6 +103,8 @@ internal class ConsoleCombatListener : BaseEveryFrameCombatPlugin(), ConsoleList
     private lateinit var context: CommandContext
 
     override fun processInputPreCoreControls(amount: Float, events: List<InputEventAPI>) {
+        if (Global.getCombatEngine().playerShip == null) return
+
         if (Console.getSettings().consoleSummonKey.isPressed(events)) {
             show(context)
         }
@@ -113,9 +114,6 @@ internal class ConsoleCombatListener : BaseEveryFrameCombatPlugin(), ConsoleList
     }
 
     override fun init(engine: CombatEngineAPI) {
-        // Don't run on the title screen
-        if (Global.getCurrentState() == GameState.TITLE) engine.removePlugin(this)
-
         // Determine what context this battle is in
         context = when {
             engine.isSimulation -> CommandContext.COMBAT_SIMULATION
