@@ -19,8 +19,6 @@ import org.lazywizard.console.Console;
 
 public class SetCommission implements BaseCommand
 {
-    private static final Logger Log = Logger.getLogger(SetCommission.class);
-
     /**
      * Ends and returns the player's current commission (if one exists; returns {@code null} otherwise).
      *

@@ -17,7 +17,7 @@ import java.util.List;
 
 public class BlockRetreat implements BaseCommand
 {
-    private static final Logger Log = Logger.getLogger(BlockRetreat.class);
+    private static final Logger Log = Global.getLogger(BlockRetreat.class);
     private static final String CHEAT_ID = "lw_console_blockretreat";
 
     @Override

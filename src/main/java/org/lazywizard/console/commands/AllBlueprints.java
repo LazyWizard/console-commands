@@ -20,10 +20,7 @@ public class AllBlueprints implements BaseCommand
 {
     public static boolean isLearnable(ShipHullSpecAPI spec)
     {
-        if (spec.getHullSize() == HullSize.FIGHTER)// || spec.getTags().contains("unboardable"))
-        {
-            return false;
-        }
+        if (spec.getHullSize() == HullSize.FIGHTER) return false;
 
         for (String tag : spec.getTags())
         {
