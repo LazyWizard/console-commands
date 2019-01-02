@@ -19,7 +19,7 @@ import org.lazywizard.lazylib.CollectionUtils;
 // TODO: A lot of these static methods should be moved to LazyLib's ModUtils
 public class ModInfo implements BaseCommand
 {
-    private static final Logger Log = Logger.getLogger(ModInfo.class);
+    private static final Logger Log = Global.getLogger(ModInfo.class);
 
     // Only works with core CSVs
     private static List<String> getRowsAddedByMod(String csvPath, String column, ModSpecAPI mod)

@@ -5,7 +5,6 @@ import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin
 import com.fs.starfarer.api.combat.CombatEngineAPI
 import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.input.InputEventAPI
-import com.sun.webkit.plugin.PluginManager
 import org.lazywizard.console.Console
 
 private typealias CData = MutableMap<String, CombatCheatData>

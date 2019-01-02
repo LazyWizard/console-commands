@@ -22,7 +22,7 @@ import java.lang.management.ManagementFactory
 import java.lang.management.MemoryUsage
 import java.text.DecimalFormat
 
-private val Log = Logger.getLogger(Console::class.java)
+private val Log = Global.getLogger(Console::class.java)
 private var history = ""
 private const val CURSOR_BLINK_SPEED = 0.7f
 internal const val HORIZONTAL_MARGIN = 30f // Don't go below 30; TODO: scale minor UI elements using this setting

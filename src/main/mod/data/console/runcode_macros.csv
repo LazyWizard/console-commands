@@ -7,8 +7,10 @@ $sector,com.fs.starfarer.api.Global.getSector()
 $pData,com.fs.starfarer.api.Global.getSector().getPersistentData()
 $cData,com.fs.starfarer.api.Global.getCombatEngine().getCustomData()
 $loc,com.fs.starfarer.api.Global.getSector().getCurrentLocation()
+$playerLoc,(Console.getContext().isInCombat() ? com.fs.starfarer.api.Global.getCombatEngine().getPlayerShip().getLocation() : com.fs.starfarer.api.Global.getSector().getPlayerFleet().getLocation())
 $playerShip,com.fs.starfarer.api.Global.getCombatEngine().getPlayerShip()
 $playerFleet,com.fs.starfarer.api.Global.getSector().getPlayerFleet()
-$playerFaction,"com.fs.starfarer.api.Global.getSector().getFaction(""player"")"
+$playerFaction,com.fs.starfarer.api.Global.getSector().getPlayerFaction()
 $sop,System.out.println
 $print,Console.showMessage
+$context,Console.getContext()

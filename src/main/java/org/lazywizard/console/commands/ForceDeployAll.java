@@ -18,7 +18,6 @@ import org.lwjgl.util.vector.Vector2f;
 
 public class ForceDeployAll implements BaseCommand
 {
-    private static final Logger Log = Logger.getLogger(ForceDeployAll.class);
     private static final float MIN_OFFSET = 300f;
 
     // FIXME: Second line never forms
