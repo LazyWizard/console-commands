@@ -4,6 +4,8 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModSpecAPI;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
+import com.fs.starfarer.api.characters.OfficerDataAPI;
+import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.loading.IndustrySpecAPI;
 import com.fs.starfarer.api.util.Pair;
@@ -256,6 +258,18 @@ public class List_ implements BaseCommand
                 for (IndustrySpecAPI spec : Global.getSettings().getAllIndustrySpecs())
                 {
                     ids.add(spec.getId() + " (" + spec.getName() + ")");
+                }
+                break;
+            case "officers":
+                newLinePerItem = true;
+                param = "officers in fleet";
+                ids = new ArrayList<>();
+                final List<OfficerDataAPI> officers = player.getFleetData().getOfficersCopy();
+                for (int i = 1; i <= officers.size(); i++)
+                {
+                    final PersonAPI person = officers.get(i - 1).getPerson();
+                    ids.add("#" + i + ": " + person.getNameString() + ", " + person.getPersonalityAPI().getDisplayName()
+                            + " " + person.getStats().getLevel());
                 }
                 break;
             default:

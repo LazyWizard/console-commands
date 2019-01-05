@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI;
 import com.fs.starfarer.api.characters.MarketConditionSpecAPI;
+import com.fs.starfarer.api.characters.OfficerDataAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Submarkets;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
@@ -361,6 +362,7 @@ public class CommandUtils
         return indent(message, indentation, null);
     }
 
+    @Nullable
     public static FactionAPI findBestFactionMatch(String name)
     {
         name = name.toLowerCase();
@@ -407,6 +409,7 @@ public class CommandUtils
         return bestMatch;
     }
 
+    @Nullable
     public static MarketAPI findBestMarketMatch(String name)
     {
         name = name.toLowerCase();
@@ -454,6 +457,7 @@ public class CommandUtils
         return bestMatch;
     }
 
+    @Nullable
     public static MarketConditionSpecAPI findBestMarketConditionMatch(String name)
     {
         if (Global.getSettings().getMarketConditionSpec(name) != null)
@@ -512,6 +516,7 @@ public class CommandUtils
         return Global.getSettings().getMarketConditionSpec(bestMatch);
     }
 
+    @Nullable
     public static IndustrySpecAPI findBestIndustryMatch(String name)
     {
         name = name.toLowerCase();
@@ -557,6 +562,7 @@ public class CommandUtils
         return bestMatch;
     }
 
+    @Nullable
     public static StarSystemAPI findBestSystemMatch(String name)
     {
         name = name.toLowerCase();
@@ -603,6 +609,7 @@ public class CommandUtils
         return bestMatch;
     }
 
+    @Nullable
     public static SectorEntityToken findBestTokenMatch(String name,
                                                        Collection<SectorEntityToken> toSearch)
     {
@@ -645,6 +652,32 @@ public class CommandUtils
                     closestDistance = distance;
                     bestMatch = token;
                 }
+            }
+        }
+
+        return bestMatch;
+    }
+
+    @Nullable
+    public static OfficerDataAPI findBestOfficerMatch(String name, CampaignFleetAPI fleet)
+    {
+        name = name.toLowerCase();
+        OfficerDataAPI bestMatch = null;
+        double closestDistance = Console.getSettings().getTypoCorrectionThreshold();
+
+        for (OfficerDataAPI officer : fleet.getFleetData().getOfficersCopy())
+        {
+            double distance = calcSimilarity(name, officer.getPerson().getNameString().toLowerCase());
+
+            if (distance == 1.0)
+            {
+                return officer;
+            }
+
+            if (distance > closestDistance)
+            {
+                closestDistance = distance;
+                bestMatch = officer;
             }
         }
 
