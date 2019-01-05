@@ -520,7 +520,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
 
         // Draw scrollback bounds
         glLineWidth(1f)
-        glColor(Color.GRAY, 0.1f, true)
+        glColor(Color.GRAY, 0.05f, true)
         glBegin(GL_LINE_LOOP)
         glVertex2f(minX - 1f, minY - 1f)  // LL
         glVertex2f(minX - 1f, maxY + 1f)  // UL
