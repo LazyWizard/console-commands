@@ -81,6 +81,7 @@ SpawnFleet,org.lazywizard.console.commands.SpawnFleet,"core,campaign",spawnfleet
 Status,org.lazywizard.console.commands.Status,"core,console",status,"Shows debug information about the console's current status."
 Storage,org.lazywizard.console.commands.Storage,"core,campaign",storage (no arguments)|clear|clear ships,"Opens the Abandoned Terraforming Platform's storage from anywhere in the campaign. If the ATP doesn't exist this command will try to find a market with an unlocked storage tab, or open player cargo instead as a last resort.\nEntering \"clear\" will delete all stored cargo, and \"clear ships\" will delete all stored ships."
 Suicide,org.lazywizard.console.commands.Suicide,"core,campaign,combat",suicide (no arguments),"Kills the currently piloted ship, or the entire player fleet if used on the campaign map."
+Survey,org.lazywizard.console.commands.Survey,"core,campaign",survey all|[optionalLocationId],"Fully surveys all markets in the specified location. If 'all' is passed in as an argument, surveys all systems. If no argument is passed in, surveys the current system."
 ToggleAI,org.lazywizard.console.commands.ToggleAI,"core,combat",toggleai [optionalTarget] [optionalOnOrOff],"Toggles the AI of the selected ship. If arguments are passed in, turns AI on or off for all selected ships. Valid arguments are FLEET, ENEMY, or ALL for the target, and on or off for the enabled argument."
 Traitor,org.lazywizard.console.commands.Traitor,"core,combat",traitor (no arguments),"Toggles the side the selected ship will fight for."
 
