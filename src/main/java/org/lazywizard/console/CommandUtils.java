@@ -562,6 +562,52 @@ public class CommandUtils
         return bestMatch;
     }
 
+    public static LocationAPI findBestLocationMatch(String name)
+    {
+        name = name.toLowerCase();
+        LocationAPI bestMatch = null;
+        double closestDistance = Console.getSettings().getTypoCorrectionThreshold();
+
+        // Check IDs first in case multiple tokens share the same name
+        for (LocationAPI loc : Global.getSector().getAllLocations())
+        {
+            double distance = calcSimilarity(name, loc.getId().toLowerCase());
+
+            if (distance == 1.0)
+            {
+                return loc;
+            }
+
+            if (distance > closestDistance)
+            {
+                closestDistance = distance;
+                bestMatch = loc;
+            }
+        }
+
+        // Search again by name if no matching ID is found
+        if (bestMatch == null)
+        {
+            for (LocationAPI loc : Global.getSector().getAllLocations())
+            {
+                double distance = calcSimilarity(name, loc.getName().toLowerCase());
+
+                if (distance == 1.0)
+                {
+                    return loc;
+                }
+
+                if (distance > closestDistance)
+                {
+                    closestDistance = distance;
+                    bestMatch = loc;
+                }
+            }
+        }
+
+        return bestMatch;
+    }
+
     @Nullable
     public static StarSystemAPI findBestSystemMatch(String name)
     {
