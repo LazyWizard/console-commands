@@ -1,10 +1,5 @@
 package org.lazywizard.console.commands;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModManagerAPI;
 import com.fs.starfarer.api.ModSpecAPI;
@@ -15,6 +10,11 @@ import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 // TODO: A lot of these static methods should be moved to LazyLib's ModUtils
 public class ModInfo implements BaseCommand
@@ -28,8 +28,7 @@ public class ModInfo implements BaseCommand
         final JSONArray csv;
         try
         {
-            csv = Global.getSettings().getMergedSpreadsheetDataForMod(
-                    column, csvPath, "starsector-core");
+            csv = Global.getSettings().getMergedSpreadsheetDataForMod(column, csvPath, "starsector-core");
         }
         catch (Exception ex)
         {
@@ -96,6 +95,21 @@ public class ModInfo implements BaseCommand
         return getRowsAddedByMod("data/campaign/commodities.csv", "id", mod);
     }
 
+    public static List<String> getSpecialItemsAddedByMod(ModSpecAPI mod)
+    {
+        return getRowsAddedByMod("data/campaign/special_items.csv", "id", mod);
+    }
+
+    public static List<String> getIndustriesAddedByMod(ModSpecAPI mod)
+    {
+        return getRowsAddedByMod("data/campaign/industries.csv", "id", mod);
+    }
+
+    public static List<String> getMarketConditionsAddedByMod(ModSpecAPI mod)
+    {
+        return getRowsAddedByMod("data/campaign/market_conditions.csv", "id", mod);
+    }
+
     private static String pad(int length, char padWith)
     {
         return new String(new char[length]).replace('\0', padWith);
@@ -152,12 +166,18 @@ public class ModInfo implements BaseCommand
             final List<String> addedShips = getShipsAddedByMod(mod),
                     addedWings = getWingsAddedByMod(mod),
                     addedWeapons = getWeaponsAddedByMod(mod),
-                    addedCommodities = getCommoditiesAddedByMod(mod);
+                    addedCommodities = getCommoditiesAddedByMod(mod),
+                    addedSpecials = getSpecialItemsAddedByMod(mod),
+                    addedIndustries = getIndustriesAddedByMod(mod),
+                    addedConditions = getMarketConditionsAddedByMod(mod);
             sb.append("\nAdded or replaced content:")
                     .append("\n - Hulls").append(implodeOrNone(addedShips, 5))
                     .append("\n - Wings").append(implodeOrNone(addedWings, 5))
                     .append("\n - Weapons").append(implodeOrNone(addedWeapons, 5))
-                    .append("\n - Commodities").append(implodeOrNone(addedCommodities, 5));
+                    .append("\n - Commodities").append(implodeOrNone(addedCommodities, 5))
+                    .append("\n - Special items").append(implodeOrNone(addedSpecials, 5))
+                    .append("\n - Industries").append(implodeOrNone(addedIndustries, 5))
+                    .append("\n - Market conditions").append(implodeOrNone(addedConditions, 5));
         }
 
         return sb.toString();
