@@ -26,12 +26,10 @@ public class Respec implements BaseCommand
 {
     private static int respecOfficer(OfficerDataAPI toRespec, CampaignFleetAPI sourceFleet)
     {
-        // Technically clone officer, but whatever...
+        // Technically it should be called cloneOfficer(), but whatever...
         final PersonAPI oldPerson = toRespec.getPerson(),
                 newPerson = OfficerManagerEvent.createOfficer(oldPerson.getFaction(), 1, false);
         final FleetMemberAPI ship = sourceFleet.getFleetData().getMemberWithCaptain(oldPerson);
-
-        newPerson.getStats().setSkipRefresh(true);
 
         // Copy the old person's memory to the new person
         final MemoryAPI oldMemory = oldPerson.getMemory(), newMemory = newPerson.getMemory();
@@ -93,7 +91,6 @@ public class Respec implements BaseCommand
         // Set the officer's person to the new copy and give it the proper amount of experience
         toRespec.setPerson(newPerson);
         if (ship != null) ship.setCaptain(newPerson);
-        newPerson.getStats().setSkipRefresh(false);
         toRespec.addXP(oldPerson.getStats().getXP());
         newPerson.getStats().refreshCharacterStatsEffects();
 

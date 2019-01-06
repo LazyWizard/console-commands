@@ -200,35 +200,39 @@ public class List_ implements BaseCommand
                 break;
             case "systems":
             case "locations":
+                newLinePerItem = true;
                 ids = new ArrayList<>();
                 ids.add(sector.getHyperspace().getId());
                 for (LocationAPI location : sector.getStarSystems())
                 {
-                    ids.add(location.getId());
+                    ids.add(location.getId() + " (" + location.getName() + ")");
                 }
                 break;
             case "factions":
+                newLinePerItem = true;
                 ids = new ArrayList<>();
                 for (FactionAPI faction : sector.getAllFactions())
                 {
-                    ids.add(faction.getId());
+                    ids.add(faction.getId() + " (" + faction.getDisplayNameLong() + ")");
                 }
                 break;
             case "planets":
+                newLinePerItem = true;
                 param = "planets in current system";
                 ids = new ArrayList<>();
                 for (PlanetAPI planet : loc.getPlanets())
                 {
-                    ids.add(planet.getId() + (planet.isStar() ? " (star)" : ""));
+                    ids.add(planet.getId() + " (" + planet.getFullName() + (planet.isStar() ? ", star)" : ")"));
                 }
                 break;
             case "stations":
+                newLinePerItem = true;
                 param = "stations in current system";
                 ids = new ArrayList<>();
                 for (SectorEntityToken station : sector.getCurrentLocation()
                         .getEntitiesWithTag(Tags.STATION))
                 {
-                    ids.add(station.getId());
+                    ids.add(station.getId() + " (" + station.getFullName() + ")");
                 }
                 break;
             case "markets":
