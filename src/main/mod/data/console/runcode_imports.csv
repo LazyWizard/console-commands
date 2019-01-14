@@ -11,6 +11,7 @@ import
 "com.fs.starfarer.api.plugins.*"
 "com.fs.starfarer.api.ui.*"
 "com.fs.starfarer.api.util.Misc"
+"com.fs.starfarer.api.imp.campaign.ids.*"
 "com.fs.starfarer.api.impl.campaign.intel.deciv.DecivTracker"
 "com.fs.starfarer.api.impl.campaign.rulecmd.salvage.MarketCMD"
 "data.scripts.*"

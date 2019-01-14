@@ -2,6 +2,7 @@ package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModSpecAPI;
+import com.fs.starfarer.api.SettingsAPI;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.characters.OfficerDataAPI;
@@ -115,6 +116,7 @@ public class List_ implements BaseCommand
         args = args.toLowerCase();
         String[] tmp = args.split(" ");
         String param = tmp[0];
+        final SettingsAPI settings = Global.getSettings();
         final SectorAPI sector = Global.getSector();
         final LocationAPI loc = sector.getCurrentLocation();
         final CampaignFleetAPI player = sector.getPlayerFleet();
@@ -160,7 +162,7 @@ public class List_ implements BaseCommand
                 newLinePerItem = true;
                 param = "enabled mods";
                 ids = new ArrayList<>();
-                for (ModSpecAPI mod : Global.getSettings().getModManager().getEnabledModsCopy())
+                for (ModSpecAPI mod : settings.getModManager().getEnabledModsCopy())
                 {
                     ids.add(mod.getId() + " (" + mod.getName() + " by " + mod.getAuthor()
                             + ", version " + mod.getVersion()
@@ -177,7 +179,7 @@ public class List_ implements BaseCommand
                 }
                 break;
             case "variants":
-                ids = new ArrayList<>(Global.getSettings().getAllVariantIds());
+                ids = new ArrayList<>(settings.getAllVariantIds());
                 break;
             case "wings":
             case "fighters":
@@ -229,8 +231,7 @@ public class List_ implements BaseCommand
                 newLinePerItem = true;
                 param = "stations in current system";
                 ids = new ArrayList<>();
-                for (SectorEntityToken station : sector.getCurrentLocation()
-                        .getEntitiesWithTag(Tags.STATION))
+                for (SectorEntityToken station : loc.getEntitiesWithTag(Tags.STATION))
                 {
                     ids.add(station.getId() + " (" + station.getFullName() + ")");
                 }
@@ -259,7 +260,7 @@ public class List_ implements BaseCommand
             case "industries":
                 newLinePerItem = true;
                 ids = new ArrayList<>();
-                for (IndustrySpecAPI spec : Global.getSettings().getAllIndustrySpecs())
+                for (IndustrySpecAPI spec : settings.getAllIndustrySpecs())
                 {
                     ids.add(spec.getId() + " (" + spec.getName() + ")");
                 }
