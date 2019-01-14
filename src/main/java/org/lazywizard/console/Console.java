@@ -196,12 +196,19 @@ public class Console
                 String classSource;
                 try
                 {
-                    final Class srcClass = Class.forName(ste.getClassName(), false, cl);
+                    final String className = ste.getClassName();
+                    final Class srcClass = Class.forName(className, false, cl);
                     final CodeSource cs = srcClass.getProtectionDomain().getCodeSource();
                     if (cs == null || cs.getLocation() == null)
                     {
-                        // TODO: Determine whether class is core or Janino-compiled (may be impossible)
-                        classSource = "core Java or loose script";
+                        if (className.startsWith("data."))
+                        {
+                            classSource = "loose script";
+                        }
+                        else
+                        {
+                            classSource = "core Java";
+                        }
                     }
                     else
                     {
