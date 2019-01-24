@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+// TODO: Add optional faction argument
 public class AllBlueprints implements BaseCommand
 {
     public static boolean isLearnable(ShipHullSpecAPI spec)

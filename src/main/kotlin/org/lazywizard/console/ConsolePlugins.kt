@@ -66,10 +66,7 @@ internal class ConsoleCampaignListener : CampaignInputListener, ConsoleListener 
     override fun getListenerInputPriority(): Int = 9999
 
     override fun processCampaignInputPreCore(events: List<InputEventAPI>) {
-        val ui = Global.getSector().campaignUI
-        if ((ui.isShowingDialog && context != CommandContext.CAMPAIGN_MARKET) || ui.isShowingMenu) {
-            return
-        }
+        if (Global.getSector().campaignUI.isShowingMenu) return
 
         if (Console.getSettings().consoleSummonKey.isPressed(events)) {
             show(context)
