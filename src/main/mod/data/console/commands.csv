@@ -29,7 +29,7 @@ AllWings,org.lazywizard.console.commands.AllWings,"core,campaign",allwings [opti
 BlockRetreat,org.lazywizard.console.commands.BlockRetreat,"core,combat",blockretreat (no arguments),"Toggles whether the enemy can order a full retreat. Individual ships may still be able to flee."
 BugReport,org.lazywizard.console.commands.BugReport,"core,console",bugreport (no arguments),"Copies basic system information and the list of active mods and their versions to the clipboard so you can easily post them in a bug report on the official forums."
 Clear,org.lazywizard.console.commands.Clear,"core,console",clear (no arguments),"Clears the console overlay's scrollback."
-DebugDialogs,org.lazywizard.console.commands.DebugDialogs,"core,campaign",debugdialogs (no arguments),"Toggles a mode where all rule-based dialogs will print any memory map changes when an option is selected."
+#DebugDialogs,org.lazywizard.console.commands.DebugDialogs,"core,campaign",debugdialogs (no arguments),"Toggles a mode where all rule-based dialogs will print any memory map changes when an option is selected."
 DevMode,org.lazywizard.console.commands.DevMode,"core,console",devmode [optionalOnOrOff],"Enables or disables dev mode. If no argument is given, acts as a toggle."
 DestroyColony,org.lazywizard.console.commands.DestroyColony,"core,market",destroycolony (no arguments),"Destroys the colony you are currently docked with. Equivalent to total destruction via saturation bombing, but without the blame falling on the player."
 EndCombat,org.lazywizard.console.commands.EndCombat,"core,combat",endcombat [optionalWinningSide],"Ends combat with the entered side as the winner (player or enemy). No ships are damaged by this command. If no side is entered, defaults to a player victory."
