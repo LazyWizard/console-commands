@@ -18,7 +18,7 @@ ext {
     ext.lazylibDir = localProps['lazylibDir']
     ext.outputPath = localProps['outputPath']
     ext.modVersion = new JsonSlurper().parseText(file('src/main/mod/mod_info.json').text).version
-    if (project.hasProperty('buildNumber')) ext.modVersion = 'dev-' + buildNumber
+    if (project.hasProperty('buildNumber')) ext.modVersion += '-dev (build ' + buildNumber + ")"
 
     // JDK config, unnecessary if your JAVA_HOME environment variable is set
     // Need to test this on a new install; something seems broken with latest Kotlin compiler
@@ -34,7 +34,7 @@ ext {
 }
 
 buildscript {
-    ext.kotlin_version = '1.3.11'
+    ext.kotlin_version = '1.3.20'
     ext.dokka_version = '0.9.17'
 
     repositories {
