@@ -39,11 +39,11 @@ internal class ConsoleModPlugin : BaseModPlugin() {
     override fun onApplicationLoad() {
         migrateSettings()
 
-        // Load console settings
+        // Load console settings - implementing it in ReloadConsole ensures the command will work identically
         ReloadConsole.reloadConsole()
 
-        Console.showMessage("Console loaded, summon with ${Console.getSettings().consoleSummonKey}.", Level.DEBUG);
-        if (needsSetup()) Console.showMessage("Use the Settings command to configure the console.", Level.DEBUG);
+        Console.showMessage("Console loaded, summon with ${Console.getSettings().consoleSummonKey}.", Level.DEBUG)
+        if (needsSetup()) Console.showMessage("Use the Settings command to configure the console.", Level.DEBUG)
     }
 
     override fun onGameLoad(newGame: Boolean) {
@@ -80,7 +80,7 @@ internal class ConsoleCampaignListener : CampaignInputListener, ConsoleListener 
     override fun processCampaignInputPostCore(events: List<InputEventAPI>) {}
 
     override fun showOutput(output: String): Boolean {
-        for (tmp in output.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
+        for (tmp in output.split('\n').dropLastWhile { it.isEmpty() }.toTypedArray()) {
             val message = StringUtils.wrapString(tmp, 100)
             Global.getSector().campaignUI.addMessage(message, Console.getSettings().outputColor)
         }
@@ -119,9 +119,7 @@ internal class ConsoleCombatListener : BaseEveryFrameCombatPlugin(), ConsoleList
         }
     }
 
-    override fun getContext(): CommandContext {
-        return context
-    }
+    override fun getContext() = context
 
     override fun showOutput(output: String): Boolean {
         val ui = Global.getCombatEngine()?.combatUI ?: return false
