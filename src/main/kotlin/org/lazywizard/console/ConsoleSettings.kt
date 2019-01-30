@@ -26,7 +26,7 @@ object ConsoleSettings {
     var showMemoryUsage by BoolPref("showMemoryUsage", default = true)
     var showCursorIndex by BoolPref("showCursorIndex", default = false)
     var showExceptionDetails by BoolPref("showExceptionDetails", default = false)
-    var outputColor by ColorPref("outputColor", default = Color(255, 255, 0))
+    var outputColor by ColorPref("outputColor", default = Color(0, 255, 255))
     var consoleSummonKey by KeystrokePref("consoleKeystroke",
             default = Keystroke(Keyboard.getKeyIndex("BACK"), true, false, false))
 
