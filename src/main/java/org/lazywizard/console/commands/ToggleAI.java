@@ -30,12 +30,12 @@ public class ToggleAI implements BaseCommand
         return aiMap;
     }
 
-    private static boolean isAIDisabled(ShipAPI target)
+    public static boolean isAIDisabled(ShipAPI target)
     {
         return getAIMap().containsKey(target);
     }
 
-    private static void setAIEnabled(ShipAPI target, boolean enabled)
+    public static void setAIEnabled(ShipAPI target, boolean enabled)
     {
         final Map<ShipAPI, ShipAIPlugin> aiMap = getAIMap();
         if (enabled && aiMap.containsKey(target))
