@@ -51,6 +51,9 @@ public class Repair implements BaseCommand
                     }
                 }
             }
+
+            ship.syncWithArmorGridState();
+            ship.syncWeaponDecalsWithArmorDamage();
         }
 
         Console.showMessage("Ships repaired.");
