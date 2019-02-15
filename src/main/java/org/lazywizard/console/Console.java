@@ -197,26 +197,34 @@ public class Console
                 try
                 {
                     final String className = ste.getClassName();
-                    final Class srcClass = Class.forName(className, false, cl);
-                    final CodeSource cs = srcClass.getProtectionDomain().getCodeSource();
-                    if (cs == null || cs.getLocation() == null)
+                    try
                     {
-                        if (className.startsWith("data."))
+                        final Class srcClass = Class.forName(className, false, cl);
+                        final CodeSource cs = srcClass.getProtectionDomain().getCodeSource();
+                        if (cs == null || cs.getLocation() == null)
                         {
-                            classSource = "loose script";
+                            if (className.startsWith("data."))
+                            {
+                                classSource = "loose script";
+                            }
+                            else
+                            {
+                                classSource = "core Java";
+                            }
                         }
                         else
                         {
-                            classSource = "core Java";
+                            classSource = cs.getLocation().getFile().replace("\\", "/");
+                            if (classSource.endsWith(".jar"))
+                            {
+                                classSource = classSource.substring(classSource.lastIndexOf('/') + 1);
+                            }
                         }
                     }
-                    else
+                    // Classloader blocked - will probably always be a core Java class
+                    catch (SecurityException ex2)
                     {
-                        classSource = cs.getLocation().getFile().replace("\\", "/");
-                        if (classSource.endsWith(".jar"))
-                        {
-                            classSource = classSource.substring(classSource.lastIndexOf('/') + 1);
-                        }
+                        classSource = "core Java";
                     }
                 }
                 catch (ClassNotFoundException ex1)
