@@ -1,15 +1,12 @@
 package org.lazywizard.console.commands;
 
-import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import org.lazywizard.console.rulecmd.ConsoleShouldIntercept;
 
 public class DebugDialogs implements BaseCommand
 {
-    public static final String MEMORY_KEY = "$consoleDebug";
-
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
@@ -19,9 +16,8 @@ public class DebugDialogs implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        final MemoryAPI memory = Global.getSector().getMemory();
-        final boolean debugEnabled = !memory.getBoolean(MEMORY_KEY);
-        Global.getSector().getMemory().set(MEMORY_KEY, debugEnabled);
+        final boolean debugEnabled = !ConsoleShouldIntercept.shouldIntercept();
+        ConsoleShouldIntercept.setIntercepting(debugEnabled);
 
         if (debugEnabled)
         {

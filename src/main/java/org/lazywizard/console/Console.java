@@ -229,7 +229,7 @@ public class Console
                 }
                 catch (ClassNotFoundException ex1)
                 {
-                    classSource = "unknown class";
+                    classSource = "unknown/synthetic class";
                 }
 
                 stackTrace.append("   [").append(classSource).append("]   at ").append(ste.toString()).append("\n");
