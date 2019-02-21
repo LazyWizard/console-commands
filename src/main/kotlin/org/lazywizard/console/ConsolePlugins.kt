@@ -8,14 +8,11 @@ import com.fs.starfarer.api.combat.CombatEngineAPI
 import com.fs.starfarer.api.input.InputEventAPI
 import org.apache.log4j.Level
 import org.lazywizard.console.BaseCommand.CommandContext
-import org.lazywizard.console.commands.DebugDialogs
 import org.lazywizard.console.commands.ReloadConsole
 import org.lazywizard.lazylib.StringUtils
 import java.util.*
 
 internal class ConsoleModPlugin : BaseModPlugin() {
-    private var debugDialogs = false
-
     // TODO: Remove in a future update (only here for compatibility with users of the dev versions)
     private fun migrateSettings() {
         try {
@@ -48,17 +45,6 @@ internal class ConsoleModPlugin : BaseModPlugin() {
 
     override fun onGameLoad(newGame: Boolean) {
         Global.getSector().listenerManager.addListener(ConsoleCampaignListener(), true)
-    }
-
-    override fun beforeGameSave() {
-        // Ensure DebugDialogs doesn't persist between saves
-        val memory = Global.getSector().memory
-        debugDialogs = memory.getBoolean(DebugDialogs.MEMORY_KEY)
-        if (debugDialogs) memory.unset(DebugDialogs.MEMORY_KEY)
-    }
-
-    override fun afterGameSave() {
-        if (debugDialogs) Global.getSector().memory.set(DebugDialogs.MEMORY_KEY, true)
     }
 }
 

@@ -10,7 +10,7 @@
         }
     },
 
-    #"ruleCommandPackages": [
-    #    "org.lazywizard.console.rulecmd"
-    #]
+    "ruleCommandPackages": [
+        "org.lazywizard.console.rulecmd"
+    ]
 }
