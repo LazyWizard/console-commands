@@ -744,7 +744,7 @@ public class CommandUtils
     public static SectorEntityToken findTokenInLocation(String toFind, LocationAPI location)
     {
         return findTokenInLocation(toFind, location, Tags.COMM_RELAY, Tags.GATE,
-                Tags.JUMP_POINT, Tags.PLANET, Tags.STAR, Tags.STATION);
+                Tags.JUMP_POINT, Tags.PLANET, Tags.STAR, Tags.STATION, Tags.WRECK);
     }
 
     @SuppressWarnings("deprecation")
