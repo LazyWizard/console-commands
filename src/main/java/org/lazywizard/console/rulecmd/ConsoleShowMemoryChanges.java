@@ -116,9 +116,7 @@ public class ConsoleShowMemoryChanges extends BaseCommandPlugin
         final boolean isDialogOpenEvent = "consoleDebugOpen".equals(ruleId) || "consoleDebugNGCOpen".equals(ruleId);
 
         // Execute the rule we've intercepted, and monitor for any memory changes
-        final MemoryAPI localMemory = memoryMap.get(MemKeys.LOCAL);
         ConsoleShouldIntercept.setIntercepting(false);
-        localMemory.set("$consoleChecked", true, 0f);
         final Map<String, Map<String, Object>> oldMemory = takeSnapshot(memoryMap);
         FireBest.fire(ruleId, dialog, memoryMap, isNGC ? (isDialogOpenEvent ? "BeginNewGameCreation" : "NewGameOptionSelected")
                 : (isDialogOpenEvent ? "OpenInteractionDialog" : "DialogOptionSelected"));

@@ -11,6 +11,7 @@ import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
 
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.lazywizard.console.CommandUtils.findBestMarketConditionMatch;
@@ -88,20 +89,12 @@ public class AddCondition implements BaseCommand
             }
         }
 
-        // Only allow one population condition
-        final Pattern populationRegex = Pattern.compile("^population_\\d+$");
-        if (populationRegex.matcher(id).matches())
+        // The population is the same as the market size, so redirect that condition to SetMarketSize
+        final Pattern populationRegex = Pattern.compile("^population_(\\d+)$");
+        final Matcher matcher = populationRegex.matcher(id);
+        if (matcher.matches())
         {
-            for (MarketConditionAPI otherCon : market.getConditions())
-            {
-                final String otherId = otherCon.getId();
-                if ((otherCon != condition) && populationRegex.matcher(otherId).matches())
-                {
-                    toRemove.add(otherId);
-                    Console.showMessage("Removed existing population condition '" + otherId
-                            + "' from market '" + market.getName() + "'.");
-                }
-            }
+            return new SetMarketSize().runCommand(matcher.group(1), context);
         }
 
         // Remove all conflicting conditions
