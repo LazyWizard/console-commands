@@ -20,11 +20,50 @@ import java.util.*;
 
 public class List_ implements BaseCommand
 {
-    private static SoftReference<List<Pair<String, String>>> conditionCache = null;
+    private static SoftReference<List<Pair<String, String>>> conditionCache = new SoftReference<>(null);
+    private static SoftReference<Set<String>> submarketCache = new SoftReference<>(null);
+
+    public static List<String> getSubmarketIds()
+    {
+        // Return cached value on subsequent calls (will be culled if available memory gets too low)
+        final Set<String> cached = submarketCache.get();
+        if (cached != null)
+        {
+            return new ArrayList<>(cached);
+        }
+
+        // If this is the first time calling this method, build the submarket ID cache
+        final Set<String> submarkets = new HashSet<>();
+        try
+        {
+            final JSONArray csv = Global.getSettings().getMergedSpreadsheetDataForMod(
+                    "id", "data/campaign/submarkets.csv", "starsector-core");
+            for (int i = 0; i < csv.length(); i++)
+            {
+                final JSONObject row = csv.getJSONObject(i);
+                final String id = row.getString("id");
+
+                // Skip empty rows
+                if (!id.isEmpty())
+                {
+                    submarkets.add(id);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.showException("Failed to load submarkets.csv!", ex);
+            return Collections.emptyList();
+        }
+
+        submarketCache = new SoftReference<>(submarkets);
+        return new ArrayList<>(submarkets);
+    }
 
     public static List<Pair<String, String>> getMarketConditionIdsWithNames()
     {
-        if (conditionCache != null && conditionCache.get() != null)
+        final List<Pair<String, String>> cached = conditionCache.get();
+        if (cached != null)
         {
             return conditionCache.get();
         }
