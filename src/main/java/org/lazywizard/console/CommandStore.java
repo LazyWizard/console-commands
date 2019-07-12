@@ -25,7 +25,7 @@ public class CommandStore
 {
     private static final Logger Log = Global.getLogger(CommandStore.class);
     private static final Map<String, StoredCommand> storedCommands = new HashMap<>();
-    private static final Set<ListenerData> listeners = new TreeSet<>();
+    private static final List<ListenerData> listeners = new ArrayList<>();
     private static final Map<String, String> aliases = new HashMap<>();
     private static final Set<String> tags = new HashSet<>();
     private static CommonDataJSONObject aliasData = null;
@@ -188,6 +188,8 @@ public class CommandStore
                         + " (class: " + listenerPath + ") from " + listenerSource, ex);
             }
         }
+
+        Collections.sort(listeners);
     }
 
     /**

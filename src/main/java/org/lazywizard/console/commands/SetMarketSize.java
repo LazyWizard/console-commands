@@ -34,12 +34,13 @@ public class SetMarketSize implements BaseCommand
             return CommandResult.SUCCESS;
         }
 
+        // The below is all copied from CoreImmigrationPluginImpl, and should be periodically checked to ensure it matches
         // Remove old population condition
         market.removeCondition("population_" + market.getSize());
         market.addCondition("population_" + newSize);
 
+        // Set size and adjust population growth
         market.setSize(newSize);
-
         market.getPopulation().setWeight(Misc.getImmigrationPlugin(market).getWeightForMarketSize(market.getSize()));
         market.getPopulation().normalize();
 
