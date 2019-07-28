@@ -27,7 +27,7 @@ public class SetMarketSize implements BaseCommand
         }
 
         final MarketAPI market = context.getMarket();
-        final int curSize = market.getSize(), newSize = MathUtils.clamp(Integer.parseInt(args), 1, 9);
+        final int curSize = market.getSize(), newSize = MathUtils.clamp(Integer.parseInt(args), 1, 10);
         if (curSize == newSize)
         {
             Console.showMessage("Market is already size " + newSize + ", so no changes were made.");
