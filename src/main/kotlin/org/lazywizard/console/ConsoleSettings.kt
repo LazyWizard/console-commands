@@ -18,7 +18,7 @@ object ConsoleSettings {
     var commandSeparator by StringPref("commandSeparator", default = ";")
     var maxScrollback by IntPref("maxScrollback", default = 10_000)
     var typoCorrectionThreshold by FloatPref("typoCorrectionThreshold", default = 0.9f)
-    var showBackground by BoolPref("showBackground", default = true)
+    var showBackground by BoolPref("showBackground", default = (System.getProperty("os.name").startsWith("Windows", 0, true)))
     var transferStorageToHome by BoolPref("transferStorageToHome", default = true)
     var devModeTogglesDebugFlags by BoolPref("devModeTogglesDebugFlags", default = true)
     var defaultCombatCheatTarget by EnumPref("defaultCombatCheatTarget", enumClass = CheatTarget::class.java, default = CheatTarget.PLAYER)
