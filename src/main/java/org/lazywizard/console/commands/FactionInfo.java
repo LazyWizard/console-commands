@@ -7,7 +7,9 @@ import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class FactionInfo implements BaseCommand
 {
@@ -30,7 +32,8 @@ public class FactionInfo implements BaseCommand
         sb.append("Faction report for faction '" + faction.getId() + "':");
 
         // Ships
-        Set<String> known = faction.getKnownShips();
+        List<String> known = new ArrayList<>(faction.getKnownShips());
+        Collections.sort(known);
         if (known.isEmpty())
         {
             sb.append("\n\nKnown ships: none\n");
@@ -41,7 +44,8 @@ public class FactionInfo implements BaseCommand
         }
 
         // Fighters
-        known = faction.getKnownFighters();
+        known = new ArrayList<>(faction.getKnownFighters());
+        Collections.sort(known);
         if (known.isEmpty())
         {
             sb.append("\n\nKnown LPCs: none\n");
@@ -52,7 +56,8 @@ public class FactionInfo implements BaseCommand
         }
 
         // Weapons
-        known = faction.getKnownFighters();
+        known = new ArrayList<>(faction.getKnownWeapons());
+        Collections.sort(known);
         if (known.isEmpty())
         {
             sb.append("\n\nKnown weapons: none\n");
@@ -63,7 +68,8 @@ public class FactionInfo implements BaseCommand
         }
 
         // Hullmods
-        known = faction.getKnownHullMods();
+        known = new ArrayList<>(faction.getKnownHullMods());
+        Collections.sort(known);
         if (known.isEmpty())
         {
             sb.append("\n\nKnown hullmods: none\n");
@@ -74,7 +80,8 @@ public class FactionInfo implements BaseCommand
         }
 
         // Industries
-        known = faction.getKnownIndustries();
+        known = new ArrayList<>(faction.getKnownIndustries());
+        Collections.sort(known);
         if (known.isEmpty())
         {
             sb.append("\n\nKnown industries: none\n");
