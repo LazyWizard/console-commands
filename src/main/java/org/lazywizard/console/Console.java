@@ -278,7 +278,7 @@ public class Console
             com = tmp[0];
             if (tmp.length > 1)
             {
-                args = tmp[1] + " " + args;
+                args = tmp[1] + (args.isEmpty() ? "" : " " + args);
             }
         }
 
