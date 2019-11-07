@@ -3,7 +3,6 @@
 package org.lazywizard.console
 
 import com.fs.starfarer.api.Global
-import org.apache.log4j.Logger
 import org.lazywizard.console.BaseCommand.CommandContext
 import org.lazywizard.lazylib.opengl.ColorUtils.glColor
 import org.lwjgl.BufferUtils
