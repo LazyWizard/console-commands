@@ -9,6 +9,7 @@ import com.fs.starfarer.api.characters.OfficerDataAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.loading.IndustrySpecAPI;
+import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -339,7 +340,7 @@ public class List_ implements BaseCommand
         // Format and print the list of valid IDs
         Collections.sort(ids);
         final String results = CollectionUtils.implode(ids, (newLinePerItem ? "\n" : ", "));
-        Console.showIndentedMessage("Known " + param + " (" + ids.size() + "):", results, 3);
+        Console.showIndentedMessage(Misc.ucFirst(param) + " (" + ids.size() + "):", results, 3);
         return CommandResult.SUCCESS;
     }
 }
