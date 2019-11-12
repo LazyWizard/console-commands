@@ -1,5 +1,5 @@
- 3.0 WIP 7 (XX XX, 2017)
-=========================
+ 3.0 (XX XX, 2019)
+===================
 (LazyLib 2.3 or higher is required for this mod to function!)
 Updated to be compatible with Starsector 0.8a+
 Completely rewrote the input system and added a custom console overlay:
