@@ -21,7 +21,7 @@ public class SourceOf implements BaseCommand
         {
             Console.showMessage("Loaded commands come from the following mods:");
             List<String> allCommands = CommandStore.getLoadedCommands();
-            Collections.sort(allCommands);
+            Collections.sort(allCommands, String.CASE_INSENSITIVE_ORDER);
             for (String tmp : allCommands)
             {
                 StoredCommand command = CommandStore.retrieveCommand(tmp);

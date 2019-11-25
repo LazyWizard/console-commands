@@ -33,7 +33,7 @@ public class FactionInfo implements BaseCommand
 
         // Ships
         List<String> known = new ArrayList<>(faction.getKnownShips());
-        Collections.sort(known);
+        Collections.sort(known, String.CASE_INSENSITIVE_ORDER);
         if (known.isEmpty())
         {
             sb.append("\n\nKnown ships: none\n");
@@ -45,7 +45,7 @@ public class FactionInfo implements BaseCommand
 
         // Fighters
         known = new ArrayList<>(faction.getKnownFighters());
-        Collections.sort(known);
+        Collections.sort(known, String.CASE_INSENSITIVE_ORDER);
         if (known.isEmpty())
         {
             sb.append("\n\nKnown LPCs: none\n");
@@ -57,7 +57,7 @@ public class FactionInfo implements BaseCommand
 
         // Weapons
         known = new ArrayList<>(faction.getKnownWeapons());
-        Collections.sort(known);
+        Collections.sort(known, String.CASE_INSENSITIVE_ORDER);
         if (known.isEmpty())
         {
             sb.append("\n\nKnown weapons: none\n");
@@ -69,7 +69,7 @@ public class FactionInfo implements BaseCommand
 
         // Hullmods
         known = new ArrayList<>(faction.getKnownHullMods());
-        Collections.sort(known);
+        Collections.sort(known, String.CASE_INSENSITIVE_ORDER);
         if (known.isEmpty())
         {
             sb.append("\n\nKnown hullmods: none\n");
@@ -81,7 +81,7 @@ public class FactionInfo implements BaseCommand
 
         // Industries
         known = new ArrayList<>(faction.getKnownIndustries());
-        Collections.sort(known);
+        Collections.sort(known, String.CASE_INSENSITIVE_ORDER);
         if (known.isEmpty())
         {
             sb.append("\n\nKnown industries: none\n");

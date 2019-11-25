@@ -18,7 +18,7 @@ public class Help implements BaseCommand
         {
             List<String> commands = (args.isEmpty() ? CommandStore.getApplicableCommands(context)
                     : CommandStore.getLoadedCommands());
-            Collections.sort(commands);
+            Collections.sort(commands, String.CASE_INSENSITIVE_ORDER);
             Console.showMessage((args.isEmpty() ? "Applicable commands for context " + context.name()
                     + " (use \"help all\" for a full list):\n" : "Loaded commands:\n")
                     + CollectionUtils.implode(commands));
@@ -31,7 +31,7 @@ public class Help implements BaseCommand
                     + " on a specific command or 'help <tag>' to only list"
                     + " commands that have that tag. Console settings can be changed with the 'Settings' command.");
             List<String> tags = CommandStore.getKnownTags();
-            Collections.sort(tags);
+            Collections.sort(tags, String.CASE_INSENSITIVE_ORDER);
             Console.showMessage("\nValid tags: " + CollectionUtils.implode(tags));
             return CommandResult.SUCCESS;
         }
@@ -42,7 +42,7 @@ public class Help implements BaseCommand
             if (CommandStore.getKnownTags().contains(args))
             {
                 List<String> commands = CommandStore.getCommandsWithTag(args);
-                Collections.sort(commands);
+                Collections.sort(commands, String.CASE_INSENSITIVE_ORDER);
                 Console.showMessage("Commands with tag '" + args + "':\n"
                         + CollectionUtils.implode(commands));
                 return CommandResult.SUCCESS;

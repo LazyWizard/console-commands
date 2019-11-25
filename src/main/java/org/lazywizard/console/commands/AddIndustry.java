@@ -62,7 +62,7 @@ public class AddIndustry implements BaseCommand
                 industries.add(industry.getId());
             }
 
-            Collections.sort(industries);
+            Collections.sort(industries, String.CASE_INSENSITIVE_ORDER);
             Console.showMessage("Existing industries of current market: " + CollectionUtils.implode(industries) + ".");
             return CommandResult.SUCCESS;
         }

@@ -35,7 +35,7 @@ public class RemoveCondition implements BaseCommand
                 conditions.add(condition.getId());
             }
 
-            Collections.sort(conditions);
+            Collections.sort(conditions, String.CASE_INSENSITIVE_ORDER);
             Console.showMessage("Conditions of current market: " + CollectionUtils.implode(conditions) + ".");
             return CommandResult.SUCCESS;
         }

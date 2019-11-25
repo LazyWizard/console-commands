@@ -137,9 +137,9 @@ public class List_ implements BaseCommand
                 }
             }
 
-            Collections.sort(universal);
-            Collections.sort(campaign);
-            Collections.sort(combat);
+            Collections.sort(universal, String.CASE_INSENSITIVE_ORDER);
+            Collections.sort(campaign, String.CASE_INSENSITIVE_ORDER);
+            Collections.sort(combat, String.CASE_INSENSITIVE_ORDER);
 
             final String output = "Universal commands (" + universal.size() + "):\n" +
                     CollectionUtils.implode(universal) +
@@ -187,11 +187,11 @@ public class List_ implements BaseCommand
                 newLinePerItem = true;
                 ids = new ArrayList<>();
                 final List<String> tags = CommandStore.getKnownTags();
-                Collections.sort(tags);
+                Collections.sort(tags, String.CASE_INSENSITIVE_ORDER);
                 for (String tag : tags)
                 {
                     final List<String> commandsWithTag = CommandStore.getCommandsWithTag(tag);
-                    Collections.sort(commandsWithTag);
+                    Collections.sort(commandsWithTag, String.CASE_INSENSITIVE_ORDER);
 
                     // Multi-indent is slightly more complicated to avoid word-wrapping issues
                     ids.add(tag + " (" + commandsWithTag.size() + "):\n" + CommandUtils.indent(
@@ -338,7 +338,7 @@ public class List_ implements BaseCommand
         }
 
         // Format and print the list of valid IDs
-        Collections.sort(ids);
+        Collections.sort(ids, String.CASE_INSENSITIVE_ORDER);
         final String results = CollectionUtils.implode(ids, (newLinePerItem ? "\n" : ", "));
         Console.showIndentedMessage(Misc.ucFirst(param) + " (" + ids.size() + "):", results, 3);
         return CommandResult.SUCCESS;

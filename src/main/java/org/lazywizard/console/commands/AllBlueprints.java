@@ -125,7 +125,7 @@ public class AllBlueprints implements BaseCommand
             }
             else
             {
-                Collections.sort(unlocked);
+                Collections.sort(unlocked, String.CASE_INSENSITIVE_ORDER);
                 Console.showIndentedMessage("Unlocked " + unlocked.size() + " ships:",
                         CollectionUtils.implode(unlocked), 3);
             }
@@ -149,7 +149,7 @@ public class AllBlueprints implements BaseCommand
             }
             else
             {
-                Collections.sort(unlocked);
+                Collections.sort(unlocked, String.CASE_INSENSITIVE_ORDER);
                 Console.showIndentedMessage("Unlocked " + unlocked.size() + " fighter wings:",
                         CollectionUtils.implode(unlocked), 3);
             }
@@ -173,7 +173,7 @@ public class AllBlueprints implements BaseCommand
             }
             else
             {
-                Collections.sort(unlocked);
+                Collections.sort(unlocked, String.CASE_INSENSITIVE_ORDER);
                 Console.showIndentedMessage("Unlocked " + unlocked.size() + " weapons:",
                         CollectionUtils.implode(unlocked), 3);
             }
@@ -197,7 +197,7 @@ public class AllBlueprints implements BaseCommand
             }
             else
             {
-                Collections.sort(unlocked);
+                Collections.sort(unlocked, String.CASE_INSENSITIVE_ORDER);
                 Console.showIndentedMessage("Unlocked " + unlocked.size() + " industries:",
                         CollectionUtils.implode(unlocked), 3);
             }
