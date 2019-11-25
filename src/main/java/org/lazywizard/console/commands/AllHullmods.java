@@ -42,7 +42,7 @@ public class AllHullmods implements BaseCommand
             return CommandResult.SUCCESS;
         }
 
-        Collections.sort(unlocked);
+        Collections.sort(unlocked, String.CASE_INSENSITIVE_ORDER);
         Console.showMessage("Unlocked " + unlocked.size() + " hullmods: "
                 + CollectionUtils.implode(unlocked) + ".");
         return CommandResult.SUCCESS;

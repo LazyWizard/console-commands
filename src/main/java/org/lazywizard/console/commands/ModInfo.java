@@ -71,7 +71,7 @@ public class ModInfo implements BaseCommand
             return Collections.emptyList();
         }
 
-        Collections.sort(added);
+        Collections.sort(added, String.CASE_INSENSITIVE_ORDER);
         return added;
     }
 

@@ -69,7 +69,7 @@ public class PlanetList implements BaseCommand
         }
 
         // Format and print the list of valid IDs
-        Collections.sort(ids);
+        Collections.sort(ids, String.CASE_INSENSITIVE_ORDER);
         final String results = CollectionUtils.implode(ids, (newLinePerItem ? "\n" : ", "));
         Console.showIndentedMessage("Known planets (" + ids.size() + "):\n", results, 3);
         return CommandResult.SUCCESS;

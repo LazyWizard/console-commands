@@ -23,17 +23,17 @@ public class Status implements BaseCommand
 
         // Commands
         List<String> tmp = CommandStore.getLoadedCommands();
-        Collections.sort(tmp);
+        Collections.sort(tmp, String.CASE_INSENSITIVE_ORDER);
         commands = "(" + tmp.size() + "):\n" + CommandUtils.indent(CollectionUtils.implode(tmp), 3);
 
         // Tags
         tmp = CommandStore.getKnownTags();
-        Collections.sort(tmp);
+        Collections.sort(tmp, String.CASE_INSENSITIVE_ORDER);
         tags = "(" + tmp.size() + "):\n" + CommandUtils.indent(CollectionUtils.implode(tmp), 3);
 
         // Command sources
         tmp = new ArrayList<>(rawSources);
-        Collections.sort(tmp);
+        Collections.sort(tmp, String.CASE_INSENSITIVE_ORDER);
         sources = "(" + tmp.size() + "):\n" + CommandUtils.indent(CollectionUtils.implode(tmp, "\n"), 3);
 
         // Aliases
@@ -42,7 +42,7 @@ public class Status implements BaseCommand
         {
             tmp.add(entry.getKey() + ": " + entry.getValue());
         }
-        Collections.sort(tmp);
+        Collections.sort(tmp, String.CASE_INSENSITIVE_ORDER);
         aliases = "(" + tmp.size() + "):\n" + CommandUtils.indent(CollectionUtils.implode(tmp, "\n"), 3);
 
         String status = "Console status:"
