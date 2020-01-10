@@ -1,52 +1,13 @@
 package org.lazywizard.console
 
-import com.fs.starfarer.api.BaseModPlugin
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.listeners.CampaignInputListener
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin
 import com.fs.starfarer.api.combat.CombatEngineAPI
 import com.fs.starfarer.api.input.InputEventAPI
-import org.apache.log4j.Level
 import org.lazywizard.console.BaseCommand.CommandContext
-import org.lazywizard.console.commands.ReloadConsole
 import org.lazywizard.lazylib.StringUtils
 import java.util.*
-
-internal class ConsoleModPlugin : BaseModPlugin() {
-    // TODO: Remove in a future update (only here for compatibility with users of the dev versions)
-    private fun migrateSettings() {
-        try {
-            val settings = Global.getSettings()
-            val oldPath = "lw_console_settings.json"
-            val oldSettings = settings.readTextFileFromCommon(oldPath)
-            if (oldSettings.trim().isEmpty()) return
-
-            settings.writeTextFileToCommon(CommonStrings.PATH_COMMON_DATA, oldSettings)
-            settings.writeTextFileToCommon(oldPath, "") // TODO: Delete old file if/when it becomes possible
-            Console.showMessage("Console settings successfully migrated to new version.")
-        } catch (ex: Exception) {
-            Console.showException("Failed to migrate console settings! Run the 'Settings' command to restore them.", ex)
-        }
-    }
-
-    // Config file is either empty (never used Settings), or an empty JSONObject (used "settings reset")
-    private fun needsSetup() = Global.getSettings().readTextFileFromCommon(CommonStrings.PATH_COMMON_DATA).trim().length < 5
-
-    @Throws(Exception::class)
-    override fun onApplicationLoad() {
-        migrateSettings()
-
-        // Load console settings - implementing it in ReloadConsole ensures the command will work identically
-        ReloadConsole.reloadConsole()
-
-        Console.showMessage("Console loaded, summon with ${Console.getSettings().consoleSummonKey}.", Level.DEBUG)
-        if (needsSetup()) Console.showMessage("Use the Settings command to configure the console.", Level.DEBUG)
-    }
-
-    override fun onGameLoad(newGame: Boolean) {
-        Global.getSector().listenerManager.addListener(ConsoleCampaignListener(), true)
-    }
-}
 
 internal class ConsoleCampaignListener : CampaignInputListener, ConsoleListener {
     override fun getListenerInputPriority(): Int = 9999
