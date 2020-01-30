@@ -17,7 +17,8 @@ public class DumpHeap implements BaseCommand
         if (!"confirm".equalsIgnoreCase(args))
         {
             Console.showMessage("Warning: dumping memory takes time and can use multiple gigabytes of disk space" +
-                    " for a heavily modded game. Enter \"dumpheap confirm\" to continue.");
+                    " for a heavily modded game.\nWarning: this command is only useful for debugging purposes, and" +
+                    " will have no effect on memory usage.\nEnter \"dumpheap confirm\" to continue.");
             return CommandResult.SUCCESS;
         }
 

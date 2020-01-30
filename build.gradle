@@ -56,11 +56,11 @@ repositories {
 //  Please note: any dependencies marked 'compile' or 'runtime' will be included in the jar!
 dependencies {
     compileOnly('org.jetbrains.kotlin:kotlin-stdlib') { transitive = false }
-    compileOnly('org.jetbrains.kotlin:kotlin-stdlib-jdk7') { transitive = false }
+    compileOnly('org.jetbrains.kotlin:kotlin-stdlib-jdk8') { transitive = false }
     compileOnly fileTree(dir: gameDir, include: '*.jar', exclude: '*_obf.jar')
     compileOnly files(lazylibDir + '/jars/LazyLib.jar')
     compileOnly files(lazylibDir + '/jars/LazyLib-Kotlin.jar')
-    dokkaRuntime files('lib/dokka-fatjar-0.9.18.jar')
+    dokkaRuntime files('lib/dokka-fatjar-0.10.0.jar')
     //compileOnly fileTree(dir: lazylibDir + '/jars/', include: '*.jar')
 }
 
