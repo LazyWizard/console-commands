@@ -112,7 +112,11 @@ task buildMod(dependsOn: [jar, copyModFiles]) {
     }
 }
 
-task zipDoc(type: Zip, dependsOn: dokka) {
+task cleanDoc(type: Delete) {
+    delete("docs/")
+}
+
+task zipDoc(type: Zip, dependsOn: [cleanDoc, dokka]) {
     from("docs/")
     include '**/*'
     archiveName = 'javadoc.zip'
