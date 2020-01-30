@@ -81,7 +81,7 @@ jar {
 
 dokka {
     outputFormat = 'javadoc'
-    outputDirectory = "$buildDir/javadoc"
+    outputDirectory = "docs"
 
     // Packages excluded from javadoc
     for (def subpackage : ['commands', 'rulecmd', 'ui', 'testing', 'ConsoleOverlay', 'ShowSettings']) {
@@ -113,7 +113,7 @@ task buildMod(dependsOn: [jar, copyModFiles]) {
 }
 
 task zipDoc(type: Zip, dependsOn: dokka) {
-    from("$buildDir/javadoc")
+    from("docs/")
     include '**/*'
     archiveName = 'javadoc.zip'
     destinationDir = file(outputPath)
