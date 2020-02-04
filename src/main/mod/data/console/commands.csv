@@ -24,6 +24,7 @@ AllBlueprints,org.lazywizard.console.commands.AllBlueprints,"core,campaign",allb
 AllCommodities,org.lazywizard.console.commands.AllCommodities,"core,campaign",allcommodities [optionalStation]|player,"Places ten thousand of every commodity in the specified station, or in storage if no argument is entered."
 AllHullmods,org.lazywizard.console.commands.AllHullmods,"core,campaign",allhullmods (no arguments),"Unlocks all hullmods in the refit screen. Persists until the game is closed."
 AllHulls,org.lazywizard.console.commands.AllHulls,"core,campaign",allhulls [optionalStation]|player,"Places one hull of every pilotable ship in the specified station, or in storage if no argument is entered."
+AllOfficerSkills,org.lazywizard.console.commands.AllOfficerSkills,"core,campaign",allofficerskills (officerNameOrNumber),"Gives an officer max level in all combat skills."
 AllWeapons,org.lazywizard.console.commands.AllWeapons,"core,campaign",allweapons [optionalStation]|player,"Places ten of every weapon in the specified station, or in storage if no argument is entered."
 AllWings,org.lazywizard.console.commands.AllWings,"core,campaign",allwings [optionalStation]|player,"Places one of every fighter wing LPC in the specified station, or in storage if no argument is entered."
 BlockRetreat,org.lazywizard.console.commands.BlockRetreat,"core,combat",blockretreat (no arguments),"Toggles whether the enemy can order a full retreat. Individual ships may still be able to flee."

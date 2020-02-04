@@ -727,7 +727,7 @@ public class CommandUtils
             }
         }
 
-        return bestMatch;
+        return (bestMatch == null ? null : fleet.getFleetData().getOfficerData(bestMatch.getPerson()));
     }
 
     public static List<SectorEntityToken> getEntitiesWithTags(LocationAPI location,
