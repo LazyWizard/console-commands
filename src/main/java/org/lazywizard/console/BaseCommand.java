@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.CampaignUIAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -196,5 +197,6 @@ public interface BaseCommand
      *
      * @since 2.0
      */
+    CommandResult runCommand(@NotNull String args, @NotNull CommandContext context);
     CommandResult runCommand(String args, CommandContext context);
 }

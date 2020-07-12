@@ -4,10 +4,13 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.ModSpecAPI;
 import com.fs.starfarer.api.SettingsAPI;
 import com.fs.starfarer.api.campaign.*;
+import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.characters.OfficerDataAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
+import com.fs.starfarer.api.impl.campaign.intel.bases.LuddicPathBaseIntel;
+import com.fs.starfarer.api.impl.campaign.intel.bases.PirateBaseIntel;
 import com.fs.starfarer.api.loading.IndustrySpecAPI;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.Pair;
@@ -257,6 +260,32 @@ public class List_ implements BaseCommand
                 {
                     ids.add(faction.getId() + " (" + faction.getDisplayNameLong() + ")");
                 }
+                break;
+            case "bases":
+                newLinePerItem = true;
+                ids = new ArrayList<>();
+                for (IntelInfoPlugin tmpIntel : sector.getIntelManager().getIntel(PirateBaseIntel.class))
+                {
+                    final PirateBaseIntel intel = (PirateBaseIntel) tmpIntel;
+                    ids.add("Pirate Base:\n - Intel: " + intel.getSmallDescriptionTitle() +
+                            "\n - Location: " + intel.getMarket().getName() + " in the " +
+                            intel.getSystem().getName() + "\n - Target: " + intel.getTarget().getName());
+                }
+                for (IntelInfoPlugin tmpIntel : sector.getIntelManager().getIntel(LuddicPathBaseIntel.class))
+                {
+                    final LuddicPathBaseIntel intel = (LuddicPathBaseIntel) tmpIntel;
+                    ids.add("Luddic Path Base:\n - Intel: " + intel.getSmallDescriptionTitle() +
+                            "\n - Location: " + intel.getMarket().getName() + " in the " +
+                            intel.getSystem().getName());
+                }
+                /*for (IntelInfoPlugin tmpIntel : sector.getIntelManager().getIntel(PirateActivityIntel.class))
+                {
+                    final PirateActivityIntel intel = (PirateActivityIntel) tmpIntel;
+                    ids.add(intel.getSmallDescriptionTitle() +
+                            "\n - Source: " + intel.getSource().getMarket().getName() +
+                            "\n - Location: " + intel.getSource().getName() +
+                            "\n - Target: " + intel.getSystem().getName());
+                }*/
                 break;
             case "planets":
                 newLinePerItem = true;
