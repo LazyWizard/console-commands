@@ -198,5 +198,4 @@ public interface BaseCommand
      * @since 2.0
      */
     CommandResult runCommand(@NotNull String args, @NotNull CommandContext context);
-    CommandResult runCommand(String args, CommandContext context);
 }
