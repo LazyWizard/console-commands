@@ -10,7 +10,6 @@ out/
 *.iml
 .classpath
 .project
-gradle.properties
 local.properties
 src/main/mod/Example Mod-Added Commands.zip
 Source_Code_Pro/
