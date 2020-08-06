@@ -5,19 +5,19 @@ This is the repository for the Console Commands mod, an unofficial developer's c
 
 ### Setting up your development environment ###
 
-Console Commands uses [Mercurial](https://www.mercurial-scm.org/) for source control and [Gradle](https://gradle.org/) for building and packaging the mod. The following instructions should be enough to get you started with both.
+Console Commands uses [Git](https://www.git-scm.org/) for source control and [Gradle](https://gradle.org/) for building and packaging the mod. The following instructions should be enough to get you started with both.
 
 A Gradle wrapper is included in this repository that will handle downloading and installing Gradle for you. You will need to manually set a few properties, but that will be covered later.
 
-For Mercurial, [TortoiseHg](https://tortoisehg.bitbucket.io/) is recommended for those who prefer a GUI. On Linux, a command line version is usually available under the package name _hg_.
+For Git, [many programs are available](https://www.git-scm.com/downloads/guis) for those who prefer a GUI, but many prefer the [command line version](https://git-scm.com/downloads). On Linux, a command line version is almost universally included in the base OS package.
 
 To download and build the mod, follow these steps:
 
 * Download and install the Java Development Kit (JDK), found [here](http://www.oracle.com/technetwork/java/javase/downloads/index.html). Any JDK >= 7 should work.
-* Open your IDE of choice and ensure that a plugin enabling Gradle support is installed. If you are using Eclipse or Netbeans, you may also want to search for and install the Kotlin plugin (IntelliJ includes native Kotlin support). The Kotlin plugin is only required if you intend to work on one of [these files](https://bitbucket.org/LazyWizard/console-commands/src/tip/src/main/kotlin/org/lazywizard/console/?at=default).
-* Download the mod's source code repository. If you are using TortoiseHg, simply right-click an empty folder and choose to clone a repository there using the context menu. The repository URL is `https://bitbucket.org/LazyWizard/console-commands`.
-    * If you prefer to use the command line, you can also clone the repository by opening a command prompt or terminal, navigating to your chosen folder, and running `hg clone https://bitbucket.org/LazyWizard/console-commands`.
-    * Alternatively, if you don't wish to use Mercurial you can download the repository manually using [this link](https://bitbucket.org/LazyWizard/console-commands/get/tip.zip). Be aware that this will make it _far_ more difficult to submit patches and keep your repository up to date, so it's highly recommended to use Mercurial if you intend to contribute.
+* Open your IDE of choice and ensure that a plugin enabling Gradle support is installed. If you are using Eclipse or Netbeans, you may also want to search for and install the Kotlin plugin (IntelliJ includes native Kotlin support). The Kotlin plugin is only required if you intend to work on one of [these files](https://github.com/LazyWizard/console-commands/tree/master/src/main/kotlin/org/lazywizard/console), and Gradle should be able to compile the mod without one.
+* Download the mod's source code repository. If you are using a GUI, most allow you to simply right-click an empty folder and choose to clone a repository there using the context menu. The repository URL is `https://github.com/LazyWizard/console-commands`.
+    * If you prefer to use the command line, you can also clone the repository by opening a command prompt or terminal, navigating to your chosen folder, and running `git clone https://github.com/LazyWizard/console-commands`.
+    * Alternatively, if you don't wish to use Git you can download the repository manually using [this link](https://github.com/LazyWizard/console-commands/archive/master.zip). Be aware that this will make it _far_ more difficult to submit patches and keep your repository up to date, so it's highly recommended to use Git if you intend to contribute.
 * Make a copy of `local.properties.example` in your downloaded repository and name it `local.properties`. Open this file and set the first property to point at your JDK's root folder, and the next two properties to point at your Starsector install folder (or starsector-core on Windows) and LazyLib jar respectively. These properties are used by Gradle to find the libraries needed to build the mod.
 
 That's it, you should be set and ready to code! Provided you have a Gradle plugin installed, your IDE should be capable of opening the file `build.gradle` as a project. The Gradle task to build the mod is, oddly enough, named 'buildMod'. The generated mod folder will be placed in `build/mod` (this can be changed in local.properties if you wish for it to use your actual mod folder).
