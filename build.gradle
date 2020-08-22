@@ -68,7 +68,7 @@ dependencies {
 
 compileKotlin {
     kotlinOptions {
-        jvmTarget = "1.6" // At the moment Kotlin only supports Java 6 or 8, and since Starsector ships with Java 7...
+        jvmTarget = "1.6" // At the moment Kotlin only targets Java 6 or 8, and since Starsector ships with Java 7...
         noReflect = true
     }
 }
