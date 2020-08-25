@@ -334,6 +334,10 @@ public class List_ implements BaseCommand
                     ids.add(spec.getId() + " (" + spec.getName() + ")");
                 }
                 break;
+            case "submarkets":
+                newLinePerItem = true;
+                ids = getSubmarketIds();
+                break;
             case "officers":
                 newLinePerItem = true;
                 param = "officers in fleet";
