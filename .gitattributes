@@ -5,3 +5,4 @@
 
 gradlew text eol=lf
 gradlew.bat eol=crlf
+*.js eol=lf
