@@ -357,11 +357,10 @@ public class Console
 
         // Runcode and Alias ignore separators
         // Hopefully the ONLY hardcoded command support I'll add to this mod...
-        CommandResult worstResult;
         String toLower = rawInput.toLowerCase();
         if (toLower.startsWith("runcode") || toLower.startsWith("alias"))
         {
-            worstResult = runCommand(rawInput, context);
+            runCommand(rawInput, context);
         }
         else
         {
@@ -370,50 +369,42 @@ public class Console
             final String separator = Pattern.quote(getSettings().getCommandSeparator());
             final Set<CommandResult> results = new HashSet<>();
             final Map<String, String> aliases = CommandStore.getAliases();
-            worstResult = CommandResult.SUCCESS;
             for (String input : rawInput.split(separator))
             {
                 input = input.trim();
                 toLower = input.toLowerCase();
                 if (!input.isEmpty())
                 {
-                    // Whole-line alias support
-                    if (aliases.containsKey(toLower))
-                    {
-                        for (String input2 : aliases.get(toLower).replace(";",
-                                getSettings().getCommandSeparator()).split(separator))
-                        {
-                            input2 = input2.trim();
-                            if (!input2.isEmpty())
-                            {
-                                results.add(runCommand(input2, context));
-                            }
-                        }
-                    }
                     // Regular commands
-                    else
+                    if (!aliases.containsKey(toLower))
                     {
                         results.add(runCommand(input, context));
                     }
+                    // Whole-line alias support
+                    else
+                    {
+                        final String comm = aliases.get(toLower);
+                        // Runcode always passes all arguments as one command
+                        if (comm.toLowerCase().startsWith("runcode "))
+                        {
+                            results.add(runCommand(comm, context));
+                        }
+                        // Regular alias, split into separate commands if needed
+                        else
+                        {
+                            for (String input2 : comm.replace(";",
+                                    getSettings().getCommandSeparator()).split(separator))
+                            {
+                                input2 = input2.trim();
+                                if (!input2.isEmpty())
+                                {
+                                    results.add(runCommand(input2, context));
+                                }
+                            }
+                        }
+                    }
                 }
             }
-
-            // Find 'worst' result of executed commands
-            for (CommandResult tmp : results)
-            {
-                if (tmp.ordinal() > worstResult.ordinal())
-                {
-                    worstResult = tmp;
-                }
-            }
-        }
-
-        // Play a sound based on worst error type
-        // FIXME: Sounds don't work with new overlay
-        final String sound = null; //settings.getSoundForResult(worstResult);
-        if (sound != null)
-        {
-            Global.getSoundPlayer().playUISound(sound, 1f, 1f);
         }
 
         lastCommand = rawInput;
