@@ -367,12 +367,12 @@ public class List_ implements BaseCommand
         if (tmp.length > 1)
         {
             final String filter = args.substring(args.indexOf(' ') + 1);
-            param += " starting with \"" + filter + "\"";
+            param += " containing \"" + filter + "\"";
 
             for (Iterator<String> iter = ids.iterator(); iter.hasNext(); )
             {
                 String id = iter.next().toLowerCase();
-                if (!id.startsWith(filter))
+                if (!id.contains(filter))
                 {
                     iter.remove();
                 }
