@@ -11,6 +11,7 @@ import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.impl.campaign.intel.bases.LuddicPathBaseIntel;
 import com.fs.starfarer.api.impl.campaign.intel.bases.PirateBaseIntel;
+import com.fs.starfarer.api.loading.HullModSpecAPI;
 import com.fs.starfarer.api.loading.IndustrySpecAPI;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.Pair;
@@ -234,7 +235,15 @@ public class List_ implements BaseCommand
                 break;
             case "hullmods":
             case "modspecs":
-                ids = new ArrayList<>(AddHullmod.getHullMods());
+                newLinePerItem = true;
+                ids = new ArrayList<>();
+                for (HullModSpecAPI spec : Global.getSettings().getAllHullModSpecs())
+                {
+                    if (!spec.isHidden())
+                    {
+                        ids.add(spec.getId() + " (" + spec.getDisplayName() + ")");
+                    }
+                }
                 break;
             case "commodities":
             case "items":
