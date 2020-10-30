@@ -95,6 +95,17 @@ public class List_ implements BaseCommand
         }
     }
 
+    public static List<String> getShipIds()
+    {
+        final SectorAPI sector = Global.getSector();
+        List<String> ids = new ArrayList<>();
+        for (String id : sector.getAllEmptyVariantIds())
+        {
+            ids.add(id.substring(0, id.lastIndexOf("_Hull")));
+        }
+        return ids;
+    }
+
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
@@ -215,11 +226,7 @@ public class List_ implements BaseCommand
                 break;
             case "ships":
             case "hulls":
-                ids = new ArrayList<>();
-                for (String id : sector.getAllEmptyVariantIds())
-                {
-                    ids.add(id.substring(0, id.lastIndexOf("_Hull")));
-                }
+                ids = getShipIds();
                 break;
             case "variants":
                 ids = new ArrayList<>(settings.getAllVariantIds());

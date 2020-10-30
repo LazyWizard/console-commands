@@ -730,6 +730,20 @@ public class CommandUtils
         return (bestMatch == null ? null : fleet.getFleetData().getOfficerData(bestMatch.getPerson()));
     }
 
+    public static List<String> findMatchingStrings(String pattern, List<String> haystack)
+    {
+        List<String> matching = new ArrayList<>();
+
+        for (String hay : haystack)
+        {
+            if (hay.matches(pattern)) {
+                matching.add(hay);
+            }
+        }
+
+        return matching;
+    }
+
     public static List<SectorEntityToken> getEntitiesWithTags(LocationAPI location,
                                                               String... tags)
     {
