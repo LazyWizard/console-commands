@@ -13,7 +13,6 @@ import com.fs.starfarer.api.impl.campaign.intel.bases.LuddicPathBaseIntel;
 import com.fs.starfarer.api.impl.campaign.intel.bases.PirateBaseIntel;
 import com.fs.starfarer.api.loading.HullModSpecAPI;
 import com.fs.starfarer.api.loading.IndustrySpecAPI;
-import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.api.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -94,6 +93,14 @@ public class List_ implements BaseCommand
             Console.showException("Failed to generate market conditions list!", ex);
             return Collections.emptyList();
         }
+    }
+
+    private static final int LEN = 4;
+    private static String pad(String prefix)
+    {
+        final int len = LEN - (prefix.length() % LEN);
+        if (len == 0 || len == LEN) return prefix;
+        return String.format("%s%" + len + "s", prefix, "");
     }
 
     @Override
@@ -216,22 +223,39 @@ public class List_ implements BaseCommand
                 break;
             case "ships":
             case "hulls":
+                newLinePerItem = true;
                 ids = new ArrayList<>();
-                for (String id : sector.getAllEmptyVariantIds())
+                for (String fullId : sector.getAllEmptyVariantIds())
                 {
-                    ids.add(id.substring(0, id.lastIndexOf("_Hull")));
+                    final String id = fullId.substring(0, fullId.lastIndexOf("_Hull"));
+                    ids.add(pad(id) + " (" + settings.getHullSpec(id).getHullNameWithDashClass() + ")");
                 }
                 break;
             case "variants":
-                ids = new ArrayList<>(settings.getAllVariantIds());
+                newLinePerItem = true;
+                ids = new ArrayList<>();
+                for (String id : settings.getAllVariantIds())
+                {
+                    ids.add(pad(id) + " (" + settings.getVariant(id).getFullDesignationWithHullName() + ")");
+                }
                 break;
             case "wings":
             case "fighters":
             case "squadrons":
-                ids = new ArrayList<>(sector.getAllFighterWingIds());
+                newLinePerItem = true;
+                ids = new ArrayList<>();
+                for (String id : sector.getAllFighterWingIds())
+                {
+                    ids.add(pad(id) + " (" + settings.getFighterWingSpec(id).getWingName() + ")");
+                }
                 break;
             case "weapons":
-                ids = new ArrayList<>(sector.getAllWeaponIds());
+                newLinePerItem = true;
+                ids = new ArrayList<>();
+                for (String id : sector.getAllWeaponIds())
+                {
+                    ids.add(pad(id) + " (" + settings.getWeaponSpec(id).getWeaponName() + ")");
+                }
                 break;
             case "hullmods":
             case "modspecs":
@@ -241,16 +265,26 @@ public class List_ implements BaseCommand
                 {
                     if (!spec.isHidden())
                     {
-                        ids.add(spec.getId() + " (" + spec.getDisplayName() + ")");
+                        ids.add(pad(spec.getId()) + " (" + spec.getDisplayName() + ")");
                     }
                 }
                 break;
             case "commodities":
             case "items":
-                ids = new ArrayList<>(sector.getEconomy().getAllCommodityIds());
+                newLinePerItem = true;
+                ids = new ArrayList<>();
+                for (String id : sector.getEconomy().getAllCommodityIds())
+                {
+                    ids.add(pad(id) + " (" + settings.getCommoditySpec(id).getName() + ")");
+                }
                 break;
             case "specials":
-                ids = AddSpecial.getSpecialItemIds();
+                newLinePerItem = true;
+                ids = new ArrayList<>();
+                for (SpecialItemSpecAPI spec : Global.getSettings().getAllSpecialItemSpecs())
+                {
+                    ids.add(pad(spec.getId()) + " (" + spec.getName() + ")");
+                }
                 break;
             case "systems":
             case "locations":
@@ -259,7 +293,7 @@ public class List_ implements BaseCommand
                 ids.add(sector.getHyperspace().getId());
                 for (LocationAPI location : sector.getStarSystems())
                 {
-                    ids.add(location.getId() + " (" + location.getName() + ")");
+                    ids.add(pad(location.getId()) + " (" + location.getName() + ")");
                 }
                 break;
             case "factions":
@@ -267,7 +301,7 @@ public class List_ implements BaseCommand
                 ids = new ArrayList<>();
                 for (FactionAPI faction : sector.getAllFactions())
                 {
-                    ids.add(faction.getId() + " (" + faction.getDisplayNameLong() + ")");
+                    ids.add(pad(faction.getId()) + " (" + faction.getDisplayNameLong() + ")");
                 }
                 break;
             case "bases":
@@ -302,7 +336,7 @@ public class List_ implements BaseCommand
                 ids = new ArrayList<>();
                 for (PlanetAPI planet : loc.getPlanets())
                 {
-                    ids.add(planet.getId() + " (" + planet.getFullName() + (planet.isStar() ? ", star)" : ")"));
+                    ids.add(pad(planet.getId()) + " (" + planet.getFullName() + (planet.isStar() ? ", star)" : ")"));
                 }
                 break;
             case "stations":
@@ -311,7 +345,7 @@ public class List_ implements BaseCommand
                 ids = new ArrayList<>();
                 for (SectorEntityToken station : loc.getEntitiesWithTag(Tags.STATION))
                 {
-                    ids.add(station.getId() + " (" + station.getFullName() + ")");
+                    ids.add(pad(station.getId()) + " (" + station.getFullName() + ")");
                 }
                 break;
             case "markets":
@@ -319,7 +353,7 @@ public class List_ implements BaseCommand
                 ids = new ArrayList<>();
                 for (MarketAPI market : sector.getEconomy().getMarketsCopy())
                 {
-                    ids.add(market.getId() + " in " + market.getContainingLocation().getName()
+                    ids.add(pad(market.getId() + " in " + market.getContainingLocation().getName())
                             + " (" + market.getFaction().getDisplayName() + ", "
                             + (market.getFaction() == null ? "no faction)"
                             : market.getFaction().getRelationshipLevel(
@@ -332,7 +366,7 @@ public class List_ implements BaseCommand
                 for (Pair<String, String> pair : getMarketConditionIdsWithNames())
                 {
                     final String id = pair.one, name = pair.two;
-                    ids.add(id + ((name == null || name.isEmpty()) ? "" : " (" + name + ")"));
+                    ids.add(pad(id) + ((name == null || name.isEmpty()) ? "" : " (" + name + ")"));
                 }
                 break;
             case "industries":
@@ -340,7 +374,7 @@ public class List_ implements BaseCommand
                 ids = new ArrayList<>();
                 for (IndustrySpecAPI spec : settings.getAllIndustrySpecs())
                 {
-                    ids.add(spec.getId() + " (" + spec.getName() + ")");
+                    ids.add(pad(spec.getId()) + " (" + spec.getName() + ")");
                 }
                 break;
             case "submarkets":
@@ -377,12 +411,19 @@ public class List_ implements BaseCommand
                     iter.remove();
                 }
             }
+
+            param = ids.size() + " " + param;
+        }
+        else
+        {
+            param = "all " + ids.size() + " " + param + " (enter 'list " + args +
+                    " <filter>' to filter the results further, ex: 'list ships hound')";
         }
 
         // Format and print the list of valid IDs
         Collections.sort(ids, String.CASE_INSENSITIVE_ORDER);
         final String results = CollectionUtils.implode(ids, (newLinePerItem ? "\n" : ", "));
-        Console.showIndentedMessage(Misc.ucFirst(param) + " (" + ids.size() + "):", results, 3);
+        Console.showIndentedMessage("Listing " + param + ":", results, 3);
         return CommandResult.SUCCESS;
     }
 }
