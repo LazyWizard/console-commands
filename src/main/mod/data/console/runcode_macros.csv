@@ -11,6 +11,8 @@ $playerLoc,(Console.getContext().isInCombat() ? com.fs.starfarer.api.Global.getC
 $playerShip,com.fs.starfarer.api.Global.getCombatEngine().getPlayerShip()
 $playerFleet,com.fs.starfarer.api.Global.getSector().getPlayerFleet()
 $playerFaction,com.fs.starfarer.api.Global.getSector().getPlayerFaction()
+$view,(Console.getContext().isInCombat() ? Global.getCombatEngine().getViewport() : Global.getSector().getViewport())
+$entity,Console.getContext().getEntityInteractedWith()
 $sop,System.out.println
 $print,Console.showMessage
 $context,Console.getContext()

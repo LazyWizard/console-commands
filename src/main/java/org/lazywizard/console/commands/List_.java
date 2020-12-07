@@ -16,7 +16,10 @@ import com.fs.starfarer.api.loading.IndustrySpecAPI;
 import com.fs.starfarer.api.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.lazywizard.console.*;
+import org.lazywizard.console.BaseCommand;
+import org.lazywizard.console.CommandStore;
+import org.lazywizard.console.CommandUtils;
+import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
 
 import java.lang.ref.SoftReference;
@@ -96,6 +99,7 @@ public class List_ implements BaseCommand
     }
 
     private static final int LEN = 4;
+
     private static String pad(String prefix)
     {
         final int len = LEN - (prefix.length() % LEN);
@@ -103,15 +107,14 @@ public class List_ implements BaseCommand
         return String.format("%s%" + len + "s", prefix, "");
     }
 
+    private static void wrongContext(String param)
+    {
+        Console.showMessage("Error: the argument '" + param + "' is campaign-only.");
+    }
+
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
-        if (!context.isInCampaign())
-        {
-            Console.showMessage(CommonStrings.ERROR_CAMPAIGN_ONLY);
-            return CommandResult.WRONG_CONTEXT;
-        }
-
         if (args.isEmpty())
         {
             return CommandResult.BAD_SYNTAX;
@@ -288,6 +291,12 @@ public class List_ implements BaseCommand
                 break;
             case "systems":
             case "locations":
+                if (!context.isCampaignAccessible())
+                {
+                    wrongContext(param);
+                    return CommandResult.WRONG_CONTEXT;
+                }
+
                 newLinePerItem = true;
                 ids = new ArrayList<>();
                 ids.add(sector.getHyperspace().getId());
@@ -305,6 +314,12 @@ public class List_ implements BaseCommand
                 }
                 break;
             case "bases":
+                if (!context.isCampaignAccessible())
+                {
+                    wrongContext(param);
+                    return CommandResult.WRONG_CONTEXT;
+                }
+
                 newLinePerItem = true;
                 ids = new ArrayList<>();
                 for (IntelInfoPlugin tmpIntel : sector.getIntelManager().getIntel(PirateBaseIntel.class))
@@ -331,6 +346,12 @@ public class List_ implements BaseCommand
                 }*/
                 break;
             case "planets":
+                if (!context.isCampaignAccessible())
+                {
+                    wrongContext(param);
+                    return CommandResult.WRONG_CONTEXT;
+                }
+
                 newLinePerItem = true;
                 param = "planets in current system";
                 ids = new ArrayList<>();
@@ -340,6 +361,12 @@ public class List_ implements BaseCommand
                 }
                 break;
             case "stations":
+                if (!context.isCampaignAccessible())
+                {
+                    wrongContext(param);
+                    return CommandResult.WRONG_CONTEXT;
+                }
+
                 newLinePerItem = true;
                 param = "stations in current system";
                 ids = new ArrayList<>();
@@ -349,6 +376,12 @@ public class List_ implements BaseCommand
                 }
                 break;
             case "markets":
+                if (!context.isCampaignAccessible())
+                {
+                    wrongContext(param);
+                    return CommandResult.WRONG_CONTEXT;
+                }
+
                 newLinePerItem = true;
                 ids = new ArrayList<>();
                 for (MarketAPI market : sector.getEconomy().getMarketsCopy())
@@ -382,6 +415,12 @@ public class List_ implements BaseCommand
                 ids = getSubmarketIds();
                 break;
             case "officers":
+                if (!context.isCampaignAccessible())
+                {
+                    wrongContext(param);
+                    return CommandResult.WRONG_CONTEXT;
+                }
+
                 newLinePerItem = true;
                 param = "officers in fleet";
                 ids = new ArrayList<>();
