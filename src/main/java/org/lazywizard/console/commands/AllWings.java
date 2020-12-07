@@ -64,7 +64,7 @@ public class AllWings implements BaseCommand
 
         for (String id : ids)
         {
-            target.addFighters(id, 10);
+            target.addFighters(id, 100);
             total++;
         }
 

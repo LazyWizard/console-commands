@@ -41,7 +41,14 @@ public class CommandStore
      * @throws JSONException if the CSV is malformed or missing columns.
      * @since 2.0
      */
+    public static void reloadAll() throws IOException, JSONException{
+        reloadCommands();
+        reloadAliases();
+        reloadListeners();
+    }
+
     // Will only throw these exceptions if there is an error loading the CSV
+    // TODO: Javadoc
     @SuppressWarnings("unchecked")
     public static void reloadCommands() throws IOException, JSONException
     {
@@ -76,7 +83,7 @@ public class CommandStore
                 final Class commandClass = loader.loadClass(commandPath);
                 if (!BaseCommand.class.isAssignableFrom(commandClass))
                 {
-                    throw new Exception(commandClass.getCanonicalName()
+                    throw new ConsoleException(commandClass.getCanonicalName()
                             + " does not extend " + BaseCommand.class.getCanonicalName());
                 }
 
@@ -118,7 +125,12 @@ public class CommandStore
         }
 
         Log.info("Loaded commands: " + CollectionUtils.implode(getLoadedCommands()));
+    }
 
+    // TODO: Javadoc
+    @SuppressWarnings("unchecked")
+    public static void reloadAliases() throws IOException
+    {
         // Populate alias mapping
         aliases.clear();
         try
@@ -140,11 +152,17 @@ public class CommandStore
         }
 
         Log.info("Loaded aliases: " + CollectionUtils.implode(getAliases().keySet()));
+    }
 
+    // TODO: Javadoc
+    @SuppressWarnings("unchecked")
+    public static void reloadListeners() throws IOException, JSONException
+    {
         // Populate listeners
         listeners.clear();
         final JSONArray listenerData = Global.getSettings().getMergedSpreadsheetDataForMod(
                 "listenerId", CommonStrings.PATH_LISTENER_CSV, CommonStrings.MOD_ID);
+        final ClassLoader loader = Global.getSettings().getScriptClassLoader();
         for (int i = 0; i < listenerData.length(); i++)
         {
             // Defined here so we can use them in the catch block
@@ -173,7 +191,7 @@ public class CommandStore
                 final Class listenerClass = loader.loadClass(listenerPath);
                 if (!CommandListener.class.isAssignableFrom(listenerClass))
                 {
-                    throw new Exception(listenerClass.getCanonicalName()
+                    throw new ConsoleException(listenerClass.getCanonicalName()
                             + " does not extend " + CommandListener.class.getCanonicalName());
                 }
 
@@ -190,6 +208,7 @@ public class CommandStore
         }
 
         Collections.sort(listeners);
+        Log.info("Loaded listeners: " + CollectionUtils.implode(getListeners()));
     }
 
     /**

@@ -13,7 +13,7 @@ public class ReloadConsole implements BaseCommand
     public static void reloadConsole() throws JSONException, IOException, FontException
     {
         Console.reloadSettings();
-        CommandStore.reloadCommands();
+        CommandStore.reloadAll();
         RunCode.reloadImports();
         RunCode.reloadMacros();
     }

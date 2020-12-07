@@ -163,6 +163,45 @@ public class Console
         showMessage(CommandUtils.indent(message.toString(), indentation), Level.INFO);
     }
 
+    private static String findClassSource(String className)
+    {
+        try
+        {
+            final Class srcClass = Class.forName(className, false, Global.getSettings().getScriptClassLoader());
+            final CodeSource cs = srcClass.getProtectionDomain().getCodeSource();
+            if (cs == null || cs.getLocation() == null)
+            {
+                if (className.startsWith("data."))
+                {
+                    return "loose script";
+                }
+                else
+                {
+                    return "core Java";
+                }
+            }
+            else
+            {
+                final String classSource = cs.getLocation().getFile().replace("\\", "/");
+                if (classSource.endsWith(".jar"))
+                {
+                    return classSource.substring(classSource.lastIndexOf('/') + 1);
+                }
+
+                return classSource;
+            }
+        }
+        // Classloader blocked - will probably always be a core Java class
+        catch (SecurityException ex2)
+        {
+            return "core Java";
+        }
+        catch (ClassNotFoundException ex1)
+        {
+            return "synthetic class";
+        }
+    }
+
     /**
      * Displays the stack trace of a {@link Throwable}.
      *
@@ -190,48 +229,9 @@ public class Console
         stackTrace.append(ex.toString()).append("\n");
         if (getSettings().getShowExceptionDetails())
         {
-            final ClassLoader cl = Global.getSettings().getScriptClassLoader();
             for (StackTraceElement ste : ex.getStackTrace())
             {
-                String classSource;
-                try
-                {
-                    final String className = ste.getClassName();
-                    try
-                    {
-                        final Class srcClass = Class.forName(className, false, cl);
-                        final CodeSource cs = srcClass.getProtectionDomain().getCodeSource();
-                        if (cs == null || cs.getLocation() == null)
-                        {
-                            if (className.startsWith("data."))
-                            {
-                                classSource = "loose script";
-                            }
-                            else
-                            {
-                                classSource = "core Java";
-                            }
-                        }
-                        else
-                        {
-                            classSource = cs.getLocation().getFile().replace("\\", "/");
-                            if (classSource.endsWith(".jar"))
-                            {
-                                classSource = classSource.substring(classSource.lastIndexOf('/') + 1);
-                            }
-                        }
-                    }
-                    // Classloader blocked - will probably always be a core Java class
-                    catch (SecurityException ex2)
-                    {
-                        classSource = "core Java";
-                    }
-                }
-                catch (ClassNotFoundException ex1)
-                {
-                    classSource = "synthetic class";
-                }
-
+                final String classSource = findClassSource(ste.getClassName());
                 stackTrace.append("   [").append(classSource).append("]   at ").append(ste.toString()).append("\n");
             }
         }
@@ -257,6 +257,7 @@ public class Console
 
     private static CommandResult runCommand(String input, CommandContext context)
     {
+        // Split input into command and arguments
         String[] tmp = input.split(" ", 2);
         String com = tmp[0].toLowerCase();
         String args = (tmp.length > 1 ? tmp[1] : "");
