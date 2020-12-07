@@ -103,7 +103,7 @@ public class ShowSettings implements BaseCommand
             scrollback = settings.getMaxScrollback();
             threshold = settings.getTypoCorrectionThreshold();
             defaultTarget = settings.getDefaultCombatCheatTarget();
-            homeStorage = settings.getTransferStorageToHome();
+            homeStorage = settings.getUseHomeForStorage();
             devModeFlags = settings.getDevModeTogglesDebugFlags();
             showBackground = settings.getShowBackground();
             showCommands = settings.getShowEnteredCommands();
@@ -314,7 +314,7 @@ public class ShowSettings implements BaseCommand
             settings.setTypoCorrectionThreshold(threshold);
             settings.setMaxScrollback(scrollback);
             settings.setDefaultCombatCheatTarget(defaultTarget);
-            settings.setTransferStorageToHome(homeStorage);
+            settings.setUseHomeForStorage(homeStorage);
             settings.setDevModeTogglesDebugFlags(devModeFlags);
             settings.setShowBackground(showBackground);
             settings.setShowEnteredCommands(showCommands);

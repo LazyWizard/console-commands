@@ -1,6 +1,7 @@
 package org.lazywizard.console.commands;
 
 import java.util.List;
+
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
@@ -14,6 +15,7 @@ import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
 
+// TODO: Remove and merge functionality with "home set"
 public class SetHome implements BaseCommand
 {
     // Distance from a token before the command doesn't consider it
@@ -50,6 +52,11 @@ public class SetHome implements BaseCommand
             }
         }
 
+        else if (context.getEntityInteractedWith() != null)
+        {
+            newHome = context.getEntityInteractedWith();
+        }
+
         // Home priorities: stations, then relays, then planets, then empty space (raw coords)
         else
         {
@@ -77,6 +84,12 @@ public class SetHome implements BaseCommand
         Global.getSector().getPersistentData().put(CommonStrings.DATA_HOME_ID, newHome);
         Console.showMessage("Home set to " + newHome.getFullName() + " in "
                 + system.getName() + ".");
+
+        if (Console.getSettings().getUseHomeForStorage() && newHome.getMarket() != null)
+        {
+            Storage.setStorageEntity(newHome);
+        }
+
         return CommandResult.SUCCESS;
     }
 }

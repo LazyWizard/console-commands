@@ -3,6 +3,7 @@
 package org.lazywizard.console
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.SectorEntityToken
 import org.lazywizard.console.BaseCommand.CommandContext
 import org.lazywizard.lazylib.opengl.ColorUtils.glColor
 import org.lwjgl.BufferUtils
@@ -65,13 +66,14 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     private val minX = HORIZONTAL_MARGIN
     private val maxX = minX + Console.getScrollbackWidth()
     private val minY = 50f + fontSize
-    private val maxY = height - 40f
+    private val maxY = height - 80f
     private val scrollback = font.createText(text = history, size = fontSize, color = mainColor, maxWidth = maxX - minX)
     private val query = font.createText(text = CommonStrings.INPUT_QUERY, color = secondaryColor, maxWidth = width, maxHeight = 30f)
     private val prompt = font.createText(text = "> ", color = secondaryColor, maxWidth = width, maxHeight = 30f)
     private val input = font.createText(text = "", color = mainColor, maxWidth = width - (prompt.width + 60f), maxHeight = fontSize * 30)
     private val mem = font.createText(text = getMemText(), color = Color.LIGHT_GRAY)
     private val curContext = font.createText(text = context.name, color = secondaryColor)
+    private val curTarget = font.createText(text = getCurrentTarget(), color = secondaryColor)
     private val devMode = font.createText(text = "DEVMODE", color = Color.LIGHT_GRAY)
     private val scrollbar = Scrollbar(10f, secondaryColor, secondaryColor.darker().darker())
     private val currentInput = StringBuilder()
@@ -182,6 +184,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         input.dispose()
         mem.dispose()
         curContext.dispose()
+        curTarget.dispose()
         devMode.dispose()
     }
 
@@ -223,6 +226,13 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         if (remaining < (1024 * 1024 * 200) || portion > 0.9) return Color.RED
         else if (remaining < (1024 * 1024 * 400) || portion > 0.8) return Color.YELLOW
         return Color.GREEN
+    }
+
+    private fun getCurrentTarget():String {
+        if (context.isInCampaign)
+            return "Target: " + (context.entityInteractedWith?.name ?: "none")
+
+        return ""
     }
 
     private fun checkInput() {
@@ -511,6 +521,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         if (settings.showMemoryUsage) mem.draw(50f, height - fontSize)
         if (Global.getSettings().isDevMode) devMode.draw(maxX - (50f + devMode.width), height - fontSize)
         curContext.draw(Math.max(150f + mem.width, (width / 2f) - (curContext.width / 2f)), height - fontSize)
+        curTarget.draw(Math.max(150f + mem.width, (width / 2f) - (curTarget.width / 2f)), height - fontSize * 2)
 
         // Draw scrollbar
         glDisable(GL_TEXTURE_2D)
