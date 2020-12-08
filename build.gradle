@@ -1,7 +1,28 @@
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 import java.nio.file.Paths
 
+buildscript {
+    ext.kotlin_version = '1.3.61' // Match the version used by the latest LazyLib
+    ext.dokka_version = '1.4.20'
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
+        classpath "org.jetbrains.dokka:kotlin-as-java-plugin:${dokka_version}"
+    }
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
 apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'org.jetbrains.dokka'
@@ -35,26 +56,6 @@ ext {
     }*/
 }
 
-buildscript {
-    ext.kotlin_version = '1.3.61' // Match the version used by the latest LazyLib
-    ext.dokka_version = '1.4.0-rc'
-
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
-
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
-        classpath "org.jetbrains.dokka:kotlin-as-java-plugin:${dokka_version}"
-    }
-}
-
-repositories {
-    mavenCentral()
-    jcenter()
-}
 
 //  Please note: any dependencies marked 'compile' or 'runtime' will be included in the jar!
 dependencies {
@@ -76,14 +77,16 @@ compileKotlin {
 jar {
     //from sourceSets.main.java
     from sourceSets.main.kotlin // Also includes Java
-    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } } // Include source files in jar
+    // Include source files in jar
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     destinationDirectory = file(Paths.get(outputPath, 'jars/'))
     archiveFileName = 'lw_Console.jar'
 }
 
 dokkaJavadoc {
-    outputDirectory = "docs"
+    outputDirectory = file("docs")
 
+    // FIXME: None of this is being applied. Fuck Dokka.
     dokkaSourceSets {
         configureEach {
             platform = "JVM"
@@ -92,11 +95,12 @@ dokkaJavadoc {
             reportUndocumented = true
             displayName = "Console Commands"
             moduleDisplayName = "Console Commands"
-            includes = [ "src/main/kotlin/org/lazywizard/console/packages.md" ]
+            includes = ["src/main/kotlin/org/lazywizard/console/packages.md"]
             jdkVersion = 7
 
             // Packages excluded from javadoc
-            for (def subpackage : ['commands', 'rulecmd', 'ui', 'testing', 'ConsoleOverlay', 'ShowSettings']) {
+            // FIXME: None of these are being applied
+            for (def subpackage : ['commands', 'ext', 'rulecmd', 'ui', 'testing', 'ConsoleOverlay', 'ShowSettings']) {
                 perPackageOption {
                     prefix = "org.lazywizard.console.$subpackage"
                     suppress = true
@@ -112,6 +116,35 @@ task printProps() {
         println 'LazyLib directory: ' + lazylibDir
         println 'Output path: ' + outputPath
         println 'Mod version: ' + modVersion
+    }
+}
+
+task updateVersion() {
+    def cal = Calendar.getInstance()
+    def major = cal.get(Calendar.YEAR)
+    def minor = cal.get(Calendar.MONTH) + 1
+    def patch = String.format("%02d", cal.get(Calendar.DAY_OF_MONTH))
+
+    // Handling it this way retains the order of keys in the JSON mapping
+    LinkedHashMap modInfo = new JsonSlurper().parseText(file('src/main/mod/mod_info.json').text)
+    modInfo.version = "$major.$minor.$patch"
+
+    // .. but isn't necessary for version files, because I named all the fields so the
+    // preferred order also happens to be in alphabetical order. Thank you, Younger Me
+    def versionInfo = [
+            masterVersionFile: "https://raw.githubusercontent.com/LazyWizard/console-commands/master/src/main/mod/console.version",
+            modName          : "Console Commands",
+            modThreadId      : 4106,
+            modVersion       : [
+                    major: cal.get(Calendar.YEAR),
+                    minor: cal.get(Calendar.MONTH) + 1,
+                    patch: String.format("%02d", cal.get(Calendar.DAY_OF_MONTH))
+            ]
+    ]
+
+    doLast {
+        new File("src/main/mod/console.version", projectDir).write(JsonOutput.prettyPrint(JsonOutput.toJson(versionInfo)))
+        new File("src/main/mod/mod_info.json", projectDir).write(JsonOutput.prettyPrint(JsonOutput.toJson(modInfo)))
     }
 }
 
@@ -163,7 +196,7 @@ task zipExample(type: Zip) {
     destinationDirectory = file(outputPath)
 }
 
-task zipMod(type: Zip, dependsOn: [clean, buildMod, zipDoc, zipExample]) {
+task zipMod(type: Zip, dependsOn: [clean, updateVersion, buildMod, zipDoc, zipExample]) {
     from(outputPath) { into 'Console Commands' }
     include '**/*'
     archiveFileName = "Console_Commands_${modVersion}.zip"
