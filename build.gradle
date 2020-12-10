@@ -23,6 +23,7 @@ repositories {
     mavenCentral()
     jcenter()
 }
+
 apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'org.jetbrains.dokka'
@@ -42,26 +43,46 @@ ext {
     // Build number is passed in by the publish_dev.sh script for the WIP dev builds
     if (project.hasProperty('buildNumber')) modVersion = 'dev_build_' + buildNumber
     else modVersion = new JsonSlurper().parseText(file('src/main/mod/mod_info.json').text).version
-
-    // JDK config, unnecessary if your JAVA_HOME environment variable is set
-    // Need to test this on a new install; something seems broken with latest Kotlin compiler
-    //compileJava.options.fork = true
-    //compileJava.options.forkOptions.executable = Paths.get(localProps['jdkLocation'].toString(), 'bin', 'javac.exe')
-    //compileKotlin.kotlinOptions.jdkHome = Paths.get(localProps['jdkLocation'].toString())
-    //gradle.java.home = compileKotlin.kotlinOptions.jdkHome
-
-    // Use Starsector's bundled JRE for bootstrap classpath (ensures compiling with newer JDKs won't cause issues)
-    /*tasks.withType(JavaCompile) {
-        options.bootstrapClasspath = files(gameDir + '/jre/lib/rt.jar')
-    }*/
 }
 
-
-//  Please note: any dependencies marked 'compile' or 'runtime' will be included in the jar!
+// Please note: any dependencies marked 'compile' or 'runtime' will be included in the jar!
 dependencies {
     compileOnly('org.jetbrains.kotlin:kotlin-stdlib') { transitive = false }
     compileOnly('org.jetbrains.kotlin:kotlin-stdlib-jdk7') { transitive = false }
-    compileOnly fileTree(dir: gameDir, include: '*.jar', exclude: '*_obf.jar')
+
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    // Local game-provided dependencies (we're using Maven to get javadoc and sources) //
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    // LWJGL
+    compileOnly('org.lwjgl.lwjgl:lwjgl:2.9.3')
+    compileOnly('org.lwjgl.lwjgl:lwjgl_util:2.9.3')
+
+    // Janino
+    compileOnly('org.codehaus.janino:janino:2.7.8')
+    compileOnly('org.codehaus.janino:commons-compiler:2.7.8')
+
+    // Log4j
+    compileOnly('log4j:log4j:1.2.9')
+
+    // JSON
+    //compileOnly('org.json:json:20150729') // This is probably much newer than Starsector's...
+    compileOnly files(gameDir + '/json.jar') // ... so we'll use the local copy and miss out on Javadoc
+
+    // And the game's API itself
+    // You'll need to rename starfarer.api.zip to starfarer.api-sources.jar if you want Javadoc/source support
+    compileOnly files(gameDir + '/starfarer.api.jar')
+
+    // If Gradle fails to find any of the above dependencies, replace this entire section with this line:
+    //compileOnly fileTree(dir: gameDir, include: '*.jar', exclude: '*_obf.jar')
+
+
+    ///////////////////////////////////////////////////////////////
+    // Local mod dependencies (locations set in local.properties //
+    ///////////////////////////////////////////////////////////////
+
+    // LazyLib
     compileOnly files(lazylibDir + '/jars/LazyLib.jar')
     compileOnly files(lazylibDir + '/jars/LazyLib-Kotlin.jar')
     //compileOnly fileTree(dir: lazylibDir + '/jars/', include: '*.jar')
@@ -214,6 +235,11 @@ dokkaJavadoc.finalizedBy removeDocTimestamps
 
 copyModFiles {
     description = 'Copies non-compiled mod files to the output directory.'
+    group = 'build'
+}
+
+updateVersion {
+    description = "Automatically updates mod_info.json and console.version to the current version number."
     group = 'build'
 }
 
