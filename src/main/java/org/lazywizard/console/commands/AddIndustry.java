@@ -114,7 +114,6 @@ public class AddIndustry implements BaseCommand
             }
         }
 
-        // TODO: Remove after 0.9.1a (provided hardcoded limitation is lifted)
         if (market.getIndustries().size() >= 12)
         {
             Console.showMessage("Warning: market '" + market.getName() + "' already has the maximum number of industries!\n" +
