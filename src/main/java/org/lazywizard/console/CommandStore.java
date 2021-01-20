@@ -384,13 +384,13 @@ public class CommandStore
     }
 
     /**
-     * Retrieves the raw data for a specific command.
+     * Retrieves the internal data for a specific command.
      *
      * @param command The name of the command to retrieve.
      *
-     * @return The {@link StoredCommand} containing all of the data the console
-     *         needs to use this command, such as its name, class, syntax, helpfile, and
-     *         what mod registered it.
+     * @return The {@link StoredCommand} containing all the information the console
+     *         has registered for this command, such as its name, class, syntax, helpfile, and
+     *         which mod is responsible for adding it.
      *
      * @since 2.0
      */

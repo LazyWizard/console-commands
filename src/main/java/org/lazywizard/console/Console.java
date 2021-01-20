@@ -283,18 +283,8 @@ public class Console
             }
         }
 
-        // Command listener support
         final List<CommandListener> listeners = CommandStore.getListeners();
         CommandListener interceptor = null;
-        for (CommandListener listener : listeners)
-        {
-            // Listeners are given the opportunity to take over execution of the command
-            if (listener.onPreExecute(com, args, context, (interceptor != null)))
-            {
-                if (interceptor == null) interceptor = listener;
-            }
-        }
-
         try
         {
             StoredCommand stored = CommandStore.retrieveCommand(com);
@@ -317,6 +307,16 @@ public class Console
             {
                 showMessage("> " + input);
             }
+            
+            // Command listener support
+            for (CommandListener listener : listeners)
+            {
+                // Listeners are given the opportunity to take over execution of the command
+                if (listener.onPreExecute(com, args, context, (interceptor != null)))
+                {
+                    if (interceptor == null) interceptor = listener;
+                }
+            }
 
             if (interceptor != null)
             {
@@ -338,7 +338,7 @@ public class Console
         {
             showException("Failed to execute command \"" + input
                     + "\" in context " + context, ex);
-            return CommandResult.ERROR;
+            result = CommandResult.ERROR;
         }
 
         for (CommandListener listener : listeners)
