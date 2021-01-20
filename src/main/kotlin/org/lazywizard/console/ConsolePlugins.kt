@@ -12,11 +12,12 @@ import java.util.*
 internal class ConsoleCampaignListener : CampaignInputListener, ConsoleListener {
     override fun getListenerInputPriority(): Int = 9999
 
-    override fun processCampaignInputPreCore(events: List<InputEventAPI>) {
+    override fun processCampaignInputPreCore(events: MutableList<InputEventAPI>) {
         if (Global.getSector().campaignUI.isShowingMenu) return
 
         if (Console.getSettings().consoleSummonKey.isPressed(events)) {
             show(context)
+            events.clear()
         }
 
         Console.advance(this)
@@ -46,11 +47,12 @@ internal class ConsoleCampaignListener : CampaignInputListener, ConsoleListener 
 internal class ConsoleCombatListener : BaseEveryFrameCombatPlugin(), ConsoleListener {
     private lateinit var context: CommandContext
 
-    override fun processInputPreCoreControls(amount: Float, events: List<InputEventAPI>) {
+    override fun processInputPreCoreControls(amount: Float, events: MutableList<InputEventAPI>) {
         if (Global.getCombatEngine().playerShip == null) return
 
         if (Console.getSettings().consoleSummonKey.isPressed(events)) {
             show(context)
+            events.clear()
         }
 
         // Advance the console and all combat commands
