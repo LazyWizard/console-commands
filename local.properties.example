@@ -1,4 +1,6 @@
 # Change this to point at the folder containing starfarer.api.jar
+# You will need to rename starfarer.api.zip to starfarer.api-sources.jar if you want
+# your IDE to display source code and documentation for API/impl classes
 starsectorInstallDir=C:/Program Files (x86)/Fractal Softworks/Starsector/starsector-core
 
 # Change this to point at your local LazyLib install (the root mod folder, not the jars subfolder)

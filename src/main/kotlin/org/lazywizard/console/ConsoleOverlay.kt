@@ -1,15 +1,21 @@
 @file:JvmName("ConsoleOverlay")
 
+/**
+ * This overlay seems to be an exercise in how many features I can cram in before
+ * I'm forced to write proper UI and layout classes. I apologize in advance for
+ * anyone who has to read this mess.
+ */
+
 package org.lazywizard.console
 
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.campaign.SectorEntityToken
 import org.lazywizard.console.BaseCommand.CommandContext
+import org.lazywizard.console.ext.GPUInfo
+import org.lazywizard.console.ext.getGPUInfo
 import org.lazywizard.lazylib.opengl.ColorUtils.glColor
 import org.lwjgl.BufferUtils
 import org.lwjgl.Sys
 import org.lwjgl.input.Keyboard
-import org.lwjgl.input.Keyboard.*
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11.*
@@ -28,8 +34,12 @@ private const val CURSOR_BLINK_SPEED = 0.7f
 internal const val HORIZONTAL_MARGIN = 30f // Don't go below 30; TODO: scale minor UI elements using this setting
 private var overlay: ConsoleOverlayInternal? = null
 
-fun show(context: CommandContext) = with(ConsoleOverlayInternal(context,
-        Console.getSettings().outputColor, Console.getSettings().outputColor.darker()))
+fun show(context: CommandContext) = with(
+    ConsoleOverlayInternal(
+        context,
+        Console.getSettings().outputColor, Console.getSettings().outputColor.darker()
+    )
+)
 {
     try {
         overlay = this
@@ -54,11 +64,13 @@ internal fun addToHistory(toAdd: String) {
 
 // TODO: This uses a lot of hardcoded numbers; need to refactor these into constants at some point
 // TODO: Move UI element instantiation into initializer to make size/position details clearer
-private class ConsoleOverlayInternal(private val context: CommandContext, mainColor: Color, secondaryColor: Color) : ConsoleListener {
+private class ConsoleOverlayInternal(private val context: CommandContext, mainColor: Color, secondaryColor: Color) :
+    ConsoleListener {
     private val settings = Console.getSettings()
     private val bgTextureId = if (settings.showBackground) glGenTextures() else 0
     private val byteFormat = DecimalFormat("#,##0.#")
     private val memory = ManagementFactory.getMemoryMXBean()
+    private val gpuInfo = getGPUInfo()
     private val font = Console.getFont()
     private val width = Display.getWidth() * Display.getPixelScaleFactor()
     private val height = Display.getHeight() * Display.getPixelScaleFactor()
@@ -67,11 +79,19 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     private val maxX = minX + Console.getScrollbackWidth()
     private val minY = 50f + fontSize
     private val maxY = height - 80f
-    private val scrollback = font.createText(text = history, size = fontSize, color = mainColor, maxWidth = maxX - minX)
-    private val query = font.createText(text = CommonStrings.INPUT_QUERY, color = secondaryColor, maxWidth = width, maxHeight = 30f)
+    private val scrollback =
+        font.createText(text = history.trimStart(), size = fontSize, color = mainColor, maxWidth = maxX - minX)
+    private val query =
+        font.createText(text = CommonStrings.INPUT_QUERY, color = secondaryColor, maxWidth = width, maxHeight = 30f)
     private val prompt = font.createText(text = "> ", color = secondaryColor, maxWidth = width, maxHeight = 30f)
-    private val input = font.createText(text = "", color = mainColor, maxWidth = width - (prompt.width + 60f), maxHeight = fontSize * 30)
-    private val mem = font.createText(text = getMemText(), color = Color.LIGHT_GRAY)
+    private val input = font.createText(
+        text = "",
+        color = mainColor,
+        maxWidth = width - (prompt.width + 60f),
+        maxHeight = fontSize * 30
+    )
+    private val ramText = font.createText(text = getRAMText(), color = Color.LIGHT_GRAY)
+    private val vramText = font.createText(text = getVRAMText(), color = Color.LIGHT_GRAY)
     private val curContext = font.createText(text = context.name, color = secondaryColor)
     private val curTarget = font.createText(text = getCurrentTarget(), color = secondaryColor)
     private val devMode = font.createText(text = "DEVMODE", color = Color.LIGHT_GRAY)
@@ -169,6 +189,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         // Clean up background texture (if any) and clear any remaining input events
         if (settings.showBackground) glDeleteTextures(bgTextureId)
         while (Keyboard.next()) Keyboard.poll()
+        while (Mouse.next()) Mouse.poll()
     }
 
     fun clear() {
@@ -182,7 +203,8 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         query.dispose()
         prompt.dispose()
         input.dispose()
-        mem.dispose()
+        ramText.dispose()
+        vramText.dispose()
         curContext.dispose()
         curTarget.dispose()
         devMode.dispose()
@@ -214,21 +236,36 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         "$percent (${asString(used)}/${asString(Math.max(max, committed))})"
     }
 
-    private fun getMemText(): String {
-        // TODO: Add setting to toggle non-heap memory usage visibility (default false) )
-        return "Memory used: ${asString(memory.heapMemoryUsage)}" //"   |   Non-heap: ${asString(memory.nonHeapMemoryUsage)}"
-    }
+    // TODO: Add setting to toggle non-heap memory usage visibility (default false) )
+    private fun getRAMText(): String =
+        "Memory used: ${asString(memory.heapMemoryUsage)}"
+    //"  |  Non-heap: ${asString(memory.nonHeapMemoryUsage)}"
 
-    private fun getMemColor(usage: MemoryUsage): Color = with(usage) {
+    private fun getRAMColor(usage: MemoryUsage): Color = with(usage) {
         val total = Math.max(max, committed)
         val portion = used / total
         val remaining = total - used
-        if (remaining < (1024 * 1024 * 200) || portion > 0.9) return Color.RED
-        else if (remaining < (1024 * 1024 * 400) || portion > 0.8) return Color.YELLOW
-        return Color.GREEN
+        return when {
+            (remaining < (1024 * 1024 * 200) || portion > 0.9) -> Color.RED
+            (remaining < (1024 * 1024 * 400) || portion > 0.8) -> Color.YELLOW
+            else -> Color.GREEN
+        }
     }
 
-    private fun getCurrentTarget():String {
+    private fun getVRAMText(): String = "  Free VRAM: ${asString(gpuInfo.getFreeVRAM())}"
+
+    private fun getVRAMColor(usage: GPUInfo): Color = with(usage)
+    {
+        val remaining = getFreeVRAM()
+        return when {
+            remaining <= 0 -> Color.RED
+            remaining < 1024 * 1024 * 50 -> Color.ORANGE
+            remaining < 1024 * 1024 * 100 -> Color.YELLOW
+            else -> Color.GREEN
+        }
+    }
+
+    private fun getCurrentTarget(): String {
         if (context.isInCampaign)
             return "Target: " + (context.entityInteractedWith?.name ?: "none")
 
@@ -236,7 +273,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     }
 
     private fun checkInput() {
-        if (Keyboard.isKeyDown(KEY_ESCAPE)) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             isOpen = false
             return
         }
@@ -245,9 +282,11 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         val scrollY = Mouse.getDWheel()
         scrollOffset -= scrollY * .2f
 
-        val ctrlDown = Keyboard.isKeyDown(KEY_LCONTROL) || Keyboard.isKeyDown(KEY_RCONTROL)
-        val shiftDown = Keyboard.isKeyDown(KEY_LSHIFT) || Keyboard.isKeyDown(KEY_RSHIFT)
-        //val altDown = Keyboard.isKeyDown(KEY_LMETA) || Keyboard.isKeyDown(KEY_RMETA)
+        val ctrlDown = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ||
+                Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)
+        val shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ||
+                Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)
+        //val altDown = isKeyDown(KEY_LMETA) || isKeyDown(KEY_RMETA)
         val previousLength = currentInput.length
         while (Keyboard.next()) {
             try {
@@ -261,7 +300,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
 
                 // Load last command when user presses up on keyboard
                 val keyPressed = Keyboard.getEventKey()
-                if (keyPressed == KEY_UP && Console.getLastCommand() != null) {
+                if (keyPressed == Keyboard.KEY_UP && Console.getLastCommand() != null) {
                     lastInput = currentInput.toString()
                     lastIndex = currentIndex
                     currentInput.replace(0, currentInput.length, Console.getLastCommand())
@@ -270,7 +309,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                 }
 
                 // Down restores previous command overwritten by up
-                if (keyPressed == KEY_DOWN && lastInput != null) {
+                if (keyPressed == Keyboard.KEY_DOWN && lastInput != null) {
                     currentInput.replace(0, currentInput.length, lastInput)
                     currentIndex = lastIndex
                     lastInput = null
@@ -279,7 +318,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                 }
 
                 // Tab auto-completes the current command
-                if (keyPressed == KEY_TAB) {
+                if (keyPressed == Keyboard.KEY_TAB) {
                     // Get just the current command (separator support complicates things)
                     val startIndex = currentInput.lastIndexOf(settings.commandSeparator, currentIndex) + 1
                     val tmp = currentInput.indexOf(settings.commandSeparator, startIndex)
@@ -325,27 +364,27 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                 }
 
                 // Left or right move the editing cursor; home and end move to start/end respectively
-                if (keyPressed == KEY_LEFT) {
+                if (keyPressed == Keyboard.KEY_LEFT) {
                     currentIndex = Math.max(0, currentIndex - 1)
                     continue
-                } else if (keyPressed == KEY_RIGHT) {
+                } else if (keyPressed == Keyboard.KEY_RIGHT) {
                     currentIndex = Math.min(currentInput.length, currentIndex + 1)
                     continue
-                } else if (keyPressed == KEY_HOME) {
+                } else if (keyPressed == Keyboard.KEY_HOME) {
                     currentIndex = 0
                     continue
-                } else if (keyPressed == KEY_END) {
+                } else if (keyPressed == Keyboard.KEY_END) {
                     currentIndex = currentInput.length
                     continue
                 }
 
                 // PageUp/Down; scroll an entire page at once
-                if (keyPressed == KEY_PRIOR) {
+                if (keyPressed == Keyboard.KEY_PRIOR) {
                     if (ctrlDown || shiftDown)
                         scrollOffset = minScroll
                     else
                         scrollOffset -= height - (80 + fontSize)
-                } else if (keyPressed == KEY_NEXT) {
+                } else if (keyPressed == Keyboard.KEY_NEXT) {
                     if (ctrlDown || shiftDown)
                         scrollOffset = 0f
                     else
@@ -353,23 +392,24 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                 }
 
                 // Backspace handling; imitates vanilla text inputs
-                if (keyPressed == KEY_BACK && currentIndex > 0) {
+                if (keyPressed == Keyboard.KEY_BACK && currentIndex > 0) {
                     // Control+backspace, delete last word
                     if (ctrlDown) {
                         // Positional editing support
-                        val lastSpace = currentInput.substring(0, currentIndex).lastIndexOfAny(listOf(" ", settings.commandSeparator))
+                        val lastSpace = currentInput.substring(0, currentIndex)
+                            .lastIndexOfAny(listOf(" ", settings.commandSeparator))
                         if (lastSpace == -1) currentInput.delete(0, currentIndex)
                         else currentInput.delete(lastSpace, currentIndex)
                     } else { // Regular backspace, delete last character
                         currentInput.deleteCharAt(currentIndex - 1)
                     }
                 } // Delete key handling
-                else if (keyPressed == KEY_DELETE && currentIndex < currentInput.length) {
+                else if (keyPressed == Keyboard.KEY_DELETE && currentIndex < currentInput.length) {
                     currentInput.deleteCharAt(currentIndex)
                     currentIndex++
                 }
                 // Return key handling
-                else if (keyPressed == KEY_RETURN) {
+                else if (keyPressed == Keyboard.KEY_RETURN) {
                     // Shift+enter to enter a newline
                     if (shiftDown) {
                         currentInput.insert(currentIndex, '\n')
@@ -393,7 +433,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                     }
                 }
                 // Paste handling
-                else if (keyPressed == KEY_V && ctrlDown && Sys.getClipboard() != null) {
+                else if (keyPressed == Keyboard.KEY_V && ctrlDown && Sys.getClipboard() != null) {
                     val pasted = Sys.getClipboard() ?: continue
                     currentInput.insert(currentIndex, pasted)
                 }
@@ -409,11 +449,15 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                 currentIndex += currentInput.length - previousLength
                 currentIndex = Math.min(Math.max(0, currentIndex), currentInput.length)
             } catch (ex: ArrayIndexOutOfBoundsException) {
-                Console.showMessage("Something went wrong with the input parser!"
-                        + "\nPlease send a copy of starsector.log to LazyWizard.")
-                Log.error("Input dump:\n - Current input: $currentInput | Index:" +
-                        " $currentIndex/${currentInput.length}\n - Last input: ${lastInput ?: "null"}" +
-                        " | Index: $lastIndex/${lastInput?.length}", ex)
+                Console.showMessage(
+                    "Something went wrong with the input parser!"
+                            + "\nPlease send a copy of starsector.log to LazyWizard."
+                )
+                Log.error(
+                    "Input dump:\n - Current input: $currentInput | Index:" +
+                            " $currentIndex/${currentInput.length}\n - Last input: ${lastInput ?: "null"}" +
+                            " | Index: $lastIndex/${lastInput?.length}", ex
+                )
                 currentIndex = currentInput.length
                 lastIndex = 0
             }
@@ -432,7 +476,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         }
 
         // Ensure scrolling can't go beyond the bounds of the displayed text
-        minScroll = (-scrollback.height + (height - 80 - fontSize)).coerceAtMost(0f)
+        minScroll = (-scrollback.height + (maxY - minY)).coerceAtMost(0f)
         scrollOffset = scrollOffset.coerceIn(minScroll, 0f)
 
         // Only update our DrawableStrings when there's actually been a change
@@ -446,8 +490,10 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
 
             if (settings.showCursorIndex) input.appendText(" | Index: $currentIndex/${currentInput.length}")
             if (settings.showMemoryUsage) {
-                mem.text = getMemText()
-                mem.color = getMemColor(memory.heapMemoryUsage)
+                ramText.text = getRAMText()
+                ramText.color = getRAMColor(memory.heapMemoryUsage)
+                vramText.text = getVRAMText()
+                vramText.color = getVRAMColor(gpuInfo)
             }
         }
     }
@@ -492,6 +538,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         }
 
         val inputHeight = Math.max(fontSize, input.height)
+        val memWidth = Math.max(ramText.width, vramText.width)
 
         // Draw scrollback
         val minY = minY + (inputHeight - fontSize)
@@ -518,10 +565,13 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         input.draw(30f + prompt.width, 15f + inputHeight)
 
         // Draw misc stats
-        if (settings.showMemoryUsage) mem.draw(50f, height - fontSize)
+        if (settings.showMemoryUsage) {
+            ramText.draw(50f, height - fontSize)
+            vramText.draw(50f, height - fontSize * 2)
+        }
         if (Global.getSettings().isDevMode) devMode.draw(maxX - (50f + devMode.width), height - fontSize)
-        curContext.draw(Math.max(150f + mem.width, (width / 2f) - (curContext.width / 2f)), height - fontSize)
-        curTarget.draw(Math.max(150f + mem.width, (width / 2f) - (curTarget.width / 2f)), height - fontSize * 2)
+        curContext.draw(Math.max(150f + memWidth, (width / 2f) - (curContext.width / 2f)), height - fontSize)
+        curTarget.draw(Math.max(150f + memWidth, (width / 2f) - (curTarget.width / 2f)), height - fontSize * 2)
 
         // Draw scrollbar
         glDisable(GL_TEXTURE_2D)

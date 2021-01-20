@@ -7,6 +7,7 @@ import org.lazywizard.console.CommandStore;
 import org.lazywizard.console.CommandStore.StoredCommand;
 import org.lazywizard.console.Console;
 
+// TODO: Extend to cover ships/weapons/modspecs/commodities/etc
 public class SourceOf implements BaseCommand
 {
     @Override
