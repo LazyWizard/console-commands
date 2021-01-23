@@ -124,7 +124,8 @@ public class List_ implements BaseCommand
         if (args.equalsIgnoreCase("consolecommands"))
         {
             final List<String> universal = new ArrayList<>(),
-                    combat = new ArrayList<>(), campaign = new ArrayList<>();
+                    combat = new ArrayList<>(),
+                    campaign = new ArrayList<>();
             for (String command : CommandStore.getLoadedCommands())
             {
                 final List<String> tags = CommandStore.retrieveCommand(command).getTags();
@@ -310,7 +311,8 @@ public class List_ implements BaseCommand
                 ids = new ArrayList<>();
                 for (FactionAPI faction : sector.getAllFactions())
                 {
-                    ids.add(pad(faction.getId()) + " (" + faction.getDisplayNameLong() + ")");
+                    ids.add(pad(faction.getId()) + " (" + faction.getDisplayNameLong() +
+                            (faction.isShowInIntelTab() ? "" : ", hidden") + ")");
                 }
                 break;
             case "bases":
@@ -437,7 +439,8 @@ public class List_ implements BaseCommand
         }
 
         // Support for further filtering results
-        if (tmp.length > 1)
+        final boolean useFilter = (tmp.length > 1);
+        if (useFilter)
         {
             final String filter = args.substring(args.indexOf(' ') + 1);
             param += " containing \"" + filter + "\"";
@@ -455,14 +458,21 @@ public class List_ implements BaseCommand
         }
         else
         {
-            param = "all " + ids.size() + " " + param + " (enter 'list " + args +
-                    " <filter>' to filter the results further, ex: 'list ships hound')";
+            param = "all " + ids.size() + " " + param;
         }
 
         // Format and print the list of valid IDs
         Collections.sort(ids, String.CASE_INSENSITIVE_ORDER);
         final String results = CollectionUtils.implode(ids, (newLinePerItem ? "\n" : ", "));
         Console.showIndentedMessage("Listing " + param + ":", results, 3);
+
+        // Notify about the filter feature
+        if (!useFilter && ids.size() > 5)
+        {
+            Console.showMessage("\nThe results can be filtered with 'list " + args + " <filter>' to make " +
+                    "finding a specific entry easier (ex: 'list ships hound' or 'list markets hegemony').");
+        }
+
         return CommandResult.SUCCESS;
     }
 }
