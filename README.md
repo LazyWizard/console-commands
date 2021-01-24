@@ -1,4 +1,5 @@
-# README #
+# Console Commands #
+![GitHub all releases](https://img.shields.io/github/downloads/LazyWizard/console-commands/total) ![GitHub release (latest by date)](https://img.shields.io/github/downloads/LazyWizard/console-commands/latest/total)
 
 This is the repository for the Console Commands mod, an unofficial developer's console for Fractal Softworks' indie space combat game **Starsector**. You can find the official forum thread for this mod, including installation instructions, [here](http://fractalsoftworks.com/forum/index.php?topic=4106.0). Documentation for this mod can be found [here](https://lazywizard.github.io/console-commands/). The remainder of this readme is for those who wish to contribute to this mod's development.
 
