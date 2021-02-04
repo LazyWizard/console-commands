@@ -20,7 +20,7 @@ public class ForceMarketUpdate implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
-        int totalMarkets = 0, totalSubmarkets = 0;
+        int totalMarkets = 0, totalSubmarkets = 0, failedSubmarkets = 0;
         for (MarketAPI market : Global.getSector().getEconomy().getMarketsCopy())
         {
             totalMarkets++;
@@ -35,18 +35,28 @@ public class ForceMarketUpdate implements BaseCommand
                 // Only update submarkets that implement BaseSubmarketPlugin (guaranteed to have the proper fields)
                 if (submarket.getPlugin() instanceof BaseSubmarketPlugin)
                 {
-                    final BaseSubmarketPlugin plugin = (BaseSubmarketPlugin) submarket.getPlugin();
-                    plugin.setSinceSWUpdate(plugin.getMinSWUpdateInterval() + 1);
-                    plugin.setSinceLastCargoUpdate(plugin.getMinSWUpdateInterval() + 1);
-                    totalSubmarkets++;
-                    plugin.updateCargoPrePlayerInteraction();
-                    plugin.setSinceSWUpdate(0);
+                    try
+                    {
+                        final BaseSubmarketPlugin plugin = (BaseSubmarketPlugin) submarket.getPlugin();
+                        plugin.setSinceSWUpdate(plugin.getMinSWUpdateInterval() + 1);
+                        plugin.setSinceLastCargoUpdate(plugin.getMinSWUpdateInterval() + 1);
+                        plugin.updateCargoPrePlayerInteraction();
+                        plugin.setSinceSWUpdate(0);
+                        totalSubmarkets++;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.showException("Failed to update submarket '" + submarket.getSpecId() +
+                                "' of market " + market.getName() + " (" + market.getId() + "): ", ex);
+                        failedSubmarkets++;
+                    }
                 }
             }
         }
 
         Console.showMessage("Updated inventory for " + totalSubmarkets
-                + " submarkets in " + totalMarkets + " markets.");
+                + " submarkets in " + totalMarkets + " markets." + (failedSubmarkets > 0 ?
+                " " + failedSubmarkets + " submarkets failed to update." : ""));
         return CommandResult.SUCCESS;
     }
 }
