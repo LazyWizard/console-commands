@@ -1,1 +1,1 @@
-var moduleSearchIndex = [{"l":"Console Commands","url":"index.html"}]
+var moduleSearchIndex = [{"l":"console-clean","url":"index.html"}]
