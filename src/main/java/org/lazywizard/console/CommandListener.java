@@ -7,7 +7,7 @@ import org.lazywizard.console.BaseCommand.CommandResult;
 
 /**
  * Provides an interface to listen for command execution, with the option to intercept the command and execute your own
- * code instead.
+ * code instead. Listeners are registered in {@code data/console/command_listeners.csv}.
  * <p>
  * <b>Important performance note:</b> {@link CommandListener}s are persistent through the entire game session, so be
  * careful with your memory management!

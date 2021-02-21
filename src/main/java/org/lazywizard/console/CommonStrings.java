@@ -57,6 +57,10 @@ public class CommonStrings
      * @since 3.0
      */
     public static final String PATH_LISTENER_CSV = "data/console/command_listeners.csv";
+    /**
+     * Commands with this tag are considered cheats, and will be disabled if the applicable setting is toggled.
+     */
+    public static final String CHEAT_TAG = "cheat";
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Common messages">

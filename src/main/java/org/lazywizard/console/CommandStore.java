@@ -41,7 +41,8 @@ public class CommandStore
      * @throws JSONException if the CSV is malformed or missing columns.
      * @since 2.0
      */
-    public static void reloadAll() throws IOException, JSONException{
+    public static void reloadAll() throws IOException, JSONException
+    {
         reloadCommands();
         reloadAliases();
         reloadListeners();
@@ -211,6 +212,20 @@ public class CommandStore
         Log.info("Loaded listeners: " + CollectionUtils.implode(getListeners()));
     }
 
+    private static Map<String, StoredCommand> getStoredCommands()
+    {
+        if (Console.getSettings().getCheatsAllowedForSave()) return storedCommands;
+
+        final Map<String, StoredCommand> commands = new HashMap<>();
+        for (Map.Entry<String, StoredCommand> entry : storedCommands.entrySet())
+        {
+            if (entry.getValue().getTags().contains(CommonStrings.CHEAT_TAG)) continue;
+            commands.put(entry.getKey(), entry.getValue());
+        }
+
+        return commands;
+    }
+
     /**
      * Returns all commands currently loaded by the mod.
      *
@@ -221,7 +236,7 @@ public class CommandStore
     public static List<String> getLoadedCommands()
     {
         final List<String> commands = new ArrayList<>(storedCommands.size());
-        for (StoredCommand tmp : storedCommands.values())
+        for (StoredCommand tmp : getStoredCommands().values())
         {
             commands.add(tmp.getName());
         }
@@ -268,7 +283,7 @@ public class CommandStore
     public static List<String> getApplicableCommands(CommandContext context)
     {
         final List<String> commands = new ArrayList<>();
-        for (StoredCommand command : storedCommands.values())
+        for (StoredCommand command : getStoredCommands().values())
         {
             if (isApplicable(command, context))
             {
@@ -336,7 +351,13 @@ public class CommandStore
      */
     public static List<String> getKnownTags()
     {
-        return new ArrayList<>(tags);
+        final List<String> allowedTags = new ArrayList<>(tags);
+        if (!Console.getSettings().getCheatsAllowedForSave())
+        {
+            tags.remove(CommonStrings.CHEAT_TAG);
+        }
+
+        return allowedTags;
     }
 
     /**
@@ -354,7 +375,7 @@ public class CommandStore
         tag = tag.toLowerCase();
 
         final List<String> commands = new ArrayList<>();
-        for (StoredCommand tmp : storedCommands.values())
+        for (StoredCommand tmp : getStoredCommands().values())
         {
             if (tmp.getTags().contains(tag))
             {
@@ -398,9 +419,9 @@ public class CommandStore
     {
         command = command.toLowerCase();
 
-        if (storedCommands.containsKey(command))
+        if (getStoredCommands().containsKey(command))
         {
-            return storedCommands.get(command);
+            return getStoredCommands().get(command);
         }
 
         return null;

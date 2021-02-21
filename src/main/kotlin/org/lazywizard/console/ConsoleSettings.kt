@@ -1,5 +1,6 @@
 package org.lazywizard.console
 
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.input.InputEventAPI
 import org.lazywizard.console.cheatmanager.CheatTarget
 import org.lazywizard.lazylib.JSONUtils
@@ -18,17 +19,35 @@ object ConsoleSettings {
     var commandSeparator by StringPref("commandSeparator", default = ";")
     var maxScrollback by IntPref("maxScrollback", default = 10_000)
     var typoCorrectionThreshold by FloatPref("typoCorrectionThreshold", default = 0.9f)
-    var showBackground by BoolPref("showBackground", default = (System.getProperty("os.name").startsWith("Windows", 0, true)))
+    var showBackground by BoolPref(
+        "showBackground",
+        default = (System.getProperty("os.name").startsWith("Windows", 0, true))
+    )
     var useHomeForStorage by BoolPref("useHomeForStorage", default = true)
     var devModeTogglesDebugFlags by BoolPref("devModeTogglesDebugFlags", default = true)
-    var defaultCombatCheatTarget by EnumPref("defaultCombatCheatTarget", enumClass = CheatTarget::class.java, default = CheatTarget.PLAYER)
+    var defaultCombatCheatTarget by EnumPref(
+        "defaultCombatCheatTarget",
+        enumClass = CheatTarget::class.java,
+        default = CheatTarget.PLAYER
+    )
     var showEnteredCommands by BoolPref("showEnteredCommands", default = true)
     var showMemoryUsage by BoolPref("showMemoryUsage", default = true)
     var showCursorIndex by BoolPref("showCursorIndex", default = false)
     var showExceptionDetails by BoolPref("showExceptionDetails", default = false)
     var outputColor by ColorPref("outputColor", default = Color(0, 255, 255))
-    var consoleSummonKey by KeystrokePref("consoleKeystroke",
-            default = Keystroke(Keyboard.getKeyIndex("BACK"), true, false, false))
+    var consoleSummonKey by KeystrokePref(
+        "consoleKeystroke",
+        default = Keystroke(Keyboard.getKeyIndex("BACK"), true, false, false)
+    )
+    var cheatsAllowedForSave: Boolean
+        get() = if (Console.getContext()?.isCampaignAccessible!!)
+            !Global.getSector().persistentData.containsKey(
+                ShowSettings.SettingsDialog.genCheatId()
+            ) else false
+        // Can only be enabled, never disabled
+        @JvmSynthetic internal set(value) {
+            if (value) Global.getSector().persistentData[ShowSettings.SettingsDialog.genCheatId()] = System.nanoTime()
+        }
 
     fun resetToDefaults() {
         JSONUtils.clear(settings)
@@ -116,13 +135,17 @@ object ConsoleSettings {
     private class KeystrokePref(val key: String, default: Keystroke) {
         private var field = parseKeystroke(settings.optString(key, asString(default)))
 
-        private fun asString(keystroke: Keystroke) = "${keystroke.keyCode}|${keystroke.ctrl}|${keystroke.alt}|${keystroke.shift}"
+        private fun asString(keystroke: Keystroke) =
+            "${keystroke.keyCode}|${keystroke.ctrl}|${keystroke.alt}|${keystroke.shift}"
+
         private fun parseKeystroke(keystroke: String): Keystroke {
             val components = keystroke.split('|')
-            return Keystroke(Integer.parseInt(components[0]),
-                    java.lang.Boolean.parseBoolean(components[1]),
-                    java.lang.Boolean.parseBoolean(components[2]),
-                    java.lang.Boolean.parseBoolean(components[3]))
+            return Keystroke(
+                Integer.parseInt(components[0]),
+                java.lang.Boolean.parseBoolean(components[1]),
+                java.lang.Boolean.parseBoolean(components[2]),
+                java.lang.Boolean.parseBoolean(components[3])
+            )
         }
 
         operator fun getValue(consoleSettings: ConsoleSettings, property: KProperty<*>): Keystroke = field

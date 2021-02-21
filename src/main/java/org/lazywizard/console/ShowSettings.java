@@ -9,11 +9,13 @@ import com.fs.starfarer.api.ui.PositionAPI;
 import com.fs.starfarer.api.ui.ValueDisplayMode;
 import org.lazywizard.console.ConsoleSettings.Keystroke;
 import org.lazywizard.console.cheatmanager.CheatTarget;
+import org.lazywizard.lazylib.CollectionUtils;
 import org.lazywizard.lazylib.ui.LazyFont.DrawableString;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
-import java.awt.*;
+import java.awt.Color;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +62,7 @@ public class ShowSettings implements BaseCommand
             TEXT,
             OVERLAY,
             MISC,
+            CHEAT_CONFIRM,
             LISTEN_KEYSTROKE,
             LISTEN_SEPARATOR
         }
@@ -75,6 +78,7 @@ public class ShowSettings implements BaseCommand
             HOME_STORAGE,
             DEVMODE_FLAGS,
             TEST_COLOR,
+            DISABLE_CHEATS,
             EXIT
         }
 
@@ -86,6 +90,11 @@ public class ShowSettings implements BaseCommand
             TYPO_THRESHOLD,
             MAX_SCROLLBACK,
             TEXT_SCALE
+        }
+
+        protected static String genCheatId()
+        {
+            return Global.getSector().getSeedString() + "lwc";
         }
 
         @Override
@@ -204,8 +213,8 @@ public class ShowSettings implements BaseCommand
                             "Whether to show Starsector's current memory usage at the top of the console overlay.");
                     options.addOption("Show error stack traces: " + (showExceptions ? "true" : "false"),
                             Option.SHOW_EXCEPTIONS, getToggleOptionColor(showExceptions),
-                            "Whether to show exception stack traces when something goes wrong. Very spammy!\n" +
-                                    "Exceptions are always saved starsector.log, so this is only useful for developers.");
+                            "Whether to show exception stack traces when something goes wrong. This can be very spammy!\n" +
+                                    "Exceptions are always saved to starsector.log, so this is only useful for developers.");
                     options.addOption("Show cursor index (debug): " + (showIndex ? "true" : "false"),
                             Option.SHOW_INDEX, getToggleOptionColor(showIndex),
                             "Whether to show debug information in the overlay's input text field.");
@@ -236,6 +245,27 @@ public class ShowSettings implements BaseCommand
                     options.addOption("Toggle debug flags with DevMode: " + (devModeFlags ? "true" : " false"),
                             Option.DEVMODE_FLAGS, getToggleOptionColor(devModeFlags),
                             "When enabled, toggling devmode will also reset all debug flags (faction control override, etc).");
+
+                    // Disable all cheat commands for the current save
+                    options.addOption("Disable cheats", Menu.CHEAT_CONFIRM, "Disables all commands that can be used to gain an unfair advantage.");
+                    options.setEnabled(Menu.CHEAT_CONFIRM, settings.getCheatsAllowedForSave());
+                    break;
+                case CHEAT_CONFIRM:
+                    final List<String> legalCommands = CommandStore.getLoadedCommands();
+                    legalCommands.removeAll(CommandStore.getCommandsWithTag(CommonStrings.CHEAT_TAG));
+                    Collections.sort(legalCommands);
+
+                    text.addParagraph("Warning: this will permanently disable cheat codes for the current save!");
+                    text.highlightInLastPara(Color.RED, "permanently");
+
+                    text.addParagraph("\nThe only commands you'll be able to use are the following:");
+                    text.highlightFirstInLastPara("only", Color.RED);
+
+                    text.addParagraph(CollectionUtils.implode(legalCommands) +
+                            ".\n\nPress 'confirm' to disable all other commands for this save.");
+                    text.highlightLastInLastPara("confirm", Color.YELLOW);
+
+                    options.addOption("Confirm", Option.DISABLE_CHEATS, "Warning: this cannot be undone!");
                     break;
             }
 
@@ -244,6 +274,11 @@ public class ShowSettings implements BaseCommand
             {
                 options.addOption("Back", Menu.OVERLAY, "Return to the overlay settings menu.");
                 options.setShortcut(Menu.OVERLAY, Keyboard.KEY_ESCAPE, false, false, false, true);
+            }
+            else if (menu == Menu.CHEAT_CONFIRM)
+            {
+                options.addOption("Cancel", Menu.MISC, "Return to the misc settings menu.");
+                options.setShortcut(Menu.MISC, Keyboard.KEY_ESCAPE, false, false, false, true);
             }
             else if (menu != Menu.MAIN)
             {
@@ -300,6 +335,11 @@ public class ShowSettings implements BaseCommand
                 case TEST_COLOR:
                     text.addParagraph("Here is what the console's output would look like with color {"
                             + red + ", " + green + ", " + blue + "}.", new Color(red, green, blue));
+                    break;
+                case DISABLE_CHEATS:
+                    Global.getSector().getPersistentData().put(genCheatId(), System.nanoTime());
+                    goToMenu(Menu.MISC);
+                    text.addPara("Cheats have been permanently disabled for this save.\n", Color.RED);
                     break;
                 case EXIT:
                     saveOptions();
