@@ -11,6 +11,7 @@ import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lwjgl.util.vector.Vector2f;
 
+// TODO: Polish system jumps (Meso request)
 public class GoTo implements BaseCommand
 {
     @Override

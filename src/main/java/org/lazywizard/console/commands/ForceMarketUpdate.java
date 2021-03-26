@@ -38,16 +38,18 @@ public class ForceMarketUpdate implements BaseCommand
                     try
                     {
                         final BaseSubmarketPlugin plugin = (BaseSubmarketPlugin) submarket.getPlugin();
-                        plugin.setSinceSWUpdate(plugin.getMinSWUpdateInterval() + 1);
-                        plugin.setSinceLastCargoUpdate(plugin.getMinSWUpdateInterval() + 1);
+                        plugin.setSinceSWUpdate(plugin.getMinSWUpdateInterval() + 1f);
+                        plugin.setSinceLastCargoUpdate(plugin.getMinSWUpdateInterval() + 1f);
                         plugin.updateCargoPrePlayerInteraction();
-                        plugin.setSinceSWUpdate(0);
+                        plugin.setSinceSWUpdate(0f);
+                        plugin.setSinceLastCargoUpdate(0f);
                         totalSubmarkets++;
                     }
                     catch (Exception ex)
                     {
-                        Console.showException("Failed to update submarket '" + submarket.getSpecId() +
-                                "' of market " + market.getName() + " (" + market.getId() + "): ", ex);
+                        Console.showException("Failed to update submarket '" + submarket.getName() + "' (" +
+                                submarket.getSpecId() + ") in market '" + market.getName() + "' (" +
+                                market.getId() + "): ", ex);
                         failedSubmarkets++;
                     }
                 }

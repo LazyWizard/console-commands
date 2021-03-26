@@ -29,7 +29,7 @@ internal abstract class GPUInfo {
     open fun getGPUString(): String = "GPU Model: ${trimVendorString(glGetString(GL_RENDERER))}\n" +
             "Vendor: ${glGetString(GL_VENDOR)}\n" +
             "Driver version: ${glGetString(GL_VERSION)}\n"+
-            "Available VRAM: ${toMB(getFreeVRAM())} MB\n"
+            "Free VRAM: ${toMB(getFreeVRAM())} MB\n"
 }
 
 // https://www.khronos.org/registry/OpenGL/extensions/NVX/NVX_gpu_memory_info.txt
@@ -38,7 +38,7 @@ internal class NvidiaGPUInfo : GPUInfo() {
     override fun getGPUString(): String {
         val dedicatedVram = toMB(glGetInteger(NVXGpuMemoryInfo.GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX).toLong() * 1024)
         val maxVram = toMB(glGetInteger(NVXGpuMemoryInfo.GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX).toLong() * 1024)
-        return super.getGPUString() + "Dedicated VRAM: $dedicatedVram MB\nMaximum VRAM: $maxVram MB\n"
+        return super.getGPUString() + "Dedicated VRAM: $dedicatedVram MB\nMaximum VRAM:   $maxVram MB\n"
     }
 }
 

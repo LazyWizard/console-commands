@@ -66,6 +66,8 @@ internal class ConsoleCombatListener : BaseEveryFrameCombatPlugin(), ConsoleList
             engine.isInCampaign -> CommandContext.COMBAT_CAMPAIGN
             else -> CommandContext.COMBAT_MISSION
         }
+
+        engine.customData["consolePlugin"] = this
     }
 
     override fun getContext() = context

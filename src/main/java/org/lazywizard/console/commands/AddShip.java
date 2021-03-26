@@ -136,7 +136,7 @@ public class AddShip implements BaseCommand
         {
             ship = Global.getFactory().createFleetMember(FleetMemberType.SHIP, variant);
             FleetEncounterContext.prepareShipForRecovery(ship,
-                    true, true, 1f, 1f, MathUtils.getRandom());
+                    true, true, true,1f, 1f, MathUtils.getRandom());
             fleet.addFleetMember(ship);
         }
 

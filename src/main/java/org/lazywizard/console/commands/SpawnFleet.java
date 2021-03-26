@@ -16,10 +16,42 @@ import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 // TODO: Rewrite to match vanilla fleet spawning behavior
 public class SpawnFleet implements BaseCommand
 {
     private static final String DEFAULT_NAME = " Fleet";
+    private static final List<String> FLEET_TYPES;
+
+    static
+    {
+        final Set<String> tmp = new HashSet<>();
+        tmp.add(FleetTypes.BATTLESTATION);
+        tmp.add(FleetTypes.FOOD_RELIEF_FLEET);
+        tmp.add(FleetTypes.INSPECTION_FLEET);
+        tmp.add(FleetTypes.MERC_ARMADA);
+        tmp.add(FleetTypes.MERC_BOUNTY_HUNTER);
+        tmp.add(FleetTypes.MERC_PATROL);
+        tmp.add(FleetTypes.MERC_PRIVATEER);
+        tmp.add(FleetTypes.MERC_SCOUT);
+        tmp.add(FleetTypes.PATROL_LARGE);
+        tmp.add(FleetTypes.PATROL_MEDIUM);
+        tmp.add(FleetTypes.PATROL_SMALL);
+        tmp.add(FleetTypes.PERSON_BOUNTY_FLEET);
+        tmp.add(FleetTypes.SCAVENGER_LARGE);
+        tmp.add(FleetTypes.SCAVENGER_MEDIUM);
+        tmp.add(FleetTypes.SCAVENGER_SMALL);
+        tmp.add(FleetTypes.TASK_FORCE);
+        tmp.add(FleetTypes.TRADE);
+        tmp.add(FleetTypes.TRADE_LINER);
+        tmp.add(FleetTypes.TRADE_SMALL);
+        tmp.add(FleetTypes.TRADE_SMUGGLER);
+        FLEET_TYPES = new ArrayList<>(tmp);
+    }
 
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -60,6 +92,7 @@ public class SpawnFleet implements BaseCommand
             return CommandResult.ERROR;
         }
 
+        final String type = (FLEET_TYPES.contains(tmp[2]) ? tmp[2] : FleetTypes.PATROL_LARGE);
         final String name = (tmp[2].isEmpty() ? "Fleet" : tmp[2]);
         try
         {
@@ -71,7 +104,7 @@ public class SpawnFleet implements BaseCommand
                     null, // Hyperspace location
                     faction.getId(), // Faction ID
                     null, // Quality override (null disables)
-                    FleetTypes.PATROL_LARGE, // Fleet type
+                    type, // Fleet type
                     totalFP, // Combat FP
                     freighterFP * .3f, // Freighter FP
                     freighterFP * .3f, // Tanker FP
@@ -103,8 +136,8 @@ public class SpawnFleet implements BaseCommand
                 repairs.setCR(repairs.getMaxCR());
             }
 
-            Console.showMessage("Spawned a " + totalFP + "FP patrol fleet with "
-                    + totalOfficers + " officers, aligned with faction " + faction.getId() + ".");
+            Console.showMessage("Spawned a " + totalFP + "FP " + faction.getFleetTypeName(type) +
+                    " fleet with " + totalOfficers + " officers, aligned with faction " + faction.getId() + ".");
             return CommandResult.SUCCESS;
         }
         catch (Exception ex)

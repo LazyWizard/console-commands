@@ -46,7 +46,7 @@ public class AllOfficerSkills implements BaseCommand
             return CommandResult.BAD_SYNTAX;
         }
 
-        OfficerDataAPI officer;
+        final OfficerDataAPI officer;
         final CampaignFleetAPI playerFleet = Global.getSector().getPlayerFleet();
         if (CommandUtils.isInteger(args))
         {
@@ -58,7 +58,7 @@ public class AllOfficerSkills implements BaseCommand
                 return CommandResult.ERROR;
             }
 
-            officer = officers.get(num - 1);
+            officer = playerFleet.getFleetData().getOfficerData(officers.get(num - 1).getPerson());
         }
         else
         {
@@ -70,7 +70,6 @@ public class AllOfficerSkills implements BaseCommand
             }
         }
 
-        officer = playerFleet.getFleetData().getOfficerData(officer.getPerson());
         giveSkills(officer);
         Console.showMessage("Granted all skills to " + officer.getPerson().getNameString() + ".");
         return CommandResult.SUCCESS;

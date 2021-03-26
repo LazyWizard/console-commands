@@ -214,7 +214,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     override fun showOutput(output: String): Boolean {
         if (!isOpen) return false
 
-        scrollback.appendText(output)
+        scrollback.append(output)
         scrollOffset = 0f
         return true
     }
@@ -327,7 +327,9 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                     val fullCommand = currentInput.substring(startIndex, endIndex)
 
                     // Only auto-complete if arguments haven't been entered
-                    if (' ' in fullCommand) {
+                    if (' ' in fullCommand || '\n' in fullCommand) {
+                        currentInput.insert(currentIndex, '\t')
+                        currentIndex++
                         continue
                     }
 
@@ -348,7 +350,8 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
 
                             // Found next matching command
                             if ((shiftDown && command.compareTo(fullCommand, true) < 0)
-                                    || (!shiftDown && command.compareTo(fullCommand, true) > 0)) {
+                                || (!shiftDown && command.compareTo(fullCommand, true) > 0)
+                            ) {
                                 nextMatch = command
                                 break
                             }
@@ -488,7 +491,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             if (currentIndex == currentInput.length) input.text = "$currentInput$cursor"
             else input.text = "${currentInput.substring(0, currentIndex)}$cursor${currentInput.substring(currentIndex)}"
 
-            if (settings.showCursorIndex) input.appendText(" | Index: $currentIndex/${currentInput.length}")
+            if (settings.showCursorIndex) input.append(" | Index: $currentIndex/${currentInput.length}")
             if (settings.showMemoryUsage) {
                 ramText.text = getRAMText()
                 ramText.color = getRAMColor(memory.heapMemoryUsage)

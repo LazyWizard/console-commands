@@ -104,8 +104,8 @@ public class AddIndustry implements BaseCommand
             {
                 if (market.hasIndustry(downgrade.getId()))
                 {
-                    existing = market.getIndustry(downgrade.getId());
-                    //downgrade.getDowngradePluginInstance(market).notifyBeingRemoved(null, true);
+                    //existing = market.getIndustry(downgrade.getId());
+                    downgrade.getDowngradePluginInstance(market).notifyBeingRemoved(null, true);
                     market.removeIndustry(downgrade.getId(), null, true);
                     Console.showMessage("Removed existing industry '" + downgrade.getId()
                             + "' of same upgrade path from market '" + market.getName() + "'.");
@@ -124,6 +124,7 @@ public class AddIndustry implements BaseCommand
         {
             final List<String> params = Arrays.asList(tmp[1].split(" "));
             market.addIndustry(id, params);
+            market.getIndustry(id).finishBuildingOrUpgrading();
             market.reapplyIndustries();
             Console.showMessage("Added industry '" + id + "' to market '" + market.getName() + "' with params " +
                     CollectionUtils.implode(params) + ".");
@@ -132,6 +133,7 @@ public class AddIndustry implements BaseCommand
         else
         {
             market.addIndustry(id);
+            market.getIndustry(id).finishBuildingOrUpgrading();
             market.reapplyIndustries();
             Console.showMessage("Added industry '" + id + "' to market '" + market.getName() + "'.");
             return CommandResult.SUCCESS;

@@ -4,7 +4,7 @@ import groovy.json.JsonSlurper
 import java.nio.file.Paths
 
 buildscript {
-    ext.kotlin_version = '1.4.21' // Match the version used by the latest LazyLib
+    ext.kotlin_version = '1.4.31' // Match the version used by the latest LazyLib
     ext.dokka_version = '1.4.20'
 
     repositories {

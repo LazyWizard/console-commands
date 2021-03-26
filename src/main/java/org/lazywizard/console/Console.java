@@ -307,7 +307,7 @@ public class Console
             {
                 showMessage("> " + input);
             }
-            
+
             // Command listener support
             for (CommandListener listener : listeners)
             {

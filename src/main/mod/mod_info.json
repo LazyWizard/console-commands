@@ -3,9 +3,9 @@
     "name": "Console Commands",
     "author": "LazyWizard",
     "utility": "true",
-    "version": "2021-1-19",
+    "version": "2021.3.26",
     "description": "An in-game developer's console, by default summoned with control+backspace.\n\nFor a complete list of commands enter 'help'. For more information on a specific command enter 'help <command>'. Enter 'settings' to customize the console's appearance and behavior, including the key used to summon it.\n\nThis should be compatible with all mods and doesn't require a new game.",
-    "gameVersion": "0.9.1a",
+    "gameVersion": "0.95a-RC8",
     "jars": [
         "jars/lw_Console.jar"
     ],
