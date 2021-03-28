@@ -59,8 +59,8 @@ public class Test implements BaseCommand
             toDraw.setMaxWidth(400f);
 
             // If you need to add text to the DrawableString, do so like this:
-            toDraw.appendText("\nThis is a second line of sample text.");
-            toDraw.appendText("\nThis is a third line of sample text that shows off the automatic" +
+            toDraw.append("\nThis is a second line of sample text.");
+            toDraw.append("\nThis is a third line of sample text that shows off the automatic" +
                     " word wrapping when a line of text reaches the maximum width you've chosen.");
             //toDraw.append("\nRed", Color.RED).append("Blue", Color.BLUE).append("Green", Color.GREEN)
             //        .append("r\ne\nd\n", Color.RED).append("b\nl\nu\ne\n", Color.BLUE).append("g\nr\ne\ne\nn\n");

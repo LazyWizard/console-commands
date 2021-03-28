@@ -12,11 +12,12 @@ import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
+import static org.lazywizard.console.CommandUtils.findBestFactionMatch;
 
 // TODO: Add optional faction argument
+// TODO: Add resetblueprints command
 public class AllBlueprints implements BaseCommand
 {
     public static boolean isLearnable(ShipHullSpecAPI spec)
@@ -71,6 +72,7 @@ public class AllBlueprints implements BaseCommand
             args = "all";
         }
 
+        final Set<FactionAPI> factions = new HashSet<>();
         boolean unlockShips = false, unlockWings = false,
                 unlockWeapons = false, unlockIndustries = false;
         for (String arg : args.split(" "))
@@ -98,13 +100,32 @@ public class AllBlueprints implements BaseCommand
                     unlockIndustries = true;
                     break;
                 case "all":
-                    unlockShips = unlockWings = unlockWeapons = unlockIndustries = true;
+                    unlockShips = unlockWings = unlockWeapons /*= unlockIndustries*/ = true;
                     break;
                 default:
-                    return CommandResult.BAD_SYNTAX;
+                    final FactionAPI faction = findBestFactionMatch(arg);
+                    if (faction != null)
+                    {
+                        factions.add(faction);
+                    }
+                    else
+                    {
+                        return CommandResult.BAD_SYNTAX;
+                    }
             }
         }
 
+        if (!factions.isEmpty())
+        {
+            final List<String> names = new ArrayList<>(factions.size());
+            for (FactionAPI faction : factions)
+            {
+                names.add(faction.getDisplayName());
+            }
+
+            Console.showMessage("Limiting to blueprints from faction" + (factions.size() > 1 ? "s " : " ")
+                    + CollectionUtils.implode(names) + ".");
+        }
 
         final FactionAPI player = Global.getSector().getPlayerFaction();
         if (unlockShips)

@@ -490,7 +490,7 @@ public class ShowSettings implements BaseCommand
             }
 
             @Override
-            public void renderBelow(float v)
+            public void renderBelow(float alphaMult)
             {
             }
 

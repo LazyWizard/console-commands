@@ -154,6 +154,7 @@ task updateVersion() {
     // Handling it this way retains the order of keys in the JSON mapping
     LinkedHashMap modInfo = new JsonSlurper().parseText(file('src/main/mod/mod_info.json').text)
     modInfo.version = "$major.$minor.$patch"
+    modVersion = modInfo.version
 
     // .. but isn't necessary for version files, because I named all the fields so the
     // preferred order also happens to be in alphabetical order. Thank you, Younger Me

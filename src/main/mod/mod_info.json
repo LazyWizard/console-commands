@@ -9,5 +9,12 @@
     "jars": [
         "jars/lw_Console.jar"
     ],
+    "dependencies": [
+        {
+            "id": "lw_lazylib",
+            "name": "LazyLib",
+            "version": "2.6"
+        }
+    ],
     "modPlugin": "org.lazywizard.console.ConsoleModPlugin"
 }
