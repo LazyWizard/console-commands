@@ -178,7 +178,7 @@ public class ShowSettings implements BaseCommand
                     text.addParagraph("This menu allows you to customize the text of the console overlay.");
 
                     // Console overlay font size
-                    options.addSelector("Text Scaling Percentage", Selector.TEXT_SCALE, Color.WHITE, barWidth, 150f, 50, 150, ValueDisplayMode.VALUE,
+                    options.addSelector("Text Scaling Percentage", Selector.TEXT_SCALE, Color.WHITE, barWidth, 150f, 50, 400, ValueDisplayMode.VALUE,
                             "Scale displayed text by this percentage of the base font size.");
                     options.setSelectorValue(Selector.TEXT_SCALE, (int) (fontScale * 100));
 

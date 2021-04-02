@@ -15,7 +15,7 @@ import kotlin.reflect.KProperty
  */
 object ConsoleSettings {
     private val settings = JSONUtils.loadCommonJSON(CommonStrings.PATH_COMMON_DATA)
-    var fontScaling by FloatPref("fontScaling", default = 1.0f)
+    var fontScaling by ScaledFloatPref("fontScaling", Global.getSettings().screenScaleMult, default = 1.0f)
     var commandSeparator by StringPref("commandSeparator", default = ";")
     var maxScrollback by IntPref("maxScrollback", default = 10_000)
     var typoCorrectionThreshold by FloatPref("typoCorrectionThreshold", default = 0.9f)
@@ -94,6 +94,17 @@ object ConsoleSettings {
         operator fun getValue(consoleSettings: ConsoleSettings, property: KProperty<*>): Float = field
         operator fun setValue(consoleSettings: ConsoleSettings, property: KProperty<*>, value: Float) {
             field = value
+            settings.put(key, value)
+            settings.save()
+        }
+    }
+
+    private class ScaledFloatPref(val key: String, val scaling: Float, default: Float) {
+        private var field = settings.optDouble(key, default.toDouble()).toFloat() * scaling
+
+        operator fun getValue(consoleSettings: ConsoleSettings, property: KProperty<*>): Float = field
+        operator fun setValue(consoleSettings: ConsoleSettings, property: KProperty<*>, value: Float) {
+            field = value * scaling
             settings.put(key, value)
             settings.save()
         }
