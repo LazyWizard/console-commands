@@ -43,7 +43,7 @@ object ConsoleSettings {
         get() = if (Console.getContext()?.isCampaignAccessible!!)
             !Global.getSector().persistentData.containsKey(
                 ShowSettings.SettingsDialog.genCheatId()
-            ) else false
+            ) else true
         // Can only be enabled, never disabled
         @JvmSynthetic internal set(value) {
             if (value) Global.getSector().persistentData[ShowSettings.SettingsDialog.genCheatId()] = System.nanoTime()
