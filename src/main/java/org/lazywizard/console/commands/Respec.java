@@ -14,6 +14,7 @@ import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import org.lazywizard.lazylib.MathUtils;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -28,7 +29,8 @@ public class Respec implements BaseCommand
     {
         // Technically it should be called cloneOfficer(), but whatever...
         final PersonAPI oldPerson = toRespec.getPerson(),
-                newPerson = OfficerManagerEvent.createOfficer(oldPerson.getFaction(), 1, false);
+                newPerson = OfficerManagerEvent.createOfficer(oldPerson.getFaction(), 1, null,
+                        false, null, false, false, -1, MathUtils.getRandom());
         final FleetMemberAPI ship = sourceFleet.getFleetData().getMemberWithCaptain(oldPerson);
 
         // Copy the old person's memory to the new person

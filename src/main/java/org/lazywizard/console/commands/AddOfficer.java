@@ -14,6 +14,8 @@ import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
+import org.lazywizard.lazylib.MathUtils;
+
 import static com.fs.starfarer.api.impl.campaign.ids.Personalities.*;
 import static org.lazywizard.console.CommandUtils.*;
 
@@ -90,7 +92,7 @@ public class AddOfficer implements BaseCommand
             return CommandResult.ERROR;
         }
 
-        final PersonAPI person = OfficerManagerEvent.createOfficer(faction, 1, false);
+        final PersonAPI person = OfficerManagerEvent.createOfficer(faction, 1, null, false, null, false, false, -1, MathUtils.getRandom());;
         final FleetDataAPI fleetData = Global.getSector().getPlayerFleet().getFleetData();
         final OfficerLevelupPlugin plugin
                 = (OfficerLevelupPlugin) Global.getSettings().getPlugin("officerLevelUp");
