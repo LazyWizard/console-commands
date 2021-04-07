@@ -7,7 +7,8 @@ import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
-import static org.lazywizard.console.CommandUtils.*;
+import static org.lazywizard.console.CommandUtils.format;
+import static org.lazywizard.console.CommandUtils.isLong;
 
 public class AddXP implements BaseCommand
 {
@@ -20,24 +21,28 @@ public class AddXP implements BaseCommand
             return CommandResult.WRONG_CONTEXT;
         }
 
+        final MutableCharacterStatsAPI player = Global.getSector().getPlayerFleet().getCommanderStats();
+        final LevelupPlugin plugin = Global.getSettings().getLevelupPlugin();
+
+        final long amount;
         if (args.isEmpty())
         {
-            return CommandResult.BAD_SYNTAX;
+            amount = plugin.getXPForLevel(Math.min(plugin.getMaxLevel(), player.getLevel() + 1)) - player.getXP();
         }
-
-        if (!isLong(args))
+        else
         {
-            Console.showMessage("Error: experience must be a whole number!");
-            return CommandResult.BAD_SYNTAX;
-        }
+            if (!isLong(args))
+            {
+                Console.showMessage("Error: experience must be a whole number!");
+                return CommandResult.BAD_SYNTAX;
+            }
 
-        final long amount = Long.parseLong(args);
-        final MutableCharacterStatsAPI player = Global.getSector().getPlayerFleet().getCommanderStats();
+            amount = Long.parseLong(args);
+        }
 
         if (amount >= 0)
         {
-            final LevelupPlugin plugin = Global.getSettings().getLevelupPlugin();
-            final long added = Math.min(amount, plugin.getXPForLevel(plugin.getMaxLevel()) - player.getXP());
+            final long added = Math.min(amount, plugin.getXPForLevel(plugin.getMaxLevel()));// - player.getXP());
             Console.showMessage("Added " + format(added) + " experience points to player.");
             player.addXP(added);
         }
