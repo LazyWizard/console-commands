@@ -126,8 +126,8 @@ public class Kill implements BaseCommand
                     nextNotify = TIME_BETWEEN_NOTIFICATIONS;
                     final LocationAPI loc = Global.getSector().getCurrentLocation();
                     final ViewportAPI view = Global.getSector().getViewport();
-                    final Vector2f target = new Vector2f(view.convertScreenXToWorldX(Mouse.getX()),
-                            view.convertScreenYToWorldY(Mouse.getY()));
+                    final Vector2f target = new Vector2f(view.convertScreenXToWorldX(Global.getSettings().getMouseX()),
+                            view.convertScreenYToWorldY(Global.getSettings().getMouseY()));
                     for (CampaignFleetAPI fleet : loc.getFleets())
                     {
                         if (fleet.isPlayerFleet())

@@ -73,8 +73,8 @@ public class Test implements BaseCommand
             // In this case, draw the text slightly below the mouse cursor
             // The draw point is the top left corner of the textbox, so we adjust the X
             // position to center the text horizontally below the mouse cursor
-            toDraw.draw(Mouse.getX() - (toDraw.getWidth() / 2f), Mouse.getY() - 30f);
+            toDraw.draw(Global.getSettings().getMouseX() - (toDraw.getWidth() / 2f),
+                    Global.getSettings().getMouseY() - 30f);
         }
     }
-
 }

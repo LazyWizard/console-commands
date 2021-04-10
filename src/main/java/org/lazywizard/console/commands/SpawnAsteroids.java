@@ -145,8 +145,8 @@ public class SpawnAsteroids implements BaseCommand
             }
 
             final ViewportAPI view = engine.getViewport();
-            final Vector2f mouseLoc = new Vector2f(view.convertScreenXToWorldX(Mouse.getX()),
-                    view.convertScreenYToWorldY(Mouse.getY()));
+            final Vector2f mouseLoc = new Vector2f(view.convertScreenXToWorldX(Global.getSettings().getMouseX()),
+                    view.convertScreenYToWorldY(Global.getSettings().getMouseY()));
             for (InputEventAPI event : events)
             {
                 if (event.isConsumed())
@@ -207,8 +207,8 @@ public class SpawnAsteroids implements BaseCommand
         @Override
         public void renderInWorldCoords(ViewportAPI view)
         {
-            final Vector2f mouseLoc = new Vector2f(view.convertScreenXToWorldX(Mouse.getX()),
-                    view.convertScreenYToWorldY(Mouse.getY()));
+            final Vector2f mouseLoc = new Vector2f(view.convertScreenXToWorldX(Global.getSettings().getMouseX()),
+                    view.convertScreenYToWorldY(Global.getSettings().getMouseY()));
             final float circleSize = getAsteroidSize(asteroidSize);
 
             glEnable(GL_BLEND);
