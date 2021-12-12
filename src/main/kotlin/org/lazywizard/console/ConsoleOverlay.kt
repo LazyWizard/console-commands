@@ -23,6 +23,8 @@ import org.lwjgl.opengl.GL12.GL_TEXTURE_BASE_LEVEL
 import org.lwjgl.opengl.GL12.GL_TEXTURE_MAX_LEVEL
 import org.lwjgl.opengl.GL13.GL_TEXTURE0
 import org.lwjgl.opengl.GL13.glActiveTexture
+import org.lwjgl.opengl.GL30.GL_INVALID_FRAMEBUFFER_OPERATION
+import org.lwjgl.opengl.GL30.glGenerateMipmap
 import java.awt.Color
 import java.lang.management.ManagementFactory
 import java.lang.management.MemoryUsage
@@ -62,6 +64,21 @@ internal fun addToHistory(toAdd: String) {
     history += toAdd
 }
 
+internal fun getErrorString(err: Int) = when (err) {
+    GL_NO_ERROR -> "GL_NO_ERROR"
+    GL_INVALID_ENUM -> "GL_INVALID_ENUM"
+    GL_INVALID_VALUE -> "GL_INVALID_VALUE"
+    GL_INVALID_OPERATION -> "GL_INVALID_OPERATION"
+    GL_INVALID_FRAMEBUFFER_OPERATION -> "GL_INVALID_FRAMEBUFFER_OPERATION"
+    GL_OUT_OF_MEMORY -> "GL_OUT_OF_MEMORY"
+    GL_STACK_UNDERFLOW -> "GL_STACK_UNDERFLOW"
+    GL_STACK_OVERFLOW -> "GL_STACK_OVERFLOW"
+
+    else -> {
+        "unknown error"
+    }
+}
+
 // TODO: This uses a lot of hardcoded numbers; need to refactor these into constants at some point
 // TODO: Move UI element instantiation into initializer to make size/position details clearer
 private class ConsoleOverlayInternal(private val context: CommandContext, mainColor: Color, secondaryColor: Color) :
@@ -80,21 +97,21 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     private val minY = 50f + fontSize
     private val maxY = height - 80f
     private val scrollback =
-        font.createText(text = history.trimStart(), size = fontSize, color = mainColor, maxWidth = maxX - minX)
+        font.createText(text = history.trimStart(), size = fontSize, baseColor = mainColor, maxWidth = maxX - minX)
     private val query =
-        font.createText(text = CommonStrings.INPUT_QUERY, color = secondaryColor, maxWidth = width, maxHeight = 30f)
-    private val prompt = font.createText(text = "> ", color = secondaryColor, maxWidth = width, maxHeight = 30f)
+        font.createText(text = CommonStrings.INPUT_QUERY, baseColor = secondaryColor, maxWidth = width, maxHeight = 30f)
+    private val prompt = font.createText(text = "> ", baseColor = secondaryColor, maxWidth = width, maxHeight = 30f)
     private val input = font.createText(
         text = "",
-        color = mainColor,
+        baseColor = mainColor,
         maxWidth = width - (prompt.width + 60f),
         maxHeight = fontSize * 30
     )
-    private val ramText = font.createText(text = getRAMText(), color = Color.LIGHT_GRAY)
-    private val vramText = font.createText(text = getVRAMText(), color = Color.LIGHT_GRAY)
-    private val curContext = font.createText(text = context.name, color = secondaryColor)
-    private val curTarget = font.createText(text = getCurrentTarget(), color = secondaryColor)
-    private val devMode = font.createText(text = "DEVMODE", color = Color.LIGHT_GRAY)
+    private val ramText = font.createText(text = getRAMText(), baseColor = Color.LIGHT_GRAY)
+    private val vramText = font.createText(text = getVRAMText(), baseColor = Color.LIGHT_GRAY)
+    private val curContext = font.createText(text = context.name, baseColor = secondaryColor)
+    private val curTarget = font.createText(text = getCurrentTarget(), baseColor = secondaryColor)
+    private val devMode = font.createText(text = "DEVMODE", baseColor = Color.LIGHT_GRAY)
     private val scrollbar = Scrollbar(10f, secondaryColor, secondaryColor.darker().darker())
     private val currentInput = StringBuilder()
     private var lastInput: String? = null
@@ -160,15 +177,37 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         // This texture will be extremely low quality to save VRAM, but since the
         // background will be drawn darkened, the compression shouldn't be noticeable
         if (settings.showBackground) {
+            glGetError() // Clear existing error flag, if any
             val buffer = BufferUtils.createByteBuffer(width.toInt() * height.toInt() * 3)
             glReadPixels(0, 0, width.toInt(), height.toInt(), GL_RGB, GL_UNSIGNED_BYTE, buffer)
             glActiveTexture(GL_TEXTURE0)
             glBindTexture(GL_TEXTURE_2D, bgTextureId)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_R3_G3_B2, width.toInt(), height.toInt(), 0, GL_RGB, GL_UNSIGNED_BYTE, buffer)
+            glGenerateMipmap(GL_TEXTURE_2D)
+            glTexImage2D(
+                GL_TEXTURE_2D,
+                0,
+                GL_R3_G3_B2,
+                width.toInt(),
+                height.toInt(),
+                0,
+                GL_RGB,
+                GL_UNSIGNED_BYTE,
+                buffer
+            )
+
+            // Fallback in case generating background fails: free memory and disable until manually re-enabled
+            val err = glGetError();
+            if (err != GL_NO_ERROR) {
+
+                glDeleteTextures(bgTextureId)
+                settings.showBackground = false
+                Console.showMessage("Failed to size buffer for background image! Disabling console background (can be re-enabled with Settings command)...")
+                Console.showMessage("Error id: " + getErrorString(err))
+            }
         }
 
         // Show overlay until closed by player
