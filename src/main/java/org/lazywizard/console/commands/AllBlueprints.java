@@ -16,7 +16,7 @@ import java.util.*;
 
 import static org.lazywizard.console.CommandUtils.findBestFactionMatch;
 
-// TODO: Add optional faction argument
+// TODO: This needs cleanup after adding the optional faction argument (supporting logic is ugly)
 // TODO: Add resetblueprints command
 public class AllBlueprints implements BaseCommand
 {
@@ -52,7 +52,7 @@ public class AllBlueprints implements BaseCommand
         return false;
     }
 
-    static boolean isLearnable(IndustrySpecAPI spec)
+    public static boolean isLearnable(IndustrySpecAPI spec)
     {
         // TODO: filter out industries that are known by default
         return true;
@@ -115,6 +115,12 @@ public class AllBlueprints implements BaseCommand
             }
         }
 
+        // No arguments defaults to all, but isn't detected if you passed in a list of factions
+        if (!unlockShips && !unlockWings && !unlockWeapons && !unlockIndustries && !factions.isEmpty())
+        {
+            unlockShips = unlockWings = unlockWeapons /*= unlockIndustries*/ = true;
+        }
+
         if (!factions.isEmpty())
         {
             final List<String> names = new ArrayList<>(factions.size());
@@ -135,8 +141,22 @@ public class AllBlueprints implements BaseCommand
             {
                 if (isLearnable(spec) && !player.knowsShip(spec.getHullId()))
                 {
-                    player.addKnownShip(spec.getHullId(), true);
-                    unlocked.add(spec.getHullId() + " (" + spec.getHullNameWithDashClass() + ")");
+                    if (factions.isEmpty())
+                    {
+                        player.addKnownShip(spec.getHullId(), true);
+                        unlocked.add(spec.getHullId() + " (" + spec.getHullNameWithDashClass() + ")");
+                    }
+                    else
+                    {
+                        for (FactionAPI faction : factions)
+                        {
+                            if (faction.knowsShip(spec.getHullId()))
+                            {
+                                player.addKnownShip(spec.getHullId(), true);
+                                unlocked.add(spec.getHullId() + " (" + spec.getHullNameWithDashClass() + ")");
+                            }
+                        }
+                    }
                 }
             }
 
@@ -159,8 +179,22 @@ public class AllBlueprints implements BaseCommand
             {
                 if (isLearnable(spec) && !player.knowsFighter(spec.getId()))
                 {
-                    player.addKnownFighter(spec.getId(), true);
-                    unlocked.add(spec.getId() + " (" + spec.getWingName() + ")");
+                    if (factions.isEmpty())
+                    {
+                        player.addKnownFighter(spec.getId(), true);
+                        unlocked.add(spec.getId() + " (" + spec.getWingName() + ")");
+                    }
+                    else
+                    {
+                        for (FactionAPI faction : factions)
+                        {
+                            if (faction.knowsFighter(spec.getId()))
+                            {
+                                player.addKnownFighter(spec.getId(), true);
+                                unlocked.add(spec.getId() + " (" + spec.getWingName() + ")");
+                            }
+                        }
+                    }
                 }
             }
 
@@ -183,8 +217,22 @@ public class AllBlueprints implements BaseCommand
             {
                 if (isLearnable(spec) && !player.knowsWeapon(spec.getWeaponId()))
                 {
-                    player.addKnownWeapon(spec.getWeaponId(), true);
-                    unlocked.add(spec.getWeaponId() + " (" + spec.getWeaponName() + ")");
+                    if (factions.isEmpty())
+                    {
+                        player.addKnownWeapon(spec.getWeaponId(), true);
+                        unlocked.add(spec.getWeaponId() + " (" + spec.getWeaponName() + ")");
+                    }
+                    else
+                    {
+                        for (FactionAPI faction : factions)
+                        {
+                            if (faction.knowsWeapon(spec.getWeaponId()))
+                            {
+                                player.addKnownWeapon(spec.getWeaponId(), true);
+                                unlocked.add(spec.getWeaponId() + " (" + spec.getWeaponName() + ")");
+                            }
+                        }
+                    }
                 }
             }
 
@@ -207,8 +255,22 @@ public class AllBlueprints implements BaseCommand
             {
                 if (isLearnable(spec) && !player.knowsIndustry(spec.getId()))
                 {
-                    player.addKnownIndustry(spec.getId());
-                    unlocked.add(spec.getId() + " (" + spec.getName() + ")");
+                    if (factions.isEmpty())
+                    {
+                        player.addKnownIndustry(spec.getId());
+                        unlocked.add(spec.getId() + " (" + spec.getName() + ")");
+                    }
+                    else
+                    {
+                        for (FactionAPI faction : factions)
+                        {
+                            if (faction.knowsIndustry(spec.getId()))
+                            {
+                                player.addKnownIndustry(spec.getId());
+                                unlocked.add(spec.getId() + " (" + spec.getName() + ")");
+                            }
+                        }
+                    }
                 }
             }
 
