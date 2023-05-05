@@ -508,6 +508,11 @@ public class ShowSettings implements BaseCommand
             public void processInput(List<InputEventAPI> events)
             {
             }
+
+            @Override
+            public void buttonPressed(Object o)
+            {
+            }
         }
     }
 }

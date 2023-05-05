@@ -48,7 +48,7 @@ internal class ConsoleCombatListener : BaseEveryFrameCombatPlugin(), ConsoleList
     private lateinit var context: CommandContext
 
     override fun processInputPreCoreControls(amount: Float, events: MutableList<InputEventAPI>) {
-        if (Global.getCombatEngine().playerShip == null) return
+        if (!::context.isInitialized || Global.getCombatEngine().playerShip == null) return
 
         if (Console.getSettings().consoleSummonKey.isPressed(events)) {
             show(context)

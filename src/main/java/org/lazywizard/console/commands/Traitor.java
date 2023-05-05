@@ -2,6 +2,7 @@ package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
+import com.fs.starfarer.api.combat.FighterLaunchBayAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.mission.FleetSide;
 import org.lazywizard.console.BaseCommand;
@@ -29,6 +30,18 @@ public class Traitor implements BaseCommand
             {
                 drone.setOwner(newOwner);
                 drone.getShipAI().forceCircumstanceEvaluation();
+            }
+        }
+
+        // As well as any fighters launched from that ship
+        if (ship.hasLaunchBays())
+        {
+            for (FighterLaunchBayAPI bay : ship.getLaunchBaysCopy())
+            {
+                for (ShipAPI fighter : bay.getWing().getWingMembers())
+                {
+                    turnTraitorInternal(fighter, newOwner);
+                }
             }
         }
     }

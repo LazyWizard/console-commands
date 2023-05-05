@@ -4,12 +4,11 @@ import groovy.json.JsonSlurper
 import java.nio.file.Paths
 
 buildscript {
-    ext.kotlin_version = '1.4.31' // Match the version used by the latest LazyLib
-    ext.dokka_version = '1.4.20'
+    ext.kotlin_version = '1.6.21' // Match the version used by the latest LazyLib
+    ext.dokka_version = '1.6.21'
 
     repositories {
         mavenCentral()
-        jcenter()
     }
 
     dependencies {
@@ -21,7 +20,6 @@ buildscript {
 
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 apply plugin: 'java'
@@ -67,6 +65,7 @@ dependencies {
     // Janino
     compileOnly('org.codehaus.janino:janino:2.7.8')
     compileOnly('org.codehaus.janino:commons-compiler:2.7.8')
+    compileOnly('org.codehaus.janino:commons-compiler-jdk:2.7.8')
 
     // Log4j
     compileOnly('log4j:log4j:1.2.9')
@@ -96,7 +95,8 @@ dependencies {
 compileKotlin {
     kotlinOptions {
         jvmTarget = "1.6" // At the moment Kotlin only targets Java 6 or 8, and since Starsector ships with Java 7...
-        noReflect = true
+        //noReflect = true
+        useIR = true
     }
 }
 

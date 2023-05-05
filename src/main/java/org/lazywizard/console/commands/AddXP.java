@@ -27,7 +27,8 @@ public class AddXP implements BaseCommand
         final long amount;
         if (args.isEmpty())
         {
-            amount = plugin.getXPForLevel(Math.min(plugin.getMaxLevel(), player.getLevel() + 1)) - player.getXP();
+            amount = Math.max(0L, plugin.getXPForLevel(Math.min(plugin.getMaxLevel(),
+                    player.getLevel() + 1)) - player.getXP());
         }
         else
         {
@@ -40,7 +41,7 @@ public class AddXP implements BaseCommand
             amount = Long.parseLong(args);
         }
 
-        if (amount >= 0)
+        if (amount >= 0L)
         {
             final long added = Math.min(amount, plugin.getXPForLevel(plugin.getMaxLevel()));// - player.getXP());
             Console.showMessage("Added " + format(added) + " experience points to player.");
