@@ -10,6 +10,7 @@ import org.lazywizard.console.Console;
 import static org.lazywizard.console.CommandUtils.format;
 import static org.lazywizard.console.CommandUtils.isLong;
 
+// TODO: add support for targeting officers in fleet
 public class AddXP implements BaseCommand
 {
     @Override

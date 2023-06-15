@@ -10,6 +10,7 @@ import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.characters.SkillSpecAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent;
+import com.fs.starfarer.api.impl.campaign.events.OfficerManagerEvent.SkillPickPreference;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.CommonStrings;
@@ -25,12 +26,56 @@ import static org.lazywizard.console.CommandUtils.findBestOfficerMatch;
 
 public class Respec implements BaseCommand
 {
+    private static int respecOfficerTest(OfficerDataAPI toRespec, CampaignFleetAPI sourceFleet)
+    {
+        final PersonAPI person = toRespec.getPerson();
+        final MutableCharacterStatsAPI stats = person.getStats();
+        final FleetMemberAPI ship = sourceFleet.getFleetData().getMemberWithCaptain(person);
+
+        // Show skills that were reset
+        final List<SkillLevelAPI> skills = stats.getSkillsCopy();
+        Collections.sort(skills, new SkillLevelComparator());
+
+        // Notify player of respecced skills
+        int totalRefunded = 0;
+        for (SkillLevelAPI skill : skills)
+        {
+            final int refunded = (int) skill.getLevel();
+            if (refunded > 0)
+            {
+                Console.showMessage(" - removed " + refunded + " points from " + (skill.getSkill().isAptitudeEffect()
+                        ? "aptitude " : "skill ") + skill.getSkill().getId());
+                totalRefunded += refunded;
+                stats.setSkillLevel(skill.getSkill().getId(), 0);
+                //skill.setLevel(0);
+            }
+        }
+
+        final long xp = stats.getXP(), bxp = stats.getBonusXp();
+        stats.addXP(-xp);
+        stats.setBonusXp(0);
+        stats.setLevel(0);
+        stats.refreshCharacterStatsEffects();
+        stats.addXP(xp);
+        stats.setBonusXp(bxp);
+        stats.addPoints(totalRefunded);
+        stats.refreshCharacterStatsEffects();
+
+        // Refresh any commander skills affecting this officer
+        if (sourceFleet.getCommanderStats() != null)
+        {
+            sourceFleet.getCommanderStats().refreshCharacterStatsEffects();
+        }
+
+        return totalRefunded;
+    }
+
     private static int respecOfficer(OfficerDataAPI toRespec, CampaignFleetAPI sourceFleet)
     {
         // Technically it should be called cloneOfficer(), but whatever...
         final PersonAPI oldPerson = toRespec.getPerson(),
-                newPerson = OfficerManagerEvent.createOfficer(oldPerson.getFaction(), 1, null,
-                        false, null, false, false, -1, MathUtils.getRandom());
+                newPerson = OfficerManagerEvent.createOfficer(oldPerson.getFaction(), 1, SkillPickPreference.ANY,
+                        false, null, true, false, -1, MathUtils.getRandom());
         final FleetMemberAPI ship = sourceFleet.getFleetData().getMemberWithCaptain(oldPerson);
 
         // Copy the old person's memory to the new person
@@ -62,12 +107,18 @@ public class Respec implements BaseCommand
         newPerson.setAICoreId(oldPerson.getAICoreId());
         newPerson.setContactWeight(oldPerson.getContactWeight());
         newPerson.setFaction(oldPerson.getFaction().getId());
+        newPerson.setFleet(oldPerson.getFleet());
+        newPerson.setGender(oldPerson.getGender());
+        newPerson.setId(oldPerson.getId());
+        newPerson.setImportance(oldPerson.getImportance());
+        newPerson.setMarket(oldPerson.getMarket());
         newPerson.setName(oldPerson.getName());
         newPerson.setPersonality(oldPerson.getPersonalityAPI().getId());
         newPerson.setPortraitSprite(oldPerson.getPortraitSprite());
         newPerson.setPostId(oldPerson.getPostId());
         newPerson.setRankId(oldPerson.getRankId());
         newPerson.getRelToPlayer().setRel(oldPerson.getRelToPlayer().getRel());
+        newPerson.setVoice(oldPerson.getVoice());
 
         // Copy any tags from the old person
         newPerson.getTags().clear();
@@ -81,12 +132,16 @@ public class Respec implements BaseCommand
         int totalRefunded = 0;
         for (SkillLevelAPI skill : skills)
         {
-            final int refunded = (int) skill.getLevel();
-            if (refunded > 0)
+            final int skillLevel = (int) skill.getLevel();
+            if (skillLevel <= 0) continue;
+
+            totalRefunded++;
+            final String skillId = skill.getSkill().getId();
+            Console.showMessage(" - removed " + (skill.getSkill().isAptitudeEffect() ? "aptitude " : "skill ") + skillId);
+            if (skillLevel > 1)
             {
-                Console.showMessage(" - removed " + refunded + " points from " + (skill.getSkill().isAptitudeEffect()
-                        ? "aptitude " : "skill ") + skill.getSkill().getId());
-                totalRefunded += refunded;
+                Console.showMessage(" - refunded story point for elite skill " + skillId);
+                Global.getSector().getPlayerStats().addStoryPoints(1);
             }
         }
 
@@ -95,6 +150,12 @@ public class Respec implements BaseCommand
         if (ship != null) ship.setCaptain(newPerson);
         toRespec.addXP(oldPerson.getStats().getXP());
         newPerson.getStats().refreshCharacterStatsEffects();
+
+        // Refresh any commander skills affecting this officer
+        if (sourceFleet.getCommanderStats() != null)
+        {
+            sourceFleet.getCommanderStats().refreshCharacterStatsEffects();
+        }
 
         return totalRefunded;
     }
