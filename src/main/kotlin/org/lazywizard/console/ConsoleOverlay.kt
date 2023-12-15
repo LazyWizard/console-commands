@@ -9,6 +9,7 @@
 package org.lazywizard.console
 
 import com.fs.starfarer.api.Global
+import org.apache.log4j.Level
 import org.lazywizard.console.BaseCommand.CommandContext
 import org.lazywizard.console.ext.GPUInfo
 import org.lazywizard.console.ext.getGPUInfo
@@ -114,15 +115,16 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     private val devMode = font.createText(text = "DEVMODE", baseColor = Color.LIGHT_GRAY)
     private val scrollbar = Scrollbar(10f, secondaryColor, secondaryColor.darker().darker())
     private val currentInput = StringBuilder()
-    private var lastInput: String? = null
+    private var latestInput: String? = null
     private var scrollOffset = 0f
     private var minScroll = 0f
     private var currentIndex = 0
-    private var lastIndex = 0
     private var nextBlink = CURSOR_BLINK_SPEED
     private var showCursor = true
     private var needsTextUpdate = true
     private var isOpen = false
+    // -1 for what the user has typed but not entered, 0 and above for previously entered commands
+    private var prevCommandNumber: Int = -1;
 
     private inner class Scrollbar(val width: Float, val barColor: Color, val bgColor: Color) {
         fun draw(x: Float, y: Float, height: Float) {
@@ -339,20 +341,25 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
 
                 // Load last command when user presses up on keyboard
                 val keyPressed = Keyboard.getEventKey()
-                if (keyPressed == Keyboard.KEY_UP && Console.getLastCommand() != null) {
-                    lastInput = currentInput.toString()
-                    lastIndex = currentIndex
-                    currentInput.replace(0, currentInput.length, Console.getLastCommand())
+                if (keyPressed == Keyboard.KEY_UP && prevCommandNumber + 1 < Console.getNumPreviousCommands()) {
+                    if(prevCommandNumber == -1) {
+                        latestInput = currentInput.toString()
+                    }
+                    prevCommandNumber++
+                    currentInput.replace(0, currentInput.length, Console.getPrevCommand(prevCommandNumber))
                     currentIndex = currentInput.length
                     continue
                 }
 
                 // Down restores previous command overwritten by up
-                if (keyPressed == Keyboard.KEY_DOWN && lastInput != null) {
-                    currentInput.replace(0, currentInput.length, lastInput)
-                    currentIndex = lastIndex
-                    lastInput = null
-                    lastIndex = currentInput.length
+                if (keyPressed == Keyboard.KEY_DOWN && prevCommandNumber - 1 >= -1) {
+                    prevCommandNumber--;
+                    if(prevCommandNumber == -1) {
+                        currentInput.replace(0, currentInput.length, latestInput)
+                    } else {
+                        currentInput.replace(0, currentInput.length, Console.getPrevCommand(prevCommandNumber))
+                    }
+                    currentIndex = currentInput.length
                     continue
                 }
 
@@ -470,8 +477,12 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                         }
                         currentInput.setLength(0)
                         currentIndex = 0
-                        lastInput = null
-                        lastIndex = 0
+
+                        // NOTE: Note I added this
+                        latestInput = null
+                        prevCommandNumber = -1
+
+//                        lastIndex = 0
                     }
                 }
                 // Paste handling
@@ -497,11 +508,9 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                 )
                 Log.error(
                     "Input dump:\n - Current input: $currentInput | Index:" +
-                            " $currentIndex/${currentInput.length}\n - Last input: ${lastInput ?: "null"}" +
-                            " | Index: $lastIndex/${lastInput?.length}", ex
+                            " $currentIndex/${currentInput.length}\n", ex
                 )
                 currentIndex = currentInput.length
-                lastIndex = 0
             }
         }
     }

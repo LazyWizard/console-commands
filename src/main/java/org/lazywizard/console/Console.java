@@ -38,7 +38,7 @@ public class Console
     private static LazyFont font;
     // Stores the output of the console until it can be displayed
     private static StringBuilder output = new StringBuilder();
-    private static String lastCommand;
+    private static final CircularArray<String> previousCommands = new CircularArray<>(100);
     private static CommandContext currentContext = CommandContext.COMBAT_MISSION;
 
     /**
@@ -85,10 +85,11 @@ public class Console
         return currentContext;
     }
 
-    static String getLastCommand()
-    {
-        return lastCommand;
-    }
+    static int getNumPreviousCommands() { return previousCommands.count(); }
+
+    static String getPrevCommand(int index) { return previousCommands.dataAt(previousCommands.count() - index - 1); }
+
+    static void addPrevCommand(String command) { previousCommands.add(command); }
 
     static float getFontSize()
     {
@@ -408,7 +409,7 @@ public class Console
             }
         }
 
-        lastCommand = rawInput;
+        addPrevCommand(rawInput);
     }
 
     private static void showOutput(ConsoleListener listener)
