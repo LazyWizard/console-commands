@@ -486,6 +486,78 @@ public class Console
         }
     }
 
+    private static class CircularArray<T> {
+        private T[] array;
+        private int count;
+        private int size;
+        private int zeroIndex;
+
+        /**
+         * CircularArray default constructor
+         */
+        public CircularArray() {
+            this(10);
+        }
+
+        /**
+         * CircularArray constructor initialized to a specific size
+         *
+         * @param size Size to initialize the array to
+         */
+        @SuppressWarnings("unchecked")
+        public CircularArray(int size) {
+            count = zeroIndex = 0;
+            this.size = size;
+            array = (T[]) new Object[this.size];
+        }
+
+        /**
+         * Adds new item into the array, removes oldest element before inserting if at capacity
+         *
+         * @param data Data to add into the array
+         * @return Data added into the array
+         */
+        public T add(T data) {
+            int tmp = (zeroIndex + count) % size;
+            if (count == size) {
+                // move zero index up to delete oldest
+                zeroIndex = (zeroIndex + 1) % size;
+                array[tmp] = data;
+            } else {
+                array[tmp] = data;
+                count++;
+            }
+            return array[tmp];
+        }
+
+        /**
+         * Gets the data at the arrays given index
+         *
+         * @param index Index to get data at
+         * @return Data at the given index or default value of T if index does not exist
+         */
+        @Nullable
+        public T dataAt(int index) {
+            if ((index + zeroIndex) % size < count && array[(index + zeroIndex) % size] != null) {
+                return (array[(index + zeroIndex) % size]);
+            }
+            return null;
+        }
+
+        /**
+         * Gets the current count of the array
+         *
+         * @return Number of items in the array
+         */
+        public int count() {
+            return count;
+        }
+
+        public int getCapacity() {
+            return size;
+        }
+    }
+
     private Console()
     {
     }
