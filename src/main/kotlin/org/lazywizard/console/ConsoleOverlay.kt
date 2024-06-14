@@ -123,6 +123,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     private var showCursor = true
     private var needsTextUpdate = true
     private var isOpen = false
+    private var firstFrame = true
 
     private inner class Scrollbar(val width: Float, val barColor: Color, val bgColor: Color) {
         fun draw(x: Float, y: Float, height: Float) {
@@ -482,7 +483,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                 // Normal typing
                 else {
                     val char = Keyboard.getEventCharacter()
-                    if (char.toInt() in 0x20..0x7e) {
+                    if (char.code in 0x20..0x7e) {
                         currentInput.insert(currentIndex, char)
                     }
                 }
@@ -533,9 +534,9 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             if (settings.showCursorIndex) input.append(" | Index: $currentIndex/${currentInput.length}")
             if (settings.showMemoryUsage) {
                 ramText.text = getRAMText()
-                ramText.color = getRAMColor(memory.heapMemoryUsage)
+                ramText.baseColor = getRAMColor(memory.heapMemoryUsage)
                 vramText.text = getVRAMText()
-                vramText.color = getVRAMColor(gpuInfo)
+                vramText.baseColor = getVRAMColor(gpuInfo)
             }
         }
     }
@@ -561,6 +562,10 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
 
         // Draw background
         if (settings.showBackground) {
+            // If the game crashes drawing the background, disable it on future runs
+            if (firstFrame)
+                settings.showBackground = false
+
             glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
             glActiveTexture(GL_TEXTURE0)
             glBindTexture(GL_TEXTURE_2D, bgTextureId)
@@ -577,6 +582,12 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             glVertex2f(0f, height)
             glEnd()
             glPopMatrix()
+
+            // No crash on first frame, undo crash fallback
+            if (firstFrame) {
+                firstFrame = false
+                settings.showBackground = true
+            }
         }
 
         val inputHeight = Math.max(fontSize, input.height)
