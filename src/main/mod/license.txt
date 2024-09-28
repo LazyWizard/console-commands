@@ -2,7 +2,7 @@ All modders have my permission to copy and use any code I've written.
 
 ================================================================================
 
-The Source Code Pro font is provided under the SIL Open Font License:
+The Source Code Pro and JetBrains Mono fonts are provided under the SIL Open Font License:
 
  SIL OPEN FONT LICENSE
 
