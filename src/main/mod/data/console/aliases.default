@@ -16,5 +16,6 @@
     "addmod": "addhullmod",
     "addmodspec": "addhullmod",
     "allmods": "allhullmods",
-    "allmodspecs": "allhullmods"
+    "allmodspecs": "allhullmods",
+    "addmarinesxp": "addmarinexp"
 }

@@ -3,11 +3,11 @@ package org.lazywizard.console.commands;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CargoAPI;
 import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.BaseCommand.CommandContext;
-import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
-import static org.lazywizard.console.CommandUtils.*;
+
+import static org.lazywizard.console.CommandUtils.format;
+import static org.lazywizard.console.CommandUtils.isInteger;
 
 public class AddMarines implements BaseCommand
 {
