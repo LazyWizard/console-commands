@@ -164,6 +164,19 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         }
     }
 
+    // TODO: Remove after LazyLib 3.0 reverts 2.8b's default blendSrc changes
+    init {
+        scrollback.blendSrc = GL_ONE
+        query.blendSrc = GL_ONE
+        prompt.blendSrc = GL_ONE
+        input.blendSrc = GL_ONE
+        ramText.blendSrc = GL_ONE
+        vramText.blendSrc = GL_ONE
+        curContext.blendSrc = GL_ONE
+        curTarget.blendSrc = GL_ONE
+        devMode.blendSrc = GL_ONE
+    }
+
     fun show() {
         // Calculates time elapsed since last frame
         var lastUpdate = Sys.getTime()
