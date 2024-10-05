@@ -1,9 +1,6 @@
 $dokka.format:javadoc-v1
 $dokka.linkExtension:html
 $dokka.location:org.lazywizard.console.cheatmanager/CombatCheatManager.PluginManager///PointingToDeclaration/org/lazywizard/console/cheatmanager/CombatCheatManager.PluginManager.html
-$dokka.location:org.lazywizard.console.commands/FindItem.PriceData///PointingToDeclaration/org/lazywizard/console/commands/FindItem.PriceData.html
-$dokka.location:org.lazywizard.console.commands/FindItem.SortByMarketDistance///PointingToDeclaration/org/lazywizard/console/commands/FindItem.SortByMarketDistance.html
-$dokka.location:org.lazywizard.console.commands/ToggleAI.NullAI///PointingToDeclaration/org/lazywizard/console/commands/ToggleAI.NullAI.html
 $dokka.location:org.lazywizard.console.testing/Test.LazyFontExample///PointingToDeclaration/org/lazywizard/console/testing/Test.LazyFontExample.html
 $dokka.location:org.lazywizard.console/BaseCommand.CommandContext///PointingToDeclaration/org/lazywizard/console/BaseCommand.CommandContext.html
 $dokka.location:org.lazywizard.console/BaseCommand.CommandResult///PointingToDeclaration/org/lazywizard/console/BaseCommand.CommandResult.html
