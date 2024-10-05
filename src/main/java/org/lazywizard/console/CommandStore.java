@@ -265,7 +265,7 @@ public class CommandStore
             return tags.contains("combat") || (!tags.contains("campaign") && !tags.contains("market"));
         }
 
-        return true;
+        return !context.isInMainMenu();
     }
 
     /**

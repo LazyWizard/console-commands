@@ -64,7 +64,8 @@ internal class ConsoleCombatListener : BaseEveryFrameCombatPlugin(), ConsoleList
         context = when {
             engine.isSimulation -> CommandContext.COMBAT_SIMULATION
             engine.isInCampaign -> CommandContext.COMBAT_CAMPAIGN
-            else -> CommandContext.COMBAT_MISSION
+            engine.missionId != null -> CommandContext.COMBAT_MISSION
+            else -> CommandContext.MAIN_MENU
         }
 
         engine.customData["consolePlugin"] = this

@@ -88,7 +88,12 @@ public interface BaseCommand
          *
          * @since 2.0
          */
-        COMBAT_SIMULATION;
+        COMBAT_SIMULATION,
+        /**
+         * Command was entered on the main menu.
+         */
+        // TODO: Add @since whenever I get around to untangling the version number mess
+        MAIN_MENU;
 
         /**
          * Returns whether this context is on the combat map.
@@ -126,6 +131,13 @@ public interface BaseCommand
         {
             return (this == CAMPAIGN_MARKET);
         }
+
+        /**
+         * Returns whether the player is viewing the main menu.
+         *
+         * @return {@code true} if the player is at the main menu, {@code false} otherwise.
+         */
+        public boolean isInMainMenu() { return (this == MAIN_MENU); }
 
         /**
          * Returns whether the player is in campaign mode, including in campaign battles (even refit simulation
