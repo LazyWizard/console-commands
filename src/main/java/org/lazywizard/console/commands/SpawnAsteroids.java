@@ -120,7 +120,7 @@ public class SpawnAsteroids implements BaseCommand
             spawnLoc = new Vector2f(0f, 0f);
             wasPaused = Global.getCombatEngine().isPaused();
             text = Console.getFont().createText();
-            text.setColor(Console.getSettings().getOutputColor());
+            text.setBaseColor(Console.getSettings().getOutputColor());
             updateText();
         }
 

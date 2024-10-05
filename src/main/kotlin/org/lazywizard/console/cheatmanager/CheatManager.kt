@@ -54,7 +54,7 @@ class CombatCheatManager : BaseEveryFrameCombatPlugin() {
         @JvmStatic
         @JvmOverloads
         fun parseTargets(str: String, vararg allowedTargets: CheatTarget = CheatTarget.values()): CheatTarget? = try {
-            val result = CheatTarget.valueOf(str.toUpperCase())
+            val result = CheatTarget.valueOf(str.uppercase())
             if (result in allowedTargets) result else null
         } catch (ex: Exception) {
             null

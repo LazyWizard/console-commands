@@ -98,13 +98,18 @@ public class List_ implements BaseCommand
         }
     }
 
-    private static final int LEN = 4;
+    private static final boolean PAD_WITH_TAB = true;
+    private static final int MAX_PAD_LEN = 4; // Only used if the above is false
 
     private static String pad(String prefix)
     {
-        final int len = LEN - (prefix.length() % LEN);
-        if (len == 0 || len == LEN) return prefix;
-        return String.format("%s%" + len + "s", prefix, "");
+        // LazyLib supports tabs, so let's use those instead
+        if (PAD_WITH_TAB)
+            return prefix + "\t";
+
+        // Manually calculating things - inaccurate, kind of a pain, kept here as backup
+        final int len = MAX_PAD_LEN - (prefix.length() % MAX_PAD_LEN);
+        return (len == MAX_PAD_LEN ? prefix : String.format("%s%" + len + "s", prefix, ""));
     }
 
     private static void wrongContext(String param)
@@ -232,7 +237,7 @@ public class List_ implements BaseCommand
                 for (String fullId : sector.getAllEmptyVariantIds())
                 {
                     final String id = fullId.substring(0, fullId.lastIndexOf("_Hull"));
-                    ids.add(pad(id) + " (" + settings.getHullSpec(id).getHullNameWithDashClass() + ")");
+                    ids.add(pad(id) + "(" + settings.getHullSpec(id).getHullNameWithDashClass() + ")");
                 }
                 break;
             case "variants":
@@ -240,7 +245,7 @@ public class List_ implements BaseCommand
                 ids = new ArrayList<>();
                 for (String id : settings.getAllVariantIds())
                 {
-                    ids.add(pad(id) + " (" + settings.getVariant(id).getFullDesignationWithHullName() + ")");
+                    ids.add(pad(id) + "(" + settings.getVariant(id).getFullDesignationWithHullName() + ")");
                 }
                 break;
             case "wings":
@@ -250,7 +255,7 @@ public class List_ implements BaseCommand
                 ids = new ArrayList<>();
                 for (String id : sector.getAllFighterWingIds())
                 {
-                    ids.add(pad(id) + " (" + settings.getFighterWingSpec(id).getWingName() + ")");
+                    ids.add(pad(id) + "(" + settings.getFighterWingSpec(id).getWingName() + ")");
                 }
                 break;
             case "weapons":
@@ -258,7 +263,7 @@ public class List_ implements BaseCommand
                 ids = new ArrayList<>();
                 for (String id : sector.getAllWeaponIds())
                 {
-                    ids.add(pad(id) + " (" + settings.getWeaponSpec(id).getWeaponName() + ")");
+                    ids.add(pad(id) + "(" + settings.getWeaponSpec(id).getWeaponName() + ")");
                 }
                 break;
             case "hullmods":
@@ -269,7 +274,7 @@ public class List_ implements BaseCommand
                 {
                     if (!spec.isHidden())
                     {
-                        ids.add(pad(spec.getId()) + " (" + spec.getDisplayName() + ")");
+                        ids.add(pad(spec.getId()) + "(" + spec.getDisplayName() + ")");
                     }
                 }
                 break;
@@ -279,7 +284,7 @@ public class List_ implements BaseCommand
                 ids = new ArrayList<>();
                 for (String id : sector.getEconomy().getAllCommodityIds())
                 {
-                    ids.add(pad(id) + " (" + settings.getCommoditySpec(id).getName() + ")");
+                    ids.add(pad(id) + "(" + settings.getCommoditySpec(id).getName() + ")");
                 }
                 break;
             case "specials":
@@ -287,7 +292,7 @@ public class List_ implements BaseCommand
                 ids = new ArrayList<>();
                 for (SpecialItemSpecAPI spec : Global.getSettings().getAllSpecialItemSpecs())
                 {
-                    ids.add(pad(spec.getId()) + " (" + spec.getName() + ")");
+                    ids.add(pad(spec.getId()) + "(" + spec.getName() + ")");
                 }
                 break;
             case "systems":
@@ -303,7 +308,7 @@ public class List_ implements BaseCommand
                 ids.add(sector.getHyperspace().getId());
                 for (LocationAPI location : sector.getStarSystems())
                 {
-                    ids.add(pad(location.getId()) + " (" + location.getName() + ")");
+                    ids.add(pad(location.getId()) + "(" + location.getName() + ")");
                 }
                 break;
             case "factions":
@@ -311,7 +316,7 @@ public class List_ implements BaseCommand
                 ids = new ArrayList<>();
                 for (FactionAPI faction : sector.getAllFactions())
                 {
-                    ids.add(pad(faction.getId()) + " (" + faction.getDisplayNameLong() +
+                    ids.add(pad(faction.getId()) + "(" + faction.getDisplayNameLong() +
                             (faction.isShowInIntelTab() ? "" : ", hidden") + ")");
                 }
                 break;
@@ -359,7 +364,7 @@ public class List_ implements BaseCommand
                 ids = new ArrayList<>();
                 for (PlanetAPI planet : loc.getPlanets())
                 {
-                    ids.add(pad(planet.getId()) + " (" + planet.getFullName() + (planet.isStar() ? ", star)" : ")"));
+                    ids.add(pad(planet.getId()) + "(" + planet.getFullName() + (planet.isStar() ? ", star)" : ")"));
                 }
                 break;
             case "stations":
@@ -374,7 +379,7 @@ public class List_ implements BaseCommand
                 ids = new ArrayList<>();
                 for (SectorEntityToken station : loc.getEntitiesWithTag(Tags.STATION))
                 {
-                    ids.add(pad(station.getId()) + " (" + station.getFullName() + ")");
+                    ids.add(pad(station.getId()) + "(" + station.getFullName() + ")");
                 }
                 break;
             case "markets":
@@ -389,7 +394,7 @@ public class List_ implements BaseCommand
                 for (MarketAPI market : sector.getEconomy().getMarketsCopy())
                 {
                     ids.add(pad(market.getId() + " in " + market.getContainingLocation().getName())
-                            + " (" + market.getFaction().getDisplayName() + ", "
+                            + "(" + market.getFaction().getDisplayName() + ", "
                             + (market.getFaction() == null ? "no faction)"
                             : market.getFaction().getRelationshipLevel(
                             player.getFaction()).getDisplayName() + ")"));
@@ -401,7 +406,7 @@ public class List_ implements BaseCommand
                 for (Pair<String, String> pair : getMarketConditionIdsWithNames())
                 {
                     final String id = pair.one, name = pair.two;
-                    ids.add(pad(id) + ((name == null || name.isEmpty()) ? "" : " (" + name + ")"));
+                    ids.add(pad(id) + ((name == null || name.isEmpty()) ? "" : "(" + name + ")"));
                 }
                 break;
             case "industries":
@@ -409,7 +414,7 @@ public class List_ implements BaseCommand
                 ids = new ArrayList<>();
                 for (IndustrySpecAPI spec : settings.getAllIndustrySpecs())
                 {
-                    ids.add(pad(spec.getId()) + " (" + spec.getName() + ")");
+                    ids.add(pad(spec.getId()) + "(" + spec.getName() + ")");
                 }
                 break;
             case "submarkets":

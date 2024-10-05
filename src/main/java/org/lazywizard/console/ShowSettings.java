@@ -427,7 +427,7 @@ public class ShowSettings implements BaseCommand
                 if (pos == null) return;
 
                 // FIXME: Track down cause of DisplayString corruption
-                testString.setColor(new Color(red, green, blue));
+                testString.setBaseColor(new Color(red, green, blue));
                 testString.setFontSize(Console.getFont().getBaseHeight() * fontScale);
                 testString.draw(pos.getX(), pos.getY());
             }

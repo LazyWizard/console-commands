@@ -15,7 +15,7 @@ internal fun trimVendorString(vendor: String) = vendor.split("/".toRegex(), 2)[0
         .replace(""" ?(series|\(r\)|\(tm\)|opengl engine)""", "")
 
 internal fun getGPUInfo(): GPUInfo {
-    val vendor = glGetString(GL_VENDOR).toLowerCase(Locale.ROOT)
+    val vendor = glGetString(GL_VENDOR).lowercase()
     return when {
         vendor.startsWith("nvidia") -> NvidiaGPUInfo()
         vendor.startsWith("ati") || vendor.startsWith("amd") -> ATIGPUInfo()
