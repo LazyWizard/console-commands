@@ -36,6 +36,7 @@ Clear,org.lazywizard.console.commands.Clear,"core,console",clear (no arguments),
 DebugDialogs,org.lazywizard.console.commands.DebugDialogs,"core",debugdialogs (no arguments),"Toggles a mode where all rule-based dialogs will print any memory map changes when an option is selected."
 DevMode,org.lazywizard.console.commands.DevMode,"core,console",devmode [optionalOnOrOff],"Enables or disables dev mode. If no argument is given, acts as a toggle."
 DestroyColony,org.lazywizard.console.commands.DestroyColony,"core,cheat,market",destroycolony (no arguments),"Destroys the colony you are currently docked with. Equivalent to total destruction via saturation bombing, but without the blame falling on the player."
+DisableConsole,org.lazywizard.console.commands.DisableConsole,"core,console",disableconsole (no arguments),"Prevents the console from being opened again in the current battle or campaign. The console will be usable again after a reload or once a new battle is entered."
 DumpHeap,org.lazywizard.console.commands.DumpHeap,"core,console",dumpheap (no arguments),"Dumps the current JVM heap to disk for use with a profiler."
 EndCombat,org.lazywizard.console.commands.EndCombat,"core,combat",endcombat [optionalWinningSide],"Ends combat with the entered side as the winner (player or enemy). No ships are damaged by this command. If no side is entered, defaults to a player victory."
 FactionInfo,org.lazywizard.console.commands.FactionInfo,"core,campaign",factioninfo <factionId>,"Lists the technology known by a faction."
@@ -84,10 +85,13 @@ Settings,org.lazywizard.console.ShowSettings,"core,console,campaign",settings (n
 ShowAI,org.lazywizard.console.commands.ShowAI,"core,combat",showai (no arguments),"Toggles rendering of AI targets (ship target, maneuvering target, and mouse target) for all ships on the battle map."
 ShowBounds,org.lazywizard.console.commands.ShowBounds,"core,combat",showbounds (no arguments),"Toggles rendering of collision bounds, collision radius, and shield radius (if applicable) for all ships on the battle map."
 ShowLoc,org.lazywizard.console.commands.ShowLoc,"core,campaign,combat",showloc (no arguments),"Shows the coordinates of your current location."
+ShowMerging,org.lazywizard.console.commands.ShowMerging,"core,console",showmerging <masterMod> [optionalIdColumnIfCsv] <filePath,"Loads a merged JSON or CSV file and displays which mod is responsible for each line."
 SourceOf,org.lazywizard.console.commands.SourceOf,"core,console",sourceof <command>|all,"Shows what mod a specific command came from, or all commands' sources if all is entered."
 SpawnAsteroids,org.lazywizard.console.commands.SpawnAsteroids,"core,cheat,combat",spawnasteroids (no arguments),"Allows you to spawn asteroids at will. Click and drag to control their spawn position and starting velocity. Press 6-0 to select asteroid size, and spacebar to exit spawn mode."
+SpawnCustomEntity,org.lazywizard.console.commands.SpawnCustomEntity,"core,cheat,campaign",spawncustomentity <entityId>,"Spawns a custom entity. TODO"
 SpawnDerelict,org.lazywizard.console.commands.SpawnDerelict,"core,cheat,campaign",spawnderelict <hullId>,"Spawns a recoverable floating derelict of the specified empty hull."
 SpawnFleet,org.lazywizard.console.commands.SpawnFleet,"core,cheat,campaign",spawnfleet <faction> <combatFP> [optionalName],"Spawns a patrol fleet near the player with the given fleet points worth of combat ships and affiliated with the specified faction. The fleet will be given bonus utility ships to match its size.\nNote: the fleets spawned with this command do not match vanilla fleet compositions, and this command should not be used to test faction doctrines!"
+SpawnShip,org.lazywizard.console.commands.SpawnShip,"core,cheat,combat",spawnship (no arguments),"TODO Allows you to spawn asteroids at will. Click and drag to control their spawn position and starting velocity. Press 6-0 to select asteroid size, and spacebar to exit spawn mode."
 Status,org.lazywizard.console.commands.Status,"core,console",status,"Shows debug information about the console's current status."
 Storage,org.lazywizard.console.commands.Storage,"core,cheat,campaign",storage (no arguments)|set|clear|clear ships,"Opens the Abandoned Terraforming Platform's storage from anywhere in the campaign. If the ATP doesn't exist this command will try to find a market with an unlocked storage tab, or open player cargo instead as a last resort.\nStorage can be set manually by docking with a market with a storage tab and entering "storage set".\nEntering \"storage clear\" will delete all stored cargo, and \"storage clear ships\" will delete all stored ships."
 Suicide,org.lazywizard.console.commands.Suicide,"core,cheat,campaign,combat",suicide (no arguments),"Kills the currently piloted ship, or the entire player fleet if used on the campaign map."
@@ -95,4 +99,10 @@ Survey,org.lazywizard.console.commands.Survey,"core,cheat,campaign",survey all|[
 ToggleAI,org.lazywizard.console.commands.ToggleAI,"core,cheat,combat",toggleai [optionalTarget] on|off,"Toggles the AI of the selected ship. If a target type argument is passed in, you need to tell it whether to turn the AI on or off for all selected ships. Valid arguments are FLEET, ENEMY, or ALL for the target, and on or off for the enabled argument."
 Traitor,org.lazywizard.console.commands.Traitor,"core,cheat,combat",traitor (no arguments),"Toggles the side the selected ship will fight for."
 
-#Test,org.lazywizard.console.testing.Test,"core",test (variable),"Personal command for quick prototyping. Don't bother uncommenting; it probably won't do anything interesting."
+Test,org.lazywizard.console.testing.Test,"core",test (variable),"Personal command for quick prototyping. Don't bother uncommenting; it probably won't do anything interesting."
+#TCR,org.lazywizard.console.commands.TestCoroutines,"core",tcr (no arguments),"Tests Kotlin coroutine support."
+#TestFont,org.lazywizard.console.testing.FontStressTest,"core,combat,campaign",testfont (no arguments),"Stress test font rendering."
+
+#VramCheck,org.lazywizard.console.commands.VramCheck,"core,console",vramcheck [args],"Displays available graphics card memory and other information.\n""verbose"" arg shows a bit more information; ""extensions"" prints available GL extensions."
+#RamCheck,org.lazywizard.console.commands.RamCheck,"core,console",ramcheck,Prints memory-related information.
+FixAudio,org.lazywizard.console.commands.FixAudio,"core",fixaudio (no arguments),"Resets the current audio device."

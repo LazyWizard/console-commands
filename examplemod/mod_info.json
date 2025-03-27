@@ -6,5 +6,5 @@
   "version":"0.4",
   "suppressVCUnsupported":true,
   "description":"Provides a template and several examples of adding custom commands to the console mod.",
-  "gameVersion":"0.95a-RC12"
+  "gameVersion":"0.98a-RC5"
 }
