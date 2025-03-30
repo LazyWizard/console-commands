@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact build-on-make="true" name="Console:res">
+    <output-path>$STARSECTOR_INSTALL_DIR$/mods/Console Commands</output-path>
+    <root id="root">
+      <element id="dir-copy" path="$PROJECT_DIR$/mod" />
+      <element id="archive" name="Example Mod-Added Commands.zip">
+        <element id="directory" name="Example Mod-Added Commands">
+          <element id="dir-copy" path="$PROJECT_DIR$/examplemod" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

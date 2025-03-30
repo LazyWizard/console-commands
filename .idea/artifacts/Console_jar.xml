@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="Console:jar">
+    <output-path>$STARSECTOR_INSTALL_DIR$/mods/Console Commands/jars</output-path>
+    <root id="archive" name="lw_Console.jar">
+      <element id="module-output" name="Console Commands" />
+      <element id="file-copy" path="$PROJECT_DIR$/mod/license.txt" />
+      <element id="dir-copy" path="$PROJECT_DIR$/src" />
+    </root>
+  </artifact>
+</component>

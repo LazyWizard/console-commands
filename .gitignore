@@ -1,17 +1,6 @@
-.DS_Store/
-.gradle/
-.idea/
-.settings/
-.vscode/
-bin/
-build/
-nbproject/
 out/
+.idea/discord.xml
+.idea/uiDesigner.xml
+.scannerwork/
 *.lnk
-*.iml
-.classpath
-.project
-local.properties
-src/main/mod/Example Mod-Added Commands.zip
-Source_Code_Pro/
-authtoken
+/docs/javadoc.zip
