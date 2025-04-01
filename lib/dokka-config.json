@@ -1,0 +1,54 @@
+{
+  "moduleName": "Console Commands",
+  "outputDir": "../doc",
+  "jdkVersion": 17,
+  "languageVersion": "2.1",
+  "apiVersion": "2.1",
+  "sourceSets": [
+    {
+      "sourceSetID": {
+        "scopeId": "console-commands",
+        "sourceSetName": "main"
+      },
+      "sourceRoots": [
+        "../src"
+      ],
+      "documentedVisibilities": [
+        "PUBLIC",
+        "PROTECTED"
+      ],
+      "suppressedFiles": [
+        "../src/org/lazywizard/console/ConsoleListener.java",
+        "../src/org/lazywizard/console/ConsoleModPlugin.java",
+        "../src/org/lazywizard/console/ShowSettings.java",
+        "../src/org/lazywizard/console/cheatmanager/CheatManager.kt"
+      ],
+      "perPackageOptions": [
+        {
+          "matchingRegex": "org.lazywizard.console.(commands|ext|rulecmd|testing).*",
+          "suppress": true,
+          "skipDeprecated": false,
+          "reportUndocumented": false,
+          "documentedVisibilities": []
+        }
+      ]
+    }
+  ],
+  "externalDocumentationLinks": [
+    {
+      "url": "https://docs.oracle.com/en/java/javase/17/docs/api/",
+      "packageListUrl": "https://docs.oracle.com/en/java/javase/17/docs/api/package-list"
+    },
+    {
+      "url": "https://kotlinlang.org/api/core/kotlin-stdlib/",
+      "packageListUrl": "https://kotlinlang.org/api/core/kotlin-stdlib/package-list"
+    }
+  ],
+  "pluginsClasspath": [
+    "./dokka-base-2.0.0.jar",
+    "./analysis-kotlin-descriptors-2.0.0.jar",
+    "./kotlin-as-java-plugin-2.0.0.jar",
+    "./korte-jvm-4.0.10.jar",
+    "./javadoc-plugin-2.0.0.jar"
+  ]
+}

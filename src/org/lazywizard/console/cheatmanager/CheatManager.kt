@@ -40,9 +40,6 @@ class CombatCheatManager : BaseEveryFrameCombatPlugin() {
         fun isEnabled(id: String) = getPlugins().containsKey(id)
 
         @JvmStatic
-        fun getDefaultTarget(): CheatTarget = Console.getSettings().defaultCombatCheatTarget
-
-        @JvmStatic
         fun isTarget(ship: ShipAPI, target: CheatTarget?): Boolean = when (target) {
             CheatTarget.PLAYER -> ship === Global.getCombatEngine().playerShip
             CheatTarget.FLEET -> ship.owner == 0

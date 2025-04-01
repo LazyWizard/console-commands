@@ -1,0 +1,1 @@
+var packageSearchIndex = [{"l":"org.lazywizard.console","url":"org/lazywizard/console/package-summary.html"}, {"l":"org.lazywizard.console.cheatmanager","url":"org/lazywizard/console/cheatmanager/package-summary.html"}, {"l":"All packages","url":"index.html"}]

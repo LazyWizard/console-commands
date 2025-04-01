@@ -2,7 +2,7 @@
 
 /**
  * This overlay seems to be an exercise in how many features I can cram in before
- * I'm forced to write proper UI and layout classes. I apologize in advance for
+ * I'm forced to write proper UI and layout classes. I apologize in advance to
  * anyone who has to read this mess.
  */
 
@@ -39,7 +39,8 @@ private var overlay: ConsoleOverlayInternal? = null
 fun show(context: CommandContext) = with(
     ConsoleOverlayInternal(
         context,
-        Console.getSettings().outputColor, Console.getSettings().outputColor.darker()
+        Console.getSettings().outputColor,
+        Console.getSettings().outputColor.darker()
     )
 )
 {

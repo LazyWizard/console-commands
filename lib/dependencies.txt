@@ -1,0 +1,8 @@
+To build the documentation, you'll need to download the following files and put them in this folder:
+
+https://repo1.maven.org/maven2/org/jetbrains/dokka/dokka-cli/2.0.0/dokka-cli-2.0.0.jar
+https://repo1.maven.org/maven2/org/jetbrains/dokka/dokka-base/2.0.0/dokka-base-2.0.0.jar
+https://repo1.maven.org/maven2/org/jetbrains/dokka/analysis-kotlin-descriptors/2.0.0/analysis-kotlin-descriptors-2.0.0.jar
+https://repo1.maven.org/maven2/org/jetbrains/dokka/javadoc-plugin/2.0.0/javadoc-plugin-2.0.0.jar
+https://repo1.maven.org/maven2/org/jetbrains/dokka/kotlin-as-java-plugin/2.0.0/kotlin-as-java-plugin-2.0.0.jar
+https://repo1.maven.org/maven2/com/soywiz/korlibs/korte/korte-jvm/4.0.10/korte-jvm-4.0.10.jar

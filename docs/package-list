@@ -1,0 +1,9 @@
+$dokka.format:javadoc-v1
+$dokka.linkExtension:html
+$dokka.location:org.lazywizard.console.cheatmanager/CombatCheatManager.PluginManager///PointingToDeclaration/org/lazywizard/console/cheatmanager/CombatCheatManager.PluginManager.html
+$dokka.location:org.lazywizard.console/BaseCommand.CommandContext///PointingToDeclaration/org/lazywizard/console/BaseCommand.CommandContext.html
+$dokka.location:org.lazywizard.console/BaseCommand.CommandResult///PointingToDeclaration/org/lazywizard/console/BaseCommand.CommandResult.html
+$dokka.location:org.lazywizard.console/CommandStore.StoredCommand///PointingToDeclaration/org/lazywizard/console/CommandStore.StoredCommand.html
+$dokka.location:org.lazywizard.console/ConsoleSettings.Keystroke///PointingToDeclaration/org/lazywizard/console/ConsoleSettings.Keystroke.html
+org.lazywizard.console
+org.lazywizard.console.cheatmanager
