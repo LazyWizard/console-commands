@@ -1,6 +1,6 @@
 {
   "moduleName": "Console Commands",
-  "outputDir": "../doc",
+  "outputDir": "../docs",
   "jdkVersion": 17,
   "languageVersion": "2.1",
   "apiVersion": "2.1",
