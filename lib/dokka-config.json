@@ -37,7 +37,7 @@
   "externalDocumentationLinks": [
     {
       "url": "https://docs.oracle.com/en/java/javase/17/docs/api/",
-      "packageListUrl": "https://docs.oracle.com/en/java/javase/17/docs/api/package-list"
+      "packageListUrl": "https://docs.oracle.com/en/java/javase/17/docs/api/element-list"
     },
     {
       "url": "https://kotlinlang.org/api/core/kotlin-stdlib/",
