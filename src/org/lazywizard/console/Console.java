@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommandStore.StoredCommand;
+import org.lazywizard.console.overlay.legacy.ConsoleOverlay;
 import org.lazywizard.lazylib.ui.FontException;
 import org.lazywizard.lazylib.ui.LazyFont;
 import org.lwjgl.opengl.Display;
@@ -85,17 +86,17 @@ public class Console
         return currentContext;
     }
 
-    static String getLastCommand()
+    public static String getLastCommand()
     {
         return lastCommand;
     }
 
-    static float getFontSize()
+    public static float getFontSize()
     {
         return font.getBaseHeight() * getSettings().getFontScaling();
     }
 
-    static float getScrollbackWidth()
+    public static float getScrollbackWidth()
     {
         return (Display.getWidth() * Display.getPixelScaleFactor()) - ConsoleOverlay.HORIZONTAL_MARGIN * 2f;
     }
@@ -349,7 +350,7 @@ public class Console
         return result;
     }
 
-    static void parseInput(String rawInput, CommandContext context)
+    public static void parseInput(String rawInput, CommandContext context)
     {
         if (rawInput == null)
         {
@@ -419,7 +420,7 @@ public class Console
         }
     }
 
-    static void advance(ConsoleListener listener)
+    public static void advance(ConsoleListener listener)
     {
         currentContext = listener.getContext();
         showOutput(listener);

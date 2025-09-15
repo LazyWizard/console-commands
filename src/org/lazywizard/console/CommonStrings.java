@@ -61,6 +61,7 @@ public class CommonStrings
      * Commands with this tag are considered cheats, and will be disabled if the applicable setting is toggled.
      */
     public static final String CHEAT_TAG = "cheat";
+
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Common messages">
