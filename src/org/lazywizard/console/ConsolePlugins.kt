@@ -9,7 +9,7 @@ import com.fs.starfarer.api.util.Misc
 import org.lazywizard.console.BaseCommand.CommandContext
 import org.lazywizard.console.overlay.legacy.addToHistory
 import org.lazywizard.console.overlay.legacy.show
-import org.lazywizard.console.overlay.v2.misc.ConsoleWindowUtils
+import org.lazywizard.console.overlay.v2.panels.ConsoleOverlayPanel
 import org.lazywizard.lazylib.StringUtils
 import java.util.*
 
@@ -20,8 +20,10 @@ internal class ConsoleCampaignListener : CampaignInputListener, ConsoleListener 
         if (Global.getSector().campaignUI.isShowingMenu) return
 
         if (Console.getSettings().consoleSummonKey.isPressed(events)) {
-
-            show(context)
+            if (ConsoleOverlayPanel.instance == null) {
+                ConsoleOverlayPanel()
+            }
+            //show(context)
             events.clear()
         }
 
@@ -56,10 +58,8 @@ internal class ConsoleCombatListener : BaseEveryFrameCombatPlugin(), ConsoleList
         if (!::context.isInitialized || Global.getCombatEngine().playerShip == null) return
 
         if (Console.getSettings().consoleSummonKey.isPressed(events)) {
-            ConsoleWindowUtils.createPopupPanel(300f, 300f) { tooltip ->
-                tooltip.addPara("AAAAA", 0f, ConsoleSettings.outputColor, ConsoleSettings.outputColor)
-                tooltip.addPara("IIIII", 0f, ConsoleSettings.outputColor, ConsoleSettings.outputColor)
-                tooltip.addPara(".....", 0f, ConsoleSettings.outputColor, ConsoleSettings.outputColor)
+            if (ConsoleOverlayPanel.instance == null) {
+                ConsoleOverlayPanel()
             }
             //show(context)
             events.clear()

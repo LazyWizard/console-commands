@@ -22,6 +22,7 @@
       <root url="jar://$PROJECT_DIR$/../LazyLib/jars/LazyLib.jar!/" />
       <root url="jar://$PROJECT_DIR$/../LazyLib/jars/LazyLib-Kotlin.jar!/" />
       <root url="jar://$PROJECT_DIR$/../LazyLib/jars/internal/Kotlin-Runtime.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../GraphicsLib/jars/Graphics.jar!/" />
     </CLASSES>
     <JAVADOC>
       <root url="https://starsectorcommunityapidocs.github.io/CommunityApiDocs/" />
@@ -32,6 +33,7 @@
       <root url="jar://$PROJECT_DIR$/../LazyLib/jars/LazyLib.jar!/" />
       <root url="jar://$PROJECT_DIR$/../LazyLib/jars/LazyLib.jar!/" />
       <root url="jar://$PROJECT_DIR$/../LazyLib/jars/LazyLib-Kotlin.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../GraphicsLib/jars/Graphics.jar!/" />
     </SOURCES>
   </library>
 </component>

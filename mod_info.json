@@ -13,7 +13,11 @@
         {
             "id": "lw_lazylib",
             "name": "LazyLib"
-        }
+        },
+		{
+		  "id": "shaderLib",
+		  "name": "GraphicsLib"
+		},
     ],
     "modPlugin": "org.lazywizard.console.ConsoleModPlugin"
 }
