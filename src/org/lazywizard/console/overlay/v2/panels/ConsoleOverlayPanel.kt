@@ -27,7 +27,6 @@ import org.lwjgl.opengl.GL20
 import java.awt.Color
 import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
-import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
@@ -130,25 +129,51 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
         var label1 = testTextContainer.innerElement.addPara(content, 0f)
         testTextContainer.position.inTL(100000f, 100000f) //Removing it doesnt work for some reason*/
 
+        val scaleFactor = inputDraw.fontSize / font1.baseHeight
+        var maxWidth = width - widthOffset
+        var sizeSoFar = 0f
+        var reconstruction = ""
+        var offsetCorrection = 0
+        var reconIndex = 0
+        for (char in input) {
+            reconstruction += char
 
-        inputDraw.text = input
+            if (char == '\n') {
+                sizeSoFar = 0f
+                continue
+            }
+
+            sizeSoFar += inputDraw.fontSize * scaleFactor
+            if (sizeSoFar >= maxWidth) {
+                reconstruction += "\n"
+
+                //Needed to display the cursor correctly within the reconstructed string display
+                if (reconIndex < cursorIndex) {
+                    offsetCorrection += 1
+                }
+
+                sizeSoFar = 0f;
+
+            }
+            reconIndex++
+        }
+
+        inputDraw.text = reconstruction
         inputDraw.baseColor = Color.white
         if (input.isEmpty()) {
             inputDraw.baseColor = Misc.getGrayColor()
             inputDraw.text = CommonStrings.INPUT_QUERY
+        } else if (input.isBlank()) {
+            inputDraw.text = " ".repeat(300) + "." //Small hack because LazyFont does not update paragraphs that are blank
         }
-        inputDraw.maxWidth = width-widthOffset-innerSizeReduction
+        //inputDraw.maxWidth = width-widthOffset-innerSizeReduction
         inputDraw.triggerRebuildIfNeeded()
         var textWidth = inputDraw.width
         var textHeight = Math.max(inputDraw.height, inputDraw.fontSize) //Height is 0 if theres no characters yet
 
-
-        var test1 = getSubstringBeforeCursor()
-        var test2 = getSubstringAfterCursor()
-
         var matchedString = ""
         var p = Pattern.compile("[\\s\\S&&[^\\n]]+")
-        for (c in input) {
+        for (c in reconstruction) {
             if (!p.matcher(c.toString()).matches()) {
                 matchedString += c
             } else {
@@ -156,14 +181,20 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
             }
         }
 
-        cursorIndex = MathUtils.clamp(cursorIndex, 0, matchedString.length)
-        var cursorText = matchedString.substring(0, cursorIndex)
+        cursorIndex = MathUtils.clamp(cursorIndex, 0, input.length)
+        //var cursorDisplayIndex = MathUtils.clamp(cursorIndex, 0, reconstruction.length)
+        var cursorText = matchedString.substring(0, cursorIndex+offsetCorrection)
 
         //cursorDraw.text = " ".repeat(cursorIndex) + "|"
         cursorDraw.text = cursorText + "|"
         cursorDraw.baseColor = Misc.getBasePlayerColor()
         cursorDraw.maxWidth = inputDraw.maxWidth
         cursorDraw.triggerRebuildIfNeeded()
+
+       /* cursorText = matchedString.substring(0, cursorIndex)
+        cursorDraw.text = cursorText + "|"
+        ReflectionUtils.set("isRebuildNeeded", cursorDraw, false)*/
+        //cursorDraw.triggerRebuildIfNeeded()
 
         //var textfield = ConsoleTextfield(element, width-widthOffset, 30f+label1.position.height)
         var textfield = ConsoleTextfield(element, width-widthOffset, 30f+textHeight)
@@ -216,16 +247,37 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
         var updatedCursor = false
 
         for (event in events) {
+
+            cursorIndex = MathUtils.clamp(cursorIndex, 0, input.length)
+
             if (event.isConsumed) continue
             //if (!event.isKeyDownEvent) continue
             if (event.isKeyboardEvent && (event.isKeyDownEvent || event.isRepeat))
             {
+
+                if (event.eventValue == Keyboard.KEY_ESCAPE) {
+                    break
+                }
+
                 if (event.eventValue == Keyboard.KEY_LEFT) {
-                    cursorIndex -= 1;
+                    if (event.isCtrlDown) {
+                        cursorIndex = lastWordIndex();
+                    } else {
+                        cursorIndex -= 1;
+                    }
                     updatedCursor = true
+                    event.consume()
+                    break
                 } else if (event.eventValue == Keyboard.KEY_RIGHT) {
-                    cursorIndex += 1;
+                    if (event.isCtrlDown) {
+                        cursorIndex = nextWordIndex();
+                    } else {
+                        cursorIndex += 1;
+                    }
+
                     updatedCursor = true
+                    event.consume()
+                    break
                 }
 
                 if (event.eventValue == Keyboard.KEY_TAB)
@@ -235,63 +287,93 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
 
                 if (event.eventValue == Keyboard.KEY_V && event.isCtrlDown)
                 {
-                    var clipboard = Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor) as String
-                    for (char in clipboard)
-                    {
-                        //appendCharIfPossible(char)
-                        input += char
+
+                    try {
+                        var clipboard = Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor) as String
+
+                        var before = getSubstringBeforeCursor()
+                        var after = getSubstringAfterCursor()
+                        var sizeBefore = input.length
+                        input = before
+                        for (char in clipboard)
+                        {
+                            //appendCharIfPossible(char)
+                            input += char
+                        }
+                        input += after
+                        cursorIndex += input.length-sizeBefore
+                    } catch (e: Throwable) {
+
                     }
+
+
                     event.consume()
-                    continue
+                    break
                 }
 
                 if (event.eventValue == Keyboard.KEY_BACK)
                 {
+                    var before = getSubstringBeforeCursor()
+                    var after = getSubstringAfterCursor()
 
-                    if (input.isEmpty())
+                    if (before.isEmpty())
                     {
                         event.consume()
+                        break
                     }
                     else if (event.isShiftDown)
                     {
+                        /*var priorSize = input.length
+                        input = after
+                        cursorIndex -= priorSize-input.length*/
                         input = ""
+                        cursorIndex = 0
+                        event.consume()
+                        break
                     }
                     else if (event.isCtrlDown)
                     {
                         deleteLastWord()
+                        event.consume()
+                        break
                     }
                     else
                     {
                         //playSound("ui_typer_type")
-                        input = (input.substring(0, input.length - 1))
+                        //input = (input.substring(0, input.length - 1))
+
+                        input = (before.substring(0, before.length - 1)) + after
+                        event.consume()
+                        cursorIndex -= 1
+                        break
                     }
-
-
-                    event.consume()
-                    continue
                 }
 
                 if (event.isCtrlDown || event.isAltDown)
                 {
                     event.consume()
-                    continue
+                    break
                 }
 
                 if (event.eventValue == Keyboard.KEY_RETURN) {
                     event.consume()
 
                     if (event.isShiftDown) {
-                        input += "\n"
+                        input = getSubstringBeforeCursor() + "\n" + getSubstringAfterCursor()
+                        cursorIndex += 1
                     }
-                    continue
+                    break
                 }
 
 
                 var char = event.eventChar
 
                 if (isValidChar(char)) {
-                    input += char
+                    //input += char
+                    input = getSubstringBeforeCursor() + char + getSubstringAfterCursor()
+                    cursorIndex += 1
                     event.consume()
+                    break
                 }
 
                 //appendCharIfPossible(char)
@@ -299,12 +381,11 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
             }
         }
 
-        if (updatedCursor) {
+        if (input != lastInput || updatedCursor) {
+
             cursorBlink = true
             cursorBlinkInterval.elapsed = 0f
-        }
 
-        if (input != lastInput || updatedCursor) {
             lastInput = input
             recreatePanel()
         }
@@ -336,20 +417,57 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
 
     private fun deleteLastWord()
     {
-        var last = input.lastIndexOf(" ")
-        if (last == input.length - 1 && last > 0)
+
+        var priorSize = input.length
+
+        var before = getSubstringBeforeCursor()
+        var after = getSubstringAfterCursor()
+
+        var last = before.lastIndexOf(" ")
+        if (last == before.length - 1 && last > 0)
         {
-            last = input.substring(0, last).lastIndexOf(" ")
+            last = before.substring(0, last).lastIndexOf(" ")
         }
 
         if (last == -1)
         {
-            input = ""
+            input = after
+            cursorIndex -= priorSize-input.length
         }
         else
         {
-            input = input.substring(0, last + 1)
+            input = input.substring(0, last + 1) + after
+            cursorIndex -= priorSize-input.length
         }
+    }
+
+    private fun lastWordIndex() : Int {
+        var before = getSubstringBeforeCursor()
+
+        var last = before.lastIndexOf(" ")
+        if (last == before.length - 1 && last > 0)
+        {
+            last = before.substring(0, last).lastIndexOf(" ")
+        }
+
+        return MathUtils.clamp(last, 0, input.length)
+    }
+
+    private fun nextWordIndex() : Int {
+        var after = getSubstringAfterCursor()
+        var first = after.indexOf(" ")
+        if (first == -1) {
+            return input.length
+        }
+
+
+        first += getSubstringBeforeCursor().length+1
+
+      /*  if (cursorIndex == first) {
+            return cursorIndex+1
+        }*/
+
+        return MathUtils.clamp(first, 0, input.length)
     }
 
     private fun isValidChar(char: Char?) : Boolean
