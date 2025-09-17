@@ -24,10 +24,8 @@ internal class ConsoleCampaignListener : CampaignInputListener, ConsoleListener 
             show(context)
             events.clear()
         }
-        else if (Console.getSettings().consoleSummonKey.isPressed(events)) {
-            if (ConsoleOverlayPanel.instance == null) {
-                ConsoleOverlayPanel()
-            }
+        else if (ConsoleOverlayPanel.instance == null && Console.getSettings().consoleSummonKey.isPressed(events)) {
+            ConsoleOverlayPanel()
             //show(context)
             events.clear()
         }
@@ -68,10 +66,8 @@ internal class ConsoleCombatListener : BaseEveryFrameCombatPlugin(), ConsoleList
             show(context)
             events.clear()
         }
-        else if (Console.getSettings().consoleSummonKey.isPressed(events)) {
-            if (ConsoleOverlayPanel.instance == null) {
-                ConsoleOverlayPanel()
-            }
+        else if (ConsoleOverlayPanel.instance == null && Console.getSettings().consoleSummonKey.isPressed(events)) {
+            ConsoleOverlayPanel()
             //show(context)
             events.clear()
         }

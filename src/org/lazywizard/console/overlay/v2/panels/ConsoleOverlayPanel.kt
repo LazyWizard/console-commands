@@ -8,6 +8,7 @@ import com.fs.starfarer.api.ui.CustomPanelAPI
 import com.fs.starfarer.api.ui.Fonts
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.ui.UIPanelAPI
+import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.state.AppDriver
 import org.dark.shaders.util.ShaderLib
@@ -16,6 +17,7 @@ import org.lazywizard.console.overlay.v2.elements.ConsoleTextfield
 import org.lazywizard.console.overlay.v2.misc.ReflectionUtils
 import org.lazywizard.console.overlay.v2.misc.clearChildren
 import org.lazywizard.console.overlay.v2.misc.getParent
+import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.ui.LazyFont
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
@@ -25,6 +27,8 @@ import org.lwjgl.opengl.GL20
 import java.awt.Color
 import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
 
@@ -37,16 +41,20 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
         var font2 = LazyFont.loadFont("graphics/fonts/jetbrains_mono_32.fnt")
     }
 
-    var input = ""
-    var lastInput = ""
-    var currentIndex = 0
+    var input = "This is a test string"
+    var lastInput = input
+    var cursorIndex = input.length
 
     var inputDraw = font1.createText("", Color.white, 16f)
+    var cursorDraw = font1.createText("|", Color.white, 16f)
     var arrowDraw = font2.createText(">", Misc.getBasePlayerColor(), 24f)
+
+    private var cursorBlinkInterval = IntervalUtil(0.5f, 0.5f) //TODO reset and force blink to true whenever typing/erasing/moving
+    private var cursorBlink = true
 
     init {
         inputDraw.blendSrc = GL_ONE
-        inputDraw.renderDebugBounds = false
+        cursorDraw.blendSrc = GL_ONE
         arrowDraw.blendSrc = GL_ONE
 
         instance = this
@@ -114,8 +122,6 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
 
         var font = Fonts.ORBITRON_16
         //var content = "Hello " +    "A ".repeat(300) +"A "
-        var content = input
-
         var innerSizeReduction = 30f
 
         //Create a dummy container that is used to determine the required size
@@ -136,6 +142,29 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
         var textWidth = inputDraw.width
         var textHeight = Math.max(inputDraw.height, inputDraw.fontSize) //Height is 0 if theres no characters yet
 
+
+        var test1 = getSubstringBeforeCursor()
+        var test2 = getSubstringAfterCursor()
+
+        var matchedString = ""
+        var p = Pattern.compile("[\\s\\S&&[^\\n]]+")
+        for (c in input) {
+            if (!p.matcher(c.toString()).matches()) {
+                matchedString += c
+            } else {
+                matchedString += " "
+            }
+        }
+
+        cursorIndex = MathUtils.clamp(cursorIndex, 0, matchedString.length)
+        var cursorText = matchedString.substring(0, cursorIndex)
+
+        //cursorDraw.text = " ".repeat(cursorIndex) + "|"
+        cursorDraw.text = cursorText + "|"
+        cursorDraw.baseColor = Misc.getBasePlayerColor()
+        cursorDraw.maxWidth = inputDraw.maxWidth
+        cursorDraw.triggerRebuildIfNeeded()
+
         //var textfield = ConsoleTextfield(element, width-widthOffset, 30f+label1.position.height)
         var textfield = ConsoleTextfield(element, width-widthOffset, 30f+textHeight)
        /* var textContainer = BaseConsoleElement(textfield.innerElement, textfield.position.width-innerSizeReduction, textfield.height).apply {
@@ -149,6 +178,11 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
         textfield.render {
             arrowDraw.draw(textfield.x+10, textfield.y+textfield.height-10)
             inputDraw.draw(textfield.x+innerSizeReduction, textfield.y+textfield.height-15)
+
+            if (cursorBlink) {
+                cursorDraw.draw(textfield.x+innerSizeReduction-cursorDraw.fontSize/4+1, textfield.y+textfield.height-13)
+                cursorDraw.draw(textfield.x+innerSizeReduction-cursorDraw.fontSize/4+1, textfield.y+textfield.height-17)
+            }
         }
 
         /*var label2 = textContainer.innerElement.addPara(content, 0f)
@@ -159,6 +193,11 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
 
     override fun advance(amount: Float) {
         super.advance(amount)
+
+        cursorBlinkInterval.advance(amount)
+        if (cursorBlinkInterval.intervalElapsed()) {
+            cursorBlink =! cursorBlink
+        }
 
         //Required to hide the hull/flux widget, as it exists outside of the normal UI tree
         var state = AppDriver.getInstance().currentState
@@ -174,11 +213,20 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
     //Prevent input from going towards other windows
     override fun processInput(events: MutableList<InputEventAPI>) {
 
+        var updatedCursor = false
+
         for (event in events) {
             if (event.isConsumed) continue
             //if (!event.isKeyDownEvent) continue
             if (event.isKeyboardEvent && (event.isKeyDownEvent || event.isRepeat))
             {
+                if (event.eventValue == Keyboard.KEY_LEFT) {
+                    cursorIndex -= 1;
+                    updatedCursor = true
+                } else if (event.eventValue == Keyboard.KEY_RIGHT) {
+                    cursorIndex += 1;
+                    updatedCursor = true
+                }
 
                 if (event.eventValue == Keyboard.KEY_TAB)
                 {
@@ -194,14 +242,13 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
                         input += char
                     }
                     event.consume()
-                    break
+                    continue
                 }
 
                 if (event.eventValue == Keyboard.KEY_BACK)
                 {
-                    var empty = input.isEmpty()
 
-                    if (empty)
+                    if (input.isEmpty())
                     {
                         event.consume()
                     }
@@ -209,10 +256,10 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
                     {
                         input = ""
                     }
-                    /*else if (event.isCtrlDown)
+                    else if (event.isCtrlDown)
                     {
                         deleteLastWord()
-                    }*/
+                    }
                     else
                     {
                         //playSound("ui_typer_type")
@@ -252,7 +299,12 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
             }
         }
 
-        if (input != lastInput) {
+        if (updatedCursor) {
+            cursorBlink = true
+            cursorBlinkInterval.elapsed = 0f
+        }
+
+        if (input != lastInput || updatedCursor) {
             lastInput = input
             recreatePanel()
         }
@@ -273,9 +325,30 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
             }
             if (event.isMouseMoveEvent || event.isMouseDownEvent || event.isMouseScrollEvent)
             {
-
                 event.consume()
             }
+        }
+    }
+
+    private fun getSubstringBeforeCursor() = input.substring(0, cursorIndex)
+
+    private fun getSubstringAfterCursor() = input.substring(cursorIndex)
+
+    private fun deleteLastWord()
+    {
+        var last = input.lastIndexOf(" ")
+        if (last == input.length - 1 && last > 0)
+        {
+            last = input.substring(0, last).lastIndexOf(" ")
+        }
+
+        if (last == -1)
+        {
+            input = ""
+        }
+        else
+        {
+            input = input.substring(0, last + 1)
         }
     }
 
