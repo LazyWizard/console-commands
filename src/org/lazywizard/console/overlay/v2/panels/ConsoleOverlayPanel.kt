@@ -3,21 +3,28 @@ package org.lazywizard.console.overlay.v2.panels
 import com.fs.starfarer.api.GameState
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.BaseCustomUIPanelPlugin
-import com.fs.starfarer.api.campaign.CustomUIPanelPlugin
 import com.fs.starfarer.api.input.InputEventAPI
 import com.fs.starfarer.api.ui.CustomPanelAPI
+import com.fs.starfarer.api.ui.Fonts
+import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.ui.UIPanelAPI
+import com.fs.starfarer.api.util.Misc
 import com.fs.state.AppDriver
 import org.dark.shaders.util.ShaderLib
-import org.lazywizard.console.overlay.v2.elements.BaseConsoleElement
+import org.lazywizard.console.CommonStrings
+import org.lazywizard.console.overlay.v2.elements.ConsoleTextfield
 import org.lazywizard.console.overlay.v2.misc.ReflectionUtils
 import org.lazywizard.console.overlay.v2.misc.clearChildren
 import org.lazywizard.console.overlay.v2.misc.getParent
-import org.lazywizard.console.overlay.v2.misc.getWidth
+import org.lazywizard.lazylib.ui.LazyFont
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.GL_ONE
 import org.lwjgl.opengl.GL13
 import org.lwjgl.opengl.GL20
+import java.awt.Color
+import java.awt.Toolkit
+import java.awt.datatransfer.DataFlavor
 
 class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
 
@@ -26,9 +33,22 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
     companion object {
         var instance: ConsoleOverlayPanel? = null
         var shader = 0
+        var font1 = LazyFont.loadFont("graphics/fonts/jetbrains_mono_24.fnt")
+        var font2 = LazyFont.loadFont("graphics/fonts/jetbrains_mono_32.fnt")
     }
 
+    var input = ""
+    var lastInput = ""
+    var currentIndex = 0
+
+    var inputDraw = font1.createText("", Color.white, 16f)
+    var arrowDraw = font2.createText(">", Misc.getBasePlayerColor(), 24f)
+
     init {
+        inputDraw.blendSrc = GL_ONE
+        inputDraw.renderDebugBounds = false
+        arrowDraw.blendSrc = GL_ONE
+
         instance = this
 
         if (shader == 0) {
@@ -52,15 +72,11 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
         if (Global.getCurrentState() == GameState.COMBAT) {
             Global.getCombatEngine().isPaused = true
             var engine = Global.getCombatEngine()
-
-
-            //ReflectionUtils.set("hideHud", state, true) //Has to be hidden, as some elements still render above, somehow.
         }
 
         if (Global.getCurrentState() == GameState.CAMPAIGN) {
             Global.getSector().isPaused = true;
         }
-
 
 
 
@@ -74,36 +90,77 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
     fun recreatePanel() {
         parent.clearChildren()
 
-        var panel = parent.createCustomPanel(parent.position.width, parent.position.height, this)
+        var width = parent.position.width
+        var height = parent.position.height
+        var widthOffset = 50
+
+        var panel = parent.createCustomPanel(width, height, this)
         parent.addComponent(panel)
         panel.position.inTL(0f, 0f)
 
-        var element = panel.createUIElement(panel.position.width, panel.position.height, false)
+        var element = panel.createUIElement(width, height, false)
         panel.addUIElement(element)
         element.position.inTL(0f, 0f)
 
-        element.addPara("Test", 0f).position.inTL(30f, 30f)
+        createTextfield(panel, element)
 
-       /* var advancer = BaseConsoleElement(element, 0f, 0f)
-        advancer.onInput {
-            for (event in it) {
-                if (event.isConsumed) continue
-                if (event.isKeyUpEvent && event.eventValue == Keyboard.KEY_ESCAPE) {
-                    close()
-                    event.consume()
-                    continue
-                }
-                if (event.isKeyboardEvent)
-                {
-                    event.consume()
-                }
-            }
-        }*/
+    }
+
+    fun createTextfield(panel: UIPanelAPI, element: TooltipMakerAPI) {
+
+        var width = parent.position.width
+        var height = parent.position.height
+        var widthOffset = 50
+
+        var font = Fonts.ORBITRON_16
+        //var content = "Hello " +    "A ".repeat(300) +"A "
+        var content = input
+
+        var innerSizeReduction = 30f
+
+        //Create a dummy container that is used to determine the required size
+       /* var testTextContainer = BaseConsoleElement(element, width-widthOffset-innerSizeReduction, 30f)
+        testTextContainer.innerElement.setParaFont(font)
+        var label1 = testTextContainer.innerElement.addPara(content, 0f)
+        testTextContainer.position.inTL(100000f, 100000f) //Removing it doesnt work for some reason*/
+
+
+        inputDraw.text = input
+        inputDraw.baseColor = Color.white
+        if (input.isEmpty()) {
+            inputDraw.baseColor = Misc.getGrayColor()
+            inputDraw.text = CommonStrings.INPUT_QUERY
+        }
+        inputDraw.maxWidth = width-widthOffset-innerSizeReduction
+        inputDraw.triggerRebuildIfNeeded()
+        var textWidth = inputDraw.width
+        var textHeight = Math.max(inputDraw.height, inputDraw.fontSize) //Height is 0 if theres no characters yet
+
+        //var textfield = ConsoleTextfield(element, width-widthOffset, 30f+label1.position.height)
+        var textfield = ConsoleTextfield(element, width-widthOffset, 30f+textHeight)
+       /* var textContainer = BaseConsoleElement(textfield.innerElement, textfield.position.width-innerSizeReduction, textfield.height).apply {
+            renderBorder = false
+            renderBackground = false
+            innerElement.setParaFont(font)
+        }
+        textContainer.position.inTL(innerSizeReduction, 14f)*/
+        textfield.position.inTL(width/2-textfield.width/2, height-textfield.height-30)
+
+        textfield.render {
+            arrowDraw.draw(textfield.x+10, textfield.y+textfield.height-10)
+            inputDraw.draw(textfield.x+innerSizeReduction, textfield.y+textfield.height-15)
+        }
+
+        /*var label2 = textContainer.innerElement.addPara(content, 0f)
+        label2.position.inTL(0f, 0f)*/
+
+        //println("Width: "+label2.computeTextWidth(label2.text))
     }
 
     override fun advance(amount: Float) {
         super.advance(amount)
 
+        //Required to hide the hull/flux widget, as it exists outside of the normal UI tree
         var state = AppDriver.getInstance().currentState
         if (Global.getCurrentState() == GameState.COMBAT) {
             var reticle = ReflectionUtils.get("targetReticleRenderer", state)
@@ -112,13 +169,96 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
                 list.clear()
             }
         }
-
-
     }
 
     //Prevent input from going towards other windows
-    override fun processInput(events: MutableList<InputEventAPI>?) {
-        for (event in events!!)
+    override fun processInput(events: MutableList<InputEventAPI>) {
+
+        for (event in events) {
+            if (event.isConsumed) continue
+            //if (!event.isKeyDownEvent) continue
+            if (event.isKeyboardEvent && (event.isKeyDownEvent || event.isRepeat))
+            {
+
+                if (event.eventValue == Keyboard.KEY_TAB)
+                {
+
+                }
+
+                if (event.eventValue == Keyboard.KEY_V && event.isCtrlDown)
+                {
+                    var clipboard = Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor) as String
+                    for (char in clipboard)
+                    {
+                        //appendCharIfPossible(char)
+                        input += char
+                    }
+                    event.consume()
+                    break
+                }
+
+                if (event.eventValue == Keyboard.KEY_BACK)
+                {
+                    var empty = input.isEmpty()
+
+                    if (empty)
+                    {
+                        event.consume()
+                    }
+                    else if (event.isShiftDown)
+                    {
+                        input = ""
+                    }
+                    /*else if (event.isCtrlDown)
+                    {
+                        deleteLastWord()
+                    }*/
+                    else
+                    {
+                        //playSound("ui_typer_type")
+                        input = (input.substring(0, input.length - 1))
+                    }
+
+
+                    event.consume()
+                    continue
+                }
+
+                if (event.isCtrlDown || event.isAltDown)
+                {
+                    event.consume()
+                    continue
+                }
+
+                if (event.eventValue == Keyboard.KEY_RETURN) {
+                    event.consume()
+
+                    if (event.isShiftDown) {
+                        input += "\n"
+                    }
+                    continue
+                }
+
+
+                var char = event.eventChar
+
+                if (isValidChar(char)) {
+                    input += char
+                    event.consume()
+                }
+
+                //appendCharIfPossible(char)
+
+            }
+        }
+
+        if (input != lastInput) {
+            lastInput = input
+            recreatePanel()
+        }
+
+        //Consume unconsumed keys to prevent interacting with other elements
+        for (event in events)
         {
             if (event.isConsumed) continue
             if (event.isKeyUpEvent && event.eventValue == Keyboard.KEY_ESCAPE)
@@ -139,7 +279,31 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
         }
     }
 
+    private fun isValidChar(char: Char?) : Boolean
+    {
+        if (char == '\u0000')
+        {
+            return false
+        }
+
+        else if (char == '%')
+        {
+            return false
+        }
+        else if (char == '$')
+        {
+            return false
+        }
+
+        return true
+    }
+
     override fun render(alphaMult: Float) {
+        super.render(alphaMult)
+
+    }
+
+    override fun renderBelow(alphaMult: Float) {
 
         //Screen texture can be unloaded if graphicslib shaders are disabled, causing a blackscreen
         if (ShaderLib.getScreenTexture() != 0) {

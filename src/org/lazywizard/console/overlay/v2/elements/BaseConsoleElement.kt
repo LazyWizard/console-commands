@@ -12,17 +12,15 @@ import java.awt.Color
 /**
 An Empty UI Element that can be used as a foundation for other Elements.
 */
-open class BaseConsoleElement : CustomUIPanelPlugin {
+open class BaseConsoleElement(tooltip: TooltipMakerAPI, var width: Float, var height: Float) : CustomUIPanelPlugin {
 
     private var elementID = Misc.genUID() ?: ""
 
-    var parentElement: TooltipMakerAPI
+    var parentElement: TooltipMakerAPI = tooltip
     var elementPanel: CustomPanelAPI
     var innerElement: TooltipMakerAPI
     var paragraph: LabelAPI? = null
 
-    var width: Float
-    var height: Float
     var x: Float
     var y: Float
 
@@ -66,21 +64,14 @@ open class BaseConsoleElement : CustomUIPanelPlugin {
     private var onHoverEnterFunctions: MutableList<(InputEventAPI) -> Unit> = ArrayList()
     private var onHoverExitFunctions: MutableList<(InputEventAPI) -> Unit> = ArrayList()
 
-    constructor(tooltip: TooltipMakerAPI, width: Float, height: Float)
-    {
-        this.parentElement = tooltip
+    init {
         this.elementPanel = Global.getSettings().createCustom(width, height, this)
         var comp = tooltip.addCustom(elementPanel, 0f)
         this.position = comp.position
-
-        this.width = width
-        this.height = height
         this.x = position.x
         this.y = position.y
-
         this.innerElement = elementPanel.createUIElement(width, height, false)
         elementPanel.addUIElement(innerElement)
-
         selectionGroup = "all"
     }
 

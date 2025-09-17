@@ -19,13 +19,20 @@ internal class ConsoleCampaignListener : CampaignInputListener, ConsoleListener 
     override fun processCampaignInputPreCore(events: MutableList<InputEventAPI>) {
         if (Global.getSector().campaignUI.isShowingMenu) return
 
-        if (Console.getSettings().consoleSummonKey.isPressed(events)) {
+
+        if (Console.getSettings().legacyConsoleSummonKey.isPressed(events)) {
+            show(context)
+            events.clear()
+        }
+        else if (Console.getSettings().consoleSummonKey.isPressed(events)) {
             if (ConsoleOverlayPanel.instance == null) {
                 ConsoleOverlayPanel()
             }
             //show(context)
             events.clear()
         }
+
+
 
         Console.advance(this)
     }
@@ -57,13 +64,19 @@ internal class ConsoleCombatListener : BaseEveryFrameCombatPlugin(), ConsoleList
     override fun processInputPreCoreControls(amount: Float, events: MutableList<InputEventAPI>) {
         if (!::context.isInitialized || Global.getCombatEngine().playerShip == null) return
 
-        if (Console.getSettings().consoleSummonKey.isPressed(events)) {
+        if (Console.getSettings().legacyConsoleSummonKey.isPressed(events)) {
+            show(context)
+            events.clear()
+        }
+        else if (Console.getSettings().consoleSummonKey.isPressed(events)) {
             if (ConsoleOverlayPanel.instance == null) {
                 ConsoleOverlayPanel()
             }
             //show(context)
             events.clear()
         }
+
+
 
         // Advance the console and all combat commands
         Console.advance(this)

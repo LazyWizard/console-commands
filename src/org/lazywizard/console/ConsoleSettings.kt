@@ -39,6 +39,10 @@ object ConsoleSettings {
         "consoleKeystroke",
         default = Keystroke(Keyboard.getKeyIndex("BACK"), true, false, false)
     )
+    var legacyConsoleSummonKey by KeystrokePref(
+        "legacyConsoleKeystroke",
+        default = Keystroke(Keyboard.getKeyIndex("BACK"), true, false, true)
+    )
     var cheatsAllowedForSave: Boolean
         get() = if (Console.getContext()?.isCampaignAccessible!!)
             !Global.getSector().persistentData.containsKey(
