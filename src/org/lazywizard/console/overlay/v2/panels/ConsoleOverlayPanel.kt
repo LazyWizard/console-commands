@@ -53,9 +53,10 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
     private var cursorDraw = font1.createText("|", Color.white, 16f)
     private var arrowDraw = font2.createText(">", Misc.getBasePlayerColor(), 24f)
 
-
     private var cursorBlinkInterval = IntervalUtil(0.5f, 0.5f)
     private var cursorBlink = true
+
+    var wasPaused = false
 
     init {
         inputDraw.blendSrc = GL_ONE
@@ -84,11 +85,13 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
         var screenPanel = ReflectionUtils.invoke("getScreenPanel", state) as UIPanelAPI
 
         if (Global.getCurrentState() == GameState.COMBAT) {
+            wasPaused = Global.getCombatEngine().isPaused
+            //Global.getCombatEngine().viewport.isExternalControl = true //Prevent moving screen with dragging
             Global.getCombatEngine().isPaused = true
-            var engine = Global.getCombatEngine()
         }
 
         if (Global.getCurrentState() == GameState.CAMPAIGN) {
+            wasPaused = Global.getSector().isPaused
             Global.getSector().isPaused = true;
         }
 
@@ -704,12 +707,13 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
         var state = AppDriver.getInstance().currentState
 
         if (Global.getCurrentState() == GameState.COMBAT) {
-            Global.getCombatEngine().isPaused = false
+            if (!wasPaused) Global.getCombatEngine().isPaused = false
+            //Global.getCombatEngine().viewport.isExternalControl = false
             //ReflectionUtils.set("hideHud", state, false)
         }
 
         if (Global.getCurrentState() == GameState.CAMPAIGN) {
-            Global.getSector().isPaused = false;
+            if (!wasPaused) Global.getSector().isPaused = false;
         }
 
         instance = null
