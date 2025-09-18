@@ -1,4 +1,8 @@
-@file:JvmName("ConsoleOverlay")
+@file:JvmName("LegacyConsoleOverlay")
+
+
+//LEGACY CONSOLE
+
 
 /**
  * This overlay seems to be an exercise in how many features I can cram in before
@@ -83,7 +87,7 @@ internal fun getErrorString(err: Int) = when (err) {
 
 // TODO: This uses a lot of hardcoded numbers; need to refactor these into constants at some point
 // TODO: Move UI element instantiation into initializer to make size/position details clearer
-private class ConsoleOverlayInternal(private val context: CommandContext, mainColor: Color, secondaryColor: Color) :
+internal class ConsoleOverlayInternal(private val context: CommandContext, mainColor: Color, secondaryColor: Color) :
     ConsoleListener {
     private val settings = Console.getSettings()
     private val bgTextureId = if (ConsoleSettings.showBackground) glGenTextures() else 0
@@ -126,6 +130,11 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     private var needsTextUpdate = true
     private var isOpen = false
     private var firstFrame = true
+
+    companion object {
+        @JvmStatic
+        public var lastCommand: String? = null
+    }
 
     private inner class Scrollbar(val width: Float, val barColor: Color, val bgColor: Color) {
         fun draw(x: Float, y: Float, height: Float) {
@@ -355,10 +364,10 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
 
                 // Load last command when user presses up on keyboard
                 val keyPressed = Keyboard.getEventKey()
-                if (keyPressed == Keyboard.KEY_UP && Console.getLastCommand() != null) {
+                if (keyPressed == Keyboard.KEY_UP && lastCommand != null) {
                     lastInput = currentInput.toString()
                     lastIndex = currentIndex
-                    currentInput.replace(0, currentInput.length, Console.getLastCommand())
+                    currentInput.replace(0, currentInput.length, lastCommand)
                     currentIndex = currentInput.length
                     continue
                 }

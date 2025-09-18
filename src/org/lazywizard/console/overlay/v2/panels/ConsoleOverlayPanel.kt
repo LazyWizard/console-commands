@@ -12,7 +12,9 @@ import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.state.AppDriver
 import org.dark.shaders.util.ShaderLib
+import org.lazywizard.console.CommandStore
 import org.lazywizard.console.CommonStrings
+import org.lazywizard.console.overlay.v2.elements.BaseConsoleElement
 import org.lazywizard.console.overlay.v2.elements.ConsoleTextfield
 import org.lazywizard.console.overlay.v2.misc.ReflectionUtils
 import org.lazywizard.console.overlay.v2.misc.clearChildren
@@ -38,27 +40,31 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
         var shader = 0
         var font1 = LazyFont.loadFont("graphics/fonts/jetbrains_mono_24.fnt")
         var font2 = LazyFont.loadFont("graphics/fonts/jetbrains_mono_32.fnt")
+        var graphicsLib = Global.getSettings().modManager.isModEnabled("shaderLib")
     }
 
     var input = "This is a test string"
     var lastInput = input
     var cursorIndex = input.length
 
-    var inputDraw = font1.createText("", Color.white, 16f)
+    var inputDraw = font1.createText("", Color(243, 245,  250), 16f)
+    var completionDraw = font1.createText("", Color(243, 245,  250), 16f)
     var cursorDraw = font1.createText("|", Color.white, 16f)
     var arrowDraw = font2.createText(">", Misc.getBasePlayerColor(), 24f)
+
 
     private var cursorBlinkInterval = IntervalUtil(0.5f, 0.5f) //TODO reset and force blink to true whenever typing/erasing/moving
     private var cursorBlink = true
 
     init {
         inputDraw.blendSrc = GL_ONE
+        completionDraw.blendSrc = GL_ONE
         cursorDraw.blendSrc = GL_ONE
         arrowDraw.blendSrc = GL_ONE
 
         instance = this
 
-        if (shader == 0) {
+        if (shader == 0 && graphicsLib) {
             shader = ShaderLib.loadShader(
                 Global.getSettings().loadText("data/shaders/cc_baseVertex.shader"),
                 Global.getSettings().loadText("data/shaders/cc_blurFragment.shader"))
@@ -120,30 +126,46 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
         var widthOffset = 50
 
         var font = Fonts.ORBITRON_16
-        //var content = "Hello " +    "A ".repeat(300) +"A "
         var innerSizeReduction = 30f
 
-        //Create a dummy container that is used to determine the required size
-       /* var testTextContainer = BaseConsoleElement(element, width-widthOffset-innerSizeReduction, 30f)
-        testTextContainer.innerElement.setParaFont(font)
-        var label1 = testTextContainer.innerElement.addPara(content, 0f)
-        testTextContainer.position.inTL(100000f, 100000f) //Removing it doesnt work for some reason*/
+        //Ensure that cursor is clamped in to the input size
+        cursorIndex = MathUtils.clamp(cursorIndex, 0, input.length)
+
+        var wordPartBeforeCursor = getWordBeforeCursor()
+        var wordAtCursor = getFullWordAtCursor()
+        var indexOfWord = getSubstringBeforeCursor().lastIndexOf(wordPartBeforeCursor) //Find out where to place the autocomplete panel
+        var metNewLine = false
+        var metWordStart = false
 
         val scaleFactor = inputDraw.fontSize / font1.baseHeight
-        var maxWidth = width - widthOffset
+        var maxWidth = width - widthOffset - innerSizeReduction - 15
         var sizeSoFar = 0f
         var reconstruction = ""
         var offsetCorrection = 0
         var reconIndex = 0
+        var widthUntilWordStart = -1f
+
         for (char in input) {
             reconstruction += char
 
             if (char == '\n') {
                 sizeSoFar = 0f
+                metNewLine = true
                 continue
             }
 
-            sizeSoFar += inputDraw.fontSize * scaleFactor
+            if (reconIndex >= indexOfWord) {
+                metWordStart = true
+            }
+
+            if (widthUntilWordStart == -1f && metWordStart && !metNewLine) {
+                widthUntilWordStart = sizeSoFar;
+            }
+
+            sizeSoFar += (inputDraw.fontSize-1) * scaleFactor
+
+
+
             if (sizeSoFar >= maxWidth) {
                 reconstruction += "\n"
 
@@ -159,7 +181,7 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
         }
 
         inputDraw.text = reconstruction
-        inputDraw.baseColor = Color.white
+        inputDraw.baseColor = Color(243, 245,  250)
         if (input.isEmpty()) {
             inputDraw.baseColor = Misc.getGrayColor()
             inputDraw.text = CommonStrings.INPUT_QUERY
@@ -181,7 +203,6 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
             }
         }
 
-        cursorIndex = MathUtils.clamp(cursorIndex, 0, input.length)
         //var cursorDisplayIndex = MathUtils.clamp(cursorIndex, 0, reconstruction.length)
         var cursorText = matchedString.substring(0, cursorIndex+offsetCorrection)
 
@@ -220,6 +241,117 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
         label2.position.inTL(0f, 0f)*/
 
         //println("Width: "+label2.computeTextWidth(label2.text))
+
+        var matches = filterForMatches()
+
+        if (matches.isNotEmpty() && wordPartBeforeCursor.isNotBlank() && widthUntilWordStart != -1f) {
+            addSuggestionWidget(matches, element, textfield.x+innerSizeReduction+widthUntilWordStart, height-textfield.height-30)
+
+        }
+
+    }
+
+    var maxMatches = 20
+
+    fun filterForMatches() : List<String> {
+        var word = getFullWordAtCursor()
+        var matches: MutableList<String> = ArrayList<String>()
+
+        var commands = CommandStore.getLoadedCommands()
+        var completions = commands
+
+        var count = 0
+        for (completion in completions) {
+            //if (!completion.lowercase().startsWith(word.lowercase())) continue
+            if (!completion.lowercase().contains(word.lowercase())) continue
+            if (count == maxMatches) break
+            matches.add(completion)
+        }
+
+        //matches = matches.sortedBy { it == word }.toMutableList()
+
+        //Exact match / Alphabetical / Starts with
+        matches = matches.sortedWith(compareBy<String> { it == word }.thenBy { it.lowercase().startsWith(word.lowercase()) }.thenBy { it }).toMutableList()
+
+        while (matches.size > maxMatches) {
+            matches.removeFirst()
+        }
+
+        return matches
+    }
+
+    fun addSuggestionWidget(matches: List<String>, element: TooltipMakerAPI, locationX: Float, locationY: Float) {
+        var bWidth = 200f
+        var background = BaseConsoleElement(element, bWidth, 160f).apply {
+            enableTransparency = true
+            renderBorder = false
+            backgroundColor = Color(20, 20, 25)
+            backgroundAlpha = 0.5f
+        }
+
+        var ratio = completionDraw.fontSize / font1.baseHeight
+
+        var bef = getWordBeforeCursor()
+        var aft = getWordAfterCursor()
+        var word = getFullWordAtCursor()
+
+        var matchColor = Misc.getBasePlayerColor()
+
+        var total = completionDraw.fontSize/2
+        var textHeight = element.position.height - locationY - 1 + 5
+        for (match in matches) {
+            var toAdd = completionDraw.fontSize
+            total += toAdd
+            var hHeight = textHeight+toAdd
+            textHeight = hHeight
+
+            background.render {
+                completionDraw.text = " "
+
+                if (match.lowercase().startsWith(bef)) {
+                    var leftPart = match.substring(0, bef.length)
+                }
+                else if (match.lowercase().contains(word)) {
+
+                }
+
+                completionDraw.append(match, matchColor).append(" ", matchColor)
+
+
+                completionDraw.draw(locationX-completionDraw.fontSize*ratio, hHeight)
+            }
+        }
+
+        background.position.setSize(bWidth, total)
+        background.position.inTL(locationX - 10, locationY-background.height)
+
+    }
+
+  /*  fun findMatchStart(match: String) : Int {
+
+    }*/
+
+    fun getWordBeforeCursor() : String {
+        var before = getSubstringBeforeCursor()
+        var emptyLeft = before.lastIndexOf(" ")
+        var partLeft = before.substring(MathUtils.clamp(emptyLeft+1,0, cursorIndex), cursorIndex)
+
+        return partLeft
+    }
+
+    fun getWordAfterCursor() : String {
+        var after = getSubstringAfterCursor()
+        var emptyRight = after.indexOf(" ")
+        if (emptyRight == -1) emptyRight = after.length
+        var partRight = after.substring(0, MathUtils.clamp(emptyRight, 0, after.length))
+
+        return partRight
+    }
+
+    fun getFullWordAtCursor() : String {
+        var partLeft = getWordBeforeCursor()
+        var partRight = getWordAfterCursor()
+        return partLeft+partRight
     }
 
     override fun advance(amount: Float) {
@@ -497,7 +629,7 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
     override fun renderBelow(alphaMult: Float) {
 
         //Screen texture can be unloaded if graphicslib shaders are disabled, causing a blackscreen
-        if (ShaderLib.getScreenTexture() != 0) {
+        if (graphicsLib && ShaderLib.getScreenTexture() != 0) {
             //Shader
 
             ShaderLib.beginDraw(shader);
@@ -517,6 +649,28 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
             GL11.glDisable(GL11.GL_BLEND);
             ShaderLib.screenDraw(ShaderLib.getScreenTexture(), GL13.GL_TEXTURE0 + 0)
             ShaderLib.exitDraw()
+        }
+        //No GraphicsLib or Disabled Shaders
+        else {
+            var color = Color.black
+            var alpha = 0.9f
+
+            GL11.glPushMatrix()
+            GL11.glDisable(GL11.GL_TEXTURE_2D)
+            GL11.glDisable(GL11.GL_CULL_FACE)
+
+
+            GL11.glEnable(GL11.GL_BLEND)
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+
+            GL11.glColor4f(color.red / 255f,
+                color.green / 255f,
+                color.blue / 255f,
+                color.alpha / 255f * (alphaMult * alpha))
+
+            GL11.glRectf(0f, 0f , Global.getSettings().screenWidth, Global.getSettings().screenHeight)
+
+            GL11.glPopMatrix()
         }
     }
 

@@ -1,6 +1,6 @@
 {
     "id": "lw_console",
-    "name": "Console Commands (UNSTABLE 0.98a DEV BUILD)",
+    "name": "Console Commands",
     "author": "LazyWizard",
     "utility": "true",
     "version": "2025.03.30",
@@ -14,10 +14,6 @@
             "id": "lw_lazylib",
             "name": "LazyLib"
         },
-		{
-		  "id": "shaderLib",
-		  "name": "GraphicsLib"
-		},
     ],
     "modPlugin": "org.lazywizard.console.ConsoleModPlugin"
 }

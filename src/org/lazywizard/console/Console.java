@@ -13,7 +13,8 @@ import org.json.JSONObject;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommandStore.StoredCommand;
-import org.lazywizard.console.overlay.legacy.ConsoleOverlay;
+import org.lazywizard.console.overlay.legacy.LegacyConsoleOverlay;
+import org.lazywizard.console.overlay.legacy.ConsoleOverlayInternal;
 import org.lazywizard.lazylib.ui.FontException;
 import org.lazywizard.lazylib.ui.LazyFont;
 import org.lwjgl.opengl.Display;
@@ -39,7 +40,6 @@ public class Console
     private static LazyFont font;
     // Stores the output of the console until it can be displayed
     private static StringBuilder output = new StringBuilder();
-    private static String lastCommand;
     private static CommandContext currentContext = CommandContext.COMBAT_MISSION;
 
     /**
@@ -86,11 +86,6 @@ public class Console
         return currentContext;
     }
 
-    public static String getLastCommand()
-    {
-        return lastCommand;
-    }
-
     public static float getFontSize()
     {
         return font.getBaseHeight() * getSettings().getFontScaling();
@@ -98,7 +93,7 @@ public class Console
 
     public static float getScrollbackWidth()
     {
-        return (Display.getWidth() * Display.getPixelScaleFactor()) - ConsoleOverlay.HORIZONTAL_MARGIN * 2f;
+        return (Display.getWidth() * Display.getPixelScaleFactor()) - LegacyConsoleOverlay.HORIZONTAL_MARGIN * 2f;
     }
 
     static Object getCommandTarget(CommandContext context)
@@ -268,7 +263,7 @@ public class Console
         if ("clear".equals(com))
         {
             output.setLength(0);
-            ConsoleOverlay.clear();
+            LegacyConsoleOverlay.clear();
             return CommandResult.SUCCESS;
         }
 
@@ -409,7 +404,7 @@ public class Console
             }
         }
 
-        lastCommand = rawInput;
+        ConsoleOverlayInternal.setLastCommand(rawInput);
     }
 
     private static void showOutput(ConsoleListener listener)
