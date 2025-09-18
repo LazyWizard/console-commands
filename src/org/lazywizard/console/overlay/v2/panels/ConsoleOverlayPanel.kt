@@ -16,6 +16,7 @@ import org.lazywizard.console.CommandStore
 import org.lazywizard.console.CommonStrings
 import org.lazywizard.console.overlay.v2.elements.BaseConsoleElement
 import org.lazywizard.console.overlay.v2.elements.ConsoleTextfield
+import org.lazywizard.console.overlay.v2.font.ConsoleFont
 import org.lazywizard.console.overlay.v2.misc.ReflectionUtils
 import org.lazywizard.console.overlay.v2.misc.clearChildren
 import org.lazywizard.console.overlay.v2.misc.getParent
@@ -38,22 +39,22 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
     companion object {
         var instance: ConsoleOverlayPanel? = null
         var shader = 0
-        var font1 = LazyFont.loadFont("graphics/fonts/jetbrains_mono_24.fnt")
-        var font2 = LazyFont.loadFont("graphics/fonts/jetbrains_mono_32.fnt")
+        internal var font1 = ConsoleFont.loadFont("graphics/fonts/jetbrains_mono_24.fnt")
+        internal var font2 = ConsoleFont.loadFont("graphics/fonts/jetbrains_mono_32.fnt")
         var graphicsLib = Global.getSettings().modManager.isModEnabled("shaderLib")
     }
 
-    var input = "This is a test string"
+    var input = ""
     var lastInput = input
     var cursorIndex = input.length
 
-    var inputDraw = font1.createText("", Color(243, 245,  250), 16f)
-    var completionDraw = font1.createText("", Color(243, 245,  250), 16f)
-    var cursorDraw = font1.createText("|", Color.white, 16f)
-    var arrowDraw = font2.createText(">", Misc.getBasePlayerColor(), 24f)
+    private var inputDraw = font1.createText("", Color(243, 245,  250), 16f)
+    private var completionDraw = font1.createText("", Color(243, 245,  250), 16f)
+    private var cursorDraw = font1.createText("|", Color.white, 16f)
+    private var arrowDraw = font2.createText(">", Misc.getBasePlayerColor(), 24f)
 
 
-    private var cursorBlinkInterval = IntervalUtil(0.5f, 0.5f) //TODO reset and force blink to true whenever typing/erasing/moving
+    private var cursorBlinkInterval = IntervalUtil(0.5f, 0.5f)
     private var cursorBlink = true
 
     init {
@@ -299,27 +300,51 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
 
         var total = completionDraw.fontSize/2
         var textHeight = element.position.height - locationY - 1 + 5
+        var maxParaWidth = 0f
         for (match in matches) {
             var toAdd = completionDraw.fontSize
             total += toAdd
             var hHeight = textHeight+toAdd
             textHeight = hHeight
 
+
+            var pWidth = match.length * completionDraw.fontSize * ratio
+            if (pWidth > maxParaWidth) {
+                maxParaWidth = pWidth
+            }
+
             background.render {
                 completionDraw.text = " "
+                completionDraw.triggerRebuildIfNeeded()
 
-                if (match.lowercase().startsWith(bef)) {
+                if (match.lowercase().startsWith(bef.lowercase())) {
                     var leftPart = match.substring(0, bef.length)
+                    var rightPart = match.substring(bef.length, match.length)
+                    completionDraw.append(leftPart, matchColor).append(rightPart, inputDraw.baseColor)
                 }
-                else if (match.lowercase().contains(word)) {
+                else if (match.lowercase().contains(word.lowercase())) {
+                    var startIndex = match.lowercase().indexOf(word.lowercase())
+                    var endIndex = startIndex + word.length
 
+                    var begin = match.substring(0, startIndex)
+                    var highlight = match.substring(startIndex, endIndex)
+                    var end = match.substring(endIndex, match.length)
+
+                    completionDraw.append(begin, inputDraw.baseColor).append(highlight, matchColor).append(end, inputDraw.baseColor)
+                } else {
+                    //Should not happen, but oh well
+                    completionDraw.text = " " + match
                 }
 
-                completionDraw.append(match, matchColor).append(" ", matchColor)
+                //completionDraw.append(match, matchColor).append(" ", matchColor)
 
 
                 completionDraw.draw(locationX-completionDraw.fontSize*ratio, hHeight)
             }
+        }
+
+        if (maxParaWidth > bWidth) {
+            bWidth = maxParaWidth + 50;
         }
 
         background.position.setSize(bWidth, total)
