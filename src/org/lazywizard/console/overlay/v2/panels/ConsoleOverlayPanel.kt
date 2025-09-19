@@ -12,7 +12,7 @@ import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.state.AppDriver
 import org.dark.shaders.util.ShaderLib
-import org.lazywizard.console.BaseCommand
+import org.lazywizard.console.BaseCommandWithSuggestion
 import org.lazywizard.console.CommandStore
 import org.lazywizard.console.CommandStore.StoredCommand
 import org.lazywizard.console.CommonStrings
@@ -215,7 +215,7 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
 
         //var cursorDisplayIndex = MathUtils.clamp(cursorIndex, 0, reconstruction.length)
         var cursorText = matchedString.substring(0, cursorIndex+offsetCorrection)
-        var syntaxDrawText = matchedString.substring(0, matchedString.length)
+        //var syntaxDrawText = matchedString.substring(0, matchedString.length)
 
         //cursorDraw.text = " ".repeat(cursorIndex) + "|"
         cursorDraw.text = cursorText + "|"
@@ -224,7 +224,7 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
         cursorDraw.triggerRebuildIfNeeded()
 
         var syntax = getCurrentSyntax()
-        syntaxDraw.text = syntaxDrawText + syntax
+        syntaxDraw.text = cursorText + syntax
         syntaxDraw.baseColor = Color(188, 190, 196)
         //syntaxDraw.maxWidth = inputDraw.maxWidth
         syntaxDraw.triggerRebuildIfNeeded()
@@ -267,7 +267,20 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
         var matches = filterForMatches()
 
         lastMatchesDisplayed.clear()
-        if (matches.isNotEmpty() && wordPartBeforeCursor.isNotBlank() && widthUntilWordStart != -1f) {
+
+        var currentWords = getWordsWithIndex()
+        var isToFarAway = true
+        if (currentWords.size <= 1) isToFarAway = false //Ignore this bool for the command
+        else {
+            var last = currentWords.get(currentWords.size-1)
+            var secondToLast = currentWords.get(currentWords.size-2)
+
+            //If theres two spaces inbetween inputs its invalid for completion and wont show up.
+            var diff = Math.abs(secondToLast.first + secondToLast.second.length - last.first)
+            if (diff <= last.second.length+1) isToFarAway = false
+        }
+
+        if (!isToFarAway && matches.isNotEmpty() && wordPartBeforeCursor.isNotBlank() && widthUntilWordStart != -1f) {
             addSuggestionWidget(matches, element, textfield.x+innerSizeReduction+widthUntilWordStart, height-textfield.height-30)
             lastMatchesDisplayed.addAll(matches)
         }
@@ -282,21 +295,40 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
         var word = getFullWordAtCursor()
         var matches: MutableList<String> = ArrayList<String>()
 
-        var commands = CommandStore.getLoadedCommands()
-        var completions = commands
+        var words = getWordsWithIndex()
+        var last = words.lastOrNull()
+        if (last == null || last.second.isBlank()) {
+            return matches
+        }
+
+        //Select command or argument suggestions
+        var completions = ArrayList<String>()
+        if (words.size == 1) {
+            var commands = CommandStore.getLoadedCommands()
+            completions.addAll(commands)
+        } else {
+            var stored = getCommand()
+            if (stored != null) {
+                var command = stored.commandClass.newInstance()
+                if (command is BaseCommandWithSuggestion) {
+                    var previous = words.filter { words.first() != it }.map { it.second }
+
+                    completions.addAll(command.getSuggestions(previous.size-1, previous))
+                }
+            }
+        }
 
         var count = 0
         for (completion in completions) {
             //if (!completion.lowercase().startsWith(word.lowercase())) continue
             if (!completion.lowercase().contains(word.lowercase())) continue
-            if (count == maxMatches) break
             matches.add(completion)
         }
 
         //matches = matches.sortedBy { it == word }.toMutableList()
 
         //Exact match / Alphabetical / Starts with
-        matches = matches.sortedWith(compareBy<String> { it == word }.thenBy { it.lowercase().startsWith(word.lowercase()) }.thenBy { it }).toMutableList()
+        matches = matches.sortedWith(compareBy<String> { it == word }.thenBy { it.lowercase().startsWith(word.lowercase()) }.thenByDescending { it }).toMutableList()
 
         while (matches.size > maxMatches) {
             matches.removeFirst()
@@ -323,8 +355,8 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
                 if (current.isNotBlank()) {
                     list.add(Pair(startIndex, current))
                     current = ""
-                    startIndex = index
                 }
+                startIndex = index
             }
         }
 
@@ -802,6 +834,8 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
     }
 
     override fun renderBelow(alphaMult: Float) {
+
+        return
 
         //Screen texture can be unloaded if graphicslib shaders are disabled, causing a blackscreen
         if (graphicsLib && ShaderLib.getScreenTexture() != 0) {

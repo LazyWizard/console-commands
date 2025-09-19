@@ -3,18 +3,24 @@ package org.lazywizard.console.commands;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FleetDataAPI;
 import com.fs.starfarer.api.combat.ShipAPI.HullSize;
+import com.fs.starfarer.api.combat.ShipHullSpecAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.fleet.FleetMemberType;
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext;
+import com.fs.starfarer.api.loading.WeaponSpecAPI;
 import org.apache.log4j.Level;
 import org.lazywizard.console.BaseCommand;
+import org.lazywizard.console.BaseCommandWithSuggestion;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.MathUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.lazywizard.console.CommandUtils.*;
 
-public class AddShip implements BaseCommand
+public class AddShip implements BaseCommandWithSuggestion
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -143,5 +149,17 @@ public class AddShip implements BaseCommand
         Console.showMessage("Added " + format(amount) + " of ship "
                 + ship.getSpecId() + " to player fleet.");
         return CommandResult.SUCCESS;
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous) {
+        if (parameter != 0) return new ArrayList<>();
+
+        ArrayList<String> suggestions = new ArrayList<>();
+
+        suggestions.addAll( Global.getSettings().getAllShipHullSpecs().stream().map(ShipHullSpecAPI::getBaseHullId).distinct().toList() );
+        suggestions.addAll( Global.getSettings().getAllVariantIds().stream().filter( it -> !it.endsWith("_Hull")).toList() );
+
+        return suggestions;
     }
 }
