@@ -12,7 +12,9 @@ import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.state.AppDriver
 import org.dark.shaders.util.ShaderLib
+import org.lazywizard.console.BaseCommand
 import org.lazywizard.console.CommandStore
+import org.lazywizard.console.CommandStore.StoredCommand
 import org.lazywizard.console.CommonStrings
 import org.lazywizard.console.overlay.v2.elements.BaseConsoleElement
 import org.lazywizard.console.overlay.v2.elements.ConsoleTextfield
@@ -49,6 +51,7 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
 
     private var inputDraw = font1.createText("", Color(243, 245,  250), 16f)
     private var completionDraw = font1.createText("", Color(243, 245,  250), 16f)
+    private var syntaxDraw = font1.createText("", Color(188, 190, 196), 16f)
     private var cursorDraw = font1.createText("|", Color.white, 16f)
     private var arrowDraw = font2.createText(">", Misc.getBasePlayerColor(), 24f)
 
@@ -63,6 +66,7 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
     init {
         inputDraw.blendSrc = GL_ONE
         completionDraw.blendSrc = GL_ONE
+        syntaxDraw.blendSrc = GL_ONE
         cursorDraw.blendSrc = GL_ONE
         arrowDraw.blendSrc = GL_ONE
 
@@ -211,12 +215,19 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
 
         //var cursorDisplayIndex = MathUtils.clamp(cursorIndex, 0, reconstruction.length)
         var cursorText = matchedString.substring(0, cursorIndex+offsetCorrection)
+        var syntaxDrawText = matchedString.substring(0, matchedString.length)
 
         //cursorDraw.text = " ".repeat(cursorIndex) + "|"
         cursorDraw.text = cursorText + "|"
         cursorDraw.baseColor = Misc.getBasePlayerColor()
-        cursorDraw.maxWidth = inputDraw.maxWidth
+        //cursorDraw.maxWidth = inputDraw.maxWidth
         cursorDraw.triggerRebuildIfNeeded()
+
+        var syntax = getCurrentSyntax()
+        syntaxDraw.text = syntaxDrawText + syntax
+        syntaxDraw.baseColor = Color(188, 190, 196)
+        //syntaxDraw.maxWidth = inputDraw.maxWidth
+        syntaxDraw.triggerRebuildIfNeeded()
 
        /* cursorText = matchedString.substring(0, cursorIndex)
         cursorDraw.text = cursorText + "|"
@@ -241,6 +252,11 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
                 cursorDraw.draw(textfield.x+innerSizeReduction-cursorDraw.fontSize/4+1, textfield.y+textfield.height-13)
                 cursorDraw.draw(textfield.x+innerSizeReduction-cursorDraw.fontSize/4+1, textfield.y+textfield.height-17)
             }
+
+            var word = getWordsWithIndex().lastOrNull()
+            if (word != null && syntax.isNotBlank() && word.first+word.second.length == cursorIndex-1) {
+                syntaxDraw.draw(textfield.x+innerSizeReduction, textfield.y+textfield.height-15)
+            }
         }
 
         /*var label2 = textContainer.innerElement.addPara(content, 0f)
@@ -256,6 +272,8 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
             lastMatchesDisplayed.addAll(matches)
         }
 
+
+        //println(getWords())
     }
 
     var maxMatches = 20
@@ -285,6 +303,72 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
         }
 
         return matches
+    }
+
+    //List of words in entire input.
+    fun getWordsWithIndex() : List<Pair<Int, String>> {
+        var list = ArrayList<Pair<Int, String>>()
+        //var end = nextWordIndex()
+        var end = input.length
+        var sub = input.substring(0, end)
+
+        var current = ""
+        var index = 0
+        var startIndex = 0
+        for (char in sub) {
+            index++
+            if (char != ' ') {
+                current += char
+            } else {
+                if (current.isNotBlank()) {
+                    list.add(Pair(startIndex, current))
+                    current = ""
+                    startIndex = index
+                }
+            }
+        }
+
+        //Required for end of sentence
+        if (current.isNotBlank()) {
+            list.add(Pair(index, current))
+        }
+
+        return list
+    }
+
+    fun getCommand() : StoredCommand? {
+        var command: StoredCommand? = null
+        var words = getWordsWithIndex()
+        if (words.isNotEmpty()) {
+            var word = words.get(0)
+            command = CommandStore.retrieveCommand(word.second)
+        }
+
+       return command
+    }
+
+    fun getCurrentSyntax() : String {
+        var syntax = ""
+        var stored = getCommand()
+
+        //Do not syntax any commands with the "no arguments" syntax
+        if (stored?.syntax?.contains("(no arguments)") == true) {
+            return ""
+        }
+
+        var split = stored?.syntax?.split(" ") ?: ArrayList<String>()
+        var words = getWordsWithIndex()
+
+        if (split.isNotEmpty() && words.isNotEmpty()) {
+            var pick = split.getOrNull(words.size) //Grab next word
+            if (pick != null) {
+                syntax = pick
+            }
+        }
+
+
+
+        return syntax
     }
 
     fun addSuggestionWidget(matches: List<String>, element: TooltipMakerAPI, locationX: Float, locationY: Float) {
