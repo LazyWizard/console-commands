@@ -21,7 +21,6 @@ import org.lazywizard.console.overlay.v2.misc.ReflectionUtils
 import org.lazywizard.console.overlay.v2.misc.clearChildren
 import org.lazywizard.console.overlay.v2.misc.getParent
 import org.lazywizard.lazylib.MathUtils
-import org.lazywizard.lazylib.ui.LazyFont
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.GL_ONE
@@ -57,6 +56,9 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
     private var cursorBlink = true
 
     var wasPaused = false
+
+    var completionSelectorIndex = 0
+    var lastMatchesDisplayed = ArrayList<String>()
 
     init {
         inputDraw.blendSrc = GL_ONE
@@ -248,9 +250,10 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
 
         var matches = filterForMatches()
 
+        lastMatchesDisplayed.clear()
         if (matches.isNotEmpty() && wordPartBeforeCursor.isNotBlank() && widthUntilWordStart != -1f) {
             addSuggestionWidget(matches, element, textfield.x+innerSizeReduction+widthUntilWordStart, height-textfield.height-30)
-
+            lastMatchesDisplayed.addAll(matches)
         }
 
     }
@@ -286,12 +289,25 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
 
     fun addSuggestionWidget(matches: List<String>, element: TooltipMakerAPI, locationX: Float, locationY: Float) {
         var bWidth = 200f
+        var sbHeightOffset = 2
+        var sbHeight = completionDraw.fontSize + sbHeightOffset
+
+        var sbackground = BaseConsoleElement(element, bWidth, sbHeight).apply {
+            enableTransparency = true
+            renderBorder = false
+            backgroundColor = Color(40, 40, 45)
+            backgroundAlpha = 0.9f
+        }
+
         var background = BaseConsoleElement(element, bWidth, 160f).apply {
             enableTransparency = true
             renderBorder = false
             backgroundColor = Color(20, 20, 25)
             backgroundAlpha = 0.5f
         }
+
+        completionSelectorIndex = MathUtils.clamp(completionSelectorIndex, 0, matches.size-1)
+
 
         var ratio = completionDraw.fontSize / font1.baseHeight
 
@@ -341,9 +357,9 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
 
                 //completionDraw.append(match, matchColor).append(" ", matchColor)
 
-
                 completionDraw.draw(locationX-completionDraw.fontSize*ratio, hHeight)
             }
+
         }
 
         if (maxParaWidth > bWidth) {
@@ -353,24 +369,39 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
         background.position.setSize(bWidth, total)
         background.position.inTL(locationX - 10, locationY-background.height)
 
+        sbackground.position.setSize(bWidth, sbHeight)
+        sbackground.position.inTL(locationX - 10, locationY-background.height+inputDraw.fontSize*completionSelectorIndex+sbHeightOffset)
+
     }
 
   /*  fun findMatchStart(match: String) : Int {
 
     }*/
 
+    fun getWordBeforeIndex() : Int {
+        var before = getSubstringBeforeCursor()
+        var emptyLeft = before.lastIndexOf(" ")+1
+        return emptyLeft
+    }
+
     fun getWordBeforeCursor() : String {
         var before = getSubstringBeforeCursor()
-        var emptyLeft = before.lastIndexOf(" ")
-        var partLeft = before.substring(MathUtils.clamp(emptyLeft+1,0, cursorIndex), cursorIndex)
+        var emptyLeft = getWordBeforeIndex()
+        var partLeft = before.substring(MathUtils.clamp(emptyLeft,0, cursorIndex), cursorIndex)
 
         return partLeft
     }
 
-    fun getWordAfterCursor() : String {
+    fun getWordAfterIndex() : Int {
         var after = getSubstringAfterCursor()
         var emptyRight = after.indexOf(" ")
         if (emptyRight == -1) emptyRight = after.length
+        return emptyRight
+    }
+
+    fun getWordAfterCursor() : String {
+        var after = getSubstringAfterCursor()
+        var emptyRight = getWordAfterIndex()
         var partRight = after.substring(0, MathUtils.clamp(emptyRight, 0, after.length))
 
         return partRight
@@ -405,6 +436,7 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
     override fun processInput(events: MutableList<InputEventAPI>) {
 
         var updatedCursor = false
+        var previousSelector = completionSelectorIndex
 
         for (event in events) {
 
@@ -440,9 +472,36 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
                     break
                 }
 
-                if (event.eventValue == Keyboard.KEY_TAB)
-                {
+                if (event.eventValue == Keyboard.KEY_UP) {
+                    completionSelectorIndex -= 1;
+                    event.consume()
+                    break
+                } else if (event.eventValue == Keyboard.KEY_DOWN) {
+                    completionSelectorIndex += 1;
+                    event.consume()
+                    break
+                }
 
+                if (event.eventValue == Keyboard.KEY_TAB /*|| event.eventValue == Keyboard.KEY_RETURN*/)
+                {
+                    if (lastMatchesDisplayed.isNotEmpty()) {
+                        var previous = input
+
+                        completionSelectorIndex = MathUtils.clamp(completionSelectorIndex, 0, lastMatchesDisplayed.size-1)
+                        var completion = lastMatchesDisplayed.get(lastMatchesDisplayed.size-completionSelectorIndex-1)
+
+                        /*var current = getFullWordAtCursor()
+                        input = input.replace(current, "$completion ") //Add space after completion.*/
+
+                        var left = getWordBeforeIndex()
+                        var right = getWordAfterIndex()
+                        input = getSubstringBeforeCursor().substring(0, left) + "$completion " + getSubstringAfterCursor().substring(right)
+
+                        cursorIndex += input.length-previous.length
+                    }
+
+                    event.consume()
+                    break
                 }
 
                 if (event.eventValue == Keyboard.KEY_V && event.isCtrlDown)
@@ -541,7 +600,11 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
             }
         }
 
-        if (input != lastInput || updatedCursor) {
+        if (input != lastInput) {
+            completionSelectorIndex = 0
+        }
+
+        if (input != lastInput || updatedCursor || completionSelectorIndex != previousSelector) {
 
             cursorBlink = true
             cursorBlinkInterval.elapsed = 0f
