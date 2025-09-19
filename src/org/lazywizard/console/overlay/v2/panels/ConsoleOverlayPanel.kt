@@ -311,9 +311,10 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
             if (stored != null) {
                 var command = stored.commandClass.newInstance()
                 if (command is BaseCommandWithSuggestion) {
-                    var previous = words.filter { words.first() != it }.map { it.second }
+                    var withoutCommand = words.filter { words.first() != it }
+                    var previous = withoutCommand.filter { withoutCommand.last() != it }.map { it.second }
 
-                    completions.addAll(command.getSuggestions(previous.size-1, previous))
+                    completions.addAll(command.getSuggestions(withoutCommand.size-1, previous))
                 }
             }
         }
@@ -834,8 +835,6 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
     }
 
     override fun renderBelow(alphaMult: Float) {
-
-        return
 
         //Screen texture can be unloaded if graphicslib shaders are disabled, causing a blackscreen
         if (graphicsLib && ShaderLib.getScreenTexture() != 0) {
