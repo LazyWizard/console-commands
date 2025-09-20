@@ -115,7 +115,7 @@ public class SetCommission implements BaseCommandWithSuggestion
 
         if (parameter == 0) {
             suggestions.add("None");
-            suggestions.addAll(Global.getSettings().getAllFactionSpecs().stream().map(it -> it.getDisplayName()).toList());
+            suggestions.addAll(Global.getSettings().getAllFactionSpecs().stream().map(it -> it.getId()).toList());
         }
 
         return suggestions;

@@ -117,9 +117,9 @@ public class AdjustRelation implements BaseCommandWithSuggestion
 
         if (parameter == 0) {
             suggestions.add("All");
-            suggestions.addAll(Global.getSettings().getAllFactionSpecs().stream().map(it -> it.getDisplayName()).toList());
+            suggestions.addAll(Global.getSettings().getAllFactionSpecs().stream().map(it -> it.getId()).toList());
         } else if (parameter == 1) {
-            suggestions.addAll(Global.getSettings().getAllFactionSpecs().stream().map(it -> it.getDisplayName()).toList());
+            suggestions.addAll(Global.getSettings().getAllFactionSpecs().stream().map(it -> it.getId()).toList());
         }
 
         return suggestions;

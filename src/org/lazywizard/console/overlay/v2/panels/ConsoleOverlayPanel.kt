@@ -1,8 +1,13 @@
 package org.lazywizard.console.overlay.v2.panels
 
+import com.fs.graphics.util.Fader
 import com.fs.starfarer.api.GameState
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.BaseCustomUIPanelPlugin
+import com.fs.starfarer.api.campaign.InteractionDialogAPI
+import com.fs.starfarer.api.campaign.InteractionDialogPlugin
+import com.fs.starfarer.api.campaign.rules.MemoryAPI
+import com.fs.starfarer.api.combat.EngagementResultAPI
 import com.fs.starfarer.api.input.InputEventAPI
 import com.fs.starfarer.api.ui.CustomPanelAPI
 import com.fs.starfarer.api.ui.Fonts
@@ -49,7 +54,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         @JvmStatic
         var instance: ConsoleOverlayPanel? = null
         var shader = 0
-        internal var fontSmall = ConsoleFont.loadFont("graphics/fonts/jetbrains_mono_24.fnt")
+        internal var fontSmall = ConsoleFont.loadFont("graphics/fonts/jetbrains_mono_16.fnt")
         internal var fontLarge = ConsoleFont.loadFont("graphics/fonts/jetbrains_mono_32.fnt")
         var graphicsLib = Global.getSettings().modManager.isModEnabled("shaderLib")
 
@@ -93,7 +98,16 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
     var COMMAND_HISTORY_KEY = "commandHistory"
 
 
+    var placeHolderDialog: InteractionDialogAPI? = null
+
     init {
+
+        if (context.isInCampaign) {
+            if (!Global.getSector().campaignUI.isShowingDialog) {
+                Global.getSector().campaignUI.showInteractionDialog(PlaceholderDialog(), Global.getSector().playerFleet)
+                placeHolderDialog = Global.getSector().campaignUI.currentInteractionDialog
+            }
+        }
 
         lastCommandsJson = JSONUtils.loadCommonJSON(COMMAND_HISTORY_PATH)
         var lastCommandsArray = lastCommandsJson.optJSONArray(COMMAND_HISTORY_KEY) ?: JSONArray()
@@ -272,6 +286,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         var offsetCorrection = 0
         var reconIndex = 0
         var widthUntilWordStart = -1f
+        var lastChar: ConsoleFont.LazyChar? = null
 
         for (char in input) {
             reconstruction += char
@@ -290,9 +305,12 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                 widthUntilWordStart = sizeSoFar;
             }
 
-            sizeSoFar += (inputDraw.fontSize-1) * scaleFactor
-
-
+            var ch = fontSmall.getChar(char)
+            val kerning = if (lastChar != null) ch.getKerning(lastChar.id).toFloat() else 0f
+            val charWidth = (kerning + ch.advance) * scaleFactor
+            sizeSoFar += charWidth
+            lastChar = ch
+            //sizeSoFar += (inputDraw.fontSize-1) * scaleFactor
 
             if (sizeSoFar >= maxWidth) {
                 reconstruction += "\n"
@@ -613,7 +631,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
                 //completionDraw.append(match, matchColor).append(" ", matchColor)
 
-                completionDraw.draw(locationX-completionDraw.fontSize*ratio, hHeight)
+                completionDraw.draw(locationX-completionDraw.fontSize/2, hHeight)
             }
 
         }
@@ -801,6 +819,8 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                         input = getSubstringBeforeCursor().substring(0, left) + "$completion " + getSubstringAfterCursor().substring(right)
 
                         cursorIndex += input.length-previous.length
+                        Global.getSoundPlayer().playUISound("ui_button_mouseover", 1f, 0.9f)
+
                     }
 
                     event.consume()
@@ -1122,8 +1142,53 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             if (!wasPaused) Global.getSector().isPaused = false;
         }
 
+        placeHolderDialog?.dismiss()
+        placeHolderDialog = null
+
         instance = null
         parent.getParent()?.removeComponent(parent)
+    }
+
+    class PlaceholderDialog() : InteractionDialogPlugin {
+
+        var dialog: InteractionDialogAPI? = null
+
+        override fun init(dialog: InteractionDialogAPI?) {
+            this.dialog = dialog
+
+            dialog!!.promptText = "Test"
+            /*if (dialog is UIPanelAPI) {
+                dialog.opacity = 0f
+               //var fader =ReflectionUtils.invoke("getFader", dialog) as Fader
+            }*/
+        }
+
+        override fun optionSelected(optionText: String?, optionData: Any?) {
+
+        }
+
+        override fun optionMousedOver(optionText: String?, optionData: Any?) {
+
+        }
+
+        override fun advance(amount: Float) {
+            //ReflectionUtils.invoke("setOpacity", dialog!!, 0f)
+            var fader = ReflectionUtils.invoke("getFader", dialog!!.visualPanel) as Fader
+            fader.brightness = 0f
+        }
+
+        override fun backFromEngagement(battleResult: EngagementResultAPI?) {
+
+        }
+
+        override fun getContext(): Any? {
+            return null
+        }
+
+        override fun getMemoryMap(): MutableMap<String, MemoryAPI> {
+            return hashMapOf()
+        }
+
     }
 
 }

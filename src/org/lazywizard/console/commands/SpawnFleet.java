@@ -148,7 +148,7 @@ public class SpawnFleet implements BaseCommandWithSuggestion
     public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
         List<String> suggestions = new ArrayList<>();
         if (parameter == 0) {
-            suggestions.addAll(Global.getSettings().getAllFactionSpecs().stream().map(it -> it.getDisplayName()).toList());
+            suggestions.addAll(Global.getSettings().getAllFactionSpecs().stream().map(it -> it.getId()).toList());
         }
         return suggestions;
     }
