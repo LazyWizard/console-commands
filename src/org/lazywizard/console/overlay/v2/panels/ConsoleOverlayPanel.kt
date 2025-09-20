@@ -143,7 +143,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
 
         ///Logging Panel
-        var lines = output.split("\n")
+       /* var lines = output.split("\n")
         var limit = 100 //Dont show more than 120 messages back
         var draws = ArrayList<ConsoleFont.DrawableString>()
 
@@ -162,7 +162,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             toDraw.blendSrc = GL_ONE
             toDraw.maxWidth = width-widthOffset
             draws.add(toDraw)
-        }
+        }*/
 
         /*for (i in 0 until 65) {
             var toDraw = fontSmall.createText("Test Para: $i", logColor, 16f)
@@ -171,8 +171,13 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             draws.add(toDraw)
         }*/
 
+        var toDraw = fontSmall.createText(output, logColor, 16f)
+        toDraw.blendSrc = GL_ONE
+        toDraw.maxWidth = width-widthOffset
+
         var logOffsetY = 95f
-        var totalLogHeight = draws.sumOf { it.height.toDouble()  }.toFloat() + fontSmall.baseHeight/2
+        //var totalLogHeight = draws.sumOf { it.height.toDouble()  }.toFloat() + fontSmall.baseHeight/2
+        var totalLogHeight = toDraw.height
         var logHeight = Math.min(height-logOffsetY, totalLogHeight)
 
         var logPanel = parent.createCustomPanel(width-widthOffset, logHeight, null)
@@ -180,12 +185,13 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
         logElement = logPanel.createUIElement(width-widthOffset, logHeight, true)
 
-        for (toDraw in draws) {
+        /*for (toDraw in draws) {
             var text = ConsoleTextElement(toDraw, logElement!!, toDraw.width, toDraw.height)
-        }
+        }*/
+        var text = ConsoleTextElement(toDraw, logElement!!, toDraw.width, toDraw.height)
 
 
-        logElement!!.addSpacer(fontSmall.baseHeight/2)
+        //logElement!!.addSpacer(fontSmall.baseHeight/2)
 
         logPanel.addUIElement(logElement)
         logPanel.position.inTL(widthOffset/2, height - logHeight - logOffsetY +10 )
@@ -277,7 +283,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             reconIndex++
         }
 
-        inputDraw.text = reconstruction
+        inputDraw.text = reconstruction + " "
         inputDraw.baseColor = inputColor
         if (input.isEmpty()) {
             inputDraw.baseColor = Misc.getGrayColor()
@@ -288,7 +294,13 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         //inputDraw.maxWidth = width-widthOffset-innerSizeReduction
         inputDraw.triggerRebuildIfNeeded()
         var textWidth = inputDraw.width
+
+
         var textHeight = Math.max(inputDraw.height, inputDraw.fontSize) //Height is 0 if theres no characters yet
+        //Another dumb hack
+        if (reconstruction.isBlank()) {
+            textHeight = inputDraw.fontSize * (1+reconstruction.count { it == '\n' })
+        }
 
         var matchedString = ""
         var p = Pattern.compile("[\\s\\S&&[^\\n]]+")

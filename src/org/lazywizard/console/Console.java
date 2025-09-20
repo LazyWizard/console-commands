@@ -121,7 +121,7 @@ public class Console
         // Add message to the output queue
         output.append('\n').append(message);
 
-        ConsoleOverlayPanel.setOutput(ConsoleOverlayPanel.getOutput() +message.toString() +  "\n" );
+        ConsoleOverlayPanel.setOutput(ConsoleOverlayPanel.getOutput() + "\n" + message.toString() );
 
 
         // Also add to Starsector's log
