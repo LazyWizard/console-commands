@@ -41,11 +41,15 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
     var parent: CustomPanelAPI
 
     companion object {
+        @JvmStatic
         var instance: ConsoleOverlayPanel? = null
         var shader = 0
         internal var fontSmall = ConsoleFont.loadFont("graphics/fonts/jetbrains_mono_24.fnt")
         internal var fontLarge = ConsoleFont.loadFont("graphics/fonts/jetbrains_mono_32.fnt")
         var graphicsLib = Global.getSettings().modManager.isModEnabled("shaderLib")
+
+        @JvmStatic
+        var output = ""
     }
 
     var input = ""
@@ -70,9 +74,10 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
     var completionSelectorIndex = 0
     var lastMatchesDisplayed = ArrayList<String>()
 
-    var output = Console.getOutputString()
 
     var previousScroller = -1f
+
+    var logElement: TooltipMakerAPI? = null
 
     init {
         inputDraw.blendSrc = GL_ONE
@@ -139,15 +144,32 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
         ///Logging Panel
         var lines = output.split("\n")
-        var limit = 120 //Dont show more than 120 messages back
+        var limit = 100 //Dont show more than 120 messages back
         var draws = ArrayList<ConsoleFont.DrawableString>()
 
-        for (i in 0 until 25) {
-            var toDraw = fontSmall.createText("Test Para: $i", logColor, 16f)
+        var index = 0
+        var toDisplay = ArrayList<String>()
+        for (line in lines.reversed()) {
+            if (index >= limit) break
+            toDisplay.add(line)
+            index++
+        }
+
+        for (line in toDisplay.reversed()) {
+            var toWrite = line
+            if (toWrite == "")toWrite = "\n"
+            var toDraw = fontSmall.createText(toWrite, logColor, 16f)
             toDraw.blendSrc = GL_ONE
             toDraw.maxWidth = width-widthOffset
             draws.add(toDraw)
         }
+
+        /*for (i in 0 until 65) {
+            var toDraw = fontSmall.createText("Test Para: $i", logColor, 16f)
+            toDraw.blendSrc = GL_ONE
+            toDraw.maxWidth = width-widthOffset
+            draws.add(toDraw)
+        }*/
 
         var logOffsetY = 95f
         var totalLogHeight = draws.sumOf { it.height.toDouble()  }.toFloat() + fontSmall.baseHeight/2
@@ -156,24 +178,25 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         var logPanel = parent.createCustomPanel(width-widthOffset, logHeight, null)
         parent.addComponent(logPanel)
 
-        var logElement = logPanel.createUIElement(width-widthOffset, logHeight, true)
+        logElement = logPanel.createUIElement(width-widthOffset, logHeight, true)
 
         for (toDraw in draws) {
-            var text = ConsoleTextElement(toDraw, logElement, toDraw.width, toDraw.height)
-            println(text.y)
+            var text = ConsoleTextElement(toDraw, logElement!!, toDraw.width, toDraw.height)
         }
 
 
-        logElement.addSpacer(fontSmall.baseHeight/2)
+        logElement!!.addSpacer(fontSmall.baseHeight/2)
 
         logPanel.addUIElement(logElement)
         logPanel.position.inTL(widthOffset/2, height - logHeight - logOffsetY +10 )
 
-        logElement.position.inTL(0f, 0f)
+        logElement!!.position.inTL(0f, 0f)
 
-
+        //Reset scroller to top, restore previous scroller if input didnt change
         if (previousScroller == -1f) {
-            logElement.externalScroller.yOffset = totalLogHeight-logHeight
+            logElement!!.externalScroller.yOffset = totalLogHeight-logHeight
+        } else {
+            logElement!!.externalScroller.yOffset = previousScroller
         }
 
 
@@ -604,6 +627,8 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
     override fun advance(amount: Float) {
         super.advance(amount)
 
+        previousScroller = logElement?.externalScroller?.yOffset ?: -1f
+
         cursorBlinkInterval.advance(amount)
         if (cursorBlinkInterval.intervalElapsed()) {
             cursorBlink =! cursorBlink
@@ -620,11 +645,14 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         }
     }
 
+
+
     //Prevent input from going towards other windows
     override fun processInput(events: MutableList<InputEventAPI>) {
 
         var updatedCursor = false
         var previousSelector = completionSelectorIndex
+        var previousOutput = output
 
         for (event in events) {
 
@@ -805,9 +833,11 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             completionSelectorIndex = 0
         }
 
-        if (input != lastInput || updatedCursor || completionSelectorIndex != previousSelector || output != Console.getOutputString()) {
+        if (output != previousOutput) {
+            previousScroller = -1f
+        }
 
-            output = Console.getOutputString()
+        if (input != lastInput || updatedCursor || completionSelectorIndex != previousSelector || output != previousOutput) {
 
             cursorBlink = true
             cursorBlinkInterval.elapsed = 0f

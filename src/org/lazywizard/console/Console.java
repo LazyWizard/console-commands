@@ -15,6 +15,7 @@ import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommandStore.StoredCommand;
 import org.lazywizard.console.overlay.legacy.LegacyConsoleOverlay;
 import org.lazywizard.console.overlay.legacy.ConsoleOverlayInternal;
+import org.lazywizard.console.overlay.v2.panels.ConsoleOverlayPanel;
 import org.lazywizard.lazylib.ui.FontException;
 import org.lazywizard.lazylib.ui.LazyFont;
 import org.lwjgl.opengl.Display;
@@ -41,10 +42,6 @@ public class Console
     // Stores the output of the console until it can be displayed
     private static StringBuilder output = new StringBuilder();
     private static CommandContext currentContext = CommandContext.COMBAT_MISSION;
-
-    public static String getOutputString() {
-        return output.toString();
-    }
 
     /**
      * Forces the console to reload its settings from the settings file.
@@ -123,6 +120,9 @@ public class Console
     {
         // Add message to the output queue
         output.append('\n').append(message);
+
+        ConsoleOverlayPanel.setOutput(ConsoleOverlayPanel.getOutput() +message.toString() +  "\n" );
+
 
         // Also add to Starsector's log
         Log.log(logLevel, message);
