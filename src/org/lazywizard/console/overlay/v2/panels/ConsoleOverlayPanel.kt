@@ -12,10 +12,12 @@ import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.state.AppDriver
 import org.dark.shaders.util.ShaderLib
+import org.lazywizard.console.BaseCommand.CommandContext
 import org.lazywizard.console.BaseCommandWithSuggestion
 import org.lazywizard.console.CommandStore
 import org.lazywizard.console.CommandStore.StoredCommand
 import org.lazywizard.console.CommonStrings
+import org.lazywizard.console.Console
 import org.lazywizard.console.overlay.v2.elements.BaseConsoleElement
 import org.lazywizard.console.overlay.v2.elements.ConsoleTextfield
 import org.lazywizard.console.overlay.v2.font.ConsoleFont
@@ -33,7 +35,7 @@ import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
 import java.util.regex.Pattern
 
-class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
+class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPanelPlugin() {
 
     var parent: CustomPanelAPI
 
@@ -314,7 +316,7 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
                     var withoutCommand = words.filter { words.first() != it }
                     var previous = withoutCommand.filter { withoutCommand.last() != it }.map { it.second }
 
-                    completions.addAll(command.getSuggestions(withoutCommand.size-1, previous))
+                    completions.addAll(command.getSuggestions(withoutCommand.size-1, previous, context))
                 }
             }
         }
@@ -692,14 +694,27 @@ class ConsoleOverlayPanel : BaseCustomUIPanelPlugin() {
                 }
 
                 if (event.eventValue == Keyboard.KEY_RETURN) {
-                    event.consume()
 
                     if (event.isShiftDown) {
                         input = getSubstringBeforeCursor() + "\n" + getSubstringAfterCursor()
                         cursorIndex += 1
+                    } else {
+                        when {
+                            // TODO: Ensure newlines are supported everywhere (currently replaced with spaces where not supported)
+                            input.startsWith("runcode ", true) -> Console.parseInput(input, context)
+                            else -> Console.parseInput(input.replace('\n', ' '), context)
+                        }
+                        input = ""
+                        cursorIndex = 0
+                        break
                     }
+
+
+                    event.consume()
+
                     break
                 }
+
 
 
                 var char = event.eventChar

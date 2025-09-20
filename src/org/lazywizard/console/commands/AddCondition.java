@@ -1,11 +1,14 @@
 package org.lazywizard.console.commands;
 
+import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI.SurveyLevel;
 import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
 import com.fs.starfarer.api.characters.MarketConditionSpecAPI;
 import com.fs.starfarer.api.impl.campaign.procgen.ConditionGenDataSpec;
+import com.fs.starfarer.api.loading.WeaponSpecAPI;
 import org.lazywizard.console.BaseCommand;
+import org.lazywizard.console.BaseCommandWithSuggestion;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
@@ -16,7 +19,7 @@ import java.util.regex.Pattern;
 
 import static org.lazywizard.console.CommandUtils.findBestMarketConditionMatch;
 
-public class AddCondition implements BaseCommand
+public class AddCondition implements BaseCommandWithSuggestion
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -109,5 +112,11 @@ public class AddCondition implements BaseCommand
         market.reapplyConditions();
         Console.showMessage("Added condition '" + id + "' to market '" + market.getName() + "'.");
         return CommandResult.SUCCESS;
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        if (parameter != 0) return new ArrayList<>();
+        return Global.getSettings().getAllMarketConditionSpecs().stream().map(it -> it.getId()).toList();
     }
 }

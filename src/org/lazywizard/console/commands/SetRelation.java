@@ -5,13 +5,10 @@ import java.util.List;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.campaign.RepLevel;
-import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.CommandUtils;
-import org.lazywizard.console.CommonStrings;
-import org.lazywizard.console.Console;
+import org.lazywizard.console.*;
 import org.lazywizard.lazylib.CollectionUtils;
 
-public class SetRelation implements BaseCommand
+public class SetRelation implements BaseCommandWithSuggestion
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -122,5 +119,19 @@ public class SetRelation implements BaseCommand
                 + CommandUtils.getFactionName(towardsFaction) + " (ID: "
                 + towardsFaction.getId() + ") to " + newRelationship + ".");
         return CommandResult.SUCCESS;
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        List<String> suggestions = new ArrayList<>();
+
+        if (parameter == 0) {
+            suggestions.add("All");
+            suggestions.addAll(Global.getSettings().getAllFactionSpecs().stream().map(it -> it.getDisplayName()).toList());
+        } else if (parameter == 1) {
+            suggestions.addAll(Global.getSettings().getAllFactionSpecs().stream().map(it -> it.getDisplayName()).toList());
+        }
+
+        return suggestions;
     }
 }

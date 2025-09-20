@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.SpecialItemData;
 import com.fs.starfarer.api.campaign.SpecialItemSpecAPI;
 import org.lazywizard.console.BaseCommand;
+import org.lazywizard.console.BaseCommandWithSuggestion;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 
@@ -13,7 +14,7 @@ import java.util.List;
 
 import static org.lazywizard.console.CommandUtils.findBestStringMatch;
 
-public class AddSpecial implements BaseCommand
+public class AddSpecial implements BaseCommandWithSuggestion
 {
     public static List<String> getSpecialItemIds()
     {
@@ -73,5 +74,11 @@ public class AddSpecial implements BaseCommand
 
         Console.showMessage("Added " + id + "'" + (data != null ? " with data '" + data + "'" : "") + " to player inventory.");
         return CommandResult.SUCCESS;
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        if (parameter != 0) return new ArrayList<>();
+        return Global.getSettings().getAllSpecialItemSpecs().stream().map(it -> it.getId()).toList();
     }
 }

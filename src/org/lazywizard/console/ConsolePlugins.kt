@@ -25,7 +25,7 @@ internal class ConsoleCampaignListener : CampaignInputListener, ConsoleListener 
             events.clear()
         }
         else if (ConsoleOverlayPanel.instance == null && Console.getSettings().consoleSummonKey.isPressed(events)) {
-            ConsoleOverlayPanel()
+            ConsoleOverlayPanel(context)
             //show(context)
             events.clear()
         }
@@ -40,10 +40,10 @@ internal class ConsoleCampaignListener : CampaignInputListener, ConsoleListener 
     override fun processCampaignInputPostCore(events: List<InputEventAPI>) {}
 
     override fun showOutput(output: String): Boolean {
-        for (tmp in output.split('\n').dropLastWhile { it.isEmpty() }.toTypedArray()) {
+        /*for (tmp in output.split('\n').dropLastWhile { it.isEmpty() }.toTypedArray()) {
             val message = StringUtils.wrapString(tmp, 100)
             Global.getSector().campaignUI.addMessage(message, Console.getSettings().outputColor)
-        }
+        }*/
 
         addToHistory(output)
         return true
@@ -67,7 +67,7 @@ internal class ConsoleCombatListener : BaseEveryFrameCombatPlugin(), ConsoleList
             events.clear()
         }
         else if (ConsoleOverlayPanel.instance == null && Console.getSettings().consoleSummonKey.isPressed(events)) {
-            ConsoleOverlayPanel()
+            ConsoleOverlayPanel(context)
             //show(context)
             events.clear()
         }
@@ -96,12 +96,12 @@ internal class ConsoleCombatListener : BaseEveryFrameCombatPlugin(), ConsoleList
         val ui = Global.getCombatEngine()?.combatUI ?: return false
 
         // Fallback if the console overlay doesn't exist for some reason
-        val messages = output.split('\n').dropLastWhile { it.isEmpty() }.toTypedArray()
+        /*val messages = output.split('\n').dropLastWhile { it.isEmpty() }.toTypedArray()
         Arrays.asList(*messages).reverse()
         for (tmp in messages) {
             val message = StringUtils.wrapString(tmp, 80)
             ui.addMessage(0, Console.getSettings().outputColor, message)
-        }
+        }*/
 
         addToHistory(output)
         return true

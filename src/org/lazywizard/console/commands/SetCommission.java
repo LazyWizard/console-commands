@@ -12,12 +12,12 @@ import com.fs.starfarer.api.impl.campaign.intel.FactionCommissionIntel;
 import com.fs.starfarer.api.impl.campaign.rulecmd.missions.Commission;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Logger;
-import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.CommandUtils;
-import org.lazywizard.console.CommonStrings;
-import org.lazywizard.console.Console;
+import org.lazywizard.console.*;
 
-public class SetCommission implements BaseCommand
+import java.util.ArrayList;
+import java.util.List;
+
+public class SetCommission implements BaseCommandWithSuggestion
 {
     /**
      * Ends and returns the player's current commission (if one exists; returns {@code null} otherwise).
@@ -107,5 +107,17 @@ public class SetCommission implements BaseCommand
         new FactionCommissionIntel(newFaction).missionAccepted();
         Console.showMessage("Began commission with " + newFaction.getDisplayNameWithArticle() + ".");
         return CommandResult.SUCCESS;
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        List<String> suggestions = new ArrayList<>();
+
+        if (parameter == 0) {
+            suggestions.add("None");
+            suggestions.addAll(Global.getSettings().getAllFactionSpecs().stream().map(it -> it.getDisplayName()).toList());
+        }
+
+        return suggestions;
     }
 }

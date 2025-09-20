@@ -1,11 +1,12 @@
 package org.lazywizard.console.commands;
 
-import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.CommandStore;
-import org.lazywizard.console.CommonStrings;
-import org.lazywizard.console.Console;
+import com.fs.starfarer.api.Global;
+import org.lazywizard.console.*;
 
-public class Alias implements BaseCommand
+import java.util.ArrayList;
+import java.util.List;
+
+public class Alias implements BaseCommandWithSuggestion
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -54,5 +55,16 @@ public class Alias implements BaseCommand
             Console.showException("Failed to register alias '" + tmp[0] + " -> " + tmp[1] + "'.", ex);
             return CommandResult.ERROR;
         }
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        List<String> suggestions = new ArrayList<>();
+
+        if (parameter >= 1) {
+            suggestions.addAll(CommandStore.getLoadedCommands());
+        }
+
+        return suggestions;
     }
 }
