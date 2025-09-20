@@ -13,7 +13,7 @@ class ConsoleTextfield(tooltip: TooltipMakerAPI, width: Float, height: Float) : 
         enableTransparency = true
         renderBorder = false
         borderAlpha = 1f
-        backgroundAlpha = 0.8f
+        backgroundAlpha = 0.85f
         backgroundColor = Color(20, 20, 25)
 
        /* innerElement.setParaFont(Fonts.ORBITRON_24AABOLD)

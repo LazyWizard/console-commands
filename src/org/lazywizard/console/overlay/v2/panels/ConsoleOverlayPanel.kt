@@ -12,6 +12,8 @@ import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.state.AppDriver
 import org.dark.shaders.util.ShaderLib
+import org.json.JSONArray
+import org.json.JSONObject
 import org.lazywizard.console.BaseCommand.CommandContext
 import org.lazywizard.console.BaseCommandWithSuggestion
 import org.lazywizard.console.CommandStore
@@ -25,7 +27,10 @@ import org.lazywizard.console.overlay.v2.font.ConsoleFont
 import org.lazywizard.console.overlay.v2.misc.ReflectionUtils
 import org.lazywizard.console.overlay.v2.misc.clearChildren
 import org.lazywizard.console.overlay.v2.misc.getParent
+import org.lazywizard.lazylib.JSONUtils
+import org.lazywizard.lazylib.JSONUtils.CommonDataJSONObject
 import org.lazywizard.lazylib.MathUtils
+import org.lazywizard.lazylib.ext.json.iterator
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.GL_ONE
@@ -58,6 +63,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
     public var inputColor = Color(243, 245,  250)
     public var logColor = Color(188, 190, 196)
+    //public var logColor = Color(178, 180, 186)
     public var grayColor = Color(188, 190, 196)
 
     private var inputDraw = fontSmall.createText("", inputColor, 16f)
@@ -74,12 +80,31 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
     var completionSelectorIndex = 0
     var lastMatchesDisplayed = ArrayList<String>()
 
-
     var previousScroller = -1f
 
     var logElement: TooltipMakerAPI? = null
 
+    var maxSavedCommands = 32
+    var lastCommand = "" //Remember current command and always display when going back to index 0
+    var lastCommandIndex = 0
+    var lastCommandsJson: CommonDataJSONObject
+    var lastCommands = ArrayList<String>()
+    var COMMAND_HISTORY_PATH = "config/lw_console_command_history.json"
+    var COMMAND_HISTORY_KEY = "commandHistory"
+
+
     init {
+
+        lastCommandsJson = JSONUtils.loadCommonJSON(COMMAND_HISTORY_PATH)
+        var lastCommandsArray = lastCommandsJson.optJSONArray(COMMAND_HISTORY_KEY) ?: JSONArray()
+
+        for (i in 0 until lastCommandsArray.length()) {
+            lastCommands.add(lastCommandsArray.getString(i))
+        }
+
+       /* lastCommandsJson.put(COMMAND_HISTORY_KEY,lastCommands)
+        lastCommandsJson.save()*/
+
         inputDraw.blendSrc = GL_ONE
         completionDraw.blendSrc = GL_ONE
         syntaxDraw.blendSrc = GL_ONE
@@ -364,8 +389,22 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         //println("Width: "+label2.computeTextWidth(label2.text))
 
         var matches = filterForMatches()
-
         lastMatchesDisplayed.clear()
+
+
+
+        if (canShowSuggestions() && widthUntilWordStart != -1f) {
+            addSuggestionWidget(matches, element, textfield.x+innerSizeReduction+widthUntilWordStart, height-textfield.height-30)
+            lastMatchesDisplayed.addAll(matches)
+        }
+
+
+        //println(getWords())
+    }
+
+    fun canShowSuggestions() : Boolean {
+        var matches = filterForMatches()
+        var wordPartBeforeCursor = getWordBeforeCursor()
 
         var currentWords = getWordsWithIndex()
         var isToFarAway = true
@@ -379,13 +418,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             if (diff <= last.second.length+1) isToFarAway = false
         }
 
-        if (!isToFarAway && matches.isNotEmpty() && wordPartBeforeCursor.isNotBlank() && widthUntilWordStart != -1f) {
-            addSuggestionWidget(matches, element, textfield.x+innerSizeReduction+widthUntilWordStart, height-textfield.height-30)
-            lastMatchesDisplayed.addAll(matches)
-        }
-
-
-        //println(getWords())
+        return !isToFarAway && matches.isNotEmpty() && wordPartBeforeCursor.isNotBlank()/* && widthUntilWordStart != -1f*/
     }
 
     var maxMatches = 20
@@ -700,12 +733,54 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                     break
                 }
 
+                var previousLastCommandIndex = lastCommandIndex
                 if (event.eventValue == Keyboard.KEY_UP) {
-                    completionSelectorIndex -= 1;
+                    if (!canShowSuggestions()) {
+                        lastCommandIndex++
+                        lastCommandIndex = MathUtils.clamp(lastCommandIndex,0, lastCommands.size)
+
+                        if (previousLastCommandIndex != lastCommandIndex && lastCommandIndex != 0) {
+                            input = lastCommands.get(lastCommandIndex-1)
+
+                            //To prevent auto complete from starting while switching through
+                            if (input.lastOrNull() != ' ') {
+                                input += " "
+                            }
+
+                            Global.getSoundPlayer().playUISound("ui_button_mouseover", 1f, 0.9f)
+                            cursorIndex = input.length
+                        }
+                    } else {
+                        completionSelectorIndex -= 1;
+                    }
+
                     event.consume()
                     break
                 } else if (event.eventValue == Keyboard.KEY_DOWN) {
-                    completionSelectorIndex += 1;
+
+                    if (!canShowSuggestions()) {
+                        lastCommandIndex--
+                        lastCommandIndex = MathUtils.clamp(lastCommandIndex,0, lastCommands.size)
+
+                        if (previousLastCommandIndex != lastCommandIndex) {
+                            if (lastCommandIndex == 0) {
+                                input = lastCommand
+                            } else {
+                                input = lastCommands.get(lastCommandIndex-1)
+                            }
+
+                            //To prevent auto complete from starting while switching through
+                            if (input.lastOrNull() != ' ' && lastCommandIndex != 0) {
+                                input += " "
+                            }
+
+                            Global.getSoundPlayer().playUISound("ui_button_mouseover", 1f, 0.9f)
+                            cursorIndex = input.length
+                        }
+                    } else {
+                        completionSelectorIndex += 1;
+                    }
+
                     event.consume()
                     break
                 }
@@ -813,6 +888,20 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                             input.startsWith("runcode ", true) -> Console.parseInput(input, context)
                             else -> Console.parseInput(input.replace('\n', ' '), context)
                         }
+
+                        //Only save if the command entered isnt equal to the one before
+                        lastCommandIndex = 0
+                        if (lastCommands.getOrNull(0) != input) {
+                            lastCommands.add(0, input)
+                            if (lastCommands.size >= maxSavedCommands) {
+                                lastCommands.removeLast()
+                            }
+                            lastCommandsJson.put(COMMAND_HISTORY_KEY, lastCommands)
+                            lastCommandsJson.save()
+                            lastCommand = ""
+                        }
+
+
                         input = ""
                         cursorIndex = 0
                         break
@@ -849,7 +938,16 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             previousScroller = -1f
         }
 
+        if (completionSelectorIndex != previousSelector) {
+            Global.getSoundPlayer().playUISound("ui_button_mouseover", 1f, 0.9f)
+        }
+
         if (input != lastInput || updatedCursor || completionSelectorIndex != previousSelector || output != previousOutput) {
+
+            //Update the saved, non-entered command when not being on the first index
+            if (lastCommandIndex == 0)  {
+                lastCommand = input
+            }
 
             cursorBlink = true
             cursorBlinkInterval.elapsed = 0f
