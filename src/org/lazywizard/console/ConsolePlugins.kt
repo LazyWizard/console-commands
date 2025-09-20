@@ -20,7 +20,7 @@ internal class ConsoleCampaignListener : CampaignInputListener, ConsoleListener 
         if (Global.getSector().campaignUI.isShowingMenu) return
 
 
-        if (Console.getSettings().legacyConsoleSummonKey.isPressed(events)) {
+        if (ConsoleOverlayPanel.instance == null && Console.getSettings().legacyConsoleSummonKey.isPressed(events)) {
             show(context)
             events.clear()
         }
@@ -62,7 +62,7 @@ internal class ConsoleCombatListener : BaseEveryFrameCombatPlugin(), ConsoleList
     override fun processInputPreCoreControls(amount: Float, events: MutableList<InputEventAPI>) {
         if (!::context.isInitialized || Global.getCombatEngine().playerShip == null) return
 
-        if (Console.getSettings().legacyConsoleSummonKey.isPressed(events)) {
+        if (ConsoleOverlayPanel.instance == null && Console.getSettings().legacyConsoleSummonKey.isPressed(events)) {
             show(context)
             events.clear()
         }

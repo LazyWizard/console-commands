@@ -42,6 +42,10 @@ public class Console
     private static StringBuilder output = new StringBuilder();
     private static CommandContext currentContext = CommandContext.COMBAT_MISSION;
 
+    public static String getOutputString() {
+        return output.toString();
+    }
+
     /**
      * Forces the console to reload its settings from the settings file.
      *

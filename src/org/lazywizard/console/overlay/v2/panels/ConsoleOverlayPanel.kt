@@ -19,6 +19,7 @@ import org.lazywizard.console.CommandStore.StoredCommand
 import org.lazywizard.console.CommonStrings
 import org.lazywizard.console.Console
 import org.lazywizard.console.overlay.v2.elements.BaseConsoleElement
+import org.lazywizard.console.overlay.v2.elements.ConsoleTextElement
 import org.lazywizard.console.overlay.v2.elements.ConsoleTextfield
 import org.lazywizard.console.overlay.v2.font.ConsoleFont
 import org.lazywizard.console.overlay.v2.misc.ReflectionUtils
@@ -42,8 +43,8 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
     companion object {
         var instance: ConsoleOverlayPanel? = null
         var shader = 0
-        internal var font1 = ConsoleFont.loadFont("graphics/fonts/jetbrains_mono_24.fnt")
-        internal var font2 = ConsoleFont.loadFont("graphics/fonts/jetbrains_mono_32.fnt")
+        internal var fontSmall = ConsoleFont.loadFont("graphics/fonts/jetbrains_mono_24.fnt")
+        internal var fontLarge = ConsoleFont.loadFont("graphics/fonts/jetbrains_mono_32.fnt")
         var graphicsLib = Global.getSettings().modManager.isModEnabled("shaderLib")
     }
 
@@ -51,11 +52,15 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
     var lastInput = input
     var cursorIndex = input.length
 
-    private var inputDraw = font1.createText("", Color(243, 245,  250), 16f)
-    private var completionDraw = font1.createText("", Color(243, 245,  250), 16f)
-    private var syntaxDraw = font1.createText("", Color(188, 190, 196), 16f)
-    private var cursorDraw = font1.createText("|", Color.white, 16f)
-    private var arrowDraw = font2.createText(">", Misc.getBasePlayerColor(), 24f)
+    public var inputColor = Color(243, 245,  250)
+    public var logColor = Color(188, 190, 196)
+    public var grayColor = Color(188, 190, 196)
+
+    private var inputDraw = fontSmall.createText("", inputColor, 16f)
+    private var completionDraw = fontSmall.createText("", inputColor, 16f)
+    private var syntaxDraw = fontSmall.createText("", grayColor, 16f)
+    private var cursorDraw = fontSmall.createText("|", Color.white, 16f)
+    private var arrowDraw = fontLarge.createText(">", Misc.getBasePlayerColor(), 24f)
 
     private var cursorBlinkInterval = IntervalUtil(0.5f, 0.5f)
     private var cursorBlink = true
@@ -64,6 +69,10 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
     var completionSelectorIndex = 0
     var lastMatchesDisplayed = ArrayList<String>()
+
+    var output = Console.getOutputString()
+
+    var previousScroller = -1f
 
     init {
         inputDraw.blendSrc = GL_ONE
@@ -117,25 +126,78 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
         var width = parent.position.width
         var height = parent.position.height
-        var widthOffset = 50
+        var widthOffset = 50f
 
-        var panel = parent.createCustomPanel(width, height, this)
-        parent.addComponent(panel)
-        panel.position.inTL(0f, 0f)
 
-        var element = panel.createUIElement(width, height, false)
-        panel.addUIElement(element)
-        element.position.inTL(0f, 0f)
+        ///Background & Input Panel
+        var backgroundPanel = parent.createCustomPanel(width, height, this)
+        parent.addComponent(backgroundPanel)
+        backgroundPanel.position.inTL(0f, 0f)
 
-        createTextfield(panel, element)
+
+
+
+        ///Logging Panel
+        var lines = output.split("\n")
+        var limit = 120 //Dont show more than 120 messages back
+        var draws = ArrayList<ConsoleFont.DrawableString>()
+
+        for (i in 0 until 25) {
+            var toDraw = fontSmall.createText("Test Para: $i", logColor, 16f)
+            toDraw.blendSrc = GL_ONE
+            toDraw.maxWidth = width-widthOffset
+            draws.add(toDraw)
+        }
+
+        var logOffsetY = 95f
+        var totalLogHeight = draws.sumOf { it.height.toDouble()  }.toFloat() + fontSmall.baseHeight/2
+        var logHeight = Math.min(height-logOffsetY, totalLogHeight)
+
+        var logPanel = parent.createCustomPanel(width-widthOffset, logHeight, null)
+        parent.addComponent(logPanel)
+
+        var logElement = logPanel.createUIElement(width-widthOffset, logHeight, true)
+
+        for (toDraw in draws) {
+            var text = ConsoleTextElement(toDraw, logElement, toDraw.width, toDraw.height)
+            println(text.y)
+        }
+
+
+        logElement.addSpacer(fontSmall.baseHeight/2)
+
+        logPanel.addUIElement(logElement)
+        logPanel.position.inTL(widthOffset/2, height - logHeight - logOffsetY +10 )
+
+        logElement.position.inTL(0f, 0f)
+
+
+        if (previousScroller == -1f) {
+            logElement.externalScroller.yOffset = totalLogHeight-logHeight
+        }
+
+
+
+        ///Text Input Panel
+        var inputPanel = parent.createCustomPanel(width, height, null)
+        parent.addComponent(inputPanel)
+        inputPanel.position.inTL(0f, 0f)
+
+        var inputElement = inputPanel.createUIElement(width, height, false)
+        inputPanel.addUIElement(inputElement)
+        inputElement.position.inTL(0f, 0f)
+
+
+        createTextfield(inputPanel, inputElement, widthOffset)
+
+
 
     }
 
-    fun createTextfield(panel: UIPanelAPI, element: TooltipMakerAPI) {
+    fun createTextfield(panel: UIPanelAPI, element: TooltipMakerAPI, widthOffset: Float) {
 
         var width = parent.position.width
         var height = parent.position.height
-        var widthOffset = 50
 
         var font = Fonts.ORBITRON_16
         var innerSizeReduction = 30f
@@ -149,7 +211,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         var metNewLine = false
         var metWordStart = false
 
-        val scaleFactor = inputDraw.fontSize / font1.baseHeight
+        val scaleFactor = inputDraw.fontSize / fontSmall.baseHeight
         var maxWidth = width - widthOffset - innerSizeReduction - 15
         var sizeSoFar = 0f
         var reconstruction = ""
@@ -193,7 +255,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         }
 
         inputDraw.text = reconstruction
-        inputDraw.baseColor = Color(243, 245,  250)
+        inputDraw.baseColor = inputColor
         if (input.isEmpty()) {
             inputDraw.baseColor = Misc.getGrayColor()
             inputDraw.text = CommonStrings.INPUT_QUERY
@@ -411,24 +473,31 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         var sbHeightOffset = 2
         var sbHeight = completionDraw.fontSize + sbHeightOffset
 
+        var background = BaseConsoleElement(element, bWidth, 160f).apply {
+            enableTransparency = true
+            renderBorder = false
+            backgroundColor = Color(15, 15, 20)
+            backgroundAlpha = 0.95f // 0.5
+        }
+
         var sbackground = BaseConsoleElement(element, bWidth, sbHeight).apply {
             enableTransparency = true
             renderBorder = false
             backgroundColor = Color(40, 40, 45)
-            backgroundAlpha = 0.9f
+            backgroundAlpha = 0.5f
         }
 
-        var background = BaseConsoleElement(element, bWidth, 160f).apply {
+        var textRender = BaseConsoleElement(element, bWidth, 160f).apply {
             enableTransparency = true
             renderBorder = false
             backgroundColor = Color(20, 20, 25)
-            backgroundAlpha = 0.5f
+            backgroundAlpha = 0.9f // 0.5
         }
 
         completionSelectorIndex = MathUtils.clamp(completionSelectorIndex, 0, matches.size-1)
 
 
-        var ratio = completionDraw.fontSize / font1.baseHeight
+        var ratio = completionDraw.fontSize / fontSmall.baseHeight
 
         var bef = getWordBeforeCursor()
         var aft = getWordAfterCursor()
@@ -451,7 +520,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                 maxParaWidth = pWidth
             }
 
-            background.render {
+            textRender.render {
                 completionDraw.text = " "
                 completionDraw.triggerRebuildIfNeeded()
 
@@ -736,7 +805,9 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             completionSelectorIndex = 0
         }
 
-        if (input != lastInput || updatedCursor || completionSelectorIndex != previousSelector) {
+        if (input != lastInput || updatedCursor || completionSelectorIndex != previousSelector || output != Console.getOutputString()) {
+
+            output = Console.getOutputString()
 
             cursorBlink = true
             cursorBlinkInterval.elapsed = 0f

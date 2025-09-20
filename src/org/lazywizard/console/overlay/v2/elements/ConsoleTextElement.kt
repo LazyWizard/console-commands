@@ -13,7 +13,7 @@ internal class ConsoleTextElement(var toDraw: ConsoleFont.DrawableString, toolti
     }
 
     override fun render(alphaMult: Float) {
-        toDraw.draw(x, Global.getSettings().screenHeight-y)
+        toDraw.draw(x, y)
     }
 
 }
