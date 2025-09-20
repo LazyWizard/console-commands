@@ -889,9 +889,9 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                             else -> Console.parseInput(input.replace('\n', ' '), context)
                         }
 
-                        //Only save if the command entered isnt equal to the one before
+                        //Only save if the command entered isnt equal to the one before, and those that arent blank
                         lastCommandIndex = 0
-                        if (lastCommands.getOrNull(0) != input) {
+                        if (lastCommands.getOrNull(0) != input && input.isNotBlank()) {
                             lastCommands.add(0, input)
                             if (lastCommands.size >= maxSavedCommands) {
                                 lastCommands.removeLast()
@@ -960,7 +960,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         for (event in events)
         {
             if (event.isConsumed) continue
-            if (event.isKeyUpEvent && event.eventValue == Keyboard.KEY_ESCAPE)
+            if (event.isKeyDownEvent && event.eventValue == Keyboard.KEY_ESCAPE)
             {
                 event.consume()
                 close()
