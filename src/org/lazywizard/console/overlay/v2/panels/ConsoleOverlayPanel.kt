@@ -267,6 +267,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         }
         compileDraw.text = compileError
         compileDraw.maxWidth = width-widthOffset-innerSizeReduction
+        compileDraw.triggerRebuildIfNeeded()
 
         var wordPartBeforeCursor = getWordBeforeCursor()
         var wordAtCursor = getFullWordAtCursor()
