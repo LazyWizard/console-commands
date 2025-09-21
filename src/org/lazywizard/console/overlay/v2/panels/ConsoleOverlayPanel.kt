@@ -16,6 +16,7 @@ import com.fs.starfarer.api.ui.UIPanelAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.state.AppDriver
+import kotlinx.coroutines.*
 import org.codehaus.commons.compiler.CompileException
 import org.dark.shaders.util.ShaderLib
 import org.json.JSONArray
@@ -115,6 +116,10 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
     var requiresRecreation = false
 
     var placeHolderDialog: InteractionDialogAPI? = null
+
+    var compileScope = CoroutineScope(Dispatchers.Default)
+    var compileJob: Job? = null
+    var compileError = ""
 
     init {
 
@@ -238,13 +243,12 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         var width = parent.position.width
         var height = parent.position.height
 
-        var font = Fonts.ORBITRON_16
         var innerSizeReduction = 30f
 
         //Ensure that cursor is clamped in to the input size
         cursorIndex = MathUtils.clamp(cursorIndex, 0, input.length)
 
-        var error = ""
+        /*var error = ""
         var isRuncode = input.lowercase().trimStart().startsWith("runcode ")
         if (isRuncode) {
             //remove the "runcode" part
@@ -256,11 +260,11 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                 try {
                     RunCode.eval.cook(toCompile)
                 } catch (e: CompileException) {
-                    error = e.toString()
+                    error = e.message ?: ""
                 }
             }
-        }
-        compileDraw.text = error
+        }*/
+        compileDraw.text = compileError
         compileDraw.maxWidth = width-widthOffset-innerSizeReduction
 
         var wordPartBeforeCursor = getWordBeforeCursor()
@@ -359,8 +363,6 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         //syntaxDraw.maxWidth = inputDraw.maxWidth
         syntaxDraw.triggerRebuildIfNeeded()
 
-        /*var extraTextfieldHeight = 0f
-        if (isRuncode) extraTextfieldHeight += fontSmall.baseHeight*/
         var textfield = ConsoleTextfield(element, width-widthOffset, 30f+textHeight+compileDraw.height)
         textfield.position.inTL(width/2-textfield.width/2, height-textfield.height-30)
 
@@ -378,7 +380,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                 syntaxDraw.draw(textfield.x+innerSizeReduction, textfield.y+textfield.height-15)
             }
 
-            if (error.isNotBlank()) {
+            if (compileError.isNotBlank()) {
                 compileDraw.draw(textfield.x+innerSizeReduction, textfield.y+textfield.height-8-compileDraw.fontSize-inputDraw.height)
             }
         }
@@ -878,11 +880,11 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                     }
                 }
 
-                if (event.isCtrlDown || event.isAltDown)
+                /*if (event.isCtrlDown || event.isAltDown)
                 {
                     event.consume()
                     break
-                }
+                }*/
 
                 if (event.eventValue == Keyboard.KEY_RETURN) {
 
@@ -959,6 +961,38 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             //Update the saved, non-entered command when not being on the first index
             if (lastCommandIndex == 0)  {
                 lastCommand = input
+            }
+
+            //cancel previous compile job as it will no longer provide the correct message
+            if (compileJob != null) {
+                if (compileJob?.isCancelled == false) {
+                    compileJob?.cancel()
+                }
+            }
+
+            var isRuncode = input.lowercase().trimStart().startsWith("runcode ")
+            if (isRuncode) {
+                //remove the "runcode" part
+                var toCompile = input.substring(input.indexOf(" "), input.length).trim()
+                if (!toCompile.endsWith(";")) {
+                    toCompile += ";"
+                }
+                if (toCompile.isNotBlank()) {
+
+                    //Run compilation on another coroutine to prevent lag
+                    compileJob = compileScope.launch {
+                        delay(100) //Short delay to cancel in case other input arrived and to make the error display less flashing
+                        if (isActive) {
+                            try {
+                                RunCode.eval.cook(toCompile)
+                                compileError = ""
+                            } catch (e: CompileException) {
+                                compileError = e.message ?: ""
+                            }
+                            requiresRecreation = true
+                        }
+                    }
+                }
             }
 
             cursorBlink = true
@@ -1064,6 +1098,10 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             return false
         }
 
+        if (char != null) {
+            return fontSmall.getChar(char) != fontSmall.fallbackChar
+        }
+
         return true
     }
 
@@ -1121,6 +1159,8 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
     }
 
     public fun close() {
+
+        compileScope.cancel()
 
         var state = AppDriver.getInstance().currentState
 

@@ -1,10 +1,10 @@
 {
-    "masterVersionFile": "https://raw.githubusercontent.com/LazyWizard/console-commands/master/src/main/mod/console.version",
+    "masterVersionFile": "https://raw.githubusercontent.com/Lukas22041/console-commands/refs/heads/master/console.version",
     "modName": "Console Commands",
     "modThreadId": 4106,
     "modVersion": {
-        "major": 2025,
-        "minor": 09,
-        "patch": 20
+        "major": 2,
+        "minor": 0,
+        "patch": 1
     }
 }

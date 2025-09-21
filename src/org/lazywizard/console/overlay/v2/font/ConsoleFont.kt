@@ -32,7 +32,7 @@ internal class ConsoleFont private constructor(
     private val extendedChars = HashMap<Char, LazyChar>()
 
     // Fallback character for when a character isn't defined in the font
-    private lateinit var fallbackChar: LazyChar
+    public lateinit var fallbackChar: LazyChar
 
     // File format documentation: http://www.angelcode.com/products/bmfont/doc/file_format.html
     companion object FontLoader {
