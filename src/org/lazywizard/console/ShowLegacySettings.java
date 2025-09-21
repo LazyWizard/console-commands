@@ -9,6 +9,7 @@ import com.fs.starfarer.api.ui.PositionAPI;
 import com.fs.starfarer.api.ui.ValueDisplayMode;
 import org.lazywizard.console.ConsoleSettings.Keystroke;
 import org.lazywizard.console.cheatmanager.CheatTarget;
+import org.lazywizard.console.overlay.v2.panels.ConsoleOverlayPanel;
 import org.lazywizard.lazylib.CollectionUtils;
 import org.lazywizard.lazylib.ui.LazyFont.DrawableString;
 import org.lwjgl.input.Keyboard;
@@ -19,11 +20,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class ShowSettings implements BaseCommand
+public class ShowLegacySettings implements BaseCommand
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
+
+        if (ConsoleOverlayPanel.getInstance() != null) {
+            Console.showMessage("Error: This command only works within the legacy console");
+            return CommandResult.ERROR;
+
+        }
+
         if (!context.isInCampaign())
         {
             Console.showMessage(CommonStrings.ERROR_CAMPAIGN_ONLY);

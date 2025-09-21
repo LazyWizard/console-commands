@@ -81,7 +81,7 @@ SetCommission,org.lazywizard.console.commands.SetCommission,"core,cheat,campaign
 SetHome,org.lazywizard.console.commands.SetHome,"core,cheat,campaign",sethome [optionalHome],"Sets the point to be teleported to with the 'home' command.\nIf an argument is entered, the command will try to find a token with that name in the system. Otherwise, it will select a nearby object (or raw coordinates if no valid station or planet is found)."
 SetMarketSize,org.lazywizard.console.commands.SetMarketSize,"core,cheat,market",setmarketsize (size),Sets the size of the current market. Market size must be a number between 1 and 10.
 SetRelation,org.lazywizard.console.commands.SetRelation,"core,cheat,campaign",setrelation all|<faction> [optionalTowardsFaction] <amount>,"Sets the relationship between two factions to the given number. If no second faction is entered, relationship with the player faction is affected. Faction relationships range between -100 and 100."
-Settings,org.lazywizard.console.ShowSettings,"core,console,campaign",settings (no arguments)|reset,Opens the console settings menu. Entering 'reset' as an argument will reset console settings to their defaults (requires an application restart to take effect).
+LegacyConsoleSettings,org.lazywizard.console.ShowLegacySettings,"core,console,campaign",legacyconsolesettings (no arguments)|reset,Opens the console settings menu. Entering 'reset' as an argument will reset console settings to their defaults (requires an application restart to take effect). This command is solely for the legacy console.
 ShowAI,org.lazywizard.console.commands.ShowAI,"core,combat",showai (no arguments),"Toggles rendering of AI targets (ship target, maneuvering target, and mouse target) for all ships on the battle map."
 ShowBounds,org.lazywizard.console.commands.ShowBounds,"core,combat",showbounds (no arguments),"Toggles rendering of collision bounds, collision radius, and shield radius (if applicable) for all ships on the battle map."
 ShowLoc,org.lazywizard.console.commands.ShowLoc,"core,campaign,combat",showloc (no arguments),Shows the coordinates of your current location.
@@ -99,6 +99,15 @@ Survey,org.lazywizard.console.commands.Survey,"core,cheat,campaign",survey all|[
 ToggleAI,org.lazywizard.console.commands.ToggleAI,"core,cheat,combat",toggleai [optionalTarget] on|off,"Toggles the AI of the selected ship. If a target type argument is passed in, you need to tell it whether to turn the AI on or off for all selected ships. Valid arguments are FLEET, ENEMY, or ALL for the target, and on or off for the enabled argument."
 Traitor,org.lazywizard.console.commands.Traitor,"core,cheat,combat",traitor (no arguments),Toggles the side the selected ship will fight for.
 ,,,,
+History,org.lazywizard.console.commands.History,core,history [optionalIndexToReplaceInput],Print the command history. Type in the index of the command in the history to replace your input with it.
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
 Test,org.lazywizard.console.testing.Test,core,test (variable),Personal command for quick prototyping. Don't bother uncommenting; it probably won't do anything interesting.
 #TCR,org.lazywizard.console.commands.TestCoroutines,core,tcr (no arguments),Tests Kotlin coroutine support.
 #TestFont,org.lazywizard.console.testing.FontStressTest,"core,combat,campaign",testfont (no arguments),Stress test font rendering.
@@ -106,3 +115,4 @@ Test,org.lazywizard.console.testing.Test,core,test (variable),Personal command f
 #VramCheck,org.lazywizard.console.commands.VramCheck,"core,console",vramcheck [args],"Displays available graphics card memory and other information.\n""verbose"" arg shows a bit more information; ""extensions"" prints available GL extensions."
 #RamCheck,org.lazywizard.console.commands.RamCheck,"core,console",ramcheck,Prints memory-related information.
 #FixAudio,org.lazywizard.console.commands.FixAudio,core,fixaudio (no arguments),Resets the current audio device.
+,,,,

@@ -46,11 +46,11 @@ object ConsoleSettings {
     var cheatsAllowedForSave: Boolean
         get() = if (Console.getContext()?.isCampaignAccessible!!)
             !Global.getSector().persistentData.containsKey(
-                ShowSettings.SettingsDialog.genCheatId()
+                ShowLegacySettings.SettingsDialog.genCheatId()
             ) else true
         // Can only be enabled, never disabled
         @JvmSynthetic internal set(value) {
-            if (value) Global.getSector().persistentData[ShowSettings.SettingsDialog.genCheatId()] = System.nanoTime()
+            if (value) Global.getSector().persistentData[ShowLegacySettings.SettingsDialog.genCheatId()] = System.nanoTime()
         }
 
     fun resetToDefaults() {

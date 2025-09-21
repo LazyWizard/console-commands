@@ -268,6 +268,7 @@ public class Console
         {
             output.setLength(0);
             LegacyConsoleOverlay.clear();
+            ConsoleOverlayPanel.setOutput("");
             return CommandResult.SUCCESS;
         }
 

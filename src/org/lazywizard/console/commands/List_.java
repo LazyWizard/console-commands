@@ -16,16 +16,13 @@ import com.fs.starfarer.api.loading.IndustrySpecAPI;
 import com.fs.starfarer.api.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.CommandStore;
-import org.lazywizard.console.CommandUtils;
-import org.lazywizard.console.Console;
+import org.lazywizard.console.*;
 import org.lazywizard.lazylib.CollectionUtils;
 
 import java.lang.ref.SoftReference;
 import java.util.*;
 
-public class List_ implements BaseCommand
+public class List_ implements BaseCommandWithSuggestion
 {
     private static SoftReference<List<Pair<String, String>>> conditionCache = new SoftReference<>(null);
     private static SoftReference<Set<String>> submarketCache = new SoftReference<>(null);
@@ -479,5 +476,32 @@ public class List_ implements BaseCommand
         }
 
         return CommandResult.SUCCESS;
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        List<String> suggestions = new ArrayList<>();
+        if (parameter != 0) return suggestions;
+
+        suggestions.add("ships");
+        suggestions.add("variants");
+        suggestions.add("wings");
+        suggestions.add("weapons");
+        suggestions.add("items");
+        suggestions.add("specials");
+        suggestions.add("factions");
+        suggestions.add("bases");
+        suggestions.add("systems");
+        suggestions.add("planets");
+        suggestions.add("stations");
+        suggestions.add("markets");
+        suggestions.add("conditions");
+        suggestions.add("industries");
+        suggestions.add("officers");
+        suggestions.add("aliases");
+        suggestions.add("commands");
+        suggestions.add("mods");
+
+        return suggestions;
     }
 }

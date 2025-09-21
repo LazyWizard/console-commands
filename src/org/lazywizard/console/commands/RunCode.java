@@ -22,7 +22,7 @@ import org.lazywizard.console.Console;
 public class RunCode implements BaseCommand
 {
     private static Map<String, String> macros;
-    private static ScriptEvaluator eval;
+    public static ScriptEvaluator eval;
 
     public static Map<String, String> getMacros()
     {

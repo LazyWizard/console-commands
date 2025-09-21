@@ -16,15 +16,16 @@ import com.fs.starfarer.api.ui.UIPanelAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.state.AppDriver
+import org.codehaus.commons.compiler.CompileException
 import org.dark.shaders.util.ShaderLib
 import org.json.JSONArray
-import org.json.JSONObject
 import org.lazywizard.console.BaseCommand.CommandContext
 import org.lazywizard.console.BaseCommandWithSuggestion
 import org.lazywizard.console.CommandStore
 import org.lazywizard.console.CommandStore.StoredCommand
 import org.lazywizard.console.CommonStrings
 import org.lazywizard.console.Console
+import org.lazywizard.console.commands.RunCode
 import org.lazywizard.console.overlay.v2.elements.BaseConsoleElement
 import org.lazywizard.console.overlay.v2.elements.ConsoleTextElement
 import org.lazywizard.console.overlay.v2.elements.ConsoleTextfield
@@ -35,7 +36,6 @@ import org.lazywizard.console.overlay.v2.misc.getParent
 import org.lazywizard.lazylib.JSONUtils
 import org.lazywizard.lazylib.JSONUtils.CommonDataJSONObject
 import org.lazywizard.lazylib.MathUtils
-import org.lazywizard.lazylib.ext.json.iterator
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.GL_ONE
@@ -60,6 +60,22 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
         @JvmStatic
         var output = ""
+
+        var COMMAND_HISTORY_PATH = "config/lw_console_command_history.json"
+        var COMMAND_HISTORY_KEY = "commandHistory"
+        private var lastCommandsJson: CommonDataJSONObject = JSONUtils.loadCommonJSON(COMMAND_HISTORY_PATH)
+
+        @JvmStatic
+        var lastCommands = ArrayList<String>()
+
+        init {
+            var lastCommandsArray = lastCommandsJson.optJSONArray(COMMAND_HISTORY_KEY) ?: JSONArray()
+
+            for (i in 0 until lastCommandsArray.length()) {
+                lastCommands.add(lastCommandsArray.getString(i))
+            }
+        }
+
     }
 
     var input = ""
@@ -68,11 +84,13 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
     public var inputColor = Color(243, 245,  250)
     public var logColor = Color(188, 190, 196)
+    public var compileErrorColor = Misc.getNegativeHighlightColor()
     //public var logColor = Color(178, 180, 186)
     public var grayColor = Color(188, 190, 196)
 
     private var inputDraw = fontSmall.createText("", inputColor, 16f)
     private var completionDraw = fontSmall.createText("", inputColor, 16f)
+    private var compileDraw = fontSmall.createText("", compileErrorColor, 12f)
     private var syntaxDraw = fontSmall.createText("", grayColor, 16f)
     private var cursorDraw = fontSmall.createText("|", Color.white, 16f)
     private var arrowDraw = fontLarge.createText(">", Misc.getBasePlayerColor(), 24f)
@@ -92,16 +110,15 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
     var maxSavedCommands = 32
     var lastCommand = "" //Remember current command and always display when going back to index 0
     var lastCommandIndex = 0
-    var lastCommandsJson: CommonDataJSONObject
-    var lastCommands = ArrayList<String>()
-    var COMMAND_HISTORY_PATH = "config/lw_console_command_history.json"
-    var COMMAND_HISTORY_KEY = "commandHistory"
 
+
+    var requiresRecreation = false
 
     var placeHolderDialog: InteractionDialogAPI? = null
 
     init {
 
+        //Open a dialog to prevent input from most other mods
         if (context.isInCampaign) {
             if (!Global.getSector().campaignUI.isShowingDialog) {
                 Global.getSector().campaignUI.showInteractionDialog(PlaceholderDialog(), Global.getSector().playerFleet)
@@ -109,18 +126,9 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             }
         }
 
-        lastCommandsJson = JSONUtils.loadCommonJSON(COMMAND_HISTORY_PATH)
-        var lastCommandsArray = lastCommandsJson.optJSONArray(COMMAND_HISTORY_KEY) ?: JSONArray()
-
-        for (i in 0 until lastCommandsArray.length()) {
-            lastCommands.add(lastCommandsArray.getString(i))
-        }
-
-       /* lastCommandsJson.put(COMMAND_HISTORY_KEY,lastCommands)
-        lastCommandsJson.save()*/
-
         inputDraw.blendSrc = GL_ONE
         completionDraw.blendSrc = GL_ONE
+        compileDraw.blendSrc = GL_ONE
         syntaxDraw.blendSrc = GL_ONE
         cursorDraw.blendSrc = GL_ONE
         arrowDraw.blendSrc = GL_ONE
@@ -178,44 +186,13 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         parent.addComponent(backgroundPanel)
         backgroundPanel.position.inTL(0f, 0f)
 
-
-
-
         ///Logging Panel
-       /* var lines = output.split("\n")
-        var limit = 100 //Dont show more than 120 messages back
-        var draws = ArrayList<ConsoleFont.DrawableString>()
-
-        var index = 0
-        var toDisplay = ArrayList<String>()
-        for (line in lines.reversed()) {
-            if (index >= limit) break
-            toDisplay.add(line)
-            index++
-        }
-
-        for (line in toDisplay.reversed()) {
-            var toWrite = line
-            if (toWrite == "")toWrite = "\n"
-            var toDraw = fontSmall.createText(toWrite, logColor, 16f)
-            toDraw.blendSrc = GL_ONE
-            toDraw.maxWidth = width-widthOffset
-            draws.add(toDraw)
-        }*/
-
-        /*for (i in 0 until 65) {
-            var toDraw = fontSmall.createText("Test Para: $i", logColor, 16f)
-            toDraw.blendSrc = GL_ONE
-            toDraw.maxWidth = width-widthOffset
-            draws.add(toDraw)
-        }*/
 
         var toDraw = fontSmall.createText(output, logColor, 16f)
         toDraw.blendSrc = GL_ONE
         toDraw.maxWidth = width-widthOffset
 
         var logOffsetY = 95f
-        //var totalLogHeight = draws.sumOf { it.height.toDouble()  }.toFloat() + fontSmall.baseHeight/2
         var totalLogHeight = toDraw.height
         var logHeight = Math.min(height-logOffsetY, totalLogHeight)
 
@@ -224,13 +201,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
         logElement = logPanel.createUIElement(width-widthOffset, logHeight, true)
 
-        /*for (toDraw in draws) {
-            var text = ConsoleTextElement(toDraw, logElement!!, toDraw.width, toDraw.height)
-        }*/
         var text = ConsoleTextElement(toDraw, logElement!!, toDraw.width, toDraw.height)
-
-
-        //logElement!!.addSpacer(fontSmall.baseHeight/2)
 
         logPanel.addUIElement(logElement)
         logPanel.position.inTL(widthOffset/2, height - logHeight - logOffsetY +10 )
@@ -272,6 +243,25 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
         //Ensure that cursor is clamped in to the input size
         cursorIndex = MathUtils.clamp(cursorIndex, 0, input.length)
+
+        var error = ""
+        var isRuncode = input.lowercase().trimStart().startsWith("runcode ")
+        if (isRuncode) {
+            //remove the "runcode" part
+            var toCompile = input.substring(input.indexOf(" "), input.length).trim()
+            if (!toCompile.endsWith(";")) {
+                toCompile += ";"
+            }
+            if (toCompile.isNotBlank()) {
+                try {
+                    RunCode.eval.cook(toCompile)
+                } catch (e: CompileException) {
+                    error = e.toString()
+                }
+            }
+        }
+        compileDraw.text = error
+        compileDraw.maxWidth = width-widthOffset-innerSizeReduction
 
         var wordPartBeforeCursor = getWordBeforeCursor()
         var wordAtCursor = getFullWordAtCursor()
@@ -355,9 +345,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             }
         }
 
-        //var cursorDisplayIndex = MathUtils.clamp(cursorIndex, 0, reconstruction.length)
         var cursorText = matchedString.substring(0, cursorIndex+offsetCorrection)
-        //var syntaxDrawText = matchedString.substring(0, matchedString.length)
 
         //cursorDraw.text = " ".repeat(cursorIndex) + "|"
         cursorDraw.text = cursorText + "|"
@@ -371,19 +359,9 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         //syntaxDraw.maxWidth = inputDraw.maxWidth
         syntaxDraw.triggerRebuildIfNeeded()
 
-       /* cursorText = matchedString.substring(0, cursorIndex)
-        cursorDraw.text = cursorText + "|"
-        ReflectionUtils.set("isRebuildNeeded", cursorDraw, false)*/
-        //cursorDraw.triggerRebuildIfNeeded()
-
-        //var textfield = ConsoleTextfield(element, width-widthOffset, 30f+label1.position.height)
-        var textfield = ConsoleTextfield(element, width-widthOffset, 30f+textHeight)
-       /* var textContainer = BaseConsoleElement(textfield.innerElement, textfield.position.width-innerSizeReduction, textfield.height).apply {
-            renderBorder = false
-            renderBackground = false
-            innerElement.setParaFont(font)
-        }
-        textContainer.position.inTL(innerSizeReduction, 14f)*/
+        /*var extraTextfieldHeight = 0f
+        if (isRuncode) extraTextfieldHeight += fontSmall.baseHeight*/
+        var textfield = ConsoleTextfield(element, width-widthOffset, 30f+textHeight+compileDraw.height)
         textfield.position.inTL(width/2-textfield.width/2, height-textfield.height-30)
 
         textfield.render {
@@ -398,6 +376,10 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             var word = getWordsWithIndex().lastOrNull()
             if (word != null && syntax.isNotBlank() && word.first+word.second.length == cursorIndex-1) {
                 syntaxDraw.draw(textfield.x+innerSizeReduction, textfield.y+textfield.height-15)
+            }
+
+            if (error.isNotBlank()) {
+                compileDraw.draw(textfield.x+innerSizeReduction, textfield.y+textfield.height-8-compileDraw.fontSize-inputDraw.height)
             }
         }
 
@@ -706,6 +688,11 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                 list.clear()
             }
         }
+
+        if (requiresRecreation) {
+            requiresRecreation = false
+            recreatePanel()
+        }
     }
 
 
@@ -899,21 +886,28 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
                 if (event.eventValue == Keyboard.KEY_RETURN) {
 
+
                     if (event.isShiftDown) {
                         input = getSubstringBeforeCursor() + "\n" + getSubstringAfterCursor()
                         cursorIndex += 1
                     } else {
+
+                        //Input needs to be reset before execution so that the history command can modify it
+                        var commandInput = input
+                        input = ""
+                        cursorIndex = 0
+
                         when {
                             // TODO: Ensure newlines are supported everywhere (currently replaced with spaces where not supported)
-                            input.startsWith("runcode ", true) -> Console.parseInput(input, context)
-                            else -> Console.parseInput(input.replace('\n', ' '), context)
+                            commandInput.startsWith("runcode ", true) -> Console.parseInput(commandInput, context)
+                            else -> Console.parseInput(commandInput.replace('\n', ' '), context)
                         }
 
                         //Only save if the command entered isnt equal to the one before, and those that arent blank
                         lastCommandIndex = 0
-                        if (lastCommands.getOrNull(0) != input && input.isNotBlank()) {
-                            lastCommands.add(0, input)
-                            if (lastCommands.size >= maxSavedCommands) {
+                        if (lastCommands.getOrNull(0) != commandInput && commandInput.isNotBlank() && !commandInput.lowercase().startsWith("history")) {
+                            lastCommands.add(0, commandInput)
+                            if (lastCommands.size > maxSavedCommands) {
                                 lastCommands.removeLast()
                             }
                             lastCommandsJson.put(COMMAND_HISTORY_KEY, lastCommands)
@@ -922,8 +916,6 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                         }
 
 
-                        input = ""
-                        cursorIndex = 0
                         break
                     }
 
