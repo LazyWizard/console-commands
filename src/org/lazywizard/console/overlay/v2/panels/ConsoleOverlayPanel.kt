@@ -191,6 +191,19 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         parent.addComponent(backgroundPanel)
         backgroundPanel.position.inTL(0f, 0f)
 
+        //Limit output size
+        var outputLimit = 3000
+        var count = output.count { it == '\n' }
+
+        while (count >= outputLimit) {
+            var index = output.indexOf("\n")+1
+            count -= 1
+            if (index == -1) break
+            output = output.substring(index, output.length)
+            var test = ""
+        }
+
+
         ///Logging Panel
 
         var toDraw = fontSmall.createText(output, logColor, 16f)
@@ -248,22 +261,10 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         //Ensure that cursor is clamped in to the input size
         cursorIndex = MathUtils.clamp(cursorIndex, 0, input.length)
 
-        /*var error = ""
         var isRuncode = input.lowercase().trimStart().startsWith("runcode ")
-        if (isRuncode) {
-            //remove the "runcode" part
-            var toCompile = input.substring(input.indexOf(" "), input.length).trim()
-            if (!toCompile.endsWith(";")) {
-                toCompile += ";"
-            }
-            if (toCompile.isNotBlank()) {
-                try {
-                    RunCode.eval.cook(toCompile)
-                } catch (e: CompileException) {
-                    error = e.message ?: ""
-                }
-            }
-        }*/
+        if (!isRuncode) {
+            compileError = ""
+        }
         compileDraw.text = compileError
         compileDraw.maxWidth = width-widthOffset-innerSizeReduction
 
