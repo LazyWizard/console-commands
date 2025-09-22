@@ -12,5 +12,5 @@
 	"directDownloadURL":"https://github.com/LazyWizard/console-commands/releases/latest/download/ConsoleCommands.zip",
 	
 	#Link towards a directly accessible text file, which can be used to display a changelog ingame, is fetched from the online version file.
-	"changelogURL":"https://raw.githubusercontent.com/LazyWizard/console-commands/refs/heads/main/changelog.txt",
+	"changelogURL":"https://raw.githubusercontent.com/LazyWizard/console-commands/refs/heads/master/changelog.txt",
 }
