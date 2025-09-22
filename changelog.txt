@@ -18,10 +18,12 @@ Keybinds
 - Tab: confirm autocompletion
 
 Legacy UI
+
 - The legacy UI can still be re-enabled in "ConsoleCommands/data/console/console_settings.json".
 - New features added with this version are not available in the legacy UI.
 
 For Modders
+
 - Added "BaseCommandWithSuggestion". Implement it to create a command with autocomplete suggestions.
 - Use the "getSuggestions" method to return a list of the provided suggestions for your command.
 - "parameter" tells you which parameter the suggestions are for (0 is the first arg).
