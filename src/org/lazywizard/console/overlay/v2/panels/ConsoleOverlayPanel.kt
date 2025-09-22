@@ -10,7 +10,6 @@ import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.combat.EngagementResultAPI
 import com.fs.starfarer.api.input.InputEventAPI
 import com.fs.starfarer.api.ui.CustomPanelAPI
-import com.fs.starfarer.api.ui.Fonts
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.ui.UIPanelAPI
 import com.fs.starfarer.api.util.IntervalUtil
@@ -44,8 +43,6 @@ import org.lwjgl.opengl.GL11.GL_ONE
 import org.lwjgl.opengl.GL13
 import org.lwjgl.opengl.GL20
 import java.awt.Color
-import java.awt.Toolkit
-import java.awt.datatransfer.DataFlavor
 import java.util.regex.Pattern
 
 class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPanelPlugin() {
@@ -122,7 +119,17 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
     var compileJob: Job? = null
     var compileError = ""
 
+    //For adding tab cycling support
+    var useTabCycling = false
+    var suggestionsForTabCycle = ArrayList<String>()
+    var befAtTabCycle = ""
+    var fullAtTabCycle = ""
+    var aftAtTabCycle = ""
+    var usedArrowsDuringTabCycle = false
+
     init {
+
+        instance = this
 
         //Open a dialog to prevent input from most other mods
         if (context.isInCampaign) {
@@ -138,8 +145,6 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         syntaxDraw.blendSrc = GL_ONE
         cursorDraw.blendSrc = GL_ONE
         arrowDraw.blendSrc = GL_ONE
-
-        instance = this
 
         if (shader == 0 && graphicsLib) {
             shader = ShaderLib.loadShader(
@@ -423,12 +428,17 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             if (diff <= last.second.length+1) isToFarAway = false
         }
 
-        return !isToFarAway && matches.isNotEmpty() && wordPartBeforeCursor.isNotBlank()/* && widthUntilWordStart != -1f*/
+        return !isToFarAway && matches.isNotEmpty() && (wordPartBeforeCursor.isNotBlank())/* && widthUntilWordStart != -1f*/
     }
 
     var maxMatches = 20
 
     fun filterForMatches() : List<String> {
+
+        if (suggestionsForTabCycle.isNotEmpty()) {
+            return suggestionsForTabCycle
+        }
+
         var word = getFullWordAtCursor()
         var matches: MutableList<String> = ArrayList<String>()
 
@@ -573,8 +583,11 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         var ratio = completionDraw.fontSize / fontSmall.baseHeight
 
         var bef = getWordBeforeCursor()
+        if (useTabCycling && befAtTabCycle.isNotBlank()) bef = befAtTabCycle
         var aft = getWordAfterCursor()
+        if (useTabCycling && aftAtTabCycle.isNotBlank()) aft = aftAtTabCycle
         var word = getFullWordAtCursor()
+        if (useTabCycling && fullAtTabCycle.isNotBlank()) word = fullAtTabCycle
 
         var matchColor = Misc.getBasePlayerColor()
 
@@ -708,6 +721,9 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         var updatedCursor = false
         var previousSelector = completionSelectorIndex
         var previousOutput = output
+        var pressedTab = false
+        var pressedAny = false
+        var pressedUpDownSuggestion = false
 
         for (event in events) {
 
@@ -717,6 +733,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             //if (!event.isKeyDownEvent) continue
             if (event.isKeyboardEvent && (event.isKeyDownEvent || event.isRepeat))
             {
+                pressedAny = true
 
                 if (event.eventValue == Keyboard.KEY_ESCAPE) {
                     break
@@ -761,6 +778,10 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                             cursorIndex = input.length
                         }
                     } else {
+                        pressedUpDownSuggestion = true
+                        if (suggestionsForTabCycle.isNotEmpty()){
+                            usedArrowsDuringTabCycle = true
+                        }
                         completionSelectorIndex -= 1;
                     }
 
@@ -788,6 +809,10 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                             cursorIndex = input.length
                         }
                     } else {
+                        pressedUpDownSuggestion = true
+                        if (suggestionsForTabCycle.isNotEmpty()){
+                            usedArrowsDuringTabCycle = true
+                        }
                         completionSelectorIndex += 1;
                     }
 
@@ -798,20 +823,43 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                 if (event.eventValue == Keyboard.KEY_TAB /*|| event.eventValue == Keyboard.KEY_RETURN*/)
                 {
                     if (lastMatchesDisplayed.isNotEmpty()) {
+                        pressedTab = true
                         var previous = input
+
+
+                        if (useTabCycling && suggestionsForTabCycle.isNotEmpty() && !usedArrowsDuringTabCycle) {
+                            completionSelectorIndex += 1
+                            if (completionSelectorIndex >= suggestionsForTabCycle.size) {
+                                completionSelectorIndex = 0
+                            }
+                        } else if(useTabCycling && !usedArrowsDuringTabCycle) {
+                            befAtTabCycle = getWordBeforeCursor()
+                            aftAtTabCycle = getWordAfterCursor()
+                            fullAtTabCycle = getFullWordAtCursor()
+                        }
+                        usedArrowsDuringTabCycle = false
 
                         completionSelectorIndex = MathUtils.clamp(completionSelectorIndex, 0, lastMatchesDisplayed.size-1)
                         var completion = lastMatchesDisplayed.get(lastMatchesDisplayed.size-completionSelectorIndex-1)
+
 
                         /*var current = getFullWordAtCursor()
                         input = input.replace(current, "$completion ") //Add space after completion.*/
 
                         var left = getWordBeforeIndex()
                         var right = getWordAfterIndex()
-                        input = getSubstringBeforeCursor().substring(0, left) + "$completion " + getSubstringAfterCursor().substring(right)
+                        var space = " "
+                        if (useTabCycling) space = ""
+                        input = getSubstringBeforeCursor().substring(0, left) + "$completion$space" + getSubstringAfterCursor().substring(right)
 
                         cursorIndex += input.length-previous.length
                         Global.getSoundPlayer().playUISound("ui_button_mouseover", 1f, 0.9f)
+
+                        if (useTabCycling) {
+                            if (suggestionsForTabCycle.isEmpty()) {
+                                suggestionsForTabCycle.addAll(lastMatchesDisplayed)
+                            }
+                        }
 
                     }
 
@@ -949,7 +997,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             }
         }
 
-        if (input != lastInput) {
+        if (input != lastInput && (!pressedTab)) {
             completionSelectorIndex = 0
         }
 
@@ -959,6 +1007,14 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
         if (completionSelectorIndex != previousSelector) {
             Global.getSoundPlayer().playUISound("ui_button_mouseover", 1f, 0.9f)
+        }
+
+        if (!pressedTab && pressedAny && !pressedUpDownSuggestion) {
+            suggestionsForTabCycle.clear() //Changed state, stop previous tab selector
+            befAtTabCycle = ""
+            aftAtTabCycle = ""
+            fullAtTabCycle = ""
+            usedArrowsDuringTabCycle = false
         }
 
         if (input != lastInput || updatedCursor || completionSelectorIndex != previousSelector || output != previousOutput) {

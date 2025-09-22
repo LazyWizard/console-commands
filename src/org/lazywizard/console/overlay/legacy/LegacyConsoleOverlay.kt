@@ -397,6 +397,7 @@ internal class ConsoleOverlayInternal(private val context: CommandContext, mainC
                         continue
                     }
 
+
                     // Cycle through matching commands from current index forward
                     // If no further matches are found, start again from beginning
                     var firstMatch: String? = null
