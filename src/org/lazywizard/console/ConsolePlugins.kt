@@ -20,7 +20,7 @@ internal class ConsoleCampaignListener : CampaignInputListener, ConsoleListener 
         if (Global.getSector().campaignUI.isShowingMenu) return
 
 
-        if (Console.getSettings().consoleSummonKey.isPressed(events)) {
+        if (ConsoleOverlayPanel.instance == null && Console.getSettings().consoleSummonKey.isPressed(events)) {
             if (Console.isUseLegacyConsole()) {
                 show(context)
             }
@@ -64,7 +64,7 @@ internal class ConsoleCombatListener : BaseEveryFrameCombatPlugin(), ConsoleList
         if (!::context.isInitialized || Global.getCombatEngine().playerShip == null) return
 
 
-        if (Console.getSettings().consoleSummonKey.isPressed(events)) {
+        if (ConsoleOverlayPanel.instance == null && Console.getSettings().consoleSummonKey.isPressed(events)) {
             if (Console.isUseLegacyConsole()) {
                 show(context)
             }

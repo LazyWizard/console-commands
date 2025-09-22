@@ -838,7 +838,8 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                         input += after
                         cursorIndex += input.length-sizeBefore
                     } catch (e: Throwable) {
-
+                        Console.showException("Error: Could not copy clipboard", e)
+                        e.printStackTrace()
                     }
 
 
