@@ -39,6 +39,7 @@ public class Console
 {
     private static final Logger Log = Global.getLogger(Console.class);
     private static LazyFont font;
+    private static boolean useLegacyConsole = false;
     // Stores the output of the console until it can be displayed
     private static StringBuilder output = new StringBuilder();
     private static CommandContext currentContext = CommandContext.COMBAT_MISSION;
@@ -60,6 +61,7 @@ public class Console
         try
         {
             font = LazyFont.loadFont(settingsFile.getString("consoleFont"));
+            useLegacyConsole = settingsFile.getBoolean("enableLegacyConsole");
         }
         catch (FontException ex)
         {
@@ -80,6 +82,10 @@ public class Console
     public static LazyFont getFont()
     {
         return font;
+    }
+
+    public static boolean isUseLegacyConsole() {
+        return useLegacyConsole;
     }
 
     public static CommandContext getContext()

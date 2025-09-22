@@ -20,15 +20,16 @@ internal class ConsoleCampaignListener : CampaignInputListener, ConsoleListener 
         if (Global.getSector().campaignUI.isShowingMenu) return
 
 
-        if (ConsoleOverlayPanel.instance == null && Console.getSettings().legacyConsoleSummonKey.isPressed(events)) {
-            show(context)
+        if (Console.getSettings().consoleSummonKey.isPressed(events)) {
+            if (Console.isUseLegacyConsole()) {
+                show(context)
+            }
+            else if (ConsoleOverlayPanel.instance == null) {
+                ConsoleOverlayPanel(context)
+            }
             events.clear()
         }
-        else if (ConsoleOverlayPanel.instance == null && Console.getSettings().consoleSummonKey.isPressed(events)) {
-            ConsoleOverlayPanel(context)
-            //show(context)
-            events.clear()
-        }
+
 
 
 
@@ -62,16 +63,16 @@ internal class ConsoleCombatListener : BaseEveryFrameCombatPlugin(), ConsoleList
     override fun processInputPreCoreControls(amount: Float, events: MutableList<InputEventAPI>) {
         if (!::context.isInitialized || Global.getCombatEngine().playerShip == null) return
 
-        if (ConsoleOverlayPanel.instance == null && Console.getSettings().legacyConsoleSummonKey.isPressed(events)) {
-            show(context)
-            events.clear()
-        }
-        else if (ConsoleOverlayPanel.instance == null && Console.getSettings().consoleSummonKey.isPressed(events)) {
-            ConsoleOverlayPanel(context)
-            //show(context)
-            events.clear()
-        }
 
+        if (Console.getSettings().consoleSummonKey.isPressed(events)) {
+            if (Console.isUseLegacyConsole()) {
+                show(context)
+            }
+            else if (ConsoleOverlayPanel.instance == null) {
+                ConsoleOverlayPanel(context)
+            }
+            events.clear()
+        }
 
 
         // Advance the console and all combat commands

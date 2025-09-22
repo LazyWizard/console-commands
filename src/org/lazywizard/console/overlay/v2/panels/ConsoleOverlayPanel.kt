@@ -37,6 +37,7 @@ import org.lazywizard.console.overlay.v2.misc.getParent
 import org.lazywizard.lazylib.JSONUtils
 import org.lazywizard.lazylib.JSONUtils.CommonDataJSONObject
 import org.lazywizard.lazylib.MathUtils
+import org.lwjgl.Sys
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.GL_ONE
@@ -822,7 +823,8 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                 {
 
                     try {
-                        var clipboard = Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor) as String
+                        //var clipboard = Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor) as String
+                        var clipboard = Sys.getClipboard()
 
                         var before = getSubstringBeforeCursor()
                         var after = getSubstringAfterCursor()

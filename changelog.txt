@@ -1,0 +1,1749 @@
+Version 3.2.2
+Save Compatible
+
+- Potentialy fixed an issue that prevented loading a save.
+
+
+
+Version 3.2.1
+Save Compatible
+
+- The expedition hub will no longer bring in hulls, to avoid messing with the nanoforge buff. 
+- Slightly increased how much heavy machinery is recovered from ruins by the expedition hub.
+- Potentialy fixed an issue that caused the which mod feature to stop working during some sessions.
+
+
+
+Version 3.2.0
+Save Compatible with 3.0.0+
+
+-> Moved the Sector Procedual Generation Configurations in to a seperate mod.
+-> Increased the brightness of abyssal storms.
+-> Fixed the Exotech Background giving a bugged AI Core.
+
+The Procedual Generation Configs have been moved to a seperate mod, mainly for the reason that their the most painful piece to update across game versions and that without it, RAT may in many cases work without any other change, likewise i would prefer to not spoil myself on new content within each game update when updating the mod. The new mod will no longer be maintained by myself, and is free to adopt by anyone that wants to once a new game version releases.
+The new mod is called "ProcGenConfigs".
+
+
+
+Version 3.1.9
+Save Compatible with 3.0.0+
+
+-> The Exoship can now be set to warp towards the Abyssal Depths
+-> The Sariels Shipsystem now makes the Sariel behave more aggresively while active.
+-> Reduced the Sariels Shipsystem speed increase from 20 to 15.
+-> Reduced the "Seraphs Grace" Hullmods in-abyss speed boost from 15 to 10.
+
+
+
+Version 3.1.8
+Save Compatible with 3.0.0+
+
+-> Fixed some issues related to the rare title screens.
+
+
+
+Version 3.1.7
+Save Compatible with 3.0.0+
+
+-> Fixed the "Raphael-class" being counted as an automated ship.
+
+
+
+Version 3.1.6
+Save Compatible with 3.0.0+
+
+-> The "Apheidas-class" can no longer equip shrouded or fragment hullmods.
+-> Fixed a rare crash when hovering over RAT's AI Cores in cargo.
+
+
+
+Version 3.1.5
+Somewhat Save Compatible with 3.0.0+
+Issue: Abyssal Ships on existing saves may no longer be recoverable.
+
+-> Reworked the "Abyssal Crew Conversion" Alteration.
+--> It now works on all automated ships.
+--> Cores can be integrated again to provide their signature skill and activate the "Abyssal Adaptability" hullmods effect.
+--> It now keeps the ship as "Automated", applying the AI Points penalty, but also being effected by automation skills.
+--> Humans count as a 2x multiplier for points, integrating a core increases it to 3x.
+--> If you can't use Automated Ships, it instead provides +70% combat readiness (Bringing the ship to 40%).
+
+-> The "Abyssal Adaptability" hullmow now has an effect for the Boss core, which showns in the tooltip after its been acquired once.
+-> Nerfed the "Mending" skill from complete immunity to a 60% reduction in d-mod chance, to adjust for "Engineerings" capstones.
+-> Fixed a bug that sometimes made abyssal ships with AI cores gain the shipsystem cooldown penalty.
+
+
+
+Version 3.1.4
+Save Compatible with 3.0.0+
+
+-> Fixed an issue where you could acquire a bugged version of the Neuro Core.
+-> Updated the Abyssal XO to work with Second-in-Commands automated points config.
+--> Make sure to update both RAT and SiC if you use both.
+
+
+
+Version 3.1.3
+Save Compatible with 3.0.0+
+
+-> Fixed an issue that made you unable to load a save that got made right after activating the catalyst.
+
+
+
+Version 3.1.2
+Save Compatible with 3.0.0+
+
+-> Fixed the Exoship Remains fight giving a bugged exo-processor.
+
+
+
+Version 3.1.1
+Save Compatible with 3.0.0+
+
+-> Fixed a crash that could occur when looking at tooltips
+
+
+
+Version 3.1.0
+Save Compatible with 3.0.0+
+
+-> Added an option to increase the size of the abyssal depths by 150%.
+-> The Artifacts Widget now pulses visualy when you have an artifact and never used the system before.
+-> The "Boost Redirector" alteration now only decreases the zero flux boost by 50% instead of 80%.
+-> Made the description of the "Boost Redirector" alteration less confusing.
+-> RAT AI Cores can now be given to factions like other AI cores.
+--> Slightly reduces the value of most RAT AI cores to adjust for this.
+-> Fixed an issue that made it possible to dupe RAT AI Cores.
+
+
+
+Version 3.0.9
+Save Compatible with 3.0.0+
+
+-> Fixed a crash that occurs when saving and loading during the transition in the primordial waters biome.
+
+
+
+Version 3.0.8
+Save Compatible with 3.0.0+
+
+-> Decreased the engine brightness of the abyssal burn ability.
+-> Fixed an issue that caused Photospheres to count as visited if you were within the same coordinates in other systems.
+-> Fixed a graphical issue with the genesis.
+-> Fixed a bug that made certain conditions able to generate multiple times in some circumstances.
+
+
+
+Version 3.0.7
+Save Compatible with 3.0.0+
+
+-> Nameless Sea should now show its name on the map if discovered.
+-> Now caches Reflection calls to improve on performance.
+-> Potentialy fixed a rare procgen crash in the abyss.
+-> Fixed a crash that occured if you had the abyss disabled and were fighting a fleet that werent technicly part of a starsystem.
+-> Fixed abyssal fleets pursuing you despite using story-point disengages.
+
+
+
+Version 3.0.6
+Save Compatible with 3.0.0+
+
+-> Slightly increased the amount of fleets spawned on photospheres in the Sea of Harmony (New saves only).
+-> Clarified parts of the Saint Units shipsystem description.
+-> Slightly reduced drop rates of items in the abyssal depths
+-> Slight adjustments to related entries in the codex.
+
+
+
+Version 3.0.5
+Save Compatible with 3.0.0+
+
+-> Made it more likely for larger [THREAT] to spawn in the Abyssal wastes (New saves only).
+-> Fixed an issue that made abyssal storms able to hit a fleet despite slow-moving at low fps.
+
+
+
+Version 3.0.4
+Save Compatible with 3.0.0+
+
+-> Fixed a crash that occured if the abyssal depths are disabled and the player entered combat.
+
+
+
+Version 3.0.3
+Save Compatible with 3.0.0+
+
+-> Heavily reduced the timeflow bonus of abyssal requiem.
+-> Fixed Which mod not working on certain items again.
+-> Decreased the droprate of alterations on abyssal droneships.
+
+
+
+Version 3.0.2
+Save Compatible with 3.0.0+
+
+-> Fixed an issue that could make ships with the Abyssal Grid hullmod unrecoverable.
+-> Fixed the Which mod feature not working on Individual Ship Blueprints.
+
+
+
+Version 3.0.1
+Save Compatible with 3.0.0
+
+-> Made the Saint Unit more likely to use its shipsystems against groups of smaller ships.
+-> Fixed "Abyssal Burn" not being disabled by transverse jump.
+-> Abyssal Wastes and Sea of Harmony now apply their change in color saturation in-combat too.
+
+
+
+Version 3.0.0
+Not save compatible
+
+-> Entirely reworked the abyssal depths.
+  --> Removed the dungeon concept, the depths are instead a single, large system now.
+  --> Added Biomes.
+  --> Added the ability to craft a limited amount of alterations and artifacts. 
+  --> Added (Abyssal) Threat.
+  --> Added the Sensor Darkness mechanic. Unexplored places are now not shown on the map.
+  --> Reduced the average and maximum damage done by abyssal storms.
+
+-> Artifacts are now accessed from the "Fleet" menu instead of intel.
+
+-> Added the "Which mod is this From" utility option.
+  --> Enabled by default, can be disabled in the configs.
+
+-> Added Metallic Paintjobs for baseline abyss ships, credits to Nia Tahl.
+-> Removed the Abyss Difficulty options for now, might be re-added later on.
+-> Removed the Abyssal Major Event.
+-> The "Computational Matrix" Artifact now provides +90 auto points instead if your using SiC.
+-> "Abyssal Adaptability" no longer provides a timeflow boost for ships with the Chronos Core.
+-> "Abyssal Crew Conversion" no longer allows integrating cores & acquiring their skills.
+-> Increased the cooldown of the "Abyssal Cloak" Shipsystem from 15s to 18s.
+-> Decreases the Morkoths Armor Rating from 1300 to 1200.
+-> Decreases the Morkoths Hitpoints from 18000 to 16000.
+-> Reduced the burst damage from Seadragon DEMs from 450 to 400.
+-> Adjusted the "Abyssal Symphony" to be less broken with ships that have infinite ppt, i.e OnslaughtMk1.
+-> Alterations, AI cores, Artifacts and Consumeable Industries should now display codex entries.
+-> Increased the size of the azazel by an additional segment and made its AI more aggressive.
+-> Slightly decreases the speed of all baseline abyssal ships.
+-> Fixed ships continuing to have limited tooltips despite their codex entries being unlocked.
+-> Potentialy fixed the gilgamesh not being recoverable.
+-> A bunch of other stuff.
+
+
+
+Version 3.0.0-Beta11
+Save compatible with beta10
+
+-> Fix for a (GPU) performance issue.
+-> Fixed two minor spelling mistakes.
+
+
+
+Version 3.0.0-Beta10
+Save compatible with beta9
+
+-> Added the miniboss for the sea of solitude.
+-> Increased the cost of integrating the abyssal grid.
+-> Alterations, AI cores, Artifacts and Consumeable Industries should now display codex entries.
+-> Using the "Abyssal Burn" ability in the depths now changes the fleets engine color to the color the biome its in.
+-> Fixed the abyss system not generating with a hyperspace anchor.
+-> Fixed an issue where ships in the mod were using the wrong sounds for opening/closing their shields.
+
+
+
+Version 3.0.0-Beta9
+Save compatible with beta8
+
+-> Added additional compatibility for more content for the Which Mod feature & configs for those in the settings.
+-> Slight performance improvements for the Artifact and WhichMod UI
+-> Fixed the Whichmod feature working on a few more things than supposed to.
+-> Made codex entries for RAT skills unlockable.
+-> The genesis now deals 25% less damage while in phase 2.
+
+
+
+Version 3.0.0-Beta8
+Save compatible with beta7
+
+-> A bunch of performance improvements.
+-> Fixed Abyssal Threat fleets being spammed with additional hullmods (Requires new save).
+-> Abyssal Threat should now have the correct commlink dialog.
+-> Slightly decreased the radius required for colossal photospheres to count as "Visited".
+-> Potentialy fixed a bug where the gabriels timeflow continued to effect the player when it should not.
+-> The alterations menu should no longer be openable for ships from the Symbiotic Void Creatures mod.
+-> Fixed the Droneship Objective not working.
+
+
+
+Version 3.0.0-Beta7
+Save compatible with beta1-6
+
+-> Added the "Which Mod is this From" utility.
+  -> Displays which mod a ship, weapon, fighter or hullmod is from at the bottom of the tooltip.
+  -> Enabled by default, can be disabled in the Lunalib configurations.
+
+
+
+Version 3.0.0-Beta6
+Save compatible with beta1-5
+
+-> Fixed a bug that teleported you to the abyss on save creation.
+-> Decreased the Sensor Range increase from Sensor Arrays from 100% to 50%.
+
+
+
+Version 3.0.0-Beta5
+Save compatible with beta1-4
+
+-> Added the "Abyssal Shipyard" encounter to the Sea of Tranquility (Requires a new save).
+  -> Rewards a sidegrade version of an existing ability.
+-> The Converted Sariel should no longer be able to spawn in the Abyssal Wastes.
+-> Fixed a visual bug that occured in the Primordial Waters on the radar.
+
+
+
+Version 3.0.0-Beta4
+Save compatible with beta1-3
+
+-> Adjusted one of the Saint Units variants to have voltaic PD.
+-> Changed the Prayers two small missile mounts to synergy mounts.
+-> Added an additional prayer variant, which the Saint will also fabricate together with the prior one.
+-> Fixed opposing threat fleets having an incompatible hullmod warning.
+
+
+
+Version 3.0.0-Beta3
+Save compatible with beta1-2
+
+-> Adjusted the "Abyssal Symphony" to be less broken with ships that have infinite ppt, i.e OnslaughtMk1.
+-> Gave Abyssal Threat its own design type, rather than just Threat.
+-> Abyssal XO should no longer spawn with the depth diver start, as you already have one.
+-> Fixed Abyssal Threat ships being able to turn omega ships in to fragments.
+-> The version checker file should now work for the beta.
+
+
+
+Version 3.0.0-Beta2
+Save compatible with beta1
+
+-> Fixed an issue that made the mod reliant on Second-in-Command
+
+
+
+Version 3.0.0-Beta1
+Not save compatible
+
+-> Entirely reworked the abyssal depths.
+  -> Removed the dungeon concept, the depths are instead a single, large system now.
+  -> Added Biomes.
+  -> Added the ability to craft a limited amount of alterations and artifacts. 
+  -> Added (Abyssal) Threat.
+  -> Added the Sensor Darkness mechanic.
+  -> Reduced the average and maximum damage done by abyssal storms.
+  -> Removed the abyssal major event.
+-> Artifacts are now accessed from the "Fleet" menu instead of intel.
+-> Added Metallic Paintjobs for baseline abyss ships, credits to Nia Tahl.
+-> Removed the Abyss Difficulty options for now, might be re-added later on.
+-> The "Computational Matrix" Artifact now provides +90 auto points instead if your using SiC.
+-> "Abyssal Adaptability" no longer provides a timeflow boost for ships with the Chronos Core.
+-> "Abyssal Crew Conversion" no longer allows integrating cores & acquiring their skills.
+-> Increased the cooldown of the "Abyssal Cloak" Shipsystem from 15s to 18s.
+-> Decreases the Morkoths Armor Rating from 1300 to 1200.
+-> Decreases the Morkoths Hitpoints from 18000 to 16000.
+-> Reduced the burst damage from Seadragon DEMs from 450 to 400.
+-> Increased the size of the azazel by an additional segment.
+-> Fixed some issues with the azazels behaviour.
+-> Slightly decreases the speed of all baseline abyssal ships.
+-> Fixed ships continuing to have limited tooltips despite their codex entries being unlocked.
+-> Potentialy fixed the gilgamesh not being recoverable.
+
+
+
+Version 2.6.10
+Save Compatible
+
+-> Fixed a crash sometimes occuring in the abyssal depths.
+
+
+
+Version 2.6.9
+Save Compatible
+
+-> Fixed some unintended ships being available through the arms dealer.
+
+
+
+Version 2.6.8
+Save Compatible
+
+-> Abyssal and Exotech ships can now be unlocked for the codex and simulator.
+-> Fixed Shipsystem Codex Entries having no text.
+-> Fixed Entries that didnt display due to errors.
+-> Removed Codex Entries that are not supposed to be visible.
+
+
+
+Version 2.6.7
+Save Compatible
+
+-> Fixed a crash that could happen from unlocking information about abyssal ships.
+
+
+
+Version 2.6.6
+Save Compatible
+
+-> Should hopefuly fix the bug that caused the NPC exoship to no longer be able to warp after an innitial warp, will only really be fixed on new saves though. This issue also caused crashes on some java versions.
+-> Fixed bought exotech ships spawning with 50% CR instead of 70%.
+
+
+
+Version 2.6.5
+Save Compatible
+
+-> Fixed a crash with the abyssal warning beacon intel entry.
+-> Potentialy fixed some weird crashes with the exoship warp.
+
+
+
+Version 2.6.4
+Save Compatible
+
+-> Fixed yet another crash with the escort planner.
+
+
+
+Version 2.6.3
+Save Compatible
+
+-> Fixed a crash with the Escort Planner that occured if the only ship deployed was an escorting ship.
+
+
+
+Version 2.6.2
+Save Compatible
+
+-> Added "Escort Planner", a button in refit that allows assigning ships to escort other ships by default.
+ -> Disabled by default. Need to enable it in the Lunalib Config.
+
+
+
+Version 2.6.1
+Save Compatible
+
+-> Fixed a crash that could occur when the Exoship warped.
+
+
+
+Version 2.6.0
+
+-> Updated to 0.98.
+-> Fixed Abyssal Crew Conversion and the Automated Conversion being blocked by Neural Shards.
+-> Fixed instances where officer levels were set as floats, causing issues with other mods.
+-> Compiled for Java 17 and Kotlin 2.0
+
+
+
+Version 2.5.15
+Save compatible with 2.4.x
+
+-> Made the raphael compatible with a change in a future version of SoTF.
+
+
+
+Version 2.5.14
+Save compatible with 2.4.x
+
+-> Fixed the UI indicator for the gilgamesh shield not being positioned correctly.
+-> Fixed a few issues that made certain shaders not render on older hardware.
+-> Fixed a bug that restocked the exoship after completing the questline.
+
+
+
+Version 2.5.13
+Save compatible with 2.4.x
+
+-> Made some adjustments to the exoships route to make it a bit likier to stumble in to the same system as it.
+-> Now generates atleast 3 Hyper-Nav Exotech Beacons per save. (Was a minimum of 2)
+-> Potentialy fixed the issue that made slow-moveing not prevent abyssal storm damage.
+
+
+
+Version 2.5.12
+Save compatible with 2.4.x
+
+-> Moved the rare abyss title screen to Lunalibs system.
+-> Fixed the gilgamesh being able to use shield hullmods, despite not receiving any effects from them.
+-> Fixed some issues with the Gilgamesh Shield UI.
+
+
+
+Version 2.5.11
+Save compatible with 2.4.x
+
+-> Increased the cost of the Starburst Microlauncher weapon from 12 to 14 OP.
+-> Fixed an issue that caused parts of the gilgamesh to potentialy render at the center of the combat map.
+-> Fixed an issue with the gilgamesh that caused it to repeatetly phase & unphase when not targeting any ship.
+-> Potentialy fixed an issue with the gilgamesh and some onHit weapon effects crashing (specificly one from Approlight)
+-> Fixed the Exotech Faction entry being displayed in saves where Exotech is disabled.
+
+
+
+Version 2.5.10
+Save compatible with 2.4.x
+
+-> More visual improvements on the Gilgamesh.
+-> Headquarters should now always be buildable on settlements.
+
+
+
+Version 2.5.9
+Save compatible with 2.4.x
+
+-> Severaly changed the stats of the Gilgamesh, it is now more agile, with better flux stats, but worse armor.
+-> Strenthened the Phaseshift shield in a bunch of ways.
+-> Improved how the AI uses the Gilgamesh a bit.
+-> Neural Shard officers are now always level 3, even if only geting 2 skills.
+-> Fixed ships that have been assigned a shard not updating their fleet stats immediately.
+
+
+
+Version 2.5.8
+Save compatible with 2.4.x
+
+-> The Gilgamesh now has a weak shield with limited hitpoints that it can charge by phasing.
+  -> Not entirely sure about this change yet, if il keep it probably depends on the feedback it gets.
+-> The Gilgamesh no longer comes with Phase Anchor built in.
+-> Neural Shard officers are now applied within the campaign, enabling them to trigger skills and hullmods that require an officer present.
+-> Fixed a crash with the Phase Drift skill.
+
+
+
+Version 2.5.7
+Save compatible with 2.4.x
+
+-> Exotech Alterations no longer restock.
+-> Re-Added the "Advanced Asteroid Mining" industry blueprint.
+-> Slightly improved the visuals of the genesis shipsystem.
+-> The Gilgameshes Gates should now match the ships timeflow at all times.
+-> The Expedition Hub Industry should now be buildable even if the planet you own isnt your factions planet.
+-> Fixed a rare crash with the Supernova.
+-> Slight performance improvement to the execution of the system handling hullmod.
+
+
+
+Version 2.5.6
+Save compatible with 2.4.x
+If you are using Nexerelin, requires the latest version of Nexerelin (v0.11.3) or later.
+
+-> Experimental Change that may fix the issue some people have where they take Abyssal Storm damage despite moving slowly.
+  -> Please tell me if this patch fixes that issue for you if you previously had it.
+-> Slightly increased the drop chance for seraph cores.
+-> Fixed an issue that made saves not compatible cross-platform and threw crashes if the settings.json devmode was active.
+-> Fixed the Azazel being able to take Storm/Solar Corona damage
+-> Fixed an issue that caused a nullpointer when entering Nexerelins Custom Start menu with Magiclib Achievements disabled.
+-> Fixed an issue with the Boss Core Integration that caused the ship to be seen as an automated ship.
+
+
+
+Version 2.5.5
+Save compatible with 2.4.x
+If you are using Nexerelin, requires the latest version of Nexerelin (v0.11.3) or later.
+
+-> The Abyss start now requires beating the abyss boss to be unlocked.
+-> Increased the PPT cost of the Abyssal Symphony skill.
+-> Fixed the Abyss custom start providing you with 1 less skill point than you are supposed to.
+
+
+
+Version 2.5.4
+Save compatible with 2.4.x
+If you use Second-in-Command, requires v1.2.6 or above, or it will likely crash
+
+-> The player-owned exoship now requires 1 Fuel/LY instead of 1.2 Fuel/LY. (New Save Only)
+-> Exoship Storage should be unlocked by default now, not requiring the 5000 credits payment.
+-> The Exotech Background now puts the Automated Arkas in to the Exoships storage.
+-> The Exotech Background now spawns you with an Exo-Processor.
+-> The Exotech Background now automaticly gives you the Second-in-Command executive officer.
+-> Slightly changed the theme of the abyssal custom start. Also no longer provides an additional crew conversion.
+-> The abyss start now provides you with an Abyssal officer instead of an Automation once when using Second-in-Command.
+-> The abyss start should no longer start you with low CR when using Second-in-Command.
+-> The abyss start now starts you at level 3.
+-> The abyss start now spawns you with a buffalo.
+-> Fixed the Primordial Sea Subsystem being able to overwrite the piloting officers personality.
+
+
+
+Version 2.5.3
+Save compatible with 2.4.x
+If you use Second-in-Command, requires v1.2.6 or above, or it will likely crash
+
+-> The "Standardised" skill can now only apply at most a 300 unit range increase.
+-> The Abaddons secondary effect should no longer effect normal projectiles.
+-> Fixed the Gabriel not having any preset variants in refit.
+
+
+
+Version 2.5.2
+Save compatible with 2.4.x
+If you use Second-in-Command, requires v1.2.6 or above, or it will likely crash
+
+-> Replaced the Abaddon's Lance Secondary Effect and improved its vfx
+-> Apollyon's End is now more flux efficient and has improved vfx. 
+-> Azazel's Blade is now more flux efficient and has 100 more range.
+-> Fixed an issue with the Gilgmesh that made missiles sometimes not target the right ship.
+
+
+
+Version 2.5.1
+Save compatible with 2.4.x
+If you use Second-in-Command, requires v1.2.6 or above, or it will likely crash
+
+-> The Gilgamesh now has Synergy Mounts instead of Energy, but missile weapons face harsher downsides on it.
+-> Made the Gilgamesh AI a bit less afraid to use its shipsystem.
+-> Made the "Dimensional Chain" skill base on the Wings base number of active fighters, rather than on how many are active.
+-> Moved the "Angelic Presence" skill down a tier, as it kind of competed with skills that you would always pick.
+-> Fixed a bug with the Gilgamesh shipsystem AI that made it consider allied missiles as important danger.
+
+
+
+Version 2.5.0
+Save compatible with 2.4.x
+If you use Second-in-Command, requires v1.2.6 or above, or it will likely crash
+
+-> Added the "Exotech" Second-in-Command Aptitude.
+  --> Acquire its officer by talking to Amelie.
+
+-> Fixed the "Mending" skill not working correctly.
+-> Fixed a few weapons not correctly reporting the source of their damage.
+-> Fixed some descriptions for unidentified abyssal ships being wrong.
+
+
+
+Version 2.4.9
+Save compatible with 2.4.x
+
+-> The "Abyssal Ships" skill now receives the same 10% min DP increase that the "Automated Ships" skill has aswell.
+-> Slightly reduced the size of abyssal fleets.
+-> Made Exotech Fighters AI disabled if controlled through the Synchronisation skill in Second-in-Command
+-> Fixed a rare crash with the "Forgotten Pact" skill.
+-> Fixed a crash when entering simulations from the missions screen.
+
+
+
+Version 2.4.8
+Save compatible with 2.4.x
+
+-> The Abyssal Executive Officer can now be found on a random lightsource in the main-branch of the abyss (path connected to the final system).
+-> Made the Arkas AI a bit more willing to use its shipsystem if its main weapons are missiles.
+-> Ships with the "Forgotten Pact" skill are forced to vent at high flux and receive some damage resistance while venting.
+-> Fixed two or more Gabriels being able to target the same opponent at the same time.
+-> Fixed an issue that caused the "Angelic Presence" skill to not apply all its bonuses.
+-> Fixed an issue that made certain types of abyssal fleets hostile to eachother for a few seconds
+-> Fixed a misleading tooltip on the abyssal crew conversion hullmod.
+-> Fixed a crash with the Abyss Boss Core.
+
+
+
+Version 2.4.7
+Save compatible with 2.4.x
+
+-> Gave some abyssal ships new damage textures.
+-> Another small change to potentialy avoid a freeze after the boss fight returns to the interaction screen.
+
+
+
+Version 2.4.6
+Save compatible with 2.4.x
+
+-> Made the "Abyssal Symphony" skill require 5 PPT per CR recovered instead of 4.
+-> Tried another thing that may help prevent the freeze during the abyss boss (again (again))
+
+
+
+Version 2.4.5
+Save compatible with 2.4.x
+
+-> The Exoship can now recharge at most 25% of its fuel per month instead of 20% (only on new saves)
+-> Performance improvement for the ai core cargo items, not sure if that entirely fixes the issues people had though.
+-> Made a few other performance adjustments.
+
+
+
+Version 2.4.4
+Save compatible with 2.4.x
+
+-> Fixed an issue where if the Hypatias shipsystem got canceled from an external source it would disable its AI.
+-> Fixed a performance issue with the Unique AI cores when viewed in the inventory.
+
+
+
+Version 2.4.3
+Save compatible with 2.4.x
+
+-> Re-Added the Exotech Background, which nows starts you off with the Questline completed.
+  - The Questline needs to have been done once to be unlocked, it should count it if you already did so before this update.
+-> Added Achievement for finising the Exotech Questline
+
+
+
+Version 2.4.2
+Save compatible with 2.4.x
+
+-> Fixed a crash that could occur on save load.
+
+
+
+Version 2.4.1
+Save compatible with 2.4.x
+
+-> Added the "Abyssal" Aptitude, which can be found near the end of the abyss when the "Second-in-command" mod is enabled.
+   - Second-in-Command needs to be updated to version 1.1.6 or newer.
+   - Requires a new save to spawn.
+
+-> Increased amount of weapons & ships available at a time in the exotech submarket.
+-> Fixed a bug that caused the current course to be cleared whenever an exoship warped.
+-> Fixed the Supernovas bounty being able to drop the fighter multiple times.
+-> Fixed a bug that made parts of the exotech questline dependent on nex.
+
+
+
+Version 2.4.0 - Exotech Overhaul
+Not Save compatible
+
+-> Reworked the Exotech Faction.
+-> Added a short questline and quest board to the Exotech Faction.
+-> Added the "Gilgamesh-class" Phase Superdestroyer.
+-> Added the "Hypatia-class" Frigate.
+-> Added the "Supernova-class" Superfighter. 
+-> Added the "Stardust Lance" and "Moonlight Lance" weapons.
+-> Added an Exoship Illustration (Credit: ANU)
+-> Removed the Exotech Background for now, will likely return in a new form later.
+-> The "Zero Day Exploit" background now require "CTRL" to be held in addition to the keybind.
+-> The Abyss boss ability now summons two more frigates, and the frigates hull and armor has been increased.
+-> The Gabriel no longer spawns with phase anchor.
+-> Fighters with shields will now have them temporarily disabled after the Gabriel phases.
+-> Most ships in the mod can now be reverse-engineered through industrial evolution.
+-> The Abyss Boss should no longer have combat chatter.
+-> Fixed Abyss fleets getting auto-fitted. This prevented aboleths from spawning with fighters.
+-> Implemented a bunch of grammatical fixes (Credit to BladedQueen & Nissa)
+-> Remade the mods normal maps, and removed the surface and material maps.
+-> Fixed an issue that made abyssal ships not recoverable with the "Second-in-Command" mod
+
+
+
+Version 2.3.1
+Save compatible
+
+-> Added special battle-entry burn drives for some ships.
+-> Added more detailed & individual descriptions for every abyss ship.
+-> Gave Exotech hullmods tooltips a simple background effect.
+-> Reduced the Gabriels Sensor Profile from 45 to 0.
+-> The Frigates spawned by the Genesis system should no longer be as focused on fighters as before.
+
+
+
+Version 2.3.0
+Not Save compatible
+
+-> Added the "Gabriel-Class" seraph phase cruiser to the abyssal depths.
+-> Reworked the generator for abyss fleets to provide a little more variety and makes difficulty more gradual.
+-> Improved the aesthetic of the area surrounding the abyssal depths entrance.
+-> Added a unique battle objective that appears in the abyss.
+-> A special abyss title screen is now displayed rarely on game launch or if you exit to title while in the abyssal depths.
+-> Nebula in abyss combat now actually share the correct texture and color as the campaign terrain.
+-> Asteroids no longer spawn in abyss combat.
+-> Added some tips.
+-> Moved the Abyss gate towards the hyperspace entrance.
+-> The Aboleth (F) should now be more aggressive.
+-> Fixed the Raphael missing its flux cost for entering phase.
+-> The "Maintaing Momentum" skill should no longer apply if the player switches to the officers ship in combat.
+-> The Primordial cores skill no longer actives if the ship is piloted by an officer with the Maintaining Momentum skill.
+
+
+
+Version 2.2.0
+Not Save compatible
+
+-> Added four weapons for the abyss boss that can also be acquired by the player by beating it.
+-> Fixed the "Personal Army" Background stat reseting its changes on save reload and other cases.
+-> Potentialy fixed, or atleast reduced, cases of Java23 freezing on the phase 2 transition of the abyss boss.
+-> Fixed a crash between the neuro core and neural shard background.
+
+
+
+Version 2.1.8
+Save compatible
+
+-> The zero day exploits background ability can now be canceled by pressing the key twice.
+-> Added a config for changing the keybind for Background abilities.
+-> Fixed a crash with the "Zero Day Exploit" Background
+-> Fixed the Bio skill reducing armor by 10%
+
+
+
+Version 2.1.7
+Save compatible
+
+-> Fixed odd issue with the Neural Shard Background when fighting together with allied fleets.
+-> Fixed being able to select modules from automated ships with the neural shard background.
+-> Neural Shard can now let you control Arkas-Phantoms.
+-> Fixed rare crash with abyssal ships.
+
+
+
+Version 2.1.6
+Save compatible
+
+-> Made ships fire seadragons more aggressively.
+-> Fixed bug where the tylos could be permanently captured with the zero day background.
+-> Controlled ships can no longer be commanded to retreat.
+
+
+
+Version 2.1.5
+Save compatible
+
+-> Fixed a crash with the "Zero Day Exploit" background.
+
+
+
+Version 2.1.4
+Maybe save compatible
+
+-> Added the "Personal Army" Background.
+-> Added the "Neural Shard" Background.
+-> Added the "Zero Day Exploit" Background.
+-> made Logistic Stats for large ships on the "Force in numbers" background worse.
+
+
+
+Version 2.1.3
+Likely not save compatible this time.
+
+-> Made the "High Value Target" background harsher.
+-> The "High Value Target" background can now spawn bounties even if you have zero hostilities.
+-> DEMs fired by Arkas clones are no longer unaffected by the damage reduction.
+-> Raphaels Grace stacks no longer reduce while phased.
+-> The "Force in numbers" background now also debuffs the fuel useage of large craft.
+
+
+
+Version 2.1.2
+Save compatible with 2.1.1
+
+-> Potentialy fixed an issue that caused weird behaviour with the tylos and leanira, but since i cant replicate it myself anyhow im not so sure.
+
+
+
+Version 2.1.1
+Save compatible with 2.1.0
+
+-> Added 3 new nexerelin backgrounds.
+-> Removed the exotech start and replaced it with a background.
+-> Fixed Artifacts and some skills not applying to modules on moduled ships.
+
+
+
+Version 2.1.0
+NOT SAVE COMPATIBLE WITH PRIOR VERSIONS
+
+-> Added a boss to the the end of the abyss.
+-> Added more variety to abyss terrain.
+-> Added a new variation of an abyss ship if you have "Secrets of the Frontiers" installed.
+-> Transverse Jump can no longer be used within the abyssal depths. You now need to leave it by flying outwards instead.
+-> The abyssal depths now let you re-enter them from where you last left.
+-> Unique AI Cores now have much more descriptive inventory tooltips.
+
+-> The "Abyssal Requiem" Skill has been changed to be rewarded from somewhere else.
+-> The "Abyssal Crew Conversion" is now a unique reward instead of a random drop.
+-> The Darkness terrain is now more gradual in applying its stat changes, rather than going from 0 to 25/50% immidiately.
+-> Added a small abyss related bar event.
+-> Added two magiclib achivements.
+-> Abyss Fleets now have fewer alterations on them than before.
+-> Added configs that allow enabling or disabling the spawning of "Relics of the Past" Stations or Conditions.
+-> Reduced the exo-tech partnership deed price from 5000 to 1000 tokens.
+-> The Exo-Processor is no longer available to buy.
+-> Arkas Phantoms now deal 50% less damage rather than 60%.
+-> Increased Arkas speed from 70 to 75.
+-> Increased Leanira Deployment cost from 26 to 30 and gave it another fighter bay.
+-> Increased Leaniras speed from 60 to 70.
+-> Leaniras Apheidas Platform now has stronger mounts & can move slightly.
+-> Reduced Tylos DP cost from 16 to 14.
+-> Reduced Thestia DP cost from 14 to 12.
+-> Increased thestia speed from 70 to 80.
+-> Increased the Dawnblades weapon, the "Dawnlance" from 200 to 250 dps.
+-> Other AI cores no longer have the 50% system cooldown debuff on abyssal ships.
+-> Performance improvement in Hyperspace and Abyss systems.
+-> Fixed Unstopable Force giving effects of Autonomous bays
+-> Fixed the Abyssal Doctrine Report being outdated.
+
+-> Bunch of other stuff & fixes i probably forgot.
+
+
+
+Version 2.0.9 Part 1
+
+-> Replaced every usage of Combat Activators with the new Magiclib Subsystems. 
+-> Requires the latest version of MagicLib.
+
+Version 2.0.8 Part 1
+NOT SAVE COMPATIBLE WITH PRIOR VERSIONS
+
+-> Fixed storms not appearing in the abyss.
+-> Opponent Ship AI should no longer focus on the Arkas Phantoms
+-> Slightly buffed the Protostars weapon.
+-> Reduced the DPS of the beam on the ceto
+-> Arkas Phantoms now render the ships phase-glow.
+-> Fixed two issues related to the autonomous bays hmod.
+-> Fixed an issue with the deployment speed of arkas phantoms if the game is paused right after activating the shipsystem
+
+
+
+Version 2.0.7 Part 1
+Not Save compatible with versions prior to 2.0.0
+
+-> Fixed the Abyssal Depths having the wrong background colors in combat.
+-> Fixed the damaged cryosleeper being visible without discovering it first on the map.
+-> Fixed the abyss custom start giving its starting ship an alteration as an smod.
+
+
+
+Version 2.0.6 Part 1
+Not Save compatible with versions prior to 2.0.0
+
+-> Reverted a change in the code of the tylos shipsystem, maybe fixing a specific crash when viewing the tactical map.
+
+
+
+Version 2.0.5 Part 1
+Not Save compatible with versions prior to 2.0.0
+
+-> Fixed Starsystems being able to spawn to close to the vanilla abyss
+-> Fixed some other Miscellanious generation issue.
+
+
+
+Version 2.0.4 Part 1
+Not Save compatible with versions prior to 2.0.0
+
+-> Fixed crash when entering sim with 2nd tylos state
+-> Fixed a crash with the arkas shipsystem
+
+
+
+Version 2.0.3 Part 1
+Not Save compatible with versions prior to 2.0.0
+
+-> Fixes a crash that happens when running out of fuel in hyperspace
+
+
+
+Version 2.0.2 Part 1
+Not Save compatible with versions prior to 2.0.0
+
+-> Fixed a Crash on Mac & Linux if you had the minimap enabled
+
+
+
+Version 2.0.1 Part 1
+Not Save compatible with versions prior to 2.0.0
+
+-> Fixed Crash when interacting with some entities.
+
+
+
+Version 2.0.0 Part 1
+Not Save compatible
+
+-> Updated to 0.97a.
+-> Renamed the "Abyss" to the "Abyssal Depths"
+-> Made the abyssal depths smaller.
+-> Reworked Hull-Alterations, they are no longer s-mods and their item is refunded on removal.
+-> Reduced the Droprate of Hull-Alterations in the abyssal depths.
+-> Reworked the Shipsystems of all baseline abyss ships.
+-> All baseline abyss ships have their previous built-in hullmod replaced with "Abyssal Adaptability", which provides buffs depending on which core that is installed.
+-> Reworked the stats of the Morkoth-Class, being now much less tanky and being much more maneuverable.
+-> Reworked the chronos and cosmos core skills.
+-> New Portraits for chronos and cosmos cores (Thanks to Selkie)
+-> Added a new interaction image for Abyss Entities (Thanks to Anulackk)
+-> Reworked the Ceto Fighter
+-> Both the Map and Radar now have more information of abyss enviroments displayed.
+-> Added some visual effects to abyss hullmods tooltips.
+-> Reduced the volume of the starburst launchers fire sound.
+-> Fixed an issue with the Arkas Shipsystem visuals
+-> Made the arkas accelerate & deccelerate a bit faster.
+-> Made the Arkas Phantoms more Aggressive.
+-> Lots of other changes im unable to remember.
+
+
+
+Version 1.9.5
+Save comp with 1.9.0-1.9.4, but not older versions or the 1.9.0 betas.
+
+-> Arkas shipsystem duration now slows down while phased, allowing it to make better use of the system.
+-> Arkas Phantoms now deal 60% less damage rather than 66% less.
+-> Reduced the Repair Time for Exo-Tech fighters.
+-> Both the Arkas and Tylos now destroy their fighters on shipsystem end/activation when they are equiped with converted hangars
+
+
+
+Version 1.9.4
+Save comp with 1.9.0-1.9.3, but not older versions or the 1.9.0 betas.
+
+-> Fixed the Exo-Tech custom start giving 1 less skillpoint than it should.
+-> Fixed an issue where the "Autonomous Bays" alteration can be installed on ships with only built-in fighters.
+-> Fixed a bug where the Arkas wouldnt despawn its phantoms if it exited the fight through phase-anchor.
+-> Fixed an issue that would cause the the tylos to not actually swap to its base state on death.
+-> Fixed an issue that caused the tylos to not be able to receive commands in the 2nd state. This causes another issue of the 2nd state being visible in the deployment window, but whatever.
+
+
+
+Version 1.9.3
+Save comp with 1.9.0-1.9.2, but not older versions or the 1.9.0 betas.
+
+-> Fixed an issue where the tylos was designated as a cruiser and not destroyer (how did i not notice that)
+-> Fixed Exo-Tech trade thinking you dont have enough tokens if the purchasing cost equals the amount of tokens you have.
+-> Settlement Selection & Icon now renders the planets glow-sprite, if it has one.
+-> Fixed a typo in a description.
+
+
+
+Version 1.9.2
+Save comp with 1.9.0 & 1.9.1, but not older versions or the 1.9.0 betas.
+
+-> Added an Exo-Tech custom start.
+-> Increased the flux capacity of the arkas-class.
+-> Fixed issue where the arkas shipsystem would spawn projectiles at a random location on activation.
+-> The tylos now changes back to its base state before dying to avoid issues.
+-> Arkas Phantoms no longer copy its inbuilt weapons as it felt a bit to spam inducing.
+-> The 2nd tylos state combat readiness is now based on the initial combat readiness of the 1st state, instead of always being 100%.
+-> Fixed a certain version of the tylos missing a hullmod.
+-> Fixed the 2nd state of the tylos not sharing the ships dmods.
+-> Another attempt at fixing a crash during procgen.
+-> Fixed an issue that caused lag after the tylos was disabled.
+
+
+
+Version 1.9.1
+Save comp with 1.9.0, but not older versions or the 1.9.0 betas.
+
+-> Fixed crash during procgen.
+-> Fixed an issue where the Dawnblades weapons ranges were mismatched, causing its beam to sometimes not fire.
+-> Fixed some weapons not being able to autofire after using the tylos shipsystem.
+-> The Tylos system AI will no longer switch if the other states CR or PPT is to low.
+
+
+
+Version 1.9.0
+Not save compatible with neither prior versions nor the 1.9.0 beta.
+
+-> Added "Frontiers", a feature allowing players to build a small settlement.
+-> Added a new Exo-Tech ship, the "Tylos", a phase destroyer.
+-> Added 4x Exo-Tech weapons.
+-> Added 3x Exo-Tech fighters.
+-> Added a new exo-tech related procgen encounter.
+-> The Arkas shipsystem has been reworked, and the ship now costs 35DP instead of 30DP to deploy.
+-> Gave the Apheidas-Platform slightly more flux capacity.
+-> Removed the "Exogrid Overload" hullmod. 
+-> Exo-Tech ships can now be recovered from defeated fleets, however their d-mods can not be restored without a partnership with the faction.
+-> Updated Exo-Tech variants to use their new content.
+
+-> Removed the "Commander" Nex-Background, as its concepts clash with what settlements are.
+-> Reworked how the Aftershadows from Thestias shipsystem work, should fix the crash issues with mods like VIC and potentialy other cases.
+-> Exo-Tech should no longer care about the players transponder.
+-> Slightly adjusted how Exoships decide where to go next.
+-> Fixed a crash that occured with the thestia class if another ship forced its shipsystem off.
+-> Fixed rare crash with the Exogrid Hullmod
+
+*Contains some changes & content that beta5 did not have yet
+
+
+
+Version 1.8.4
+Not save compatible :skull_emoji:. Patch isnt the largest, and im mostly releasing it now because i may start working on some larger things afterwards.
+
+-> Modified the Thestia-Class Sprite & Mounts.
+-> The Thestia-Class shipsystem now also works on returning fighters and bombers.
+-> Adjusted the Colors of some Exo-Tech shipsystems.
+-> "Autonomous Bays" Alteration now gives 3 random gamma-core skills instead of the base 3 skills that gammas usually have.
+-> Fixed an issue with VIC fighters and the Thestias shipsystem, there will still be a crash until VIC updates however.
+
+
+
+Version 1.8.3
+Might not be save compatible, not sure to be honest, use at your own risk.
+
+-> Exo-Tech markets and fleets now have their own encounter theme, thanks to haplo!
+-> Added a new Exo-Tech ship.
+-> Added another Exo-Tech trade in reward.
+-> Gave the mod a new icon in the LunaSettings menu.
+-> Removed the "Rename Station" option from the commander start, as it was bugged and the player can rename the station like any other colony anyways.
+-> Fixed an issue that allowed triggering abyssal bloodstreams effect on multiple ships.
+-> Fixed an issue caused by removing the autonomous bays hullmod while a fighter was installed in its slot.
+
+
+
+Version 1.8.2
+Not save compatible with prior versions.
+
+-> Simplified the Commander start and added a location picker for where the station is placed.
+-> Added new effects to some abyss weapons & adjusted their stats.
+-> Improved the Exoship teleport sequence.
+-> Fixed an issue where selecting the abyss start, then selecting another start would still possibly spawn you in the abyss.
+-> Fixed an issue where exo-tech ships in the player fleet could not be recovered.
+-> Fixed an issue with the exo-professors portrait not loading.
+
+
+
+Version 1.8.1
+
+-> Fixed a crash from a missing ressource.
+
+
+
+Version 1.8.0
+Not save compatible with prior versions.
+
+-> Added the "Exo-Tech" faction, a mini-faction that can be found moving through the fringe-sector. 
+-> It is still in beta, and only has 2 useable ships for now. Will get more over the next updates.
+-> The faction can not be started with.
+-> Added the Campaign "Exoships".
+-> Added another Exo-Tech ship. 
+-> Added 5 new items for trade with the faction.
+-> Changed Exocloak to a minimum speed of 60% instead of 75% at high flux.
+-> Increased Arkas Shipsystem cooldown from 10s to 15s
+-> Exocloak now displays the phase glows fade out over cooldown+out duration, instead of just out.
+-> Removed anomalous cache as its contents are now acquireable through other methods.
+
+-> Reworked how the abyss generates the connection between systems. 
+-> Abyss systems now have a big border around them, going over it teleports you out of the abyss.
+-> Abyss map can now be dragged with rightclick.
+-> Added a config to make the abyss brighter for screens where it would otherwise be hardly visible.
+-> Abyss Custom Start now spawns you in the abyss.
+-> Slightly increased abyss fleet sizes.
+-> Removed rift-system for now.
+-> Deep abyss should have more morkoths spawn again.
+-> Improved the performance for the abyss, removing a lot of functions that were called for systems the player wasnt even in.
+-> Fixed outdated description on the seraph core, mentioning that it can not be installed on capitals.
+-> Fixed issue where recovered abyss ships dont have the "no data" tag removed.
+
+-> Restructured the lunalib config window to make more sense with the amount of expansions in the mod.
+-> Expedition Hub no longer looks for planets in hidden systems and no longer ignores fleet quality.
+
+-> Fixed typo on Biomodifications skill
+-> Fixed Auto-Engineer crash.
+-> Potentialy fixed Maintaining-Momentum crash but it was so extremely rare that i dont even know if the mod was at fault.
+
+
+Version 1.7.4
+Not save compatible with prior versions.
+
+-> Made the first ship from the WIP mini-faction available as relics loot.
+-> Commander Background Station now gives production intel, and the duration of the production now depends on the amount ordered
+-> Comradery Background now has a proper portrait selector.
+-> Comradery Background will no longer display Combat-Chatter characters if they have a chance of 0.
+
+
+
+Version 1.7.3
+Probably Not save Compatible with versions before 1.7.2
+
+-> Commander background no longer requires the faction to not be decentralised.
+-> Fixed a crash that happened with the commander background if the selected faction has no markets of their own.
+-> Fixed a crash with the abyssal bloodstream skill
+
+
+
+Version 1.7.2
+Probably not save Compatible.
+
+-> Added 2 Character Backgrounds to the mod, which are new custom-start-esque options for the normal faction starts in Nexerelin.
+-> Requires the (currently) discord exclusive nex beta (v0.11.1 or newer) to appear.
+
+-> Fixed the Defensive Drone Condition being able to spawn capital ships like the Guardian.
+
+
+
+Version 1.7.1
+Not save Compatible.
+
+-> Revamped & Expanded a certain skill from the abyss.
+-> Salvage Entities & Other objects in the abyss now have an interaction theme.
+-> Adjusted some relics exploration content.
+-> Buffed the effect of the gravitational dynamo.
+-> A secret lil thing.
+
+
+
+Version 1.7.0
+May be save compatible, but not recommended as much would be missing or buggy.
+
+-> 2 new music pieces for the abyss (thanks to Haplogynae)
+-> Added some more variants for the abyss faction (thanks to Loyse)
+-> Added some more Relics Content.
+-> Changed the fleet behaviour around photospheres in the deep abyss a little.
+-> Removed "Development Station" from generation and moved its hull alterations to the abyss drop pool.
+-> Changed some writing in existing interactions and some descriptions, and added an additional log.
+-> Added a warning beacon around the abyss entrance.
+-> Abyssal Crew Conversion no longer permanently consume the core and now provide the cores skill. 
+-> Increased seraph core droprate.
+-> Improved the doctrine-intel a little more.
+-> Fleets now have limited tooltips for ship details until the doctrine is learned.
+-> Rebalanced the Engineered-Utopia condition.
+-> Fixed an issue that made it impossible to cheat in multiple conditions on to the same colony.
+-> Fixed an issue that showed that there is another unexplored connection in abyss systems with a rift.
+
+
+
+Version 1.6.6
+Not sure if its save compatible to be honest, not really recommended atleast.
+
+-> Added a core for abyssal seraphs.
+-> Added "Doctrine Reports", which are short intels that are available after defeating some of the abyss fleets, giving some information about them.
+-> Deep-Abyss fleets now have their a different indicator color and seraphs are shown in the front of the fleet view.
+-> Added one more log.
+-> Improved the vignette in the abyss to more dark at the edges but brighter in the center.
+-> Adjusted the spawn rates for relics conditions.
+-> Fixed an issue where the new planetary conditions did not show up on planets in some menus.
+
+
+
+Version 1.6.5
+
+-> Added lore-logs that can now be found in the abyss.
+-> Improved the darkness visuals of the abyss.
+-> Relics stations and conditions can now spawn in more themes than just ruins, but their spawn chance is still much higher for ruins.
+-> Relics conditions dont have a maximum cap on how often a specific condition can spawn anymore.
+-> Added a bit more to the abyss start.
+-> Adjusted the balance of some of the conditions.
+-> Fixed an issue between the military core condition and indevos military arrays
+-> Fixed an issue where the military core would get a new comm directory entry whenever the market was granted autonomy
+
+
+
+Version 1.6.4
+
+-> Added 4 new planetery conditions.
+-> Multiple of the new conditions are now able to appear on the same planet.
+-> Nerfed the fuel related condition.
+
+
+
+Version 1.6.3
+
+-> Replaced the reward of a certain station with a new one.
+-> Added 6 planet conditions that can randomly spawn in ruin systems.
+-> The Abyss cores now show their automated ship points cost in officer tooltip.
+-> Archivist Intel is now set to importand and added to the "Accepted" Intel by default.
+-> Archivist intel is no longer removed by default if the structure is still around.
+-> Added the "rat_dont_allow_for_skills" tag which allows mods to forbid officers from being picked for skill stations.
+
+
+
+Version 1.6.2
+
+-> Added new frigate to abyss faction.
+-> Added 3 new abyss weapons.
+-> added abyss custom start.
+-> Added more relics exploration content.
+-> Alterations are now sorted alphabeticly.
+-> Fixed archivist being able to provide missions to things she already gave you.
+
+
+
+Version 1.6.1
+
+-> Now generates a gate in to the first level of the abyss.
+-> The archivist can now appear in bar events even if you already accepted one of her missions.
+-> Reduced Alteration droprates a slight bit.
+-> Fixed the Abyss fighter being findable in random loot pools outside of the abyss.
+-> Fixed the Raguel-Class not having a variant to select from in refit.
+
+
+
+Version 1.6.0
+Not save compatible with prior versions.
+
+-> The Abyss is now accessed through the bottom left corner in Hyperspace.
+-> Reworked the generation of the abyss with new interactables and the removal of old ones.
+
+-> Added a new frigate for the abyss faction.
+-> Added a fighter for the abyss faction.
+-> The Fighter-Bay version of the Aboleth can now spawn.
+
+-> Removed Alteration Removers, can now remove alterations freely.
+-> Removed Instrument Items.
+-> "Abyssal Grid" now provides some EMP resistance.
+
+
+
+Version 1.5.11
+
+-> Abyss ships should now have default autofit variants to select from.
+-> Ordnance Overwrite no longer effects missile weapons.
+-> Punitive Cryostation now gives officers with a max level of 7 instead of 5.
+-> "Maintaining Momentum" now has a shorter duration on larger hulls.
+-> Nerfed Maverick to a 25% buff instead of 33%.
+-> Decreased the amount of weapon drops from the abyss.
+-> Fixed another issue with the Mass Interface skill.
+
+
+
+Version 1.5.10
+
+-> Fixed an issue that bloated save size.
+-> Fightersystem Alterations no longer have the fighters show some text when activated.
+
+Version 1.5.9
+
+-> Punitive Cryostation should no longer consider mercenaries for the maximum amount of officers in the fleet.
+-> Fixed "Mass Neural Interface" applying a 100 times multiplier for range instead of a flat 100 increase.
+-> Potentialy Fixed an issue that made the archivist guide you towards places that you already found.
+
+
+
+Version 1.5.8
+
+-> Added a bar event that helps with finding some of the relics content.
+-> Improved the officer picker for the skill stations to look visualy nicer and feel better to interact with.
+-> increased the size of some of the small relics stations by 50% to make them easier to spot.
+-> Fixed the "Refurbished" hullmod from being applicable to a ship that already has it.
+-> Fixed an issue where abyssal ships aquired with a crew conversion & no automated ships skill could not recover the ship.
+
+
+
+Version 1.5.7
+
+-> Fixed a bug with "Keeping Momentum" and nerfed it a slight bit.
+-> Fixed Assembly Station having more options than just ships.
+-> Fixed a crash with the augmented skill
+
+
+
+Version 1.5.6
+
+-> Downscaled the FP of abyssal fleets and made them have more randomness in fleet size.
+-> Certain relic stations now spawn more than once.
+-> "Augmented" skill no longer completely negates the Automated Points cost of a ship.
+-> Fixed an issue where Fleets defending an abyssal fracture were stronger than they should have been.
+-> Fixed a crash with a skill when transfering between ships.
+
+
+
+Version 1.5.5
+
+-> Added 3 new exploration stations to "Relics of the Past"
+-> Added 3 new alterations
+-> Added 2 new artifacts
+
+
+
+Version 1.5.4
+
+-> Fixed a crash happening with the abyss + relics of the past being loaded at the same time. If you loaded a save with both, opening the abyss map would crash.
+
+
+
+Version 1.5.3
+
+Added "Relics of the Past" expansion to the configs (active by default)
+Adds more procgen content to ruined systems, as of now it does not have a lot of content yet.
+
+-> Fixed an issue where certain objects like cryosleepers and motherships may have generated twice in a system.
+-> Fixed some things not scaling correctly during procgen.
+
+
+
+Version 1.5.2
+
+-> Fixed an issue that caused some debug code to be active.
+
+
+
+Version 1.5.1
+
+-> Fixed crash with Roiders
+
+
+
+Version 1.5.0
+
+-> Added "The Abyss" (Beta)
+The Abyss is a new and large-scale area to explore. It comes with a variety of unique ships, weapons and loot.
+
+-> Removed Chiral and Outpost systems.
+-> Removed Modular Weapons.
+-> Mini-map configs were moved to a new tab.
+-> Removed some joke options.
+
+
+
+Version 1.5.0 DiscordBeta11
+
+- Humpback/Haddock have been decreased to 600/700 range.
+- Humpback/Haddock effects now take longer/more weapons to build up, but their total effectiveness remains the same.
+- Increased humpbacks projectile speed and turn rate a bit.
+- Improved weapon descriptions a little.
+
+
+
+Version 1.5.0 DiscordBeta10
+Only available on the unofficial starsector discord server until its in a more polished state. 
+
+- Abyssal ships now have a new hullmod that buffs energy weapons.
+
+- "Abyssal Exploration" event is no longer repeatable.
+- Reduced the points required for the "Abyssal Exploration" Event.
+- "Into the Depths" event stage now adds +1 to the burn speed at which the fleet is considered moving slowly while in the Abyss.
+- "Ressourcefullnes" has been replaced with "Persistance", which reduces damage taken from Abyssal storms.
+- The last two milestones have been combined in to one instead.
+
+- Added descriptions to all weapons.
+- Added "Seadragon DEM Rack" weapon.
+- Gave haddock and humpack blasters their own weapon effects.
+- Recolored Asterias and Asterina to give off a more "Kinetic" feel.
+- Added missing tags to weapons, should prevent them from appearing in the wrong places and makes autofit possible.
+- lots of other weapon fixes & balance changes i am to lazy to list.
+
+- added another hull alteration.
+
+- Improved morkoth sprite.
+- Added graphics-lib normal maps for ships.
+- If progressive s-mods is installed, alterations now ignore the max-smod limit.
+- The unique AI cores can now be turned in to colony officials.
+- AI Conversion can be used on Capitals now, but requires 50% more supplies a month.
+- Fixed aboleths system breaking if the player pilots one and another aboleth is deployed as well.
+- Fixed Abyssal ships being able to spawn with smodded Safety Overrides.
+- Fixed some spelling.
+
+
+
+Version 1.5.0 DiscordBeta9
+Only available on the unofficial starsector discord server until its in a more polished state. 
+
+- added 8 weapons to the Abyssal faction
+- remade all ship loadouts and added some more variety (no more reaper spam)
+- probably completely unbalanced so make sure to ping me for dumb stuff.
+
+- revamped the "Abyssal Crew Conversion" Alterations to now be just one hullmod, with the core integration being a seperate option that now requires you to use either core.
+- derelict Abyssal ship wrecks now spawn in the Abyss.
+- wrecks from the Abyssal faction can be recovered with the Abysal Crew Conversion Alteration if the player doesnt have the automated ships skill.
+
+- added two more hull alteration.
+- improved a few sprites, notably replacing the aboleths phase glow with an revamped version.
+- hardmode now has slight player fleet scaling, which should make fighting them with overleveled fleets slightly more fun. The scaling however is rather limited.
+
+- several balance changes.
+- Abyssal fleets have a slightly lower sensor range now.
+- reduced the drop rates of instrument items and slightly reduced the drop rates of alterations.
+- fixed artifacts not applying to ships added to the fleet after the artifact has been activated.
+- fixed the mod accidentaly overwriting the radiant description.
+- fixed Abyssal core hullmod description missing on ships with dmods.
+- possibly fixed some of the ship glows appearing in combat if the ship isnt deployed.
+
+
+
+Version 1.5.0 DiscordBeta8
+Only available on the unofficial starsector discord server until its in a more polished state. 
+
+- improved the trigger that checks if your currently being targeted by a fleet when your salvaging things.
+- might have fixed some odd fleet behaviour.
+- some hullmod balance changes.
+- fixed some shipsystem ai bugs.
+- fixed a bug that made Abyssal fleets able to be positive in rep.
+
+
+
+Version 1.5.0 DiscordBeta7
+Only available on the unofficial starsector discord server until its in a more polished state. 
+
+This patch mostly reworks & rebalances most shipsystems for the Abyssal ships. They should now provide a bit more variety and have a stronger presence.
+
+- reworked shipsystems.
+- fixed an ui element being off by like 10 pixels.
+- improved some alteration descriptions.
+- fixed one of aboleths hardpoint mounts being set as a turret.
+- tweaked drop chances a bit.
+
+
+
+Version 1.5.0 DiscordBeta6
+Only available on the unofficial starsector discord server until its in a more polished state. 
+
+NOW REQUIRES LUNALIB 1.8.1
+
+- reworked hull alterations, they can now be added through the refit menu instead of rightclicking the item.
+- alterations that previously did not require an smod-slot now do.
+- slight alteration balance changes.
+- made combat photospheres less bright in combat and in low level systems.
+- reverted the combat background change, as it had some issues.
+- changed front the hardpoints on the merrow to be universal now.
+
+
+
+Version 1.5.0 DiscordBeta5
+Only available on the unofficial starsector discord server until its in a more polished state. 
+
+- buffed lower level zone fleets
+- low level Abyss zones can now have photospheres.
+- Abyss darkness now has an in-combat effect.
+- photospheres now render in combat.
+- battles close to photospheres are now a bit brighter.
+- combat background now moves similar to how it does in the campaign.
+- fixed some hullmods being dropped from fleets that shouldnt be dropped.
+
+
+
+Version 1.5.0 DiscordBeta4
+Only available on the unofficial starsector discord server until its in a more polished state. 
+
+- fixed a crash that happened occasionaly with some of the ships
+
+
+
+Version 1.5.0 DiscordBeta3
+Only available on the unofficial starsector discord server until its in a more polished state. 
+
+- fixed a crash with certain hullmods
+- fixed some items to not work correctly if the ship they are used on has dmods.
+- fixed some descriptions showing up where they shouldnt
+- fixed nex config not applying
+- adjusted amount of officers in fleets a bit more.
+
+
+
+Version 1.5.0 DiscordBeta2
+Only available on the unofficial starsector discord server until its in a more polished state. 
+
+- Abyss can now generate on existing saves when loading in to one with the Abyss setting active.
+- slightly increased fleet sizes and amount of officers per fleet.
+- changed aboleth OP from 150 to 160
+- fixed sellprice of some items.
+
+
+
+Version 1.5.0-DiscordBeta1
+Only available on the unofficial starsector discord server until its in a more polished state. 
+
+-> Added "The Abyss" (Beta)
+--> The Abyss is a new and large-scale area to explore. It comes with a variety of unique loot and fleet encounters.
+--> The Beta is still missing relatively much content, and feedback for anything in it is appreciated.
+
+-> Removed Chiral and Outpost systems.
+-> Removed Joke options before they become to stale.
+-> Fixed bug that made slipstreams not show up on any map if the mini-map was enabled.
+-> Improved performance of the mini-map.
+
+
+
+Version 1.4.2
+
+-> Added close button to the Modular Weapons panel.
+-> Reduced how much time unlocking a modular weapon modifier takes.
+-> Fixed Modifiers not saving.
+-> Fixed a crash that happened when interacting with tritach outposts
+
+
+
+Version 1.4.1
+
+-> Fixed a crash that occured when loading a save in hyperspace with the mini-map enabled.
+
+
+
+Version 1.4.0
+
+Likely not save compatible with prior versions.
+
+
+General
+-> Added "UI" Config Tab
+-> Moved "Modular Weapons" to its own config tab.
+-> Added "Mini-map" config, which allows replacing the campaign radar with a mini-map.
+
+-> Fixed Skills not appearing
+-> Fixed one of the skills breaking a save.
+
+
+Modular Weapons
+
+-> You can now enter a simulation from the weapon design screen, allowing you to playtest weapons before finalizing them.
+-> Weapons now have a crafting cost. 
+-> Modifiers now need to be unlocked through battles.
+-> Added a small "tutorial" screen.
+-> Added more modifiers.
+-> All Bodies have been changed to mimic the stats and looks of vanilla counterparts.
+-> Bodies now change the weapons sound.
+-> The designs selection now splits in to a "Finished Design" and "Unfinished Designs" list
+-> The "Guidance" modifier will now cause projectiles to home on to projectiles & fighters if the weapon is set as point-defense
+-> Added a devmode config which allows ignoring modifier unlocks and crafting costs.
+-> Improved modifier descriptions.
+-> Fixed refit screens flux cost being wrong for builds with limited ammo.
+-> Fixed "Acidic Payload" getting stronger over time.
+
+
+
+Version 1.3.4
+
+-> Updated to 0.96a
+-> Temporarily removed "Improved Misc" config options.
+
+Modular Weapons (Beta):
+-> All saved weapons will be wiped when updating (but hey atleast (probably) save compatible). This will also most definitly be the case for most future updates for the beta.
+
+-> Adjusted the UI to display modifiers in a more readable manner.
+-> The weapons should no longer show up in markets or at the arms dealer
+
+Known Issues:
+- Learned skills will currently not show up in the skill menu, they do however function.
+
+
+
+Version 1.3.3
+
+Modular Weapons (Beta):
+-> All saved weapons will be wiped when updating (but hey atleast (probably) save compatible). This will also most definitly be the case for most future updates for the beta.
+
+-> You can now select a weapon body.
+ -> Weapon Bodies Determine:
+ - Size
+ - Base Stats
+ - Max Capacity
+ - Sprite (Still just recolors)
+-> Bodies are very much not balanced at all, i really just selected values at random for the moment. They mostly exist for playtesting as of now.
+
+-> Made some slight UI improvements to make it easier to read.
+-> Renamed "Effects" to "Modifiers"
+-> Renamed "Budget" to "Capacity"
+-> Unnamed Weapons now have a number next to their name instead of all of them having the same one.
+-> The stat panels now show a lot more stats.
+-> Fixed weapon flux/sec display in the refit screen (for real this time)
+-> Removed "Defense Protocol", "High Value Munition" and "Burst" effects as they are now redundant.
+-> Changed some modifiers to make them fit in line with bodies.
+
+Version 1.3.2
+
+Modular Weapons (Beta):
+-> All saved weapons will be wiped when updating (but hey atleast (probably) save compatible). This will also most definitly be the case for most future updates for the beta.
+
+-> Added 4 new effects.
+-> Switched some calculations to how vanilla does them to make it less prone to errors.
+-> The fire-glow around the weapon now matches the selected color.
+-> Improved trail visual.
+-> Recolored the weapon to gray to be less distracting.
+-> Reduced OP from 20 to 14 (Wasnt actually supposed to be at 20 lol)
+
+Other:
+-> Fixed a skill not applying to frigates.
+
+
+
+Version 1.3.1
+
+Modular Weapons (Beta):
+-> All saved weapons will be wiped when updating (but hey atleast (probably) save compatible)
+
+-> Added a few new effects.
+-> Added 4 more design slots.
+-> Several balance adjustments. Not actually balanced, but there should be more options than just going for Burst now.
+-> Flux useage should now show on the refit screen.
+ - It still wont be perfectly accurate and there are some issues in the way of making the refit screen show the actual values.
+-> Effects are now sorted based on Type and then also based on Cost.
+-> Merged Quickloader and Autoloader.
+-> Explosion effect now changes its size based on projectile size.
+
+Misc:
+-> Fixed an issue that caused some config changes to not be loaded on save reload.
+
+
+
+Version 1.3.0 (Requires Lunalib 1.6.0 or higher)
+
+>Added Modular Weapons (Beta)
+Modular Weapons can be enabled from the configs. They are currenlty unbalanced, untested and unfinished, so they arent quite recommended if you want a quality playthrough, but feel like messing with a fun new thing.
+
+How they work:
+Once enabled, if you enter/reload a save, you will get the "Weapon Forge" ability. Use it to open the design screen. In there you can select different stats with a budget restraint for a weapon. Once you have something that you like, you can hold the "Finalize" button to finish the design. Once created, it cant be changed anymore for the entire duration of the save. Some may not like it, but it has its reason for API limitations that i am facing (Worst case you can still reload a prior save). Now you are able to craft the weapon and equip it. 
+
+The Lunalib Debug menu also has a snippet that lets you reset all modular weapons, which would let you go around the "Modify once per save" Restriction.
+
+Other:
+-> Fixed a crash with lunalib, now requirs version 1.6.0 of it.
+-> Fixed a crash related to the chiral system having no hyperspace anchor
+
+
+
+Version 1.2.0
+
+A decently sized patch that should improve the feel of outpost systems and adds some fun new content to them.
+
+-> Outpost systems may now include a new station with some custom loot.
+-> Outpost systems now only take up one system instead of an entire constellation (which it previously filled with filler).
+-> Updated the config descriptions to match how chiral and outpost systems function now.
+-> Outposts may spawn with the same faction multiple times now.
+-> The Loot from outpost planets now doesnt give blueprints that the player knows by default anymore.
+-> Fighting fleets in the outpost systems now has a way lower rep impact.
+-> The secondary shipsystem hullmods can now only be applied to frigates, destroyers and cruisers.
+-> The secondary shipsystems now require a story point to be installed.
+-> Possibly fixed a rare crash.
+
+
+
+Version 1.1.0
+
+Important: This mod now requires the "Combat Activators" Library Mod, and to avoid bugs it requires the 1.0.2 version or above
+
+-> Integrated "Combat Activators" mod.
+-> Added a new bit of exploration content for the chiral system
+-> Added a bar event that gives you the chiral systems location.
+
+-> Outposts now generate after remnants and ruins, to ensure that they will never take any space reserved to them.
+-> All chiral ships have have front-shields instead of omni shields, and have slightly reduced speeds.
+-> Fixed some wrong ship data for chiral ships.
+-> Fixed a station in the chiral system not being hostile
+-> Fixed a mistake in the chiral hull hullmod description.
+-> Might have Fixed a rare crash during the chiral system generation.
+-> Fixed some planets generating twice in the chiral system.
+
+
+
+Version 1.0.4
+
+-> The Skeleton has been nerfed
+
+
+
+Version 1.0.3
+
+-> The Skeleton Appears
+-> Added more version checker data.
+
+
+
+Version 1.0.2
+
+-> added configs allow you to modify the amount of hullmods and ship blueprints being dropped from salvaging.
+-> changed the System Count Modifier to use a Radio-Button instead (The config will reset upon updating)
+-> changed the icon for the mod in the settings panel.
+
+
+
+Version 1.0.1
+
+-> Updated to the latest Lunalib version.
+-> Moved some configs to another tab.
+
+
+
+Version 1.0
+
+-> Reworked Chiral Theme and added more content towards it.
+-> Streamlined the outpost planet interaction.
+-> Removed the blackmarket theme, as it was kind of limiting by design and didnt feel like it really fit in to the procedual aspect.
+-> Chiral themes now generate over another theme instead of taking up a constellation fully to themself.
+-> Added a config options for enabling silly/joke content, which currently adds one thing if enabled.
+-> Slightly nerfed Improved-Misc.
+-> Fixed an issue that caused Improved-Misc to sometimes not work correctly.
