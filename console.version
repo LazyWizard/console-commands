@@ -1,0 +1,16 @@
+{
+    "masterVersionFile": "https://raw.githubusercontent.com/LazyWizard/console-commands/refs/heads/master/console.version",
+    "modName": "Console Commands",
+    "modThreadId": 4106,
+    "modVersion": {
+        "major": 4,
+        "minor": 0,
+        "patch": 0
+    },
+	
+	#Link towards a direct download, fetched from the online version file
+	"directDownloadURL":"https://github.com/LazyWizard/console-commands/releases/latest/download/ConsoleCommands.zip",
+	
+	#Link towards a directly accessible text file, which can be used to display a changelog ingame, is fetched from the online version file.
+	"changelogURL":"https://raw.githubusercontent.com/LazyWizard/console-commands/refs/heads/main/changelog.txt",
+}

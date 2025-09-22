@@ -10,10 +10,7 @@ import com.fs.starfarer.api.campaign.SubmarketPlugin.TransferAction;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI;
 import com.fs.starfarer.api.impl.campaign.submarkets.BaseSubmarketPlugin;
-import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.CommandUtils;
-import org.lazywizard.console.CommonStrings;
-import org.lazywizard.console.Console;
+import org.lazywizard.console.*;
 import org.lazywizard.lazylib.MathUtils;
 
 import java.text.NumberFormat;
@@ -22,7 +19,7 @@ import java.util.*;
 // TODO: Potentially split into FindItem, FindWeapon, FindWing and FindHullmod?
 // FIXME: Prices are sometimes incorrect
 // FIXME: Stacks over 10k (ex: fuel) report incorrect totals
-public class FindItem implements BaseCommand
+public class FindItem implements BaseCommandWithSuggestion
 {
     private static float getPrice()
     {
@@ -280,5 +277,17 @@ public class FindItem implements BaseCommand
             return Float.compare(MathUtils.getDistanceSquared(token, t1),
                     MathUtils.getDistanceSquared(token, t2));
         }
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        if (parameter != 0) return new ArrayList<>();
+        List<String> suggestions = new ArrayList<>();
+
+        suggestions.addAll(Global.getSettings().getAllFighterWingSpecs().stream().map(it -> it.getId()).toList());
+        suggestions.addAll(Global.getSettings().getAllWeaponSpecs().stream().map(it -> it.getWeaponId()).toList());
+        suggestions.addAll(Global.getSettings().getAllCommoditySpecs().stream().map(it -> it.getId()).toList());
+
+        return suggestions;
     }
 }

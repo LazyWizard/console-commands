@@ -1,4 +1,8 @@
-@file:JvmName("ConsoleOverlay")
+@file:JvmName("LegacyConsoleOverlay")
+
+
+//LEGACY CONSOLE
+
 
 /**
  * This overlay seems to be an exercise in how many features I can cram in before
@@ -6,9 +10,10 @@
  * anyone who has to read this mess.
  */
 
-package org.lazywizard.console
+package org.lazywizard.console.overlay.legacy
 
 import com.fs.starfarer.api.Global
+import org.lazywizard.console.*
 import org.lazywizard.console.BaseCommand.CommandContext
 import org.lazywizard.console.ext.GPUInfo
 import org.lazywizard.console.ext.getGPUInfo
@@ -39,8 +44,8 @@ private var overlay: ConsoleOverlayInternal? = null
 fun show(context: CommandContext) = with(
     ConsoleOverlayInternal(
         context,
-        Console.getSettings().outputColor,
-        Console.getSettings().outputColor.darker()
+        ConsoleSettings.outputColor,
+        ConsoleSettings.outputColor.darker()
     )
 )
 {
@@ -82,10 +87,10 @@ internal fun getErrorString(err: Int) = when (err) {
 
 // TODO: This uses a lot of hardcoded numbers; need to refactor these into constants at some point
 // TODO: Move UI element instantiation into initializer to make size/position details clearer
-private class ConsoleOverlayInternal(private val context: CommandContext, mainColor: Color, secondaryColor: Color) :
+internal class ConsoleOverlayInternal(private val context: CommandContext, mainColor: Color, secondaryColor: Color) :
     ConsoleListener {
     private val settings = Console.getSettings()
-    private val bgTextureId = if (settings.showBackground) glGenTextures() else 0
+    private val bgTextureId = if (ConsoleSettings.showBackground) glGenTextures() else 0
     private val byteFormat = DecimalFormat("#,##0.#")
     private val memory = ManagementFactory.getMemoryMXBean()
     private val gpuInfo = getGPUInfo()
@@ -125,6 +130,11 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
     private var needsTextUpdate = true
     private var isOpen = false
     private var firstFrame = true
+
+    companion object {
+        @JvmStatic
+        public var lastCommand: String? = null
+    }
 
     private inner class Scrollbar(val width: Float, val barColor: Color, val bgColor: Color) {
         fun draw(x: Float, y: Float, height: Float) {
@@ -191,7 +201,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         // Save the current screen to a texture, to be used as the overlay background
         // This texture will be extremely low quality to save VRAM, but since the
         // background will be drawn darkened, the compression shouldn't be noticeable
-        if (settings.showBackground) {
+        if (ConsoleSettings.showBackground) {
             glGetError() // Clear existing error flag, if any
             val buffer = BufferUtils.createByteBuffer(width.toInt() * height.toInt() * 3)
             glReadPixels(0, 0, width.toInt(), height.toInt(), GL_RGB, GL_UNSIGNED_BYTE, buffer)
@@ -219,7 +229,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             if (err != GL_NO_ERROR) {
 
                 glDeleteTextures(bgTextureId)
-                settings.showBackground = false
+                ConsoleSettings.showBackground = false
                 Console.showMessage("Failed to size buffer for background image! Disabling console background (can be re-enabled with Settings command)...")
                 Console.showMessage("Error id: " + getErrorString(err))
             }
@@ -241,7 +251,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         }
 
         // Clean up background texture (if any) and clear any remaining input events
-        if (settings.showBackground) glDeleteTextures(bgTextureId)
+        if (ConsoleSettings.showBackground) glDeleteTextures(bgTextureId)
         while (Keyboard.next()) Keyboard.poll()
         while (Mouse.next()) Mouse.poll()
     }
@@ -354,10 +364,10 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
 
                 // Load last command when user presses up on keyboard
                 val keyPressed = Keyboard.getEventKey()
-                if (keyPressed == Keyboard.KEY_UP && Console.getLastCommand() != null) {
+                if (keyPressed == Keyboard.KEY_UP && lastCommand != null) {
                     lastInput = currentInput.toString()
                     lastIndex = currentIndex
-                    currentInput.replace(0, currentInput.length, Console.getLastCommand())
+                    currentInput.replace(0, currentInput.length, lastCommand)
                     currentIndex = currentInput.length
                     continue
                 }
@@ -374,8 +384,8 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                 // Tab auto-completes the current command
                 if (keyPressed == Keyboard.KEY_TAB) {
                     // Get just the current command (separator support complicates things)
-                    val startIndex = currentInput.lastIndexOf(settings.commandSeparator, currentIndex) + 1
-                    val tmp = currentInput.indexOf(settings.commandSeparator, startIndex)
+                    val startIndex = currentInput.lastIndexOf(ConsoleSettings.commandSeparator, currentIndex) + 1
+                    val tmp = currentInput.indexOf(ConsoleSettings.commandSeparator, startIndex)
                     val endIndex = if (tmp < 0) currentInput.length else tmp
                     val toIndex = currentInput.substring(startIndex, Math.max(startIndex, currentIndex))
                     val fullCommand = currentInput.substring(startIndex, endIndex)
@@ -454,7 +464,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                     if (ctrlDown) {
                         // Positional editing support
                         val lastSpace = currentInput.substring(0, currentIndex)
-                            .lastIndexOfAny(listOf(" ", settings.commandSeparator))
+                            .lastIndexOfAny(listOf(" ", ConsoleSettings.commandSeparator))
                         if (lastSpace == -1) currentInput.delete(0, currentIndex)
                         else currentInput.delete(lastSpace, currentIndex)
                     } else { // Regular backspace, delete last character
@@ -506,10 +516,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
                 currentIndex += currentInput.length - previousLength
                 currentIndex = Math.min(Math.max(0, currentIndex), currentInput.length)
             } catch (ex: ArrayIndexOutOfBoundsException) {
-                Console.showMessage(
-                    "Something went wrong with the input parser!"
-                            + "\nPlease send a copy of starsector.log to LazyWizard."
-                )
+                Console.showMessage("Something went wrong with the input parser!" + "\nPlease send a copy of starsector.log to LazyWizard.")
                 Log.error(
                     "Input dump:\n - Current input: $currentInput | Index:" +
                             " $currentIndex/${currentInput.length}\n - Last input: ${lastInput ?: "null"}" +
@@ -545,8 +552,8 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             if (currentIndex == currentInput.length) input.text = "$currentInput$cursor"
             else input.text = "${currentInput.substring(0, currentIndex)}$cursor${currentInput.substring(currentIndex)}"
 
-            if (settings.showCursorIndex) input.append(" | Index: $currentIndex/${currentInput.length}")
-            if (settings.showMemoryUsage) {
+            if (ConsoleSettings.showCursorIndex) input.append(" | Index: $currentIndex/${currentInput.length}")
+            if (ConsoleSettings.showMemoryUsage) {
                 ramText.text = getRAMText()
                 ramText.baseColor = getRAMColor(memory.heapMemoryUsage)
                 vramText.text = getVRAMText()
@@ -575,10 +582,10 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         glEnable(GL_BLEND)
 
         // Draw background
-        if (settings.showBackground) {
+        if (ConsoleSettings.showBackground) {
             // If the game crashes drawing the background, disable it on future runs
             if (firstFrame)
-                settings.showBackground = false
+                ConsoleSettings.showBackground = false
 
             glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
             glActiveTexture(GL_TEXTURE0)
@@ -600,7 +607,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
             // No crash on first frame, undo crash fallback
             if (firstFrame) {
                 firstFrame = false
-                settings.showBackground = true
+                ConsoleSettings.showBackground = true
             }
         }
 
@@ -632,7 +639,7 @@ private class ConsoleOverlayInternal(private val context: CommandContext, mainCo
         input.draw(30f + prompt.width, 15f + inputHeight)
 
         // Draw misc stats
-        if (settings.showMemoryUsage) {
+        if (ConsoleSettings.showMemoryUsage) {
             ramText.draw(50f, height - fontSize)
             vramText.draw(50f, height - fontSize * 2)
         }

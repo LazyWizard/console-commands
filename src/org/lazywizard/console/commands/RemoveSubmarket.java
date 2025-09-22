@@ -4,15 +4,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI;
 
 import org.lazywizard.console.BaseCommand;
+import org.lazywizard.console.BaseCommandWithSuggestion;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
 
-public class RemoveSubmarket implements BaseCommand {
+public class RemoveSubmarket implements BaseCommandWithSuggestion {
     @Override
     public CommandResult runCommand(String args, CommandContext context) {
         if (!context.isInMarket()) {
@@ -41,5 +43,11 @@ public class RemoveSubmarket implements BaseCommand {
         market.removeSubmarket(id);
         Console.showMessage("Removed submarket '" + id + "' from market '" + market.getName() + "'.");
         return CommandResult.SUCCESS;
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        if (parameter != 0) return new ArrayList<>();
+        return Global.getSettings().getAllSubmarketSpecs().stream().map(it -> it.getId()).toList();
     }
 }

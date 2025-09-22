@@ -5,6 +5,7 @@ import com.fs.starfarer.api.combat.ShipSystemAPI;
 import com.fs.starfarer.api.combat.WeaponAPI;
 import org.jetbrains.annotations.NotNull;
 import org.lazywizard.console.BaseCommand;
+import org.lazywizard.console.BaseCommandWithSuggestion;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.console.cheatmanager.CheatPlugin;
@@ -12,7 +13,10 @@ import org.lazywizard.console.cheatmanager.CheatTarget;
 import org.lazywizard.console.cheatmanager.CombatCheatManager;
 import org.lazywizard.lazylib.CollectionUtils;
 
-public class NoCooldown implements BaseCommand
+import java.util.ArrayList;
+import java.util.List;
+
+public class NoCooldown implements BaseCommandWithSuggestion
 {
     private static final String CHEAT_ID = "lw_console_nocooldown";
 
@@ -58,6 +62,19 @@ public class NoCooldown implements BaseCommand
                 new NoCooldownPlugin(), appliesTo);
         Console.showMessage("Cooldowns disabled for " + appliesTo.name() + ".");
         return CommandResult.SUCCESS;
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        List<String> suggestions = new ArrayList<>();
+        if (parameter != 0) return suggestions;
+
+        suggestions.add("PLAYER");
+        suggestions.add("FLEET");
+        suggestions.add("ENEMY");
+        suggestions.add("ALL");
+
+        return suggestions;
     }
 
     private static class NoCooldownPlugin extends CheatPlugin

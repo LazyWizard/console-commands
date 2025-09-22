@@ -5,14 +5,15 @@ import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
-import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.CommandUtils;
-import org.lazywizard.console.CommonStrings;
-import org.lazywizard.console.Console;
+import com.fs.starfarer.api.loading.WeaponSpecAPI;
+import org.lazywizard.console.*;
 import org.lwjgl.util.vector.Vector2f;
 
+import java.util.ArrayList;
+import java.util.List;
+
 // TODO: Polish system jumps (Meso request)
-public class GoTo implements BaseCommand
+public class GoTo implements BaseCommandWithSuggestion
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -73,5 +74,11 @@ public class GoTo implements BaseCommand
         playerFleet.addAssignment(FleetAssignment.GO_TO_LOCATION, token, 1f);
         Console.showMessage("Teleported to " + token.getFullName() + ".");
         return CommandResult.SUCCESS;
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        if (parameter != 0 || !context.isInCampaign()) return new ArrayList<>();
+        return Global.getSector().getCurrentLocation().getAllEntities().stream().map(it -> it.getName()).toList();
     }
 }

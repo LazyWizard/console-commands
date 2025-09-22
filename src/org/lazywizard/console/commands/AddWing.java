@@ -3,11 +3,16 @@ package org.lazywizard.console.commands;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CargoAPI;
 import org.lazywizard.console.BaseCommand;
+import org.lazywizard.console.BaseCommandWithSuggestion;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.lazywizard.console.CommandUtils.*;
 
-public class AddWing implements BaseCommand
+public class AddWing implements BaseCommandWithSuggestion
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -75,5 +80,11 @@ public class AddWing implements BaseCommand
         Console.showMessage("Added " + format(amount) + " of LPC "
                 + variant + " to player fleet.");
         return CommandResult.SUCCESS;
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        if (parameter != 0) return new ArrayList<>();
+        return Global.getSettings().getAllFighterWingSpecs().stream().map(it -> it.getId()).toList();
     }
 }

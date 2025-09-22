@@ -1,0 +1,20 @@
+{
+	
+	# Valid levels: OFF, FATAL, ERROR, WARN, INFO, DEBUG, ALL
+    # INFO and above will save all console output to Starsector.log!
+    "consoleLogLevel":INFO,           # Default: INFO
+	
+	
+	
+	
+	
+	###Legacy Console Settings
+	#Replace the modern version of the console UI with its previous legacy version.
+	"enableLegacyConsole":false,
+    # The path to the bitmap font used by the overlay, for the legacy console only.
+    "consoleFont":"graphics/fonts/jetbrains_mono_16.fnt", # The default console font
+    #"consoleFont":"graphics/fonts/scp_16.fnt", # The old console font (monospaced)
+    #"consoleFont":"graphics/fonts/insignia15LTaa.fnt", # Starsector's font (not monospaced)
+
+  
+}

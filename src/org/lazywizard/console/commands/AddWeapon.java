@@ -2,12 +2,18 @@ package org.lazywizard.console.commands;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CargoAPI;
+import com.fs.starfarer.api.loading.WeaponSpecAPI;
 import org.lazywizard.console.BaseCommand;
+import org.lazywizard.console.BaseCommandWithSuggestion;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.lazywizard.console.CommandUtils.*;
 
-public class AddWeapon implements BaseCommand
+public class AddWeapon implements BaseCommandWithSuggestion
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -76,5 +82,11 @@ public class AddWeapon implements BaseCommand
         }
 
         return CommandResult.SUCCESS;
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        if (parameter != 0) return new ArrayList<>();
+        return Global.getSettings().getAllWeaponSpecs().stream().map(WeaponSpecAPI::getWeaponId).toList();
     }
 }

@@ -4,15 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FactionAPI;
-import org.lazywizard.console.BaseCommand;
+import org.lazywizard.console.*;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
-import org.lazywizard.console.CommandUtils;
-import org.lazywizard.console.CommonStrings;
-import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
 
-public class AdjustRelation implements BaseCommand
+public class AdjustRelation implements BaseCommandWithSuggestion
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -112,5 +109,19 @@ public class AdjustRelation implements BaseCommand
                 + CommandUtils.getFactionName(towardsFaction) + " (ID: "
                 + towardsFaction.getId() + ") by " + newRelationship + ".");
         return CommandResult.SUCCESS;
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        List<String> suggestions = new ArrayList<>();
+
+        if (parameter == 0) {
+            suggestions.add("All");
+            suggestions.addAll(Global.getSettings().getAllFactionSpecs().stream().map(it -> it.getId()).toList());
+        } else if (parameter == 1) {
+            suggestions.addAll(Global.getSettings().getAllFactionSpecs().stream().map(it -> it.getId()).toList());
+        }
+
+        return suggestions;
     }
 }

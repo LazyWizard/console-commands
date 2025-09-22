@@ -3,6 +3,7 @@ package org.lazywizard.console.commands;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.combat.ShipHullSpecAPI;
 import com.fs.starfarer.api.combat.ShipVariantAPI;
 import com.fs.starfarer.api.impl.campaign.DerelictShipEntityPlugin.DerelictShipData;
 import com.fs.starfarer.api.impl.campaign.ids.Entities;
@@ -13,14 +14,18 @@ import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.ShipRecoverySp
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.ShipRecoverySpecial.ShipCondition;
 import com.fs.starfarer.api.util.Misc;
 import org.lazywizard.console.BaseCommand;
+import org.lazywizard.console.BaseCommandWithSuggestion;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.lazywizard.console.CommandUtils.findBestStringMatch;
 
-public class SpawnDerelict implements BaseCommand
+public class SpawnDerelict implements BaseCommandWithSuggestion
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -66,5 +71,17 @@ public class SpawnDerelict implements BaseCommand
         ship.setFixedLocation(spawnLoc.x, spawnLoc.y);
         Console.showMessage("Spawned derelict of hull '" + id + "'.");
         return CommandResult.SUCCESS;
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        if (parameter != 0) return new ArrayList<>();
+
+        ArrayList<String> suggestions = new ArrayList<>();
+
+        suggestions.addAll( Global.getSettings().getAllShipHullSpecs().stream().map(ShipHullSpecAPI::getBaseHullId).distinct().toList() );
+        suggestions.addAll( Global.getSettings().getAllVariantIds().stream().filter( it -> !it.endsWith("_Hull")).toList() );
+
+        return suggestions;
     }
 }

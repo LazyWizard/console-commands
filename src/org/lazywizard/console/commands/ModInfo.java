@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.lazywizard.console.BaseCommand;
+import org.lazywizard.console.BaseCommandWithSuggestion;
 import org.lazywizard.console.CommandUtils;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
@@ -17,7 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 // TODO: A lot of these static methods should be moved to LazyLib's ModUtils
-public class ModInfo implements BaseCommand
+public class ModInfo implements BaseCommandWithSuggestion
 {
     private static final Logger Log = Global.getLogger(ModInfo.class);
 
@@ -73,6 +74,12 @@ public class ModInfo implements BaseCommand
 
         Collections.sort(added, String.CASE_INSENSITIVE_ORDER);
         return added;
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        if (parameter != 0) return new ArrayList<>();
+        return Global.getSettings().getModManager().getEnabledModsCopy().stream().map(it -> it.getId()).toList();
     }
 
     public static List<String> getShipsAddedByMod(ModSpecAPI mod)

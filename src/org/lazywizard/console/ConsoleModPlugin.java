@@ -3,6 +3,7 @@ package org.lazywizard.console;
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.SettingsAPI;
+import com.fs.starfarer.api.ui.Fonts;
 import org.apache.log4j.Level;
 import org.lazywizard.console.commands.ReloadConsole;
 
@@ -51,6 +52,11 @@ public class ConsoleModPlugin extends BaseModPlugin
     @Override
     public void onApplicationLoad() throws Exception
     {
+
+        //Global.getSettings().loadTexture("graphics/fonts/jetbrains_mono_16_fixed.png");
+        //Global.getSettings().loadFont(CommonStrings.JETBRAINS_MONO_16_FIXED);
+        //Fonts.DEFAULT_SMALL = CommonStrings.JETBRAINS_MONO_16_FIXED;
+
         try
         {
             Global.getSettings().getScriptClassLoader().loadClass("org.lazywizard.lazylib.LazyLib");

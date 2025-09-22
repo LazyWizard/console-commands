@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.econ.Industry;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.loading.IndustrySpecAPI;
 import org.lazywizard.console.BaseCommand;
+import org.lazywizard.console.BaseCommandWithSuggestion;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
@@ -16,7 +17,7 @@ import java.util.List;
 
 import static org.lazywizard.console.CommandUtils.findBestIndustryMatch;
 
-public class AddIndustry implements BaseCommand
+public class AddIndustry implements BaseCommandWithSuggestion
 {
     public static List<IndustrySpecAPI> getUpgrades(IndustrySpecAPI spec)
     {
@@ -138,5 +139,11 @@ public class AddIndustry implements BaseCommand
             Console.showMessage("Added industry '" + id + "' to market '" + market.getName() + "'.");
             return CommandResult.SUCCESS;
         }
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        if (parameter != 0) return new ArrayList<>();
+        return Global.getSettings().getAllIndustrySpecs().stream().map(it -> it.getId()).toList();
     }
 }

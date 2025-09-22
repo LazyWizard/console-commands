@@ -1,17 +1,15 @@
 package org.lazywizard.console.commands;
 
+import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.FactionAPI;
-import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.CommandUtils;
-import org.lazywizard.console.CommonStrings;
-import org.lazywizard.console.Console;
+import org.lazywizard.console.*;
 import org.lazywizard.lazylib.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class FactionInfo implements BaseCommand
+public class FactionInfo implements BaseCommandWithSuggestion
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -93,5 +91,11 @@ public class FactionInfo implements BaseCommand
 
         Console.showMessage(sb.toString());
         return CommandResult.SUCCESS;
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        if (parameter != 0) return new ArrayList<>();
+        return Global.getSettings().getAllFactionSpecs().stream().map(it -> it.getId()).toList();
     }
 }

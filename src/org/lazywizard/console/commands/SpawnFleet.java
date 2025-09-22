@@ -9,10 +9,7 @@ import com.fs.starfarer.api.fleet.RepairTrackerAPI;
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3;
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3;
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes;
-import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.CommandUtils;
-import org.lazywizard.console.CommonStrings;
-import org.lazywizard.console.Console;
+import org.lazywizard.console.*;
 import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -22,7 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 // TODO: Rewrite to match vanilla fleet spawning behavior
-public class SpawnFleet implements BaseCommand
+public class SpawnFleet implements BaseCommandWithSuggestion
 {
     private static final String DEFAULT_NAME = " Fleet";
     private static final List<String> FLEET_TYPES;
@@ -145,5 +142,14 @@ public class SpawnFleet implements BaseCommand
             Console.showMessage("Unable to spawn generic patrol fleet for faction '" + faction.getId() + "'!");
             return CommandResult.ERROR;
         }
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        List<String> suggestions = new ArrayList<>();
+        if (parameter == 0) {
+            suggestions.addAll(Global.getSettings().getAllFactionSpecs().stream().map(it -> it.getId()).toList());
+        }
+        return suggestions;
     }
 }

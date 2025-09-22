@@ -13,6 +13,9 @@ import org.json.JSONObject;
 import org.lazywizard.console.BaseCommand.CommandContext;
 import org.lazywizard.console.BaseCommand.CommandResult;
 import org.lazywizard.console.CommandStore.StoredCommand;
+import org.lazywizard.console.overlay.legacy.LegacyConsoleOverlay;
+import org.lazywizard.console.overlay.legacy.ConsoleOverlayInternal;
+import org.lazywizard.console.overlay.v2.panels.ConsoleOverlayPanel;
 import org.lazywizard.lazylib.ui.FontException;
 import org.lazywizard.lazylib.ui.LazyFont;
 import org.lwjgl.opengl.Display;
@@ -36,9 +39,9 @@ public class Console
 {
     private static final Logger Log = Global.getLogger(Console.class);
     private static LazyFont font;
+    private static boolean useLegacyConsole = false;
     // Stores the output of the console until it can be displayed
     private static StringBuilder output = new StringBuilder();
-    private static String lastCommand;
     private static CommandContext currentContext = CommandContext.COMBAT_MISSION;
 
     /**
@@ -58,6 +61,7 @@ public class Console
         try
         {
             font = LazyFont.loadFont(settingsFile.getString("consoleFont"));
+            useLegacyConsole = settingsFile.getBoolean("enableLegacyConsole");
         }
         catch (FontException ex)
         {
@@ -80,24 +84,23 @@ public class Console
         return font;
     }
 
+    public static boolean isUseLegacyConsole() {
+        return useLegacyConsole;
+    }
+
     public static CommandContext getContext()
     {
         return currentContext;
     }
 
-    static String getLastCommand()
-    {
-        return lastCommand;
-    }
-
-    static float getFontSize()
+    public static float getFontSize()
     {
         return font.getBaseHeight() * getSettings().getFontScaling();
     }
 
-    static float getScrollbackWidth()
+    public static float getScrollbackWidth()
     {
-        return (Display.getWidth() * Display.getPixelScaleFactor()) - ConsoleOverlay.HORIZONTAL_MARGIN * 2f;
+        return (Display.getWidth() * Display.getPixelScaleFactor()) - LegacyConsoleOverlay.HORIZONTAL_MARGIN * 2f;
     }
 
     static Object getCommandTarget(CommandContext context)
@@ -123,6 +126,9 @@ public class Console
     {
         // Add message to the output queue
         output.append('\n').append(message);
+
+        ConsoleOverlayPanel.setOutput(ConsoleOverlayPanel.getOutput() + "\n" + message.toString() );
+
 
         // Also add to Starsector's log
         Log.log(logLevel, message);
@@ -267,7 +273,8 @@ public class Console
         if ("clear".equals(com))
         {
             output.setLength(0);
-            ConsoleOverlay.clear();
+            LegacyConsoleOverlay.clear();
+            ConsoleOverlayPanel.setOutput("");
             return CommandResult.SUCCESS;
         }
 
@@ -349,7 +356,7 @@ public class Console
         return result;
     }
 
-    static void parseInput(String rawInput, CommandContext context)
+    public static void parseInput(String rawInput, CommandContext context)
     {
         if (rawInput == null)
         {
@@ -408,7 +415,7 @@ public class Console
             }
         }
 
-        lastCommand = rawInput;
+        ConsoleOverlayInternal.setLastCommand(rawInput);
     }
 
     private static void showOutput(ConsoleListener listener)
@@ -419,7 +426,7 @@ public class Console
         }
     }
 
-    static void advance(ConsoleListener listener)
+    public static void advance(ConsoleListener listener)
     {
         currentContext = listener.getContext();
         showOutput(listener);

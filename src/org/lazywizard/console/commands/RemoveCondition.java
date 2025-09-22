@@ -1,9 +1,11 @@
 package org.lazywizard.console.commands;
 
+import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
 import com.fs.starfarer.api.characters.MarketConditionSpecAPI;
 import org.lazywizard.console.BaseCommand;
+import org.lazywizard.console.BaseCommandWithSuggestion;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
@@ -15,7 +17,7 @@ import java.util.regex.Pattern;
 
 import static org.lazywizard.console.CommandUtils.findBestMarketConditionMatch;
 
-public class RemoveCondition implements BaseCommand
+public class RemoveCondition implements BaseCommandWithSuggestion
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -65,5 +67,11 @@ public class RemoveCondition implements BaseCommand
         market.reapplyConditions();
         Console.showMessage("Removed condition '" + id + "' from market '" + market.getName() + "'.");
         return CommandResult.SUCCESS;
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        if (parameter != 0) return new ArrayList<>();
+        return Global.getSettings().getAllMarketConditionSpecs().stream().map(it -> it.getId()).toList();
     }
 }

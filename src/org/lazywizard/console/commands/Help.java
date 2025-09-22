@@ -1,15 +1,18 @@
 package org.lazywizard.console.commands;
 
+import com.fs.starfarer.api.Global;
 import org.lazywizard.console.BaseCommand;
+import org.lazywizard.console.BaseCommandWithSuggestion;
 import org.lazywizard.console.CommandStore;
 import org.lazywizard.console.CommandStore.StoredCommand;
 import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Help implements BaseCommand
+public class Help implements BaseCommandWithSuggestion
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -70,5 +73,11 @@ public class Help implements BaseCommand
             }
             return CommandResult.SUCCESS;
         }
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        if (parameter != 0) return new ArrayList<>();
+        return CommandStore.getLoadedCommands();
     }
 }

@@ -8,15 +8,12 @@ import com.fs.starfarer.api.campaign.FleetAssignment;
 import com.fs.starfarer.api.campaign.PlanetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
-import org.lazywizard.console.BaseCommand;
-import org.lazywizard.console.CommandUtils;
-import org.lazywizard.console.CommonStrings;
-import org.lazywizard.console.Console;
+import org.lazywizard.console.*;
 import org.lazywizard.lazylib.CollectionUtils;
 import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
 
-public class Jump implements BaseCommand
+public class Jump implements BaseCommandWithSuggestion
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
@@ -128,5 +125,11 @@ public class Jump implements BaseCommand
         player.addAssignment(FleetAssignment.GO_TO_LOCATION, destination, 1f);
         Console.showMessage("Jumped to " + destination.getContainingLocation().getName() + ".");
         return CommandResult.SUCCESS;
+    }
+
+    @Override
+    public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
+        if (parameter != 0 || !context.isInCampaign()) return new ArrayList<>();
+        return Global.getSector().getStarSystems().stream().map(it -> it.getBaseName()).toList();
     }
 }
