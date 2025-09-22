@@ -109,7 +109,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
     var logElement: TooltipMakerAPI? = null
 
-    var maxSavedCommands = 32
+    var maxSavedCommands = 30
     var lastCommand = "" //Remember current command and always display when going back to index 0
     var lastCommandIndex = 0
 
