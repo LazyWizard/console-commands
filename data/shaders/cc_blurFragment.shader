@@ -3,6 +3,8 @@
 uniform sampler2D tex;
 vec2 texCoord = gl_TexCoord[0].xy;
 uniform vec2 resolution;
+uniform bool displayBlur;
+uniform float darkening;
 
 //Shader from https://www.shadertoy.com/view/Xltfzj
 void main() {
@@ -24,22 +26,24 @@ void main() {
     //vec4 Color = texture(iChannel0, uv);
 	vec4 Color = texture2D(tex, texCoord);
     
-    // Blur calculations
-    for( float d=0.0; d<Pi; d+=Pi/Directions)
-    {
-		for(float i=1.0/Quality; i<=1.0; i+=1.0/Quality)
+    if (displayBlur) {
+        // Blur calculations
+        for( float d=0.0; d<Pi; d+=Pi/Directions)
         {
-			//Color += texture( iChannel0, uv+vec2(cos(d),sin(d))*Radius*i);		
-			Color += texture(tex, texCoord+vec2(cos(d),sin(d))*Radius*i);		
+		    for(float i=1.0/Quality; i<=1.0; i+=1.0/Quality)
+            {
+			    //Color += texture( iChannel0, uv+vec2(cos(d),sin(d))*Radius*i);		
+			    Color += texture(tex, texCoord+vec2(cos(d),sin(d))*Radius*i);		
+            }
         }
-    }
     
-    // Output to screen
-    Color /= Quality * Directions - 15.0;
+        // Output to screen
+        Color /= Quality * Directions - 15.0;
+    }
 
-    Color.r *= 0.1;
-    Color.g *= 0.1;
-    Color.b *= 0.1;
+    Color.r *= darkening;
+    Color.g *= darkening;
+    Color.b *= darkening;
 
 	gl_FragColor = Color;
 

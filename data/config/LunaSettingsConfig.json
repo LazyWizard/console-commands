@@ -1,0 +1,9 @@
+{
+    "lw_console": {
+
+        #If not "", loads a custom icon for the mod in the settings menu.
+        #The image has to be preloaded already or it will not appear. It can be loaded through a commodity, weapon, hullmod or ship, or by adding an entry in settings.json under graphics.
+        #The image can technicly be any size, 40x40 will see no adjustment however, but any larger or smaller sizes are fine aswell, important part is to keep the width and height the same.
+        "iconPath":"graphics/lw_console_icon.png", 
+    }
+}

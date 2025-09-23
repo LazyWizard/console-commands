@@ -33,6 +33,7 @@ import org.lazywizard.console.overlay.v2.font.ConsoleFont
 import org.lazywizard.console.overlay.v2.misc.ReflectionUtils
 import org.lazywizard.console.overlay.v2.misc.clearChildren
 import org.lazywizard.console.overlay.v2.misc.getParent
+import org.lazywizard.console.overlay.v2.settings.ConsoleV2Settings
 import org.lazywizard.lazylib.JSONUtils
 import org.lazywizard.lazylib.JSONUtils.CommonDataJSONObject
 import org.lazywizard.lazylib.MathUtils
@@ -81,8 +82,8 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
     var lastInput = input
     var cursorIndex = input.length
 
-    public var inputColor = Color(243, 245,  250)
-    public var logColor = Color(188, 190, 196)
+    public var inputColor = ConsoleV2Settings.textInputColor
+    public var logColor = ConsoleV2Settings.textOutputColor
     public var compileErrorColor = Misc.getNegativeHighlightColor()
     //public var logColor = Color(178, 180, 186)
     public var grayColor = Color(188, 190, 196)
@@ -120,7 +121,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
     var compileError = ""
 
     //For adding tab cycling support
-    var useTabCycling = false
+    var useTabCycling = ConsoleV2Settings.enableTabCycling
     var suggestionsForTabCycle = ArrayList<String>()
     var befAtTabCycle = ""
     var fullAtTabCycle = ""
@@ -431,9 +432,12 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         return !isToFarAway && matches.isNotEmpty() && (wordPartBeforeCursor.isNotBlank())/* && widthUntilWordStart != -1f*/
     }
 
-    var maxMatches = 20
-
+    var maxMatches = ConsoleV2Settings.maxAutocompletionsCount
     fun filterForMatches() : List<String> {
+
+        if (!ConsoleV2Settings.enableAutocomplete) {
+            return ArrayList()
+        }
 
         if (suggestionsForTabCycle.isNotEmpty()) {
             return suggestionsForTabCycle
@@ -783,6 +787,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                             usedArrowsDuringTabCycle = true
                         }
                         completionSelectorIndex -= 1;
+                        if (completionSelectorIndex < 0) completionSelectorIndex = filterForMatches().size-1
                     }
 
                     event.consume()
@@ -814,6 +819,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                             usedArrowsDuringTabCycle = true
                         }
                         completionSelectorIndex += 1;
+                        if (completionSelectorIndex > filterForMatches().size-1) completionSelectorIndex = 0
                     }
 
                     event.consume()
@@ -1180,6 +1186,11 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             ShaderLib.beginDraw(shader);
 
             GL20.glUniform2f(GL20.glGetUniformLocation(shader, "resolution"), ShaderLib.getInternalWidth().toFloat(), ShaderLib.getInternalHeight().toFloat())
+            GL20.glUniform1f(GL20.glGetUniformLocation(shader, "darkening"), 1f-ConsoleV2Settings.backgroundDarkening)
+
+            var blurInt = 1
+            if (!ConsoleV2Settings.enableBackgroundBlur) blurInt = 0
+            GL20.glUniform1i(GL20.glGetUniformLocation(shader, "displayBlur"), blurInt)
 
             GL13.glActiveTexture(GL13.GL_TEXTURE0 + 0);
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, ShaderLib.getScreenTexture());
@@ -1198,7 +1209,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         //No GraphicsLib or Disabled Shaders
         else {
             var color = Color.black
-            var alpha = 0.9f
+            var alpha = ConsoleV2Settings.backgroundDarkening
 
             GL11.glPushMatrix()
             GL11.glDisable(GL11.GL_TEXTURE_2D)

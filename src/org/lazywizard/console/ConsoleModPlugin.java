@@ -4,8 +4,11 @@ import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.SettingsAPI;
 import com.fs.starfarer.api.ui.Fonts;
+import lunalib.lunaSettings.LunaSettings;
 import org.apache.log4j.Level;
 import org.lazywizard.console.commands.ReloadConsole;
+import org.lazywizard.console.overlay.v2.settings.ConsoleLunaSettingsListener;
+import org.lazywizard.console.overlay.v2.settings.ConsoleV2Settings;
 
 import java.io.IOException;
 
@@ -53,9 +56,10 @@ public class ConsoleModPlugin extends BaseModPlugin
     public void onApplicationLoad() throws Exception
     {
 
-        //Global.getSettings().loadTexture("graphics/fonts/jetbrains_mono_16_fixed.png");
-        //Global.getSettings().loadFont(CommonStrings.JETBRAINS_MONO_16_FIXED);
-        //Fonts.DEFAULT_SMALL = CommonStrings.JETBRAINS_MONO_16_FIXED;
+        if (Global.getSettings().getModManager().isModEnabled("lunalib")) {
+            LunaSettings.addSettingsListener(new ConsoleLunaSettingsListener());
+            ConsoleV2Settings.update();
+        }
 
         try
         {

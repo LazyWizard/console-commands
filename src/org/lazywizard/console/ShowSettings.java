@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class ShowLegacySettings implements BaseCommand
+public class ShowSettings implements BaseCommand
 {
     @Override
     public CommandResult runCommand(String args, CommandContext context)
