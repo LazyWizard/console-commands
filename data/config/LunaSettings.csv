@@ -9,7 +9,7 @@ console_matchColor,Autocompletion text color,Color,#aadeff,,Adjust the color of 
 ,,,,,,,,
 console_autocompleteHeader,Autocomplete & Suggestion,Header,Autocomplete & Suggestion,,,,,
 console_enableAutocomplete,Enable autocomplete & suggestions,Boolean,true,,"When enabled, provides a window with suggestions for command and argument autocompletion. Can be scrolled with the up & down arrow keys, and completed with pressing tab.",,,
-console_contextSensitiveSuggestions,Context sensitive suggestions,Boolean,false,,"If enabled, will only provide suggestions for commands that can be used in the current state of the game (Campaign, Combat, etc)",,,
+console_contextSensitiveSuggestions,Context sensitive suggestions,Boolean,false,,"If enabled, will only provide suggestions for commands that can be used in the current state of the game (Campaign, Combat, AtMarket, etc)",,,
 console_enableTabCycling,Enable tab cycling,Boolean,false,,"When enabled, allows pressing tab to cycle through the available autocompletions one at a time. Enabling this option disables the automatic gap added after normal autocompletes.",,,
 console_autocompletionsCount,Autocompletions display count,Int,20,,Sets the maximum of how many suggestions can be displayed at a time.,5,40,
 ,,,,,,,,

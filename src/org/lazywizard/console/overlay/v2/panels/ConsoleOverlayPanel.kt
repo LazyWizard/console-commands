@@ -26,6 +26,9 @@ import org.lazywizard.console.CommandStore.StoredCommand
 import org.lazywizard.console.CommonStrings
 import org.lazywizard.console.Console
 import org.lazywizard.console.commands.RunCode
+import org.lazywizard.console.ext.GPUInfo
+import org.lazywizard.console.ext.getGPUInfo
+import org.lazywizard.console.ext.getGPUString
 import org.lazywizard.console.overlay.v2.elements.BaseConsoleElement
 import org.lazywizard.console.overlay.v2.elements.ConsoleTextElement
 import org.lazywizard.console.overlay.v2.elements.ConsoleTextfield
@@ -44,6 +47,9 @@ import org.lwjgl.opengl.GL11.GL_ONE
 import org.lwjgl.opengl.GL13
 import org.lwjgl.opengl.GL20
 import java.awt.Color
+import java.lang.management.ManagementFactory
+import java.lang.management.MemoryUsage
+import java.text.DecimalFormat
 import java.util.regex.Pattern
 
 class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPanelPlugin() {
@@ -54,8 +60,8 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         @JvmStatic
         var instance: ConsoleOverlayPanel? = null
         var shader = 0
-        internal var fontSmall = ConsoleFont.loadFont("graphics/fonts/jetbrains_mono_16.fnt")
-        internal var fontLarge = ConsoleFont.loadFont("graphics/fonts/jetbrains_mono_32.fnt")
+        internal lateinit var fontSmall: ConsoleFont
+        internal lateinit var fontLarge: ConsoleFont
         var graphicsLib = Global.getSettings().modManager.isModEnabled("shaderLib")
 
         @JvmStatic
@@ -63,16 +69,36 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
         var COMMAND_HISTORY_PATH = "config/lw_console_command_history.json"
         var COMMAND_HISTORY_KEY = "commandHistory"
-        private var lastCommandsJson: CommonDataJSONObject = JSONUtils.loadCommonJSON(COMMAND_HISTORY_PATH)
+        private lateinit var lastCommandsJson: CommonDataJSONObject
 
         @JvmStatic
         var lastCommands = ArrayList<String>()
 
-        init {
+        @JvmStatic
+        fun loadStaticVariables() {
+            lastCommandsJson = JSONUtils.loadCommonJSON(COMMAND_HISTORY_PATH)
             var lastCommandsArray = lastCommandsJson.optJSONArray(COMMAND_HISTORY_KEY) ?: JSONArray()
 
             for (i in 0 until lastCommandsArray.length()) {
                 lastCommands.add(lastCommandsArray.getString(i))
+            }
+
+            fontSmall = ConsoleFont.loadFont("graphics/fonts/jetbrains_mono_16.fnt")
+            fontLarge = ConsoleFont.loadFont("graphics/fonts/jetbrains_mono_32.fnt")
+
+            if (shader == 0 && graphicsLib) {
+                shader = ShaderLib.loadShader(
+                    Global.getSettings().loadText("data/shaders/cc_baseVertex.shader"),
+                    Global.getSettings().loadText("data/shaders/cc_blurFragment.shader"))
+                if (shader != 0) {
+                    GL20.glUseProgram(shader)
+
+                    GL20.glUniform1i(GL20.glGetUniformLocation(shader, "tex"), 0)
+
+                    GL20.glUseProgram(0)
+                } else {
+                    var test = ""
+                }
             }
         }
 
@@ -94,6 +120,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
     private var syntaxDraw = fontSmall.createText("", grayColor, 16f)
     private var cursorDraw = fontSmall.createText("|", Color.white, 16f)
     private var arrowDraw = fontLarge.createText(">", Misc.getBasePlayerColor(), 24f)
+    private var ramDraw = fontSmall.createText("", logColor, 12f)
 
     private var cursorBlinkInterval = IntervalUtil(0.5f, 0.5f)
     private var cursorBlink = true
@@ -128,6 +155,12 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
     var aftAtTabCycle = ""
     var usedArrowsDuringTabCycle = false
 
+    private val memory = ManagementFactory.getMemoryMXBean()
+    private val gpuInfo = getGPUInfo()
+    private val byteFormat = DecimalFormat("#,##0.#")
+    var memText = ""
+    var gpuText = ""
+
     init {
 
         instance = this
@@ -146,21 +179,9 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         syntaxDraw.blendSrc = GL_ONE
         cursorDraw.blendSrc = GL_ONE
         arrowDraw.blendSrc = GL_ONE
+        ramDraw.blendSrc = GL_ONE
 
-        if (shader == 0 && graphicsLib) {
-            shader = ShaderLib.loadShader(
-                Global.getSettings().loadText("data/shaders/cc_baseVertex.shader"),
-                Global.getSettings().loadText("data/shaders/cc_blurFragment.shader"))
-            if (shader != 0) {
-                GL20.glUseProgram(shader)
 
-                GL20.glUniform1i(GL20.glGetUniformLocation(shader, "tex"), 0)
-
-                GL20.glUseProgram(0)
-            } else {
-                var test = ""
-            }
-        }
 
         var state = AppDriver.getInstance().currentState
         var screenPanel = ReflectionUtils.invoke("getScreenPanel", state) as UIPanelAPI
@@ -182,6 +203,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         screenPanel.addComponent(parent)
         parent.position.inTL(0f, 0f)
 
+        setRamVramText()
         recreatePanel()
     }
 
@@ -191,7 +213,6 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         var width = parent.position.width
         var height = parent.position.height
         var widthOffset = 50f
-
 
         ///Background & Input Panel
         var backgroundPanel = parent.createCustomPanel(width, height, this)
@@ -217,9 +238,14 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         toDraw.blendSrc = GL_ONE
         toDraw.maxWidth = width-widthOffset
 
+        var logMaxHeight = height
+        if (ConsoleV2Settings.showRAMandVRAMusage) {
+            logMaxHeight -= 40
+        }
+
         var logOffsetY = 95f
         var totalLogHeight = toDraw.height
-        var logHeight = Math.min(height-logOffsetY, totalLogHeight)
+        var logHeight = Math.min(logMaxHeight-logOffsetY, totalLogHeight)
 
         var logPanel = parent.createCustomPanel(width-widthOffset, logHeight, null)
         parent.addComponent(logPanel)
@@ -392,6 +418,10 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             if (compileError.isNotBlank()) {
                 compileDraw.draw(textfield.x+innerSizeReduction, textfield.y+textfield.height-8-compileDraw.fontSize-inputDraw.height)
             }
+
+            if (ConsoleV2Settings.showRAMandVRAMusage) {
+                ramDraw.draw(widthOffset/2+5, height-ramDraw.height/2-5)
+            }
         }
 
         /*var label2 = textContainer.innerElement.addPara(content, 0f)
@@ -412,6 +442,8 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
         //println(getWords())
     }
+
+
 
     fun canShowSuggestions() : Boolean {
         var matches = filterForMatches()
@@ -455,8 +487,14 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         //Select command or argument suggestions
         var completions = ArrayList<String>()
         if (words.size == 1) {
-            var commands = CommandStore.getLoadedCommands()
-            completions.addAll(commands)
+
+            if (ConsoleV2Settings.useContextSensitiveSuggestions) {
+                var commands = CommandStore.getApplicableCommands(context)
+                completions.addAll(commands)
+            } else {
+                var commands = CommandStore.getLoadedCommands()
+                completions.addAll(commands)
+            }
         } else {
             var stored = getCommand()
             if (stored != null) {
@@ -593,7 +631,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         var word = getFullWordAtCursor()
         if (useTabCycling && fullAtTabCycle.isNotBlank()) word = fullAtTabCycle
 
-        var matchColor = Misc.getBasePlayerColor()
+        var matchColor = ConsoleV2Settings.matchColor
 
         var total = completionDraw.fontSize/2
         var textHeight = element.position.height - locationY - 1 + 5
@@ -691,8 +729,28 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         return partLeft+partRight
     }
 
+    fun setRamVramText() {
+        var needsUpdate = false
+        if (gpuText != getVRAMText()) {
+            gpuText = getVRAMText()
+            needsUpdate = true
+        }
+        if (memText != getRAMText()) {
+            memText = getRAMText()
+            needsUpdate = true
+        }
+
+        if (needsUpdate) {
+            ramDraw.text = ""
+            ramDraw.append("Memory used: ").append(memText, getRAMColor(memory.heapMemoryUsage)).append("\n", ramDraw.baseColor)
+            ramDraw.append("Free VRAM: ").append(gpuText, getVRAMColor(gpuInfo))
+        }
+    }
+
     override fun advance(amount: Float) {
         super.advance(amount)
+
+        //setRamVramText()
 
         previousScroller = logElement?.externalScroller?.yOffset ?: -1f
 
@@ -1251,6 +1309,49 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
         instance = null
         parent.getParent()?.removeComponent(parent)
+    }
+
+
+    private fun getRAMText(): String =
+        "${asString(memory.heapMemoryUsage)}"
+    //"  |  Non-heap: ${asString(memory.nonHeapMemoryUsage)}"
+
+    private fun getRAMColor(usage: MemoryUsage): Color = with(usage) {
+        val total = Math.max(max, committed)
+        val portion = used / total
+        val remaining = total - used
+        return when {
+            (remaining < (1024 * 1024 * 200) || portion > 0.9) -> Color.RED
+            (remaining < (1024 * 1024 * 400) || portion > 0.8) -> Color.YELLOW
+            else -> Color.GREEN
+        }
+    }
+
+    private fun getVRAMText(): String = "${asString(gpuInfo.getFreeVRAM())}"
+
+    private fun getVRAMColor(usage: GPUInfo): Color = with(usage)
+    {
+        val remaining = getFreeVRAM()
+        return when {
+            remaining <= 0 -> Color.RED
+            remaining < 1024 * 1024 * 50 -> Color.ORANGE
+            remaining < 1024 * 1024 * 100 -> Color.YELLOW
+            else -> Color.GREEN
+        }
+    }
+
+    private fun asString(size: Long): String {
+        if (size <= 0) return "0 B"
+        val units = arrayOf("B", "kB", "MB", "GB", "TB")
+        val digitGroups = (Math.log10(size.toDouble()) / Math.log10(1024.0)).toInt()
+        val digits = size / Math.pow(1024.0, digitGroups.toDouble())
+        return "${byteFormat.format(digits)} ${units[digitGroups]}"
+    }
+
+    // Creates readable memory usage string; ex: "8% (248.6 MB/2.9 GB)"
+    private fun asString(usage: MemoryUsage): String = with(usage) {
+        val percent = DecimalFormat.getPercentInstance().format(used / Math.max(max, committed).toDouble())
+        "$percent (${asString(used)}/${asString(Math.max(max, committed))})"
     }
 
     class PlaceholderDialog() : InteractionDialogPlugin {

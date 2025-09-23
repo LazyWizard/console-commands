@@ -7,6 +7,7 @@ import com.fs.starfarer.api.ui.Fonts;
 import lunalib.lunaSettings.LunaSettings;
 import org.apache.log4j.Level;
 import org.lazywizard.console.commands.ReloadConsole;
+import org.lazywizard.console.overlay.v2.panels.ConsoleOverlayPanel;
 import org.lazywizard.console.overlay.v2.settings.ConsoleLunaSettingsListener;
 import org.lazywizard.console.overlay.v2.settings.ConsoleV2Settings;
 
@@ -60,6 +61,8 @@ public class ConsoleModPlugin extends BaseModPlugin
             LunaSettings.addSettingsListener(new ConsoleLunaSettingsListener());
             ConsoleV2Settings.update();
         }
+
+        ConsoleOverlayPanel.loadStaticVariables();
 
         try
         {
