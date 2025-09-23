@@ -1,11 +1,22 @@
 package org.lazywizard.console.overlay.v2.settings
 
 import lunalib.lunaSettings.LunaSettings
+import org.lazywizard.console.ConsoleSettings
+import org.lazywizard.console.ConsoleSettings.Keystroke
+import org.lazywizard.console.ConsoleSettings.KeystrokePref
+import org.lwjgl.input.Keyboard
 import java.awt.Color
 
 object ConsoleV2Settings {
 
     var MOD_ID = "lw_console"
+
+   /* var consoleKeybind = Keyboard.KEY_BACK
+    var needsHoldCTRL = true
+    var needsHoldShift = false
+    var needsHoldAlt = false*/
+
+    var consoleKeybind = ConsoleSettings.Keystroke(Keyboard.KEY_BACK, true, false, false)
 
     var enableBackgroundBlur = true
     var backgroundDarkening = 0.9f
@@ -23,6 +34,18 @@ object ConsoleV2Settings {
     //Only called from the ConsoleLunaSettingsListener class
     @JvmStatic
     fun update() {
+
+        /*consoleKeybind = LunaSettings.getInt(MOD_ID, "console_openKeybind")!!
+        needsHoldCTRL = LunaSettings.getBoolean(MOD_ID, "console_holdCTRL")!!
+        needsHoldShift = LunaSettings.getBoolean(MOD_ID, "console_holdSHIFT")!!
+        needsHoldAlt = LunaSettings.getBoolean(MOD_ID, "console_holdALT")!!*/
+
+        consoleKeybind = Keystroke(LunaSettings.getInt(MOD_ID, "console_openKeybind")!!,
+            LunaSettings.getBoolean(MOD_ID, "console_holdCTRL")!!,
+            LunaSettings.getBoolean(MOD_ID, "console_holdALT")!!,
+            LunaSettings.getBoolean(MOD_ID, "console_holdSHIFT")!!
+        )
+
         enableBackgroundBlur = LunaSettings.getBoolean(MOD_ID, "console_enableBackgroundBlur")!!
         backgroundDarkening = LunaSettings.getFloat(MOD_ID, "console_backgroundDarkening")!!
         textInputColor = LunaSettings.getColor(MOD_ID, "console_inputTextColor")!!

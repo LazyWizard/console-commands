@@ -29,7 +29,6 @@ public class ShowSettings implements BaseCommand
         if (ConsoleOverlayPanel.getInstance() != null) {
             Console.showMessage("Error: This command only works within the legacy console");
             return CommandResult.ERROR;
-
         }
 
         if (!context.isInCampaign())

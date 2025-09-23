@@ -1,5 +1,11 @@
 fieldID,fieldName,fieldType,defaultValue,secondaryValue,fieldDescription,minValue,maxValue,tab
 ,,,,,,,,
+console_keybindsHeader,Keybinds,Header,Keybinds,,,,,
+console_openKeybind,Console Keybind,Keycode,14,,Key that should be pressed to open the console. ,,,
+console_holdCTRL,Require Ctrl,Boolean,true,,"If enabled, requires CTRL to be held in addition to the keybind.",,,
+console_holdSHIFT,Require Shift,Boolean,false,,"If enabled, requires Shift to be held in addition to the keybind.",,,
+console_holdALT,Require Alt,Boolean,false,,"If enabled, requires Alt to be held in addition to the keybind.",,,
+,,,,,,,,
 console_uiHeader,UI,Header,UI,,,,,
 console_enableBackgroundBlur,Enable blur,Boolean,true,,Enable the blur that is applied to everything behind the console. This blur is only displayed when [GraphicsLib] is active and its [enableShaders] config is set to true.,,,
 console_backgroundDarkening,Background darkening,Double,0.9,,"How strongly the background is darkened while the console is open. 1 is fully dark, 0 is completely visible",0,1,
@@ -16,3 +22,8 @@ console_autocompletionsCount,Autocompletions display count,Int,20,,Sets the maxi
 console_MiscHeader,Misc,Header,Misc,,,,,
 console_showRAMAndVram,Show RAM/VRAM usage,Boolean,true,,Display RAM and VRAM usage in the Console.,,,
 ,,,,,,,,
+console_legacyHeader,Legacy Console,Header,Legacy Console,,,,,
+console_legacyText,Legacy Console,Text,"If you want to use the legacy console, it can be enabled in [""ConsoleCommands/data/console/console_settings.json""] by changing [""enableLegacyConsole""] from false to true. 
+
+The legacy console does not use any settings from this screen. 
+Configure it with the LegacyConsoleSettings command in the console.",,,,,

@@ -1,5 +1,18 @@
 Version 4.0.0
 
+- Added optional lunalib settings support with a bunch of settings to customise the new UI.
+- Added tab cycling (disbled by default).
+- Added context sentitive command suggestions. (disabled by default)
+- The up/down keys will now loop through autocompletions.
+- Readded the RAM/VRAM display.
+- Reverted the name of a class to fix an issue with ShipBrowser.
+- Moved a few things to on application load, should prevent a small lag when first opening the console.
+- Fixed an issue where sometimes the same command would be added to the command history twice in a row.
+
+
+
+Version 4.0.0
+
 - Complete visual overhaul of the legacy UI.
 - Added command and argument autocompletion & suggestion.
 - Added syntax hints for command parameters

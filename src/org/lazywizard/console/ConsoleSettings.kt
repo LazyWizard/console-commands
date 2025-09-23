@@ -144,7 +144,7 @@ object ConsoleSettings {
         }
     }
 
-    private class KeystrokePref(val key: String, default: Keystroke) {
+    public class KeystrokePref(val key: String, default: Keystroke) {
         private var field = parseKeystroke(settings.optString(key, asString(default)))
 
         private fun asString(keystroke: Keystroke) =

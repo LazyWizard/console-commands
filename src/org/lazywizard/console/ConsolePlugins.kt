@@ -10,28 +10,24 @@ import org.lazywizard.console.BaseCommand.CommandContext
 import org.lazywizard.console.overlay.legacy.addToHistory
 import org.lazywizard.console.overlay.legacy.show
 import org.lazywizard.console.overlay.v2.panels.ConsoleOverlayPanel
+import org.lazywizard.console.overlay.v2.settings.ConsoleV2Settings
 import org.lazywizard.lazylib.StringUtils
 import java.util.*
 
 internal class ConsoleCampaignListener : CampaignInputListener, ConsoleListener {
-    override fun getListenerInputPriority(): Int = 9999
+    override fun getListenerInputPriority(): Int = Int.MAX_VALUE-10
 
     override fun processCampaignInputPreCore(events: MutableList<InputEventAPI>) {
         if (Global.getSector().campaignUI.isShowingMenu) return
 
-
-        if (ConsoleOverlayPanel.instance == null && Console.getSettings().consoleSummonKey.isPressed(events)) {
-            if (Console.isUseLegacyConsole()) {
-                show(context)
-            }
-            else if (ConsoleOverlayPanel.instance == null) {
-                ConsoleOverlayPanel(context)
-            }
+        if (ConsoleOverlayPanel.instance == null && Console.isUseLegacyConsole() && Console.getSettings().consoleSummonKey.isPressed(events)) {
+            show(context)
             events.clear()
         }
-
-
-
+        else if (ConsoleOverlayPanel.instance == null && ConsoleV2Settings.consoleKeybind.isPressed(events)) {
+            ConsoleOverlayPanel(context)
+            events.clear()
+        }
 
         Console.advance(this)
     }
@@ -64,13 +60,12 @@ internal class ConsoleCombatListener : BaseEveryFrameCombatPlugin(), ConsoleList
         if (!::context.isInitialized || Global.getCombatEngine().playerShip == null) return
 
 
-        if (ConsoleOverlayPanel.instance == null && Console.getSettings().consoleSummonKey.isPressed(events)) {
-            if (Console.isUseLegacyConsole()) {
-                show(context)
-            }
-            else if (ConsoleOverlayPanel.instance == null) {
-                ConsoleOverlayPanel(context)
-            }
+        if (ConsoleOverlayPanel.instance == null && Console.isUseLegacyConsole() && Console.getSettings().consoleSummonKey.isPressed(events)) {
+            show(context)
+            events.clear()
+        }
+        else if (ConsoleOverlayPanel.instance == null && ConsoleV2Settings.consoleKeybind.isPressed(events)) {
+            ConsoleOverlayPanel(context)
             events.clear()
         }
 
