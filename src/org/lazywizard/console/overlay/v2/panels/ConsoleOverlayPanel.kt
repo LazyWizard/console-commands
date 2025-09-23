@@ -1024,7 +1024,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
                         //Only save if the command entered isnt equal to the one before, and those that arent blank
                         lastCommandIndex = 0
-                        if (lastCommands.getOrNull(0) != commandInput && commandInput.isNotBlank() && !commandInput.lowercase().startsWith("history")) {
+                        if ( (lastCommands.getOrNull(0)?.trim() != commandInput.trim()) && commandInput.isNotBlank() && !commandInput.lowercase().startsWith("history")) {
                             lastCommands.add(0, commandInput)
                             if (lastCommands.size > maxSavedCommands) {
                                 lastCommands.removeLast()
