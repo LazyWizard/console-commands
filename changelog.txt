@@ -2,7 +2,7 @@ Version 4.0.0
 
 - Added optional lunalib settings support with a bunch of settings to customise the new UI.
 - Added tab cycling (disbled by default).
-- Added context sentitive command suggestions. (disabled by default)
+- Added context sentitive command suggestions (disabled by default).
 - The up/down keys will now loop through autocompletions.
 - Readded the RAM/VRAM display.
 - Reverted the name of a class to fix an issue with ShipBrowser.
