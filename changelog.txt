@@ -1,4 +1,13 @@
-Version 4.0.0
+Version 4.0.2
+
+- Goto, Jump and OpenMarket now use ID suggestions instead of name ones.
+- The Goto commands suggestions now filter out some entities that should never be of interest.
+- Fixed a crash with the goto command.
+- Fixed an issue where the console could no longer be opened after using the EndCombat command.
+
+
+
+Version 4.0.1
 
 - Added optional lunalib settings support with a bunch of settings to customise the new UI.
 - Added tab cycling (disbled by default).

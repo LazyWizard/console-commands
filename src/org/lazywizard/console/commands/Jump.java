@@ -130,6 +130,6 @@ public class Jump implements BaseCommandWithSuggestion
     @Override
     public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
         if (parameter != 0 || !context.isInCampaign()) return new ArrayList<>();
-        return Global.getSector().getStarSystems().stream().map(it -> it.getBaseName()).toList();
+        return Global.getSector().getStarSystems().stream().map(it -> it.getId()).toList();
     }
 }

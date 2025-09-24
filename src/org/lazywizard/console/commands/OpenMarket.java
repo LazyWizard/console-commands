@@ -47,6 +47,6 @@ public class OpenMarket implements BaseCommandWithSuggestion
     @Override
     public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
         if (parameter != 0) return new ArrayList<>();
-        return Global.getSector().getEconomy().getMarketsCopy().stream().map(it -> it.getName()).toList();
+        return Global.getSector().getEconomy().getMarketsCopy().stream().map(it -> it.getId()).toList();
     }
 }

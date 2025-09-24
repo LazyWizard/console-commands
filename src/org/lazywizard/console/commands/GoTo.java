@@ -79,6 +79,12 @@ public class GoTo implements BaseCommandWithSuggestion
     @Override
     public List<String> getSuggestions(int parameter, List<String> previous, CommandContext context) {
         if (parameter != 0 || !context.isInCampaign()) return new ArrayList<>();
-        return Global.getSector().getCurrentLocation().getAllEntities().stream().map(it -> it.getName()).toList();
+
+        List<String> blacklist = List.of("magiclib_campaign_trail_custom_entity", "nex_mining_gui_dummy", "luna_campaign_renderer", "orbital_junk");
+
+        return Global.getSector().getCurrentLocation().getAllEntities().stream()
+                .filter(it -> !blacklist.contains(it.getCustomEntitySpec() != null ? it.getCustomEntitySpec().getId() : it.getId() ))
+                .map(it -> it.getId())
+                .toList();
     }
 }

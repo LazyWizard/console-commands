@@ -6,6 +6,7 @@ import com.fs.starfarer.api.mission.FleetSide;
 import org.lazywizard.console.BaseCommand;
 import org.lazywizard.console.CommonStrings;
 import org.lazywizard.console.Console;
+import org.lazywizard.console.overlay.v2.panels.ConsoleOverlayPanel;
 import org.lazywizard.lazylib.CollectionUtils;
 
 public class EndCombat implements BaseCommand
@@ -46,6 +47,9 @@ public class EndCombat implements BaseCommand
             }
         }
 
+        if (ConsoleOverlayPanel.getInstance() != null) {
+            ConsoleOverlayPanel.getInstance().close();
+        }
         Global.getCombatEngine().endCombat(0f, victor);
         return CommandResult.SUCCESS;
     }
