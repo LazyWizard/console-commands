@@ -1,3 +1,12 @@
+Version 4.0.3
+
+- Opening the console now describes a few of the common keybinds in the default chat log.
+- Opening the console no longer interupts the current campaign music.
+- Opening the console no longer hides the campaign UI in the background.
+- Fixed the console not correctly re-pausing the game in the campaign.
+
+
+
 Version 4.0.2
 
 - Goto, Jump and OpenMarket now use ID suggestions instead of name ones.

@@ -16,6 +16,7 @@ object ConsoleV2Settings {
     var needsHoldShift = false
     var needsHoldAlt = false*/
 
+    @JvmStatic
     var consoleKeybind = ConsoleSettings.Keystroke(Keyboard.KEY_BACK, true, false, false)
 
     var enableBackgroundBlur = true

@@ -1,6 +1,7 @@
 package org.lazywizard.console.overlay.v2.panels
 
 import com.fs.graphics.util.Fader
+import com.fs.starfarer.api.EveryFrameScript
 import com.fs.starfarer.api.GameState
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.BaseCustomUIPanelPlugin
@@ -8,6 +9,8 @@ import com.fs.starfarer.api.campaign.InteractionDialogAPI
 import com.fs.starfarer.api.campaign.InteractionDialogPlugin
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.combat.EngagementResultAPI
+import com.fs.starfarer.api.impl.MusicPlayerPluginImpl
+import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.input.InputEventAPI
 import com.fs.starfarer.api.ui.CustomPanelAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
@@ -35,6 +38,7 @@ import org.lazywizard.console.overlay.v2.elements.ConsoleTextfield
 import org.lazywizard.console.overlay.v2.font.ConsoleFont
 import org.lazywizard.console.overlay.v2.misc.ReflectionUtils
 import org.lazywizard.console.overlay.v2.misc.clearChildren
+import org.lazywizard.console.overlay.v2.misc.getChildrenCopy
 import org.lazywizard.console.overlay.v2.misc.getParent
 import org.lazywizard.console.overlay.v2.settings.ConsoleV2Settings
 import org.lazywizard.lazylib.JSONUtils
@@ -141,7 +145,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
     var requiresRecreation = false
 
-    var placeHolderDialog: InteractionDialogAPI? = null
+    var placeHolderDialog: UIPanelAPI? = null
 
     var compileScope = CoroutineScope(Dispatchers.Default)
     var compileJob: Job? = null
@@ -165,11 +169,32 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
         instance = this
 
+        if (Global.getCurrentState() == GameState.COMBAT) {
+            wasPaused = Global.getCombatEngine().isPaused
+            //Global.getCombatEngine().viewport.isExternalControl = true //Prevent moving screen with dragging
+            Global.getCombatEngine().isPaused = true
+        }
+
+        if (Global.getCurrentState() == GameState.CAMPAIGN) {
+            wasPaused = Global.getSector().isPaused
+            Global.getSector().isPaused = true;
+        }
+
         //Open a dialog to prevent input from most other mods
         if (context.isInCampaign) {
             if (!Global.getSector().campaignUI.isShowingDialog) {
-                Global.getSector().campaignUI.showInteractionDialog(PlaceholderDialog(), Global.getSector().playerFleet)
-                placeHolderDialog = Global.getSector().campaignUI.currentInteractionDialog
+                var ui = Global.getSector().campaignUI
+
+                //Use message dialog instead of InteractionDialog, as it doesnt hide campaign UI and doesnt mess with pause behaviour
+                ui.showMessageDialog("")
+                val screenPanel = ReflectionUtils.get("screenPanel", ui) as UIPanelAPI
+                placeHolderDialog = screenPanel.getChildrenCopy().find { ReflectionUtils.hasMethodOfName("getOptionMap", it)  } as? UIPanelAPI
+                if (placeHolderDialog != null) {
+                    ReflectionUtils.invoke("setOpacity", placeHolderDialog!!, 0f)
+                    ReflectionUtils.invoke("setBackgroundDimAmount", placeHolderDialog!!, 0f)
+                    ReflectionUtils.invoke("setAbsorbOutsideEvents", placeHolderDialog!!, false)
+                    ReflectionUtils.invoke("makeOptionInstant", placeHolderDialog!!, 0f)
+                }
             }
         }
 
@@ -185,18 +210,6 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
         var state = AppDriver.getInstance().currentState
         var screenPanel = ReflectionUtils.invoke("getScreenPanel", state) as UIPanelAPI
-
-        if (Global.getCurrentState() == GameState.COMBAT) {
-            wasPaused = Global.getCombatEngine().isPaused
-            //Global.getCombatEngine().viewport.isExternalControl = true //Prevent moving screen with dragging
-            Global.getCombatEngine().isPaused = true
-        }
-
-        if (Global.getCurrentState() == GameState.CAMPAIGN) {
-            wasPaused = Global.getSector().isPaused
-            Global.getSector().isPaused = true;
-        }
-
 
 
         parent = Global.getSettings().createCustom(screenPanel.position.width, screenPanel.position.height, null)
@@ -1292,7 +1305,13 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
         compileScope.cancel()
 
-        var state = AppDriver.getInstance().currentState
+       /* placeHolderDialog?.dismiss()
+        placeHolderDialog = null*/
+
+        if (placeHolderDialog != null) {
+            ReflectionUtils.invoke("dismiss", placeHolderDialog!!, 0)
+            placeHolderDialog = null
+        }
 
         if (Global.getCurrentState() == GameState.COMBAT) {
             if (!wasPaused) Global.getCombatEngine().isPaused = false
@@ -1301,11 +1320,8 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         }
 
         if (Global.getCurrentState() == GameState.CAMPAIGN) {
-            if (!wasPaused) Global.getSector().isPaused = false;
+            Global.getSector().isPaused = wasPaused;
         }
-
-        placeHolderDialog?.dismiss()
-        placeHolderDialog = null
 
         instance = null
         parent.getParent()?.removeComponent(parent)
@@ -1353,47 +1369,4 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         val percent = DecimalFormat.getPercentInstance().format(used / Math.max(max, committed).toDouble())
         "$percent (${asString(used)}/${asString(Math.max(max, committed))})"
     }
-
-    class PlaceholderDialog() : InteractionDialogPlugin {
-
-        var dialog: InteractionDialogAPI? = null
-
-        override fun init(dialog: InteractionDialogAPI?) {
-            this.dialog = dialog
-
-            dialog!!.promptText = "Test"
-            /*if (dialog is UIPanelAPI) {
-                dialog.opacity = 0f
-               //var fader =ReflectionUtils.invoke("getFader", dialog) as Fader
-            }*/
-        }
-
-        override fun optionSelected(optionText: String?, optionData: Any?) {
-
-        }
-
-        override fun optionMousedOver(optionText: String?, optionData: Any?) {
-
-        }
-
-        override fun advance(amount: Float) {
-            //ReflectionUtils.invoke("setOpacity", dialog!!, 0f)
-            var fader = ReflectionUtils.invoke("getFader", dialog!!.visualPanel) as Fader
-            fader.brightness = 0f
-        }
-
-        override fun backFromEngagement(battleResult: EngagementResultAPI?) {
-
-        }
-
-        override fun getContext(): Any? {
-            return null
-        }
-
-        override fun getMemoryMap(): MutableMap<String, MemoryAPI> {
-            return hashMapOf()
-        }
-
-    }
-
 }

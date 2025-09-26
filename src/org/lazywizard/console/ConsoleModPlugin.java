@@ -80,12 +80,22 @@ public class ConsoleModPlugin extends BaseModPlugin
         // Load console settings - implementing it in ReloadConsole ensures the command will work identically
         ReloadConsole.reloadConsole();
 
-        Console.showMessage("Console loaded, summon with " + Console.getSettings().getConsoleSummonKey() + ".", Level.DEBUG);
-
-        if (needsSetup())
-        {
-            Console.showMessage("Use the Settings command to configure the console.", Level.DEBUG);
+        if (Console.isUseLegacyConsole()) {
+            Console.showMessage("Console loaded, summon with " + Console.getSettings().getConsoleSummonKey() + ".", Level.DEBUG);
+            if (needsSetup())
+            {
+                Console.showMessage("Use the Settings command to configure the console.", Level.DEBUG);
+            }
+        } else  {
+            Console.showMessage("Console loaded", Level.DEBUG);
+            //Console.showMessage("Controls: ", Level.DEBUG);
+            Console.showMessage(" - Enter: confirm command", Level.DEBUG);
+            Console.showMessage(" - Tab: autocomplete command/argument", Level.DEBUG);
+            Console.showMessage(" - Left/Right: move cursor", Level.DEBUG);
+            Console.showMessage(" - Up/Down: scroll command history/autocomplete suggestions", Level.DEBUG);
         }
+
+
     }
 
     @Override
