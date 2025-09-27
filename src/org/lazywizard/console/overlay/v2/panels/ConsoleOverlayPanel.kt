@@ -24,6 +24,7 @@ import org.dark.shaders.util.ShaderLib
 import org.json.JSONArray
 import org.lazywizard.console.BaseCommand.CommandContext
 import org.lazywizard.console.BaseCommandWithSuggestion
+import org.lazywizard.console.CommandListenerWithSuggestion
 import org.lazywizard.console.CommandStore
 import org.lazywizard.console.CommandStore.StoredCommand
 import org.lazywizard.console.CommonStrings
@@ -165,6 +166,8 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
     var memText = ""
     var gpuText = ""
 
+    var listeners = CommandStore.getListeners()
+
     init {
 
         instance = this
@@ -187,8 +190,8 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
                 //Use message dialog instead of InteractionDialog, as it doesnt hide campaign UI and doesnt mess with pause behaviour
                 ui.showMessageDialog("")
-                val screenPanel = ReflectionUtils.get("screenPanel", ui) as UIPanelAPI
-                placeHolderDialog = screenPanel.getChildrenCopy().find { ReflectionUtils.hasMethodOfName("getOptionMap", it)  } as? UIPanelAPI
+                val screenPanel = ReflectionUtils.get("screenPanel", ui) as UIPanelAPI?
+                placeHolderDialog = screenPanel?.getChildrenCopy()?.find { ReflectionUtils.hasMethodOfName("getOptionMap", it)  } as? UIPanelAPI?
                 if (placeHolderDialog != null) {
                     ReflectionUtils.invoke("setOpacity", placeHolderDialog!!, 0f)
                     ReflectionUtils.invoke("setBackgroundDimAmount", placeHolderDialog!!, 0f)
@@ -510,13 +513,22 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             }
         } else {
             var stored = getCommand()
+            var withoutCommand = words.filter { words.first() != it }
+            var previous = withoutCommand.filter { withoutCommand.last() != it }.map { it.second }
             if (stored != null) {
                 var command = stored.commandClass.newInstance()
-                if (command is BaseCommandWithSuggestion) {
-                    var withoutCommand = words.filter { words.first() != it }
-                    var previous = withoutCommand.filter { withoutCommand.last() != it }.map { it.second }
 
+                if (command is BaseCommandWithSuggestion) {
                     completions.addAll(command.getSuggestions(withoutCommand.size-1, previous, context))
+                }
+
+                for (listener in listeners) {
+                    if (listener is CommandListenerWithSuggestion) {
+                        var suggestions = listener.getSuggestions(stored.name, withoutCommand.size-1, previous, context)
+                        if (suggestions != null && suggestions.isNotEmpty()) {
+                            completions.addAll(suggestions)
+                        }
+                    }
                 }
             }
         }
@@ -1148,7 +1160,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             {
                 event.consume()
                 close()
-                continue
+                break
             }
             if (event.isKeyboardEvent)
             {
@@ -1257,7 +1269,6 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             ShaderLib.beginDraw(shader);
 
             GL20.glUniform2f(GL20.glGetUniformLocation(shader, "resolution"), ShaderLib.getInternalWidth().toFloat(), ShaderLib.getInternalHeight().toFloat())
-            GL20.glUniform1f(GL20.glGetUniformLocation(shader, "darkening"), 1f-ConsoleV2Settings.backgroundDarkening)
 
             var blurInt = 1
             if (!ConsoleV2Settings.enableBackgroundBlur) blurInt = 0
@@ -1274,8 +1285,14 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             }
 
             GL11.glDisable(GL11.GL_BLEND);
-            ShaderLib.screenDraw(ShaderLib.getScreenTexture(), GL13.GL_TEXTURE0 + 0)
-            ShaderLib.exitDraw()
+            var verticalPassLoc = GL20.glGetUniformLocation(shader, "verticalPass");
+            GL20.glUniform1i(verticalPassLoc, 0);
+            GL20.glUniform1f(GL20.glGetUniformLocation(shader, "darkening"), 1f)
+            ShaderLib.screenDraw(ShaderLib.getScreenTexture(), GL13.GL_TEXTURE0);
+            GL20.glUniform1i(verticalPassLoc, 1);
+            GL20.glUniform1f(GL20.glGetUniformLocation(shader, "darkening"), 1f-ConsoleV2Settings.backgroundDarkening)
+            ShaderLib.screenDraw(ShaderLib.getScreenTexture(), GL13.GL_TEXTURE0);
+            ShaderLib.exitDraw();
         }
         //No GraphicsLib or Disabled Shaders
         else {

@@ -1,3 +1,18 @@
+Version 4.0.4
+
+- Added suggestions for some AddSpecial arguments (modspec, ship_bp, fighter_bp, weapon_bp, industry_bp)
+- Replaced the blur shader with a better one by shiozakana.
+- Slightly lowered the default background darkening to match the new shader.
+--> This will reset the background darkening configuration when updating.
+
+For modders
+
+- Added CommandListenerWithSuggestion, enables adding suggestions to existing commands.
+- Check "AddSpecialSuggestionsListener" for an example.
+- Most useful for adding suggestions for special items data.
+
+
+
 Version 4.0.3
 
 - Opening the console now describes a few of the common keybinds in the default chat log.

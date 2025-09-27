@@ -1,50 +1,54 @@
+#version 110
+// should have a version define
 
+//shader by shiozakana
 
 uniform sampler2D tex;
-vec2 texCoord = gl_TexCoord[0].xy;
 uniform vec2 resolution;
+// uniform vec2 pixelStep;
 uniform bool displayBlur;
+// one of pass set 1, another pass set 0
+uniform bool verticalPass;
 uniform float darkening;
 
-//Shader from https://www.shadertoy.com/view/Xltfzj
+vec2 texCoord = gl_TexCoord[0].xy;
+
+#define PI 3.14159265
+// also uniform
+#define FILTER_I 12
+#define FILTER_I_F float(FILTER_I)
+const float PER_STEP = (1.0 / (FILTER_I_F * 0.1111111 * PI));
+
+float getGaussian(float x) {
+	float p = x * PER_STEP;
+	return PER_STEP * 0.3989423 * exp(-0.5 * p * p);
+}
+
+// separated gaussian filter (a.k.a gaussian blur), draw it twice, and use last screen capture for each draw
+// GL_BLEND should disabled, it was unnecessary here
 void main() {
+	// should use uniform for pixelStep
+	vec2 pixelStep = 1.0 / resolution;
+	// normally, alpha channel is unnecessary in post-effect
+	// should use texture2D() in lower OpenGL 2.0 ~ 3.2(glsl 110 ~ 150), not texture()
+	// and texture2D() functions are deprecated since OpenGL 3.3(glsl 330)
+	vec3 Color = displayBlur ? vec3(0.0) : texture2D(tex, texCoord).xyz;
 
-	float Pi = 6.28318530718; // Pi*2
-    
-    // GAUSSIAN BLUR SETTINGS {{{
-    float Directions = 16.0; // BLUR DIRECTIONS (Default 16.0 - More is better but slower)
-    float Quality = 4.0; // BLUR QUALITY (Default 4.0 - More is better but slower)
-    float Size = 8.0; // BLUR SIZE (Radius)
-    // GAUSSIAN BLUR SETTINGS }}}
-   
-    //vec2 Radius = Size/iResolution.xy;
-    vec2 Radius = Size/resolution.xy;
-    
-    // Normalized pixel coordinates (from 0 to 1)
-    vec2 uv = texCoord/resolution.xy;
-    // Pixel colour
-    //vec4 Color = texture(iChannel0, uv);
-	vec4 Color = texture2D(tex, texCoord);
-    
-    if (displayBlur) {
-        // Blur calculations
-        for( float d=0.0; d<Pi; d+=Pi/Directions)
-        {
-		    for(float i=1.0/Quality; i<=1.0; i+=1.0/Quality)
-            {
-			    //Color += texture( iChannel0, uv+vec2(cos(d),sin(d))*Radius*i);		
-			    Color += texture(tex, texCoord+vec2(cos(d),sin(d))*Radius*i);		
-            }
-        }
-    
-        // Output to screen
-        Color /= Quality * Directions - 15.0;
-    }
+	if (displayBlur) {
+		float weightSum = 0.0, currWeight, ift;
+		vec2 offset;
 
-    Color.r *= darkening;
-    Color.g *= darkening;
-    Color.b *= darkening;
+		for (int i = -FILTER_I; i <= FILTER_I; i++) {
+			ift = float(i);
+			currWeight = getGaussian(ift);
+			offset = verticalPass ? vec2(0.0, pixelStep.y) : vec2(pixelStep.x, 0.0);
+			offset *= ift;
+			Color += texture2D(tex, texCoord + offset).xyz * currWeight;
+			weightSum += currWeight;
+		}
+		Color /= weightSum;
+	}
 
-	gl_FragColor = Color;
-
+	// sqrt(darkening) per pass, or multiply it in last pass
+	gl_FragColor = vec4(Color * darkening, 1.0);
 }

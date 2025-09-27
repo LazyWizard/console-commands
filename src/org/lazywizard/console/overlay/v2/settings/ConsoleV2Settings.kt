@@ -48,7 +48,7 @@ object ConsoleV2Settings {
         )
 
         enableBackgroundBlur = LunaSettings.getBoolean(MOD_ID, "console_enableBackgroundBlur")!!
-        backgroundDarkening = LunaSettings.getFloat(MOD_ID, "console_backgroundDarkening")!!
+        backgroundDarkening = LunaSettings.getFloat(MOD_ID, "console_backgroundDarkening2")!!
         textInputColor = LunaSettings.getColor(MOD_ID, "console_inputTextColor")!!
         textOutputColor = LunaSettings.getColor(MOD_ID, "console_outputTextColor")!!
         matchColor = LunaSettings.getColor(MOD_ID, "console_matchColor")!!

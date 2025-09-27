@@ -1,7 +1,8 @@
 listenerId,listenerClass,priority
-# listenerId - The unique ID for this listener
-# listenerClass - Called before (with a chance to take over execution) and after the console executes each command
-# (listenerClass must implement the org.lazywizard.console.CommandListener interface)
-# priority - The listener with the highest priority wins when intercepting execution of a command
+# listenerId - The unique ID for this listener,,
+# listenerClass - Called before (with a chance to take over execution) and after the console executes each command,,
+# (listenerClass must implement the org.lazywizard.console.CommandListener interface),,
+# priority - The listener with the highest priority wins when intercepting execution of a command,,
 #ListListenerHighPriority,org.lazywizard.console.testing.ListOverrideTest,-10
 #ListListenerLowPriority,org.lazywizard.console.testing.ListOverrideTest2,-11
+ListListenerLowPriority,org.lazywizard.console.listeners.AddSpecialSuggestionsListener,0
