@@ -20,7 +20,7 @@ object ConsoleV2Settings {
     var consoleKeybind = ConsoleSettings.Keystroke(Keyboard.KEY_BACK, true, false, false)
 
     var enableBackgroundBlur = true
-    var backgroundDarkening = 0.9f
+    var backgroundDarkening = 0.875f
     var textInputColor =  Color(243, 245,  250)
     var textOutputColor =  Color(188, 190, 196)
     var matchColor = Color(170,222,255)
@@ -29,6 +29,9 @@ object ConsoleV2Settings {
     var useContextSensitiveSuggestions = false
     var enableTabCycling = false
     var maxAutocompletionsCount = 20
+
+    var showCommandInfo = false
+    var showCompileErrors = true
 
     var showRAMandVRAMusage = true
 
@@ -57,6 +60,10 @@ object ConsoleV2Settings {
         useContextSensitiveSuggestions = LunaSettings.getBoolean(MOD_ID, "console_contextSensitiveSuggestions")!!
         enableTabCycling = LunaSettings.getBoolean(MOD_ID, "console_enableTabCycling")!!
         maxAutocompletionsCount = LunaSettings.getInt(MOD_ID, "console_autocompletionsCount")!!
+
+        showCommandInfo = LunaSettings.getBoolean(MOD_ID, "console_showCommandInfo")!!
+        showCompileErrors = LunaSettings.getBoolean(MOD_ID, "console_showCompileErrors")!!
+
 
         showRAMandVRAMusage = LunaSettings.getBoolean(MOD_ID, "console_showRAMAndVram")!!
         var test = ""

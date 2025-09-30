@@ -1,16 +1,8 @@
 package org.lazywizard.console.overlay.v2.panels
 
-import com.fs.graphics.util.Fader
-import com.fs.starfarer.api.EveryFrameScript
 import com.fs.starfarer.api.GameState
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.BaseCustomUIPanelPlugin
-import com.fs.starfarer.api.campaign.InteractionDialogAPI
-import com.fs.starfarer.api.campaign.InteractionDialogPlugin
-import com.fs.starfarer.api.campaign.rules.MemoryAPI
-import com.fs.starfarer.api.combat.EngagementResultAPI
-import com.fs.starfarer.api.impl.MusicPlayerPluginImpl
-import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.input.InputEventAPI
 import com.fs.starfarer.api.ui.CustomPanelAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
@@ -32,7 +24,6 @@ import org.lazywizard.console.Console
 import org.lazywizard.console.commands.RunCode
 import org.lazywizard.console.ext.GPUInfo
 import org.lazywizard.console.ext.getGPUInfo
-import org.lazywizard.console.ext.getGPUString
 import org.lazywizard.console.overlay.v2.elements.BaseConsoleElement
 import org.lazywizard.console.overlay.v2.elements.ConsoleTextElement
 import org.lazywizard.console.overlay.v2.elements.ConsoleTextfield
@@ -121,6 +112,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
     private var inputDraw = fontSmall.createText("", inputColor, 16f)
     private var completionDraw = fontSmall.createText("", inputColor, 16f)
+    private var infoDraw = fontSmall.createText("", grayColor, 12f)
     private var compileDraw = fontSmall.createText("", compileErrorColor, 12f)
     private var syntaxDraw = fontSmall.createText("", grayColor, 16f)
     private var cursorDraw = fontSmall.createText("|", Color.white, 16f)
@@ -204,6 +196,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         inputDraw.blendSrc = GL_ONE
         completionDraw.blendSrc = GL_ONE
         compileDraw.blendSrc = GL_ONE
+        infoDraw.blendSrc = GL_ONE
         syntaxDraw.blendSrc = GL_ONE
         cursorDraw.blendSrc = GL_ONE
         arrowDraw.blendSrc = GL_ONE
@@ -318,6 +311,15 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         compileDraw.maxWidth = width-widthOffset-innerSizeReduction
         compileDraw.triggerRebuildIfNeeded()
 
+        var currentCommand = getCommand()
+        if (currentCommand != null && currentCommand.commandClass != RunCode::class.java && ConsoleV2Settings.showCommandInfo) {
+            infoDraw.text = currentCommand.help
+        } else {
+            infoDraw.text = ""
+        }
+        infoDraw.maxWidth = width-widthOffset-innerSizeReduction
+        infoDraw.triggerRebuildIfNeeded()
+
         var wordPartBeforeCursor = getWordBeforeCursor()
         var wordAtCursor = getFullWordAtCursor()
         var indexOfWord = getSubstringBeforeCursor().lastIndexOf(wordPartBeforeCursor) //Find out where to place the autocomplete panel
@@ -414,7 +416,9 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         //syntaxDraw.maxWidth = inputDraw.maxWidth
         syntaxDraw.triggerRebuildIfNeeded()
 
-        var textfield = ConsoleTextfield(element, width-widthOffset, 30f+textHeight+compileDraw.height)
+        var extraHeight = Math.max(compileDraw.height, infoDraw.height)
+
+        var textfield = ConsoleTextfield(element, width-widthOffset, 30f+textHeight+extraHeight)
         textfield.position.inTL(width/2-textfield.width/2, height-textfield.height-30)
 
         textfield.render {
@@ -433,6 +437,8 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
             if (compileError.isNotBlank()) {
                 compileDraw.draw(textfield.x+innerSizeReduction, textfield.y+textfield.height-8-compileDraw.fontSize-inputDraw.height)
+            } else if (infoDraw.text.isNotBlank()) {
+                infoDraw.draw(textfield.x+innerSizeReduction, textfield.y+textfield.height-8-infoDraw.fontSize-inputDraw.height)
             }
 
             if (ConsoleV2Settings.showRAMandVRAMusage) {
@@ -1121,7 +1127,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             }
 
             var isRuncode = input.lowercase().trimStart().startsWith("runcode ")
-            if (isRuncode) {
+            if (isRuncode && ConsoleV2Settings.showCompileErrors) {
                 //remove the "runcode" part
                 var toCompile = input.substring(input.indexOf(" "), input.length).trim()
                 if (!toCompile.endsWith(";")) {
