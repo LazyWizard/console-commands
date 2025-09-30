@@ -30,6 +30,7 @@ object ConsoleV2Settings {
     var enableTabCycling = false
     var maxAutocompletionsCount = 20
 
+    var textfieldResizeBehaviour = "Move Log"
     var showCommandInfo = false
     var showCompileErrors = true
 
@@ -61,12 +62,11 @@ object ConsoleV2Settings {
         enableTabCycling = LunaSettings.getBoolean(MOD_ID, "console_enableTabCycling")!!
         maxAutocompletionsCount = LunaSettings.getInt(MOD_ID, "console_autocompletionsCount")!!
 
+        textfieldResizeBehaviour = LunaSettings.getString(MOD_ID, "console_textfieldResizeBehaviour")!!
         showCommandInfo = LunaSettings.getBoolean(MOD_ID, "console_showCommandInfo")!!
         showCompileErrors = LunaSettings.getBoolean(MOD_ID, "console_showCompileErrors")!!
 
-
         showRAMandVRAMusage = LunaSettings.getBoolean(MOD_ID, "console_showRAMAndVram")!!
-        var test = ""
     }
 
 }

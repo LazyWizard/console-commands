@@ -1,3 +1,11 @@
+Version 4.0.5
+
+- Added a config that displays the current commands "help" info below the input text field (disabled by default)
+- Added a config for enabling/disabling the runcode compile error information.
+- When using multiple lines in the input text field, the log will now be offset upwards by the increased size, instead of the input field overlaying the log, same way it worked in the legacy console. This behaviour can be toggled off again in the configs.
+
+
+
 Version 4.0.4
 
 - Added suggestions for some AddSpecial arguments (modspec, ship_bp, fighter_bp, weapon_bp, industry_bp)

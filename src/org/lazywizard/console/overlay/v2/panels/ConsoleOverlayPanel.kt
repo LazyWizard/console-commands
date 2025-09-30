@@ -112,7 +112,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
     private var inputDraw = fontSmall.createText("", inputColor, 16f)
     private var completionDraw = fontSmall.createText("", inputColor, 16f)
-    private var infoDraw = fontSmall.createText("", grayColor, 12f)
+    private var infoDraw = fontSmall.createText("", grayColor, 14f)
     private var compileDraw = fontSmall.createText("", compileErrorColor, 12f)
     private var syntaxDraw = fontSmall.createText("", grayColor, 16f)
     private var cursorDraw = fontSmall.createText("|", Color.white, 16f)
@@ -159,6 +159,8 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
     var gpuText = ""
 
     var listeners = CommandStore.getListeners()
+
+    var lastTextFieldHeight: Float? = null
 
     init {
 
@@ -252,28 +254,11 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             logMaxHeight -= 40
         }
 
-        var logOffsetY = 95f
-        var totalLogHeight = toDraw.height
-        var logHeight = Math.min(logMaxHeight-logOffsetY, totalLogHeight)
 
-        var logPanel = parent.createCustomPanel(width-widthOffset, logHeight, null)
+        //add the log panel before the text field, as its supposed to be below in the UI mode where the text field overlays it
+        var logPanel = parent.createCustomPanel(0f, 0f, null)
         parent.addComponent(logPanel)
 
-        logElement = logPanel.createUIElement(width-widthOffset, logHeight, true)
-
-        var text = ConsoleTextElement(toDraw, logElement!!, toDraw.width, toDraw.height)
-
-        logPanel.addUIElement(logElement)
-        logPanel.position.inTL(widthOffset/2, height - logHeight - logOffsetY +10 )
-
-        logElement!!.position.inTL(0f, 0f)
-
-        //Reset scroller to top, restore previous scroller if input didnt change
-        if (previousScroller == -1f) {
-            logElement!!.externalScroller.yOffset = totalLogHeight-logHeight
-        } else {
-            logElement!!.externalScroller.yOffset = previousScroller
-        }
 
 
 
@@ -287,13 +272,51 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         inputElement.position.inTL(0f, 0f)
 
 
-        createTextfield(inputPanel, inputElement, widthOffset)
+        var extraTextfieldHeight = createTextfield(inputPanel, inputElement, widthOffset)
+        if (ConsoleV2Settings.textfieldResizeBehaviour == "Move Log") {
+            extraTextfieldHeight = MathUtils.clamp(extraTextfieldHeight, 0f, height/2)
+        } else {
+            extraTextfieldHeight = 0f
+        }
+        if (lastTextFieldHeight == null) {
+            lastTextFieldHeight = extraTextfieldHeight
+        }
 
+        var textFieldHeightDiff = lastTextFieldHeight!!-extraTextfieldHeight
+        lastTextFieldHeight = extraTextfieldHeight
 
+        //Resize log panel, then create the element scroller
+
+        var logOffsetY = 95f
+        var totalLogHeight = toDraw.height
+        var logHeight = Math.min(logMaxHeight-logOffsetY- extraTextfieldHeight, totalLogHeight)
+        var isMax = logMaxHeight-logOffsetY-extraTextfieldHeight>=totalLogHeight
+
+        logPanel.position.setSize(width-widthOffset, logHeight)
+        logElement = logPanel.createUIElement(width-widthOffset, logHeight, true)
+
+        var text = ConsoleTextElement(toDraw, logElement!!, toDraw.width, toDraw.height)
+
+        logPanel.addUIElement(logElement)
+        logPanel.position.inTL(widthOffset/2, height - logHeight - logOffsetY +10 - extraTextfieldHeight)
+
+        logElement!!.position.inTL(0f, 0f)
+
+        //Reset scroller to top, restore previous scroller if input didnt change
+        if (previousScroller == -1f) {
+            logElement!!.externalScroller.yOffset = totalLogHeight-logHeight
+        } else {
+            logElement!!.externalScroller.yOffset = previousScroller/*-textFieldHeightDiff*/
+            if (!isMax) {
+                logElement!!.externalScroller.yOffset -= textFieldHeightDiff
+            }
+            logElement!!.externalScroller.yOffset = MathUtils.clamp(logElement!!.externalScroller.yOffset, 0f, totalLogHeight-logHeight)
+        }
 
     }
 
-    fun createTextfield(panel: UIPanelAPI, element: TooltipMakerAPI, widthOffset: Float) {
+    //Returns the additional size of the textfield, ignoring the base size.
+    fun createTextfield(panel: UIPanelAPI, element: TooltipMakerAPI, widthOffset: Float) : Float {
 
         var width = parent.position.width
         var height = parent.position.height
@@ -461,7 +484,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             lastMatchesDisplayed.addAll(matches)
         }
 
-
+        return MathUtils.clamp(textHeight+extraHeight-inputDraw.fontSize, 0f, Float.MAX_VALUE)
         //println(getWords())
     }
 

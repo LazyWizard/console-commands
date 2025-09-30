@@ -20,7 +20,7 @@ console_enableTabCycling,Enable tab cycling,Boolean,false,,"When enabled, allows
 console_autocompletionsCount,Autocompletions display count,Int,20,,Sets the maximum of how many suggestions can be displayed at a time.,5,40,
 ,,,,,,,,
 console_textfieldHeader,Textfield,Header,Textfield,,,,,
-console_textfieldResizeBehaviour,Textfield rezise behaviour,Radio,Move Log,"Move Log, Overlay Log","When typing in multiple lines in to the console, should the textfield move the above text log up to get more space, or simply overlay it?",,,
+console_textfieldResizeBehaviour,Textfield rezise behaviour,Radio,Move Log,"Move Log, Overlay Log","Sets behaviour for when the text field increases in height, which happens when using multi-line commands or the two options below. ""Move Log"" causes the text output to be moved above the text field, reducing its size. ""Overlay Log"" will simply make the Textfield display above the log, without changing its size. The ""Move Log"" option is limited to about half of the screens height before overlaying the log.",,,
 console_showCommandInfo,Show command info,Boolean,false,,"If enabled, shows information about a command below the textfield when a valid command is entered.",,,
 console_showCompileErrors,Show runcode compile errors,Boolean,true,,"If enabled, shows compile errors for your current ""runcode"" command below the command in the text field. Compile errors are issues with the code itself, that would prevent it from executing in any context.",,,
 ,,,,,,,,
