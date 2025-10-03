@@ -401,7 +401,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             inputDraw.text = " ".repeat(300) + "." //Small hack because LazyFont does not update paragraphs that are blank
         }
         //inputDraw.maxWidth = width-widthOffset-innerSizeReduction
-        if (input.lowercase().trimStart().startsWith("runcode")) {
+        if (input.lowercase().trimStart().startsWith("runcode") && ConsoleV2Settings.useRuncodeHighlighting) {
             addSyntaxHighlighting()
         }
         inputDraw.triggerRebuildIfNeeded()
@@ -494,7 +494,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         var stringColor = Color(205, 144, 105) //strings
 
         var control = setOf("{", "}","(", ")","while", "if", "else", "for", "break", "case", "try", "catch", "finaly", "continue", "throw", "switch", "return", "default")
-        var keywords = setOf( "new", "import", "class", "interface", "final",      "int", "float", "double", "long", "char", "boolean", "short",     "void", "super")
+        var keywords = setOf( "new", "import", "class", "interface", "final",      "int", "float", "double", "long", "char", "boolean", "short",     "void", "super",    "false", "true")
 
         var runcodeTextColor = inputDraw.baseColor
         var textColor = grayColor
@@ -511,6 +511,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
 
         var index = 0
         for (char in text) {
+            var prev = text.getOrNull(index-1) ?: ""
             var next = text.getOrNull(index+1) ?: ""
             index++
             currentSection += char
@@ -528,7 +529,8 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                     isStringMode = false
                 }
             }
-            else if (char == '\n' || char == '\t' || char == '\r' || char == ' '
+            else if (char == '\n' || char == '\t' || char == '\r'
+                || char == ' ' || char.isWhitespace()
                 || char == '(' || char == ')' || next == '(' || next == ')'
                 || char == '{' || char == '}' || next == '{' || next == '}'
                 || next == '"' || index == text.lastIndex) {
@@ -537,7 +539,11 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                 if (isFirst) color = inputDraw.baseColor
                 else if (control.contains(word)) color = controlColor
                 else if (keywords.contains(word)) color = keywordColor
-                inputDraw.append(currentSection, color)
+                if (currentSection.isBlank()) {
+                    inputDraw.append(currentSection)
+                } else {
+                    inputDraw.append(currentSection, color)
+                }
                 currentSection = ""
                 isFirst = false
             }

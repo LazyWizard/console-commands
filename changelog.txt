@@ -1,3 +1,12 @@
+Version 4.0.6
+
+- Added simple syntax highlighting for runcodes
+- Added an option to disable the syntax highlighting
+- Fixed the runcode compile error message not working correctly when using macros.
+- Fixed runcode errors not displaying if the character after "runcode" was a new line character.
+
+
+
 Version 4.0.5
 
 - Added a config that displays the current commands "help" info below the input text field (disabled by default)

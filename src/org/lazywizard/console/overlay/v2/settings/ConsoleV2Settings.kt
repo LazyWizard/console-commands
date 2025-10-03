@@ -33,6 +33,7 @@ object ConsoleV2Settings {
     var textfieldResizeBehaviour = "Move Log"
     var showCommandInfo = false
     var showCompileErrors = true
+    var useRuncodeHighlighting = true
 
     var showRAMandVRAMusage = true
 
@@ -65,6 +66,7 @@ object ConsoleV2Settings {
         textfieldResizeBehaviour = LunaSettings.getString(MOD_ID, "console_textfieldResizeBehaviour")!!
         showCommandInfo = LunaSettings.getBoolean(MOD_ID, "console_showCommandInfo")!!
         showCompileErrors = LunaSettings.getBoolean(MOD_ID, "console_showCompileErrors")!!
+        useRuncodeHighlighting = LunaSettings.getBoolean(MOD_ID, "console_syntaxHighlightRuncode")!!
 
         showRAMandVRAMusage = LunaSettings.getBoolean(MOD_ID, "console_showRAMAndVram")!!
     }

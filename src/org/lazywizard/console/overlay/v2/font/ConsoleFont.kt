@@ -534,6 +534,7 @@ internal class ConsoleFont private constructor(
             // TODO: Handle invisible characters that mess up length
             substringColorData[sb.length+1] = color.getRGBComponents(null)
             append(text)
+
             substringColorData[sb.length+1] = this.baseColor.getRGBComponents(null)
             return this
         }
@@ -568,7 +569,10 @@ internal class ConsoleFont private constructor(
             var yOffset = 0f
             var sizeX = 0f
             var sizeY = fontSize
-            val toDraw = wrapString(text, fontSize, maxWidth, maxHeight)
+            //TODO Quick and dirty fix for text rendering being wrong, wrapString seems to give bad results, and for the current use case where it breaks it is not needed.
+            //The Specific issue appears to be wrapString removing whitespaces in lines that only have whitespace characters
+            var toDraw = wrapString(text, fontSize, maxWidth, maxHeight)
+            if (maxWidth == Float.MAX_VALUE) toDraw = text
 
             // Don't store per-vertex color data if the entire string is the same color!
             val useColorData = substringColorData.isNotEmpty()
