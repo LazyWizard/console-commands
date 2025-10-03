@@ -14,13 +14,9 @@ import kotlinx.coroutines.*
 import org.codehaus.commons.compiler.CompileException
 import org.dark.shaders.util.ShaderLib
 import org.json.JSONArray
+import org.lazywizard.console.*
 import org.lazywizard.console.BaseCommand.CommandContext
-import org.lazywizard.console.BaseCommandWithSuggestion
-import org.lazywizard.console.CommandListenerWithSuggestion
-import org.lazywizard.console.CommandStore
 import org.lazywizard.console.CommandStore.StoredCommand
-import org.lazywizard.console.CommonStrings
-import org.lazywizard.console.Console
 import org.lazywizard.console.commands.RunCode
 import org.lazywizard.console.ext.GPUInfo
 import org.lazywizard.console.ext.getGPUInfo
@@ -326,7 +322,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         //Ensure that cursor is clamped in to the input size
         cursorIndex = MathUtils.clamp(cursorIndex, 0, input.length)
 
-        var isRuncode = input.lowercase().trimStart().startsWith("runcode ")
+        var isRuncode = input.lowercase().trimStart().startsWith("runcode")
         if (!isRuncode) {
             compileError = ""
         }
@@ -405,6 +401,9 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             inputDraw.text = " ".repeat(300) + "." //Small hack because LazyFont does not update paragraphs that are blank
         }
         //inputDraw.maxWidth = width-widthOffset-innerSizeReduction
+        if (input.lowercase().trimStart().startsWith("runcode")) {
+            addSyntaxHighlighting()
+        }
         inputDraw.triggerRebuildIfNeeded()
         var textWidth = inputDraw.width
 
@@ -488,6 +487,66 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         //println(getWords())
     }
 
+    //Go through the entire text, replace with colored inputs for runcodes
+    fun addSyntaxHighlighting() {
+        var controlColor = Color(204, 133, 198) //new, while, for, break
+        var keywordColor = Color(71, 162, 237) //import, class, int, char, float, double
+        var stringColor = Color(205, 144, 105) //strings
+
+        var control = setOf("{", "}","(", ")","while", "if", "else", "for", "break", "case", "try", "catch", "finaly", "continue", "throw", "switch", "return", "default")
+        var keywords = setOf( "new", "import", "class", "interface", "final",      "int", "float", "double", "long", "char", "boolean", "short",     "void", "super")
+
+        var runcodeTextColor = inputDraw.baseColor
+        var textColor = grayColor
+
+        var text = inputDraw.text
+        text = text.replace("\r", "") //breaks highlighting somehow
+        inputDraw.text = ""
+        //var recreation = ""
+
+        var currentSection = ""
+        var isInQuoteMode = false
+        var isFirst = true
+        var isStringMode = false
+
+        var index = 0
+        for (char in text) {
+            var next = text.getOrNull(index+1) ?: ""
+            index++
+            currentSection += char
+
+            var enteredStringMode = false
+            if (!isStringMode && char == '"') {
+                isStringMode = true
+                enteredStringMode = true
+            }
+
+            if (isStringMode) {
+                if (!enteredStringMode && char == '"') {
+                    inputDraw.append(currentSection, stringColor)
+                    currentSection = ""
+                    isStringMode = false
+                }
+            }
+            else if (char == '\n' || char == '\t' || char == '\r' || char == ' '
+                || char == '(' || char == ')' || next == '(' || next == ')'
+                || char == '{' || char == '}' || next == '{' || next == '}'
+                || next == '"' || index == text.lastIndex) {
+                var color = grayColor
+                var word = currentSection.trim()
+                if (isFirst) color = inputDraw.baseColor
+                else if (control.contains(word)) color = controlColor
+                else if (keywords.contains(word)) color = keywordColor
+                inputDraw.append(currentSection, color)
+                currentSection = ""
+                isFirst = false
+            }
+        }
+
+        if (currentSection.isNotEmpty()) {
+            inputDraw.append(currentSection)
+        }
+    }
 
 
     fun canShowSuggestions() : Boolean {
@@ -1149,26 +1208,43 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                 }
             }
 
-            var isRuncode = input.lowercase().trimStart().startsWith("runcode ")
+            var isRuncode = input.lowercase().trimStart().startsWith("runcode")
             if (isRuncode && ConsoleV2Settings.showCompileErrors) {
                 //remove the "runcode" part
-                var toCompile = input.substring(input.indexOf(" "), input.length).trim()
-                if (!toCompile.endsWith(";")) {
-                    toCompile += ";"
-                }
-                if (toCompile.isNotBlank()) {
 
-                    //Run compilation on another coroutine to prevent lag
-                    compileJob = compileScope.launch {
-                        delay(100) //Short delay to cancel in case other input arrived and to make the error display less flashing
-                        if (isActive) {
-                            try {
-                                RunCode.eval.cook(toCompile)
-                                compileError = ""
-                            } catch (e: CompileException) {
-                                compileError = e.message ?: ""
+                var runcodeIndex = input.lowercase().indexOf("runcode") + "runcode".length
+
+                if (runcodeIndex != -1) {
+                    var toCompile = input.substring(runcodeIndex, input.length).trim()
+                    if (!toCompile.endsWith(";")) {
+                        toCompile += ";"
+                    }
+
+                    // Macro support
+                    if (toCompile.contains("$")) {
+                        //System.out.println("Replacing macros");
+                        for ((key, value) in RunCode.macros) {
+                            //System.out.println(tmp.getKey() + ": " + tmp.getValue());
+                            toCompile = toCompile.replace(key, value)
+                        }
+                    }
+
+                    if (toCompile.isNotBlank()) {
+
+                        //Run compilation on another coroutine to prevent lag
+                        compileJob = compileScope.launch {
+                            delay(100) //Short delay to cancel in case other input arrived and to make the error display less flashing
+                            if (isActive) {
+                                try {
+                                    RunCode.eval.cook(toCompile)
+                                    compileError = ""
+                                } catch (e: CompileException) {
+                                    compileError = e.message ?: ""
+                                } catch (e: Exception) {
+
+                                }
+                                requiresRecreation = true
                             }
-                            requiresRecreation = true
                         }
                     }
                 }

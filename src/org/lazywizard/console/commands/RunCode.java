@@ -21,7 +21,7 @@ import org.lazywizard.console.Console;
 
 public class RunCode implements BaseCommand
 {
-    private static Map<String, String> macros;
+    public static Map<String, String> macros;
     public static ScriptEvaluator eval;
 
     public static Map<String, String> getMacros()
@@ -92,6 +92,12 @@ public class RunCode implements BaseCommand
     @Override
     public CommandResult runCommand(String args, CommandContext context)
     {
+
+       /* import com.fs.starfarer.*;
+        for (int i = 0; i < 10; i++) {
+            Console.showMessage("Test: " + i);
+        }*/
+
         if (args.isEmpty())
         {
             return CommandResult.BAD_SYNTAX;

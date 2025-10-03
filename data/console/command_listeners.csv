@@ -5,4 +5,4 @@ listenerId,listenerClass,priority
 # priority - The listener with the highest priority wins when intercepting execution of a command,,
 #ListListenerHighPriority,org.lazywizard.console.testing.ListOverrideTest,-10
 #ListListenerLowPriority,org.lazywizard.console.testing.ListOverrideTest2,-11
-ListListenerLowPriority,org.lazywizard.console.listeners.AddSpecialSuggestionsListener,0
+AddSpecialSuggestionsListener,org.lazywizard.console.listeners.AddSpecialSuggestionsListener,0
