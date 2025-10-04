@@ -492,9 +492,12 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         var controlColor = Color(204, 133, 198) //new, while, for, break
         var keywordColor = Color(71, 162, 237) //import, class, int, char, float, double
         var stringColor = Color(205, 144, 105) //strings
+        var commentColor = Color(106, 153, 85)
 
-        var control = setOf("{", "}","(", ")","while", "if", "else", "for", "break", "case", "try", "catch", "finaly", "continue", "throw", "switch", "return", "default")
-        var keywords = setOf( "new", "import", "class", "interface", "final",      "int", "float", "double", "long", "char", "boolean", "short",     "void", "super",    "false", "true")
+        var control = setOf("{", "}","(", ")","while", "if", "else", "for", "break", "case", "try", "catch", "finaly", "continue", "throw", "switch", "return", "default", "do")
+        var keywords = setOf( "new", "import", "class", "interface", "final",
+            "int", "float", "double", "long", "char", "boolean", "short",
+            "void", "super",    "false", "true",   "null",   "instanceof", "extends", "implements", "enum", "assert", "package")
 
         var runcodeTextColor = inputDraw.baseColor
         var textColor = grayColor
@@ -508,11 +511,13 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
         var isInQuoteMode = false
         var isFirst = true
         var isStringMode = false
+        var isCommentMode = false
 
         var index = 0
         for (char in text) {
             var prev = text.getOrNull(index-1) ?: ""
             var next = text.getOrNull(index+1) ?: ""
+            var next2 = text.getOrNull(index+2) ?: ""
             index++
             currentSection += char
 
@@ -522,7 +527,18 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                 enteredStringMode = true
             }
 
-            if (isStringMode) {
+            if (char == '/' && next == '/') {
+                isCommentMode = true
+            }
+
+            if (isCommentMode) {
+                if (char == '\n' || char == '\r' || index == text.lastIndex) {
+                    inputDraw.append(currentSection, commentColor)
+                    currentSection = ""
+                    isCommentMode = false
+                }
+            }
+            else if (isStringMode) {
                 if (!enteredStringMode && char == '"') {
                     inputDraw.append(currentSection, stringColor)
                     currentSection = ""
@@ -533,10 +549,12 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                 || char == ' ' || char.isWhitespace()
                 || char == '(' || char == ')' || next == '(' || next == ')'
                 || char == '{' || char == '}' || next == '{' || next == '}'
-                || next == '"' || index == text.lastIndex) {
+                || (next == '/' && next2 == '/') //Comments
+                || next == '"' || next == ';' || index == text.lastIndex) {
                 var color = grayColor
                 var word = currentSection.trim()
                 if (isFirst) color = inputDraw.baseColor
+                //else if (word.toDoubleOrNull() != null) color = keywordColor
                 else if (control.contains(word)) color = controlColor
                 else if (keywords.contains(word)) color = keywordColor
                 if (currentSection.isBlank()) {
