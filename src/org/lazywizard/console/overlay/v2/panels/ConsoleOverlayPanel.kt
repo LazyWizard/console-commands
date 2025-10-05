@@ -1368,15 +1368,6 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             return false
         }
 
-        else if (char == '%')
-        {
-            return false
-        }
-        else if (char == '$')
-        {
-            return false
-        }
-
         if (char != null) {
             return fontSmall.getChar(char) != fontSmall.fallbackChar
         }
