@@ -3,7 +3,7 @@
     "name": "Console Commands",
     "author": "LazyWizard, Lukas04",
     "utility": "true",
-    "version": "4.0.7",
+    "version": "4.0.8",
     "description": "An in-game developer's console, by default summoned with control+backspace.\n\nFor a complete list of commands enter 'help'. For more information on a specific command enter 'help <command>'. Enter 'settings' to customize the console's appearance and behavior, including the key used to summon it.\n\nThis should be compatible with all mods and doesn't require a new game.",
     "gameVersion": "0.98a-RC5",
     "jars": [

@@ -1,3 +1,9 @@
+Version 4.0.8
+
+- Fixed a bug where commands that may end combat (i.e Nuke) would prevent the console from being opened again that session.
+
+
+
 Version 4.0.7
 
 - Fixed $ and % not being writeable in the console.

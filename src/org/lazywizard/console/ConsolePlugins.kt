@@ -5,10 +5,13 @@ import com.fs.starfarer.api.campaign.listeners.CampaignInputListener
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin
 import com.fs.starfarer.api.combat.CombatEngineAPI
 import com.fs.starfarer.api.input.InputEventAPI
+import com.fs.starfarer.api.ui.UIPanelAPI
 import com.fs.starfarer.api.util.Misc
+import com.fs.state.AppDriver
 import org.lazywizard.console.BaseCommand.CommandContext
 import org.lazywizard.console.overlay.legacy.addToHistory
 import org.lazywizard.console.overlay.legacy.show
+import org.lazywizard.console.overlay.v2.misc.ReflectionUtils
 import org.lazywizard.console.overlay.v2.panels.ConsoleOverlayPanel
 import org.lazywizard.console.overlay.v2.settings.ConsoleV2Settings
 import org.lazywizard.lazylib.StringUtils
@@ -20,11 +23,17 @@ internal class ConsoleCampaignListener : CampaignInputListener, ConsoleListener 
     override fun processCampaignInputPreCore(events: MutableList<InputEventAPI>) {
         if (Global.getSector().campaignUI.isShowingMenu) return
 
+      /*  var state = AppDriver.getInstance().currentState
+        var screenPanel = ReflectionUtils.invoke("getScreenPanel", state) as UIPanelAPI*/
+
         if (ConsoleOverlayPanel.instance == null && Console.isUseLegacyConsole() && Console.getSettings().consoleSummonKey.isPressed(events)) {
             show(context)
             events.clear()
         }
         else if (ConsoleOverlayPanel.instance == null && ConsoleV2Settings.consoleKeybind.isPressed(events)) {
+
+
+
             ConsoleOverlayPanel(context)
             events.clear()
         }

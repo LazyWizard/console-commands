@@ -910,6 +910,10 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
             requiresRecreation = false
             recreatePanel()
         }
+
+        if (context.isInCombat && Global.getCombatEngine().isCombatOver) {
+            close()
+        }
     }
 
 
