@@ -186,7 +186,7 @@ class ConsoleOverlayPanel(private val context: CommandContext) : BaseCustomUIPan
                     ReflectionUtils.invoke("setOpacity", placeHolderDialog!!, 0f)
                     ReflectionUtils.invoke("setBackgroundDimAmount", placeHolderDialog!!, 0f)
                     ReflectionUtils.invoke("setAbsorbOutsideEvents", placeHolderDialog!!, false)
-                    ReflectionUtils.invoke("makeOptionInstant", placeHolderDialog!!, 0f)
+                    ReflectionUtils.invoke("makeOptionInstant", placeHolderDialog!!, 0)
                 }
             }
         }

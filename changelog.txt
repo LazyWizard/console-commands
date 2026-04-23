@@ -1,3 +1,8 @@
+Version 4.0.9
+
+- Fixed an issue with a dialog value being set as a float instead of an int.
+
+
 Version 4.0.8
 
 - Fixed a bug where commands that may end combat (i.e Nuke) would prevent the console from being opened again that session.
